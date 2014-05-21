@@ -1,0 +1,41 @@
+SET(cuda_HEADERS 
+	src/gpu/cuda/ContrastFilter.hpp
+	src/gpu/cuda/CudaWrap.hpp
+	src/gpu/cuda/GaussianFilter.hpp
+	src/gpu/cuda/RadRenderer.hpp
+	src/gpu/cuda/RayCaster.hpp
+	src/gpu/cuda/SharpenFilter.hpp
+	src/gpu/cuda/SobelFilter.hpp
+)
+
+SET(cuda_SOURCES
+	src/gpu/cuda/ContrastFilter.cpp
+	src/gpu/cuda/CudaWrap.cpp
+	src/gpu/cuda/GaussianFilter.cpp
+	src/gpu/cuda/RadRenderer.cpp
+	src/gpu/cuda/RayCaster.cpp
+	src/gpu/cuda/SharpenFilter.cpp
+	src/gpu/cuda/SobelFilter.cpp
+)
+
+SET(cuda_KERNEL_HEADERS
+    src/gpu/cuda/Compositor_kernels.h
+	src/gpu/cuda/ContrastFilter_kernels.h
+	src/gpu/cuda/GaussianFilter_kernels.h
+	src/gpu/cuda/Ncc_kernels.h
+	src/gpu/cuda/RadRenderer_kernels.h
+	src/gpu/cuda/RayCaster_kernels.h
+	src/gpu/cuda/SharpenFilter_kernels.h
+	src/gpu/cuda/SobelFilter_kernels.h
+)
+
+SET(cuda_KERNEL
+	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/Compositor_kernels.cu
+	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/ContrastFilter_kernels.cu
+	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/GaussianFilter_kernels.cu
+	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/Ncc_kernels.cu
+	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/RadRenderer_kernels.cu
+	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/RayCaster_kernels.cu
+	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/SharpenFilter_kernels.cu
+	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/SobelFilter_kernels.cu
+)

@@ -1,0 +1,6 @@
+// @EDIT_WARNING@
+
+static const char @SHADER_NAME@_cl[] =
+{
+@SHADER_BINARY_DATA@
+0x00 };
