@@ -148,6 +148,11 @@
       </layout>
      </widget>
     </item>
+    <item row="1" column="0">
+     <widget class="GLTimeline" name="gltimeline" native="true">
+      <zorder>frame</zorder>
+     </widget>
+    </item>
     <item row="0" column="0">
      <widget class="QFrame" name="frame">
       <property name="sizePolicy">
@@ -413,9 +418,6 @@
        </item>
       </layout>
      </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="GLTimeline" name="gltimeline" native="true"/>
     </item>
    </layout>
   </widget>

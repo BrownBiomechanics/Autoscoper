@@ -102,6 +102,20 @@ void GLWidget::resizeGL(int w, int h){
 
 void GLWidget::update_viewport(ViewData* view)
 {
+	 if (view->m_isStaticView) {
+
+        view->zoom = 1.0f;
+        view->zoom_x = 0.0f;
+        view->zoom_y = 0.0f;
+
+        view->viewport_x = 0;
+        view->viewport_y = 0;
+        view->viewport_width = view->window_width;
+        view->viewport_height = view->window_height;
+
+        return;
+    }
+
     // A zoom of 1 corresponds to a viewport that is the same size as the
     // viewing window. A zoom of 2 corrseponds to a viewport that is twice the
     // size of the window in each dimension. We don't ever want the viewport to

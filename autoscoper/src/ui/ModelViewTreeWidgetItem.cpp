@@ -16,6 +16,10 @@
 #include <QCheckBox>
 #include <QSpacerItem>
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
 #include <View.hpp>
 #ifdef WITH_CUDA
 #include <gpu/cuda/RayCaster.hpp>
@@ -62,11 +66,108 @@ ModelViewTreeWidgetItem::ModelViewTreeWidgetItem(int type, std::vector<Filter*>*
 //	init();
 //}
 
+void ModelViewTreeWidgetItem::save(std::ofstream & file){
+	if(m_type == 0){
+		file << "RadFilters_begin" << std::endl;
+		for(int i = 0 ; i < childCount(); i ++){
+			FilterTreeWidgetItem * filter = dynamic_cast<FilterTreeWidgetItem*> (child(i));
+			if(filter){
+				filter->save(file);
+			}
+		}
+		file << "RadFilters_end" << std::endl;
+	}else if (m_type == 1){
+		file << "DrrRenderer_begin" << std::endl;
+		file << "SampleDistance " << parameters[0]->value << std::endl;
+		file << "RayIntensity " << parameters[1]->value << std::endl;
+		file << "Cutoff " << parameters[2]->value << std::endl;
+		file << "DrrRenderer_end" << std::endl;
+
+		file << "DrrFilters_begin" << std::endl;
+		for(int i = 0 ; i < childCount(); i ++){
+			FilterTreeWidgetItem * filter = dynamic_cast<FilterTreeWidgetItem*> (child(i));
+			if(filter){
+				filter->save(file);
+			}
+		}
+		file << "DrrFilters_end" << std::endl;
+	}
+}
+
+void ModelViewTreeWidgetItem::loadSettings(std::ifstream & file){
+	std::string line, key;
+	if (m_type == 1){
+		while (std::getline(file,line) && line.compare("DrrRenderer_end") != 0) {
+            std::istringstream lineStream(line);
+            lineStream >> key;
+            if (key.compare("SampleDistance") == 0) {
+                float value;
+                lineStream >> value;
+				parameters[0]->spinbox->setValue(value);
+            }
+            else if (key.compare("RayIntensity") == 0) {
+                 float value;
+                lineStream >> value;
+                parameters[1]->spinbox->setValue(value);
+            }
+            else if (key.compare("Cutoff") == 0) {
+                float value;
+                lineStream >> value;
+                parameters[2]->spinbox->setValue(value);
+            }
+        }
+	}
+}
+
+void ModelViewTreeWidgetItem::loadFilters(std::ifstream & file){
+	std::string line, key;
+
+	//Delete all Filters
+	for(int i = childCount() - 1; i >= 0 ; i --){
+		FilterTreeWidgetItem * filterItem = dynamic_cast<FilterTreeWidgetItem*> (child(i)); 
+		if(filterItem){
+			removeFilter(filterItem);
+			delete filterItem;	
+		}
+	}
+
+	while (std::getline(file,line) && line.compare("DrrFilters_end") != 0  && line.compare("RadFilters_end") != 0 ) {
+		std::istringstream lineStream(line);
+		lineStream >> key;
+		if (key.compare("SobelFilter_begin") == 0) {
+			FilterTreeWidgetItem* filter = new FilterTreeWidgetItem(0);
+			filter->addToModelViewTreeWidgetItem(treeWidget(),this);
+			filter->load(file);
+		}
+		else if (key.compare("ContrastFilter_begin") == 0) {
+			FilterTreeWidgetItem* filter = new FilterTreeWidgetItem(1);
+			filter->addToModelViewTreeWidgetItem(treeWidget(),this);
+			filter->load(file);
+		}
+		else if (key.compare("GaussianFilter_begin") == 0) {
+			FilterTreeWidgetItem* filter = new FilterTreeWidgetItem(2);
+			filter->addToModelViewTreeWidgetItem(treeWidget(),this);
+			filter->load(file);
+		}
+		else if (key.compare("SharpenFilter_begin") == 0) {
+			FilterTreeWidgetItem* filter = new FilterTreeWidgetItem(3);
+			filter->addToModelViewTreeWidgetItem(treeWidget(),this);
+			filter->load(file);
+		}
+	}
+	
+}
+
+
 void ModelViewTreeWidgetItem::init(){
 	settingsShown = false;
 
 	pFrameSettings = NULL;
 	settingsButton = NULL;
+}
+
+void ModelViewTreeWidgetItem::toggleVisible(){
+	visibleCheckBox->toggle();
 }
 
 ModelViewTreeWidgetItem::~ModelViewTreeWidgetItem()
@@ -110,6 +211,7 @@ void ModelViewTreeWidgetItem::addToCameraTreeWidgetItem(QTreeWidget * treewidget
 			box->setMinimum(parameters[i]->minimumValue);
 			box->setSingleStep(parameters[i]->step);
 			box->setValue(parameters[i]->value);
+			parameters[i]->spinbox = box;
 			connect(box,SIGNAL(valueChanged(double)),parameters[i],SLOT(valueChanged(double)));
 			connect(parameters[i],SIGNAL(parameterChanged(void)),this,SLOT(updateModelview(void)));
 			pLayoutSettings->addWidget(box, i,1);

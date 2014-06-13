@@ -24,13 +24,18 @@ class FilterTreeWidget : public QTreeWidget{
 
 		void addCamera(View * view);
 		void redrawGL();
+		void toggle_drrs();
 
 	private:
 		void printTree();
 		void resetFilterTree();
 
 		QTreeWidgetItem* item_contextMenu; 
-
+		
+		//CameraView Actions
+		QAction * action_LoadSettings;
+		QAction * action_SaveSettings;
+		
 		//ModelView Actions
 		QAction * action_AddSobelFilter;
 		QAction * action_AddContrastFilter;
@@ -47,6 +52,9 @@ class FilterTreeWidget : public QTreeWidget{
 	public slots:
 		void onCustomContextMenuRequested(const QPoint& pos);
 		void showContextMenu(QTreeWidgetItem* item, const QPoint& globalPos);
+
+		void action_LoadSettings_triggered();
+		void action_SaveSettings_triggered();
 
 		void action_AddSobelFilter_triggered();
 		void action_AddContrastFilter_triggered();

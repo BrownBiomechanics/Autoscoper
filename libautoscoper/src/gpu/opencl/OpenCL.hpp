@@ -17,6 +17,8 @@ namespace xromm { namespace gpu {
 
 void opencl_global_gl_context();
 cl_int opencl_global_context();
+std::vector< std::vector<std::string> > get_platforms();
+void setUsedPlatform(int platform_idx);
 
 class Buffer;
 class GLBuffer;

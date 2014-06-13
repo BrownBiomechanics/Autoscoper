@@ -2,6 +2,7 @@
 #include <cstring>
 #include <iostream>
 #include <fstream>
+#include <sstream>      // std::stringstream, std::stringbuf
 
 #include "OpenCL.hpp"
 #include "Backtrace.hpp"
@@ -50,6 +51,7 @@ using namespace std;
 
 static bool inited_ = false;
 static bool gl_inited_ = false;
+static int used_platform = 0;
 
 #if defined(__APPLE__) || defined(__MACOSX)
 static CGLShareGroupObj share_group_;
@@ -156,6 +158,7 @@ static void print_platform(cl_platform_id platform)
 	CHECK_CL
 	cerr << "# Vendor     : " << buffer << endl;
 }
+
 
 static void print_device(cl_device_id device)
 {
@@ -283,15 +286,232 @@ static void print_device(cl_device_id device)
 		device, CL_DEVICE_IMAGE3D_MAX_DEPTH, sizeof(size_t), s+2, NULL);
 	CHECK_CL
 	cerr << "# Max 3D Image  : ("
+			 
 		 << s[0] << ',' << s[1] << ',' << s[2] << ")\n";
 
 	err_ = clGetDeviceInfo(
 		device, CL_DEVICE_EXTENSIONS, sizeof(buffer), buffer, NULL);
 	CHECK_CL
-	cerr << "# Extensions    : " << buffer << "\n";
+	cerr << "# Extensions    :  "  << buffer << " \n";
 }
 
 namespace xromm { namespace gpu {
+
+	
+std::vector< std::vector<std::string> > get_platforms(){
+	cl_uint num_platforms;
+	cl_platform_id platforms[10];
+	err_ = clGetPlatformIDs(10, platforms, &num_platforms);
+	CHECK_CL
+	
+	if (num_platforms < 1) ERROR("no OpenCL platforms found");
+	
+	std::vector< std::vector<std::string> > platforms_desc;
+	char buffer[1024];
+	for (int i = 0 ; i < num_platforms; i ++){
+		/* find GPU device */
+		std::vector<std::string> platform_desc;
+		err_ = clGetPlatformInfo(platforms[i], CL_PLATFORM_VERSION, sizeof(buffer), buffer, NULL);
+		CHECK_CL
+		std::string version = "# Version    : ";
+		version.append(buffer);
+		platform_desc.push_back(version);
+
+		err_ = clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, sizeof(buffer), buffer, NULL);
+		CHECK_CL
+		std::string name = "# Name    : ";
+		name.append(buffer);
+		platform_desc.push_back(name);
+
+		err_ = clGetPlatformInfo(platforms[i], CL_PLATFORM_VENDOR, sizeof(buffer), buffer, NULL);
+		CHECK_CL
+		std::string vendor = "# Vendor    : ";
+		vendor.append(buffer);
+		platform_desc.push_back(vendor);
+
+		cl_uint num_devices;
+		err_ = clGetDeviceIDs(platforms[i], TYPE, 1, devices_, &num_devices);
+		CHECK_CL
+		if (num_devices < 1) ERROR("no OpenCL GPU device found");
+		for(int d = 0 ; d <num_devices; d++){
+			char buffer[1024];
+			cl_bool b;
+			cl_device_type t;
+			cl_ulong ul;
+			cl_uint ui;
+			size_t s[3];
+			stringstream ss;
+
+			ss << "# OpenCL Device";
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
+			CHECK_CL
+			ss << "# Name          : " << buffer;
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_TYPE, sizeof(t), &t, NULL);
+			ss << "# Type          : ";
+			switch (t) {
+				case CL_DEVICE_TYPE_CPU: ss << "CPU"; break;
+				case CL_DEVICE_TYPE_GPU: ss << "GPU"; break;
+				case CL_DEVICE_TYPE_ACCELERATOR: ss << "Accelerator"; break;
+				case CL_DEVICE_TYPE_DEFAULT: ss << "Default"; break;
+				default: ss << "Unknown";
+			}
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(ui), &ui, NULL);
+			CHECK_CL
+			ss << "# Compute Cores : " << ui;
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(ui), &ui, NULL);
+			CHECK_CL
+			ss << "# Core Freq.    : " << ui << " Mhz";
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_VENDOR, sizeof(buffer), buffer, NULL);
+			CHECK_CL
+			ss << "# Vendor        : " << buffer;
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_VENDOR_ID, sizeof(ui), &ui, NULL);
+			CHECK_CL
+			ss << "# Vendor ID     : " << ui;
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_VERSION, sizeof(buffer), buffer, NULL);
+			CHECK_CL
+			ss << "# Version       : " << buffer;
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DRIVER_VERSION, sizeof(buffer), buffer, NULL);
+			CHECK_CL
+			ss << "# Driver Ver.   : " << buffer;
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_AVAILABLE, sizeof(b), &b, NULL);
+			CHECK_CL
+			ss << "# Available     : ";
+			switch (b) {
+				case CL_TRUE: ss << "Yes"; break;
+				case CL_FALSE: ss << "No"; break;
+				default: ss << "Unknown";
+			}
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(s), s, NULL);
+			CHECK_CL
+			ss << "# Max Items     : ("<< s[0] << ',' << s[1] << ',' << s[2] << ")";
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), s, NULL);
+			CHECK_CL
+			ss << "# Max Group     : " << s[0];
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE, sizeof(ul), &ul, NULL);
+			CHECK_CL
+			ss << "# Max Constant  : " << ul << " kB";
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.;
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_MAX_CONSTANT_ARGS, sizeof(ui), &ui, NULL);
+			CHECK_CL
+			ss << "# Max Constants : " << ui;
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_LOCAL_MEM_SIZE, sizeof(ul), &ul, NULL);
+			CHECK_CL
+			ss << "# Local Mem.    : " << (ul/1024) << " kB";
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(ul), &ul, NULL);
+			CHECK_CL
+			ss << "# Global Mem.   : " << (ul/1024) << " kB";
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_GLOBAL_MEM_CACHE_SIZE, sizeof(ul), &ul, NULL);
+			CHECK_CL
+			ss << "# Global Cache  : " << ul << " B";
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_IMAGE_SUPPORT, sizeof(b), &b, NULL);
+			CHECK_CL
+			ss << "# Image Support : " << b;
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_IMAGE2D_MAX_WIDTH, sizeof(size_t), s+0, NULL);
+			CHECK_CL
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_IMAGE2D_MAX_HEIGHT, sizeof(size_t), s+1, NULL);
+			CHECK_CL
+			ss << "# Max 2D Image  : (" << s[0] << ',' << s[1] << ")";
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_IMAGE3D_MAX_WIDTH, sizeof(size_t), s+0, NULL);
+			CHECK_CL
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_IMAGE3D_MAX_HEIGHT, sizeof(size_t), s+1, NULL);
+			CHECK_CL
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_IMAGE3D_MAX_DEPTH, sizeof(size_t), s+2, NULL);
+			CHECK_CL
+			ss << "# Max 3D Image  : (" << s[0] << ',' << s[1] << ',' << s[2] << ")";
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+
+			err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_EXTENSIONS, sizeof(buffer), buffer, NULL);
+			CHECK_CL
+			ss << "# Extensions    :  "  << buffer;
+			platform_desc.push_back(ss.str());
+			ss.str("");
+			ss.clear(); // Clear state flags.
+		}
+		platforms_desc.push_back(platform_desc);
+	}
+	return platforms_desc;
+}
+
+void setUsedPlatform(int platform_idx){
+	used_platform = platform_idx;
+}
 
 void opencl_global_gl_context()
 {
@@ -321,26 +541,25 @@ cl_int opencl_global_context()
 		/* find platform */
 
 		cl_uint num_platforms;
-		cl_platform_id platforms[2];
-		err_ = clGetPlatformIDs(2, platforms, &num_platforms);
+		cl_platform_id platforms[10];
+		err_ = clGetPlatformIDs(10, platforms, &num_platforms);
 		CHECK_CL
-
+		if (num_platforms < used_platform) used_platform = 0;
 		if (num_platforms < 1) ERROR("no OpenCL platforms found");
 
-		for (int i = 0 ; i < num_platforms; i ++){
-			/* find GPU device */
-			cl_uint num_devices;
-			err_ = clGetDeviceIDs(platforms[i], TYPE, 1, devices_, &num_devices);
-			CHECK_CL
-			if (num_devices < 1) ERROR("no OpenCL GPU device found");
-			for(int d = 0 ; d <num_devices; d++){
-				cerr << endl;
-				print_platform(platforms[i]);
-				print_device(devices_[d]);
-				cerr << endl;
-			}
-			
-		}
+		//for (int i = 0 ; i < num_platforms; i ++){
+		//	/* find GPU device */
+		//	cl_uint num_devices;
+		//	err_ = clGetDeviceIDs(platforms[i], TYPE, 1, devices_, &num_devices);
+		//	CHECK_CL
+		//	if (num_devices < 1) ERROR("no OpenCL GPU device found");
+		//	for(int d = 0 ; d <num_devices; d++){
+		//		cerr << endl;
+		//		print_platform(platforms[i]);
+		//		print_device(devices_[d]);
+		//		cerr << endl;
+		//	}
+		//}
 
 		/* create context */
 
@@ -371,7 +590,7 @@ cl_int opencl_global_context()
 		cl_context_properties prop[] = { 
 			CL_GL_CONTEXT_KHR, (cl_context_properties) wglGetCurrentContext(),
 			CL_WGL_HDC_KHR, (cl_context_properties) wglGetCurrentDC(),
-			CL_CONTEXT_PLATFORM, (cl_context_properties)(platforms[1]),
+			CL_CONTEXT_PLATFORM, (cl_context_properties)(platforms[used_platform]),
 			0 };
 
 			if (!clGetGLContextInfoKHR)
@@ -387,7 +606,6 @@ cl_int opencl_global_context()
 			clGetGLContextInfoKHR(prop, CL_DEVICES_FOR_GL_CONTEXT_KHR, 10 * sizeof(cl_device_id), devices_, &size);
 			// Create a context using the supported devices
 			count = size / sizeof(cl_device_id);
-			print_device(devices_[count-1]);
 			
 		context_ = clCreateContext(prop, count, devices_, NULL, NULL, &err_);
 		CHECK_CL
@@ -399,16 +617,17 @@ cl_int opencl_global_context()
 			CL_GLX_DISPLAY_KHR,
 			(cl_context_properties)glXGetCurrentDisplay(),
 			CL_CONTEXT_PLATFORM, 
-			(cl_context_properties)(platforms[0]),
+			(cl_context_properties)(platforms[used_platform]),
 			0 };
 
-		context_ = clCreateContext(prop, 1, devices_, NULL, NULL, &err_);
+			count = size / sizeof(cl_device_id);
+			context_ = clCreateContext(prop, count, devices_, NULL, NULL, &err_);
 		CHECK_CL
 #endif
 
 		/* create command queue */
 
-		queue_ = clCreateCommandQueue(context_, devices_[count-1], 0, &err_);
+		queue_ = clCreateCommandQueue(context_, devices_[0], 0, &err_);
 		CHECK_CL
 
 		inited_ = true;

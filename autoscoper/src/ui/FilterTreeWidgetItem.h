@@ -36,10 +36,13 @@ public:
 
 	QString getName(){return name;}
 	void setName(QString _name){name = _name;}
+	std::vector<FilterTreeWidgetParameter * >* getParameters(){return &parameters;} 
 
 	void addToModelViewTreeWidgetItem(QTreeWidget * treewidget, ModelViewTreeWidgetItem * modelViewWidget, bool addToTree = true);
 
 	Filter * getFilter () {return m_filter;}
+	void save(std::ofstream & file);	
+	void load(std::ifstream & file);
 
 private:
 	void init();

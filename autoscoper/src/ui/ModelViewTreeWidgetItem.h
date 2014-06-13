@@ -38,13 +38,19 @@ public:
 
 	QString getName(){return name;}
 	void setName(QString _name){name = _name;}
+	int getType(){return m_type;}
 
+	std::vector<FilterTreeWidgetParameter * >* getParameters(){return &parameters;} 
 	void addToCameraTreeWidgetItem(QTreeWidget * treewidget, CameraTreeWidgetItem * cameraWidget);
 
 	void addFilter(FilterTreeWidgetItem* filterItem, bool addToTree = true);
 	void removeFilter(FilterTreeWidgetItem* filterItem,bool removeFromTree = true);
 	void printFilters();
 	void resetVectors();
+	void save(std::ofstream & file);
+	void loadSettings(std::ifstream & file);
+	void loadFilters(std::ifstream & file);
+	void toggleVisible();
 
 private:
 	void init();

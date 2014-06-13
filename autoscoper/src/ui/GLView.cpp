@@ -25,7 +25,7 @@
 
 #include "Tracker.hpp"
 #include "View.hpp"
-#include "CoordFrame.hpp"
+
 #include "Manip3D.hpp"
 
 
@@ -48,6 +48,17 @@ GLView::GLView(QWidget *parent)
     : GLWidget(parent)
 {
 	m_view = NULL;
+	viewdata.m_isStaticView = false;
+	double xyzypr[6] = {250.0f, 250.0f, 250.0f, 0.0f, 45.0f, -35.0f};
+	defaultViewMatrix = CoordFrame::from_xyzypr(xyzypr);
+}
+
+void GLView::setStaticView(bool staticView){
+	viewdata.m_isStaticView = staticView;
+	if(viewdata.m_isStaticView){
+		const double xyzypr[6] = {250.0f, 250.0f, 250.0f, 0.0f, 45.0f, -35.0f};
+		defaultViewMatrix = CoordFrame::from_xyzypr(xyzypr);
+	}
 }
 
 void GLView::setView(View * view){
@@ -76,8 +87,12 @@ void GLView::select_manip_in_view(double x, double y, int button)
     glLoadIdentity();
     gluPerspective(viewdata.fovy,viewdata.ratio,viewdata.near_clip,viewdata.far_clip);
 
-	CoordFrame viewMatrix = cameraViewWidget->getMainWindow()->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame();
-
+	CoordFrame viewMatrix;
+	if (viewdata.m_isStaticView) {
+        viewMatrix = defaultViewMatrix;
+	}else{
+		viewMatrix = cameraViewWidget->getMainWindow()->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame();
+	}
     double m[16];
     viewMatrix.inverse().to_matrix(m);
 
@@ -141,7 +156,14 @@ void GLView::move_manip_in_view(double x, double y, bool out_of_plane)
     }
     else if (mainwindow->getManipulator()->selection() == Manip3D::VIEW_PLANE) {
 		CoordFrame mmat = CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()));
-		CoordFrame viewMatrix = mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame();
+		
+		CoordFrame viewMatrix;
+		if (viewdata.m_isStaticView) {
+			viewMatrix = defaultViewMatrix;
+		}else{
+			viewMatrix = cameraViewWidget->getMainWindow()->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame();
+		}
+
 
         double zdir[3] = { mmat.translation()[0]-viewMatrix.translation()[0],
                            mmat.translation()[1]-viewMatrix.translation()[1],
@@ -175,12 +197,44 @@ void GLView::mouseMoveEvent(QMouseEvent *e){
 	double x = e->x();
 	double y = e->y();
 	if ( Qt::ControlModifier & e->modifiers() ) {
-		if (e->buttons() &  Qt::LeftButton) {
-            viewdata.zoom_x -= dx/200/viewdata.zoom;
-            viewdata.zoom_y += dy/200/viewdata.zoom;
+		if (viewdata.m_isStaticView) {
+            if (e->buttons() &  Qt::LeftButton) {
+                CoordFrame rotationMatrix;
+                rotationMatrix.rotate(defaultViewMatrix.rotation()+3,
+                                             -dx/2.0);
+                rotationMatrix.rotate(defaultViewMatrix.rotation()+0,
+                                             -dy/2.0);
 
-            update_viewport(&viewdata);
+                defaultViewMatrix = rotationMatrix*defaultViewMatrix;
+            }
+            else if (e->buttons() &  Qt::MiddleButton) {
+                double xtrans[3] = {-dx*defaultViewMatrix.rotation()[0],
+                                    -dx*defaultViewMatrix.rotation()[1],
+                                    -dx*defaultViewMatrix.rotation()[2]};
+                double ytrans[3] = {dy*defaultViewMatrix.rotation()[3],
+                                    dy*defaultViewMatrix.rotation()[4],
+                                    dy*defaultViewMatrix.rotation()[5]};
+
+                defaultViewMatrix.translate(xtrans);
+                defaultViewMatrix.translate(ytrans);
+            }
+			else if (e->buttons() &  Qt::RightButton) {
+                double ztrans[3] =
+                    { (dx-dy)/2.0*defaultViewMatrix.rotation()[6],
+                      (dx-dy)/2.0*defaultViewMatrix.rotation()[7],
+                      (dx-dy)/2.0*defaultViewMatrix.rotation()[8] };
+
+                defaultViewMatrix.translate(ztrans);
+            }
         }
+        else {
+            if (e->buttons() &  Qt::LeftButton) {
+				viewdata.zoom_x -= dx/200/viewdata.zoom;
+				viewdata.zoom_y += dy/200/viewdata.zoom;
+
+				update_viewport(&viewdata);
+			}
+		}
         update_scale_in_view(&viewdata);
     }
     else {
@@ -239,71 +293,174 @@ void GLView::paintGL()
 				   viewdata.viewport_height);
 
 		double m[16];
-		CoordFrame modelview  = mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame().inverse()
-								* CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()))
-							    * (*mainwindow->getVolume_matrix());
 
-		double imv[16];
-		modelview.inverse().to_matrix_row_order(imv);
-		m_view->drrRenderer()->setInvModelView(imv);
+		if(viewdata.m_isStaticView){
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		float temp = 2.0f*sqrt(5.0)*sin(M_PI*viewdata.fovy/360.0);
-		float width = temp/viewdata.zoom, height = temp/viewdata.zoom;
-		float x = viewdata.zoom_x-width/2.0f, y = viewdata.zoom_y-height/2.0f;
+			defaultViewMatrix.inverse().to_matrix(m);
 
-		m_view->drrRenderer()->setViewport(
-			viewdata.ratio*x, y, viewdata.ratio*width, height);
-		m_view->radRenderer()->set_viewport(
-			viewdata.ratio*x, y, viewdata.ratio*width, height);
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			gluPerspective(viewdata.fovy,viewdata.ratio,viewdata.near_clip,viewdata.far_clip);
+			glMatrixMode(GL_MODELVIEW);
+			glLoadMatrixd(m);
 
-		m_view->render(viewdata.pbo,viewdata.window_width, viewdata.window_height);
+			// Draw background
+			float top_color[3] = {0.20f,0.35f,0.50f};
+			float bot_color[3] = {0.10f,0.17f,0.25f};
 
-		glViewport(0, 0,viewdata.window_width, viewdata.window_height);
+			draw_gradient(top_color,bot_color);	
+			// Draw image planes
+			for (unsigned int i = 0; i < mainwindow->getTracker()->trial()->cameras.size(); ++i) {
+				draw_textured_quad(mainwindow->getTracker()->trial()->cameras.at(i).image_plane(),
+					(*mainwindow->getTextures())[i]);
+			}
 
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glOrtho(0.0, 1.0, 0.0, 1.0, 0.0, 1.0);
+			// Draw cameras
+			enable_headlight();
+			glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+			for (unsigned int i = 0; i < mainwindow->getTracker()->trial()->cameras.size(); ++i) {
 
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+				glPushMatrix();
+
+				double m1[16];
+				mainwindow->getTracker()->trial()->cameras.at(i).coord_frame().to_matrix(m1);
+				glMultMatrixd(m1);
+
+				float scale = 0.05*sqrt(m1[12]*m1[12]+m1[13]*m1[13]+m1[14]*m1[14]);
+				glScalef(scale,scale,scale);
+
+				glColor3f(0.5f, 0.5f, 0.5f);
+				draw_camera();
+
+				glPopMatrix();
+			}
+
+			draw_manip_from_view(&viewdata);
+			glDisable(GL_LIGHTING);
+
+			// Draw grid
+			bool drawGrid = true;
+			if (drawGrid == true) {
+				draw_xz_grid(24, 24, 10.0f);
+			}
+
+			if (!mainwindow->getTracker()->views().empty()) {
+
+				CoordFrame modelview = defaultViewMatrix.inverse()*CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()))* *mainwindow->getVolume_matrix();
+
+				double imv[16];
+				modelview.inverse().to_matrix_row_order(imv);
+				mainwindow->getTracker()->view(0)->drrRenderer()->setInvModelView(imv);
+
+				float width = 2.0f/viewdata.zoom, height = 2.0f/viewdata.zoom;
+				float x = viewdata.zoom_x-width/2.0f, y = viewdata.zoom_y-height/2.0f;
+
+				mainwindow->getTracker()->view(0)->drrRenderer()->setViewport(
+					viewdata.ratio*x, y, viewdata.ratio*width, height);
+            
+				mainwindow->getTracker()->view(0)->renderDrr(viewdata.pbo,viewdata.window_width,viewdata.window_height);
+
+				glViewport(0, 0, viewdata.window_width, viewdata.window_height);
+
+				glMatrixMode(GL_PROJECTION);
+				glLoadIdentity();
+				glOrtho(0.0, 1.0, 0.0, 1.0, 0.0, 1.0);
+
+				glMatrixMode(GL_MODELVIEW);
+				glLoadIdentity();
+
+				glDisable(GL_DEPTH_TEST);
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_ONE,GL_ONE);
+
+				CALL_GL(glRasterPos2i(0, 0));
+
+	#ifdef WITH_CUDA
+				CALL_GL(glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, viewdata.pbo));
+				CALL_GL(glDrawPixels(viewdata.window_width,
+							 viewdata.window_height,
+							 GL_RGB, GL_FLOAT, 0));
+				CALL_GL(glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0));    
+	#else
+				CALL_GL(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, viewdata.pbo));
+				CALL_GL(glDrawPixels(viewdata.window_width,
+							 viewdata.window_height,
+							 GL_RGB, GL_FLOAT, 0));
+				CALL_GL(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0));
+	#endif
+				CALL_GL(glDisable(GL_BLEND));
+				CALL_GL(glEnable(GL_DEPTH_TEST));
+			}
+			return;
+		}
+		else{
+			CoordFrame modelview  = mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame().inverse()
+									* CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()))
+									* (*mainwindow->getVolume_matrix());
+
+			double imv[16];
+			modelview.inverse().to_matrix_row_order(imv);
+			m_view->drrRenderer()->setInvModelView(imv);
+
+			float temp = 2.0f*sqrt(5.0)*sin(M_PI*viewdata.fovy/360.0);
+			float width = temp/viewdata.zoom, height = temp/viewdata.zoom;
+			float x = viewdata.zoom_x-width/2.0f, y = viewdata.zoom_y-height/2.0f;
+
+			m_view->drrRenderer()->setViewport(
+				viewdata.ratio*x, y, viewdata.ratio*width, height);
+			m_view->radRenderer()->set_viewport(
+				viewdata.ratio*x, y, viewdata.ratio*width, height);
+
+			m_view->render(viewdata.pbo,viewdata.window_width, viewdata.window_height);
+
+			glViewport(0, 0,viewdata.window_width, viewdata.window_height);
+
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			glOrtho(0.0, 1.0, 0.0, 1.0, 0.0, 1.0);
+
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
 		
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glDisable(GL_DEPTH_TEST);
-		glRasterPos2i(0, 0);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glDisable(GL_DEPTH_TEST);
+			glRasterPos2i(0, 0);
 
-		#ifdef WITH_CUDA
-		CALL_GL(glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, view->pbo));
-		CALL_GL(glDrawPixels(view->window_width,
-						view->window_height,
-						GL_RGB, GL_FLOAT, 0));
-		CALL_GL(glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0));
-		#else
-		CALL_GL(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, viewdata.pbo));
-		CALL_GL(glDrawPixels(viewdata.window_width,
-						viewdata.window_height,
-						GL_RGB, GL_FLOAT, 0));
-		CALL_GL(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0));
-		#endif
+			#ifdef WITH_CUDA
+			CALL_GL(glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, view->pbo));
+			CALL_GL(glDrawPixels(view->window_width,
+							view->window_height,
+							GL_RGB, GL_FLOAT, 0));
+			CALL_GL(glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0));
+			#else
+			CALL_GL(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, viewdata.pbo));
+			CALL_GL(glDrawPixels(viewdata.window_width,
+							viewdata.window_height,
+							GL_RGB, GL_FLOAT, 0));
+			CALL_GL(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0));
+			#endif
 		
-		glEnable(GL_DEPTH_TEST);
+			glEnable(GL_DEPTH_TEST);
 
-		glViewport(viewdata.viewport_x,
-					viewdata.viewport_y,
-					viewdata.viewport_width,
-					viewdata.viewport_height);
+			glViewport(viewdata.viewport_x,
+						viewdata.viewport_y,
+						viewdata.viewport_width,
+						viewdata.viewport_height);
 
-		mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).
-			coord_frame().inverse().to_matrix(m);
+			mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).
+				coord_frame().inverse().to_matrix(m);
 
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		gluPerspective(viewdata.fovy,viewdata.ratio,viewdata.near_clip,viewdata.far_clip);
-		glMatrixMode(GL_MODELVIEW);
-		glLoadMatrixd(m);
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			gluPerspective(viewdata.fovy,viewdata.ratio,viewdata.near_clip,viewdata.far_clip);
+			glMatrixMode(GL_MODELVIEW);
+			glLoadMatrixd(m);
 
-		enable_headlight();
-		draw_manip_from_view(&viewdata);
-		glDisable(GL_LIGHTING);
+			enable_headlight();
+			draw_manip_from_view(&viewdata);
+			glDisable(GL_LIGHTING);
+		}
 	}
 }
 
@@ -317,13 +474,22 @@ void GLView::update_scale_in_view(ViewData* view)
 	CoordFrame mat = CoordFrame::from_matrix(trans(cameraViewWidget->getMainWindow()->getManipulator()->transform()));
     
 	double dist_vec[3];
-	dist_vec[0] = mat.translation()[0]-
-        mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame().translation()[0];
-    dist_vec[1] = mat.translation()[1]-
-        mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame().translation()[1];
-    dist_vec[2] = mat.translation()[2]-
-        mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame().translation()[2];
-    
+	if (view->m_isStaticView) {
+        dist_vec[0] = mat.translation()[0]-
+                      defaultViewMatrix.translation()[0];
+        dist_vec[2] = mat.translation()[1]-
+                      defaultViewMatrix.translation()[1];
+        dist_vec[1] = mat.translation()[2]-
+                      defaultViewMatrix.translation()[2];
+    }
+    else {
+		dist_vec[0] = mat.translation()[0]-
+			mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame().translation()[0];
+		dist_vec[1] = mat.translation()[1]-
+			mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame().translation()[1];
+		dist_vec[2] = mat.translation()[2]-
+			mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame().translation()[2];
+	}
     double dist = sqrt(dist_vec[0]*dist_vec[0]+
                        dist_vec[1]*dist_vec[1]+
                        dist_vec[2]*dist_vec[2]);
@@ -379,3 +545,208 @@ void GLView::enable_headlight()
 }
 
 
+
+void GLView::draw_gradient(const float* top_color, const float* bot_color)
+{
+    glPushAttrib(GL_ENABLE_BIT);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glBegin(GL_QUADS);
+    glColor3fv(bot_color);
+    glVertex3i(-1,-1,-1);
+    glVertex3i(1,-1,-1);
+    glColor3fv(top_color);
+    glVertex3i(1,1,-1);
+    glVertex3i(-1,1,-1);
+    glEnd();
+
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+
+    glPopAttrib();
+}
+
+void GLView::draw_xz_grid(int width, int height, float scale)
+{
+    glPushAttrib(GL_LINE_BIT);
+
+    glLineWidth(2.0f);
+    glBegin(GL_LINES);
+    glColor3f(1.0f,0.0f,0.0f);
+    glVertex3f(-scale*width/2, 0.0f, 0.0f);
+    glVertex3f(scale*width/2, 0.0f, 0.0f);
+    glColor3f(0.0f,0.0f,1.0f);
+    glVertex3f(0.0f, 0.0f, -scale*height/2);
+    glVertex3f(0.0f, 0.0f, scale*height/2);
+    glEnd();
+
+    glColor3f(0.5f,0.5f,0.5f);
+    glLineWidth(1.0f);
+    glBegin(GL_LINES);
+    for (int i = 0; i <= width; ++i) {
+        glVertex3f(scale*(i-width/2), 0.0f, -scale*height/2);
+        glVertex3f(scale*(i-width/2), 0.0f, scale*height/2);
+    }
+    for (int i = 0; i <= height; ++i) {
+        glVertex3f(-scale*width/2, 0.0f, scale*(i-height/2));
+        glVertex3f(scale*width/2, 0.0f, scale*(i-height/2));
+    }
+    glEnd();
+
+    glPopAttrib();
+}
+
+void GLView::draw_cylinder(float radius, float height, int slices)
+{
+    for (int i = 0; i < slices; ++i) {
+        float alpha = 2*M_PI*i/slices;
+        float beta = 2*M_PI*(i+1)/slices;
+
+        float cos_alpha = cos(alpha);
+        float sin_alpha = sin(alpha);
+
+        float cos_beta = cos(beta);
+        float sin_beta = sin(beta);
+
+        glBegin(GL_TRIANGLES);
+        glNormal3f(0,-1,0);
+        glVertex3f(radius*cos_alpha,-height/2,radius*sin_alpha);
+        glVertex3f(radius*cos_beta,-height/2,radius*sin_beta);
+        glVertex3f(0,-height/2,0);
+        glEnd();
+
+        glBegin(GL_QUADS);
+        glNormal3f(cos_alpha,0,sin_alpha);
+        glVertex3f(radius*cos_alpha,-height/2,radius*sin_alpha);
+        glVertex3f(radius*cos_alpha,height/2,radius*sin_alpha);
+        glVertex3f(radius*cos_beta,height/2,radius*sin_beta);
+        glVertex3f(radius*cos_beta,-height/2,radius*sin_beta);
+        glEnd();
+
+        glBegin(GL_TRIANGLES);
+        glNormal3f(0,1,0);
+        glVertex3f(radius*cos_alpha,height/2,radius*sin_alpha);
+        glVertex3f(0,height/2,0);
+        glVertex3f(radius*cos_beta,height/2,radius*sin_beta);
+        glEnd();
+    }
+}
+
+void GLView::draw_camera()
+{
+    float length = 1.0f;
+    float width = 0.3f;
+    float height = 0.5f;
+
+    glBegin(GL_QUADS);
+
+    glNormal3f(0.0f,1.0f,0.0f);
+    glVertex3f(-width,height,-length);
+    glVertex3f(-width,height,length);
+    glVertex3f(width,height,length);
+    glVertex3f(width,height,-length);
+
+    glNormal3f(1.0f,0.0f,0.0f);
+    glVertex3f(width,-height,-length);
+    glVertex3f(width,height,-length);
+    glVertex3f(width,height,length);
+    glVertex3f(width,-height,length);
+
+    glNormal3f(0.0f,-1.0f,0.0f);
+    glVertex3f(-width,-height,-length);
+    glVertex3f(width,-height,-length);
+    glVertex3f(width,-height,length);
+    glVertex3f(-width,-height,length);
+
+    glNormal3f(-1.0f,0.0f,0.0f);
+    glVertex3f(-width,-height,-length);
+    glVertex3f(-width,-height,length);
+    glVertex3f(-width,height,length);
+    glVertex3f(-width,height,-length);
+
+    glNormal3f(0.0f,0.0f,1.0f);
+    glVertex3f(-width,-height,length);
+    glVertex3f(width,-height,length);
+    glVertex3f(width,height,length);
+    glVertex3f(-width,height,length);
+
+    glNormal3f(0.0f,0.0f,-1.0f);
+    glVertex3f(-width,-height,-length);
+    glVertex3f(-width,height,-length);
+    glVertex3f(width,height,-length);
+    glVertex3f(width,-height,-length);
+
+    glEnd();
+
+    glBegin(GL_TRIANGLES);
+
+    float mag = sqrt(height*height+9*length*length/25);
+
+    glNormal3f(3*length/5/mag,0.0f,height/mag);
+    glVertex3f(0,0,-length);
+    glVertex3f(height,-height,-8*length/5);
+    glVertex3f(height,height,-8*length/5);
+
+    glNormal3f(-3*length/5/mag,0.0f,height/mag);
+    glVertex3f(0,0,-length);
+    glVertex3f(-height,height,-8*length/5);
+    glVertex3f(-height,-height,-8*length/5);
+
+    glNormal3f(0.0f,3*length/5/mag,height/mag);
+    glVertex3f(0,0,-length);
+    glVertex3f(height,height,-8*length/5);
+    glVertex3f(-height,height,-8*length/5);
+
+    glNormal3f(0.0f,-3*length/5/mag,height/mag);
+    glVertex3f(0,0,-length);
+    glVertex3f(-height,-height,-8*length/5);
+    glVertex3f(height,-height,-8*length/5);
+
+    glEnd();
+
+    glPushMatrix();
+    glTranslatef(0.0f,11*height/5,6*height/5);
+    glRotatef(90.0f,0.0f,0.0f,1.0f);
+    draw_cylinder(4*height/3,width,10);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.0f,11*height/5,-6*height/5);
+    glRotatef(90.0f,0.0f,0.0f,1.0f);
+    draw_cylinder(4*height/3,width,10);
+    glPopMatrix();
+}
+
+void GLView::draw_textured_quad(const double* pts, unsigned int texid)
+{
+    glPushAttrib(GL_ENABLE_BIT);
+
+    //glColor3f(1.0f,1.0f,1.0f);
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D,texid);
+    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
+
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3d(pts[0], pts[1],  pts[2]);
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3d(pts[3], pts[4],  pts[5]);
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3d(pts[6], pts[7],  pts[8]);
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3d(pts[9], pts[10], pts[11]);
+    glEnd();
+
+    glPopAttrib();
+}

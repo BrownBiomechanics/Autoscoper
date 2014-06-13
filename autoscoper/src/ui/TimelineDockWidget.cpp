@@ -9,6 +9,7 @@
 #include "Tracker.hpp"
 
 #include <QGLContext>
+#include <QTimer>
 
 TimelineDockWidget::TimelineDockWidget(QWidget *parent) :
 										QDockWidget(parent),
@@ -33,6 +34,10 @@ TimelineDockWidget::TimelineDockWidget(QWidget *parent) :
 	dock->gltimeline->setGraphData(position_graph);
 
 	m_spinButtonUpdate = true;
+
+	play_tag = 0;
+	play_timer = new QTimer(this);
+    connect(play_timer, SIGNAL(timeout()), this, SLOT(play_update()));
 }
 
 TimelineDockWidget::~TimelineDockWidget(){
@@ -73,13 +78,29 @@ void TimelineDockWidget::on_toolButton_PreviousFrame_clicked(){
 	dock->horizontalSlider_Frame->setValue(dock->labelFrame->text().toInt() - 1);
 }
 void TimelineDockWidget::on_toolButton_Stop_clicked(){
-
+	if (play_tag) {
+        play_tag = 0;
+		play_timer->stop();
+    }
 }
-void TimelineDockWidget::on_toolButton_Play_clicked(){
 
+void TimelineDockWidget::play_update(){
+	on_toolButton_NextFrame_clicked();
+	QApplication::processEvents();
+}
+
+void TimelineDockWidget::on_toolButton_Play_clicked(){
+	 if (!play_tag) {
+        play_tag = 1;
+		play_timer->start(100);
+    }
 }
 void TimelineDockWidget::on_toolButton_NextFrame_clicked(){
 	dock->horizontalSlider_Frame->setValue(dock->labelFrame->text().toInt() + 1);
+	if(play_tag && dock->horizontalSlider_Frame->value() == dock->horizontalSlider_Frame->maximum())on_toolButton_Stop_clicked();
+}
+void TimelineDockWidget::setFrame(int frame){
+	dock->horizontalSlider_Frame->setValue(frame);
 }
 
 void TimelineDockWidget::on_horizontalSlider_Frame_valueChanged(int value){
@@ -142,6 +163,67 @@ void TimelineDockWidget::on_doubleSpinBox_Roll_valueChanged ( double d ){
 	}
 }
 
+
+void TimelineDockWidget::on_checkBox_X_stateChanged ( int state ){
+	position_graph->show_x = (state != Qt::Unchecked);
+    update_graph_min_max();
+    mainwindow->redrawGL();
+}
+
+void TimelineDockWidget::on_checkBox_Y_stateChanged ( int state ){
+	position_graph->show_y = (state != Qt::Unchecked);
+    update_graph_min_max();
+    mainwindow->redrawGL();
+}
+
+void TimelineDockWidget::on_checkBox_Z_stateChanged ( int state ){
+	position_graph->show_z = (state != Qt::Unchecked);
+    update_graph_min_max();
+    mainwindow->redrawGL();
+}
+
+void TimelineDockWidget::on_checkBox_Yaw_stateChanged ( int state ){
+	position_graph->show_yaw = (state != Qt::Unchecked);
+    update_graph_min_max();
+    mainwindow->redrawGL();
+}
+
+void TimelineDockWidget::on_checkBox_Pitch_stateChanged ( int state ){
+	position_graph->show_pitch = (state != Qt::Unchecked);
+    update_graph_min_max();
+    mainwindow->redrawGL();
+}
+
+void TimelineDockWidget::on_checkBox_Roll_stateChanged ( int state ){
+	position_graph->show_roll = (state != Qt::Unchecked);
+    update_graph_min_max();
+    mainwindow->redrawGL();
+}
+
+void TimelineDockWidget::on_spinBox_FirstFrame_valueChanged ( int d ){
+	int new_min = d;
+	dock->spinBox_LastFrame->setMinimum(new_min+1);
+
+	if(position_graph){
+		position_graph->min_frame = new_min;
+		update_graph_min_max();
+		mainwindow->redrawGL();
+	}
+}
+
+void TimelineDockWidget::on_spinBox_LastFrame_valueChanged ( int d ){
+	int new_max = d;
+	dock->spinBox_FirstFrame->setMaximum(new_max-1);
+
+	if(position_graph){
+		position_graph->max_frame = new_max;
+		update_graph_min_max();
+		mainwindow->redrawGL();
+	}
+}
+
+
+
 void TimelineDockWidget::getValues(double *xyzypr){
 	xyzypr[0] = dock->doubleSpinBox_X->value();
     xyzypr[1] = dock->doubleSpinBox_Y->value();
@@ -158,6 +240,15 @@ void TimelineDockWidget::setValues(double *xyzypr){
 	dock->doubleSpinBox_Yaw->setValue(xyzypr[3]);
 	dock->doubleSpinBox_Pitch->setValue(xyzypr[4]);
 	dock->doubleSpinBox_Roll->setValue(xyzypr[5]);
+}
+
+void TimelineDockWidget::setValuesEnabled(bool enabled){
+	dock->doubleSpinBox_X->setEnabled(enabled);
+	dock->doubleSpinBox_Y->setEnabled(enabled);
+	dock->doubleSpinBox_Z->setEnabled(enabled);
+	dock->doubleSpinBox_Yaw->setEnabled(enabled);
+	dock->doubleSpinBox_Pitch->setEnabled(enabled);
+	dock->doubleSpinBox_Roll->setEnabled(enabled);
 }
 
 

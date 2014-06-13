@@ -2,6 +2,7 @@
 #define FILTERTREEWIDGETPARAMETER_H
 
 #include <QObject>
+#include <QDoubleSpinBox>
 
 class FilterTreeWidgetParameter : public QObject{
 
@@ -16,7 +17,8 @@ class FilterTreeWidgetParameter : public QObject{
 		double minimumValue;
 		double maximumValue;
 		double step;
-		
+		QDoubleSpinBox * spinbox;
+
 	private:
 		
 	protected:

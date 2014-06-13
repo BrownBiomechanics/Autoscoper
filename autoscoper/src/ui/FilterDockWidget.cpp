@@ -22,6 +22,10 @@ void FilterDockWidget::clearTree(){
 
 	dock->treeWidget->clear();
 }
+void FilterDockWidget::toggle_drrs(){
+	dock->treeWidget->toggle_drrs();
+}
+
 void FilterDockWidget::addCamera(View * view){
 	dock->treeWidget->addCamera(view);
 }

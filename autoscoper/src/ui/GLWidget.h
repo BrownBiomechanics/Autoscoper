@@ -17,6 +17,8 @@
 
 struct ViewData
 {
+	bool m_isStaticView;
+
     int window_width;
     int window_height;
 
@@ -54,10 +56,6 @@ public slots:
 protected:
 	void initializeGL();
 	void resizeGL(int w, int h);
-
-	//void mouseMoveEvent(QMouseEvent *e);
-
-	//void wheelEvent(QWheelEvent *event);
 
 	ViewData viewdata;
 	

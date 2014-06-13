@@ -27,6 +27,10 @@
 #endif
 #include <Filter.hpp>
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
 FilterTreeWidgetItem::FilterTreeWidgetItem(int type):QTreeWidgetItem(FILTER), QObject()
 {
 	m_type = type;
@@ -73,6 +77,81 @@ FilterTreeWidgetItem::FilterTreeWidgetItem(int type):QTreeWidgetItem(FILTER), QO
 //	setName(_name);
 //	settingsShown = false;
 //}
+
+void FilterTreeWidgetItem::save(std::ofstream & file){
+	if(m_type == 0){
+		file << "SobelFilter_begin" << std::endl;
+		file << "Scale " << parameters[0]->value << std::endl;
+		file << "Blend " << parameters[1]->value << std::endl;
+		file << "SobelFilter_end" << std::endl;
+	}else if (m_type == 1){
+		file << "ContrastFilter_begin" << std::endl;
+		file << "Alpha " << parameters[0]->value << std::endl;
+		file << "Beta " << parameters[1]->value<< std::endl;
+		file << "ContrastFilter_end" << std::endl;
+	}else if (m_type == 2){
+		file << "GaussianFilter_begin" << std::endl;
+		file << "Radius " << parameters[0]->value << std::endl;
+		file << "GaussianFilter_end" << std::endl;
+	}else if (m_type == 3){
+		file << "SharpenFilter_begin" << std::endl;
+		file << "Radius " 	<<parameters[0]->value << std::endl;
+		file << "Contrast " << parameters[1]->value << std::endl;
+		file << "SharpenFilter_end" << std::endl;
+	}
+}
+
+void FilterTreeWidgetItem::load(std::ifstream & file){
+	std::string line, key;
+	while (std::getline(file,line) && line.compare("SobelFilter_end") != 0
+		&& line.compare("ContrastFilter_end") != 0 && line.compare("GaussianFilter_end") != 0 
+		&& line.compare("SharpenFilter_end") != 0) {
+        std::istringstream lineStream(line);
+        lineStream >> key;
+
+		if(m_type == 0){
+			if (key.compare("Scale") == 0) {
+				float value;
+				lineStream >> value;
+				parameters[0]->spinbox->setValue(value);
+			}
+			else if (key.compare("Blend") == 0) {
+				float value;
+				lineStream >> value;
+				parameters[1]->spinbox->setValue(value);
+			}
+		}else if (m_type == 1){
+			if (key.compare("Alpha") == 0) {
+				float value;
+				lineStream >> value;
+				parameters[0]->spinbox->setValue(value);
+			}
+			else if (key.compare("Beta") == 0) {
+				float value;
+				lineStream >> value;
+				parameters[1]->spinbox->setValue(value);
+			}
+		}else if (m_type == 2){
+			if (key.compare("Radius") == 0) {
+				float value;
+				lineStream >> value;
+				parameters[0]->spinbox->setValue(value);
+			}
+		}else if (m_type == 3){
+			if (key.compare("Radius") == 0) {
+				float value;
+				lineStream >> value;
+				parameters[0]->spinbox->setValue(value);
+			}
+			else if (key.compare("Contrast") == 0) {
+				float value;
+				lineStream >> value;
+				parameters[1]->spinbox->setValue(value);
+			}
+			
+        }
+	}
+}
 
 void FilterTreeWidgetItem::init(){
 	settingsShown = false;
@@ -124,6 +203,7 @@ void FilterTreeWidgetItem::addToModelViewTreeWidgetItem(QTreeWidget * treewidget
 			box->setMinimum(parameters[i]->minimumValue);
 			box->setSingleStep(parameters[i]->step);
 			box->setValue(parameters[i]->value);
+			parameters[i]->spinbox = box;
 			connect(box,SIGNAL(valueChanged(double)),parameters[i],SLOT(valueChanged(double)));
 			connect(parameters[i],SIGNAL(parameterChanged(void)),this,SLOT(updateFilter(void)));
 			pLayoutSettings->addWidget(box, i,1);

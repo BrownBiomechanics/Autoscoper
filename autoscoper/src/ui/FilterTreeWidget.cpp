@@ -11,6 +11,7 @@
 #include "ui/FilterDockWidget.h"
 #include "ui/AutoscoperMainWindow.h"
 
+#include "View.hpp"
 #include <math.h>
 
 #include <QBoxLayout>
@@ -18,6 +19,10 @@
 #include <QPainter>
 #include <QMenu>
 #include <QDropEvent>
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 FilterTreeWidget::FilterTreeWidget(QWidget *parent) :QTreeWidget(parent){
 	setContentsMargins( 0, 0, 0, 0 );
@@ -27,6 +32,12 @@ FilterTreeWidget::FilterTreeWidget(QWidget *parent) :QTreeWidget(parent){
 	connect(this,
                 SIGNAL(customContextMenuRequested(const QPoint&)),
                 SLOT(onCustomContextMenuRequested(const QPoint&)));	
+
+	action_LoadSettings = new QAction(tr("&Load Settings"), this);
+	connect(action_LoadSettings, SIGNAL(triggered()), this, SLOT(action_LoadSettings_triggered()));
+	action_SaveSettings = new QAction(tr("&Save Settings"), this);
+	connect(action_SaveSettings, SIGNAL(triggered()), this, SLOT(action_SaveSettings_triggered()));
+	
 
 	action_AddSobelFilter = new QAction(tr("&Add Sobelfilter"), this);
 	connect(action_AddSobelFilter, SIGNAL(triggered()), this, SLOT(action_AddSobelFilter_triggered()));
@@ -68,6 +79,11 @@ void FilterTreeWidget::showContextMenu(QTreeWidgetItem* item_contextMenu, const 
     QMenu menu;
 	QMenu menuFilters;
     switch (item_contextMenu->type()) {
+		case CAMERA_VIEW:
+            menu.addAction(action_LoadSettings);
+			menu.addAction(action_SaveSettings);
+			break;
+
         case MODEL_VIEW:		
 			menuFilters.setTitle("Add Filters");
 			menuFilters.addAction(action_AddSobelFilter);
@@ -75,7 +91,6 @@ void FilterTreeWidget::showContextMenu(QTreeWidgetItem* item_contextMenu, const 
 			menuFilters.addAction(action_AddGaussianFilter);
             menuFilters.addAction(action_AddSharpenFilter);
 			menu.addMenu(&menuFilters);
-
 			break;
  
         case FILTER:
@@ -84,6 +99,91 @@ void FilterTreeWidget::showContextMenu(QTreeWidgetItem* item_contextMenu, const 
     }
  
     menu.exec(globalPos);
+}
+
+void FilterTreeWidget::action_LoadSettings_triggered(){
+	CameraTreeWidgetItem * cameraTreeItem = dynamic_cast<CameraTreeWidgetItem*> (item_contextMenu); 
+	FilterDockWidget * dock_widget = dynamic_cast <FilterDockWidget *>(parent()->parent());
+
+	if(cameraTreeItem && dock_widget){
+		QString filename = dock_widget->getMainWindow()->get_filename(false, "*.vie");
+		if (filename.compare("") == 0) {
+			return;
+		}
+
+		std::ifstream file(filename.toStdString().c_str(), std::ios::in);
+		if (!file) {
+			std::cerr << "Import: Unable to open file for writing" << std::endl;
+			return;
+		}
+
+		std::string line, key;
+		while (std::getline(file,line)) {
+			if (line.compare("DrrRenderer_begin") == 0) {
+				for(int i = 0 ; i < cameraTreeItem->childCount(); i ++){
+					ModelViewTreeWidgetItem * modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (cameraTreeItem->child(i));
+					if(modelviewItem && modelviewItem->getType() == 1){
+						modelviewItem->loadSettings(file);
+					}
+				}
+			}else if(line.compare("DrrFilters_begin") == 0){
+				for(int i = 0 ; i < cameraTreeItem->childCount(); i ++){
+					ModelViewTreeWidgetItem * modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (cameraTreeItem->child(i));
+					if(modelviewItem && modelviewItem->getType() == 1){
+						modelviewItem->loadFilters(file);
+					}
+				}
+			}else if(line.compare("RadFilters_begin") == 0){
+				for(int i = 0 ; i < cameraTreeItem->childCount(); i ++){
+					ModelViewTreeWidgetItem * modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (cameraTreeItem->child(i));
+					if(modelviewItem && modelviewItem->getType() == 0){
+						modelviewItem->loadFilters(file);
+					}
+				}
+			}
+		}
+	}
+}
+void FilterTreeWidget::action_SaveSettings_triggered(){
+	CameraTreeWidgetItem * cameraTreeItem = dynamic_cast<CameraTreeWidgetItem*> (item_contextMenu); 
+	FilterDockWidget * dock_widget = dynamic_cast <FilterDockWidget *>(parent()->parent());
+
+	if(cameraTreeItem && dock_widget){
+		QString filename = dock_widget->getMainWindow()->get_filename(true, "*.vie");
+		if (filename.compare("") == 0) {
+			return;
+		}
+
+		std::ofstream file(filename.toStdString().c_str(), std::ios::out);
+		if (!file) {
+			std::cerr << "Export: Unable to open file for writing" << std::endl;
+			return;
+		}
+
+		for(int i = 0 ; i < cameraTreeItem->childCount(); i ++){
+			ModelViewTreeWidgetItem * modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (cameraTreeItem->child(i));
+			if(modelviewItem){
+				modelviewItem->save(file);
+			}
+		}
+
+		file.close();
+	}
+}
+
+void FilterTreeWidget::toggle_drrs(){
+	for(int i=0;i<this->topLevelItemCount(); ++i){
+		CameraTreeWidgetItem * camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));
+		if(camera){
+			for(int j=0;j<camera->childCount(); ++j){
+				ModelViewTreeWidgetItem * model = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(j));
+				if(model && model->getType() == 1){
+					model->toggleVisible();
+				}
+			}
+		}
+	}
+
 }
 
 void FilterTreeWidget::action_AddSobelFilter_triggered(){
