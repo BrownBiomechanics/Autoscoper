@@ -1505,4 +1505,17 @@ void AutoscoperMainWindow::setupShortcuts(){
 	new QShortcut(QKeySequence(Qt::Key_Equal), this, SLOT(key_equal_pressed()));
 	new QShortcut(QKeySequence(Qt::Key_Minus), this, SLOT(key_minus_pressed()));
 
+	ui->actionCopy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
+	ui->actionPaste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
+	ui->actionCut->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_X));
+	ui->actionDelete->setShortcut(QKeySequence(Qt::Key_Delete));
+	ui->actionUndo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
+	ui->actionRedo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Y));
+
+	ui->actionNew->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
+	ui->actionOpen->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
+	ui->actionSave->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
+	ui->actionSave_as->setShortcut(QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_S));
+	ui->actionQuit->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
+	ui->actionInsert_Key->setShortcut(QKeySequence(Qt::Key_S));
 }
