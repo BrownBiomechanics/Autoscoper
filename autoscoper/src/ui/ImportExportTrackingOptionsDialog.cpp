@@ -10,3 +10,11 @@ ImportExportTrackingOptionsDialog::ImportExportTrackingOptionsDialog(QWidget *pa
 ImportExportTrackingOptionsDialog::~ImportExportTrackingOptionsDialog(){
 	delete diag;
 }
+
+void ImportExportTrackingOptionsDialog::on_pushButton_OK_clicked(){
+	this->accept();
+}
+
+void ImportExportTrackingOptionsDialog::on_pushButton_Cancel_clicked(){
+	this->reject();
+}

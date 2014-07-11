@@ -21,6 +21,9 @@ class ImportExportTrackingOptionsDialog : public QDialog{
 		Ui::ImportExportTrackingOptionsDialog *diag;
 
 	public slots:
+
+		void on_pushButton_OK_clicked();
+		void on_pushButton_Cancel_clicked();
 };
 
 #endif /* IMPORTEXPORTTRACKINGOPTIONSDIALOG_H_ */
