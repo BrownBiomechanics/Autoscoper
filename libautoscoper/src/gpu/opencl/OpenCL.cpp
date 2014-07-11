@@ -513,6 +513,10 @@ void setUsedPlatform(int platform_idx){
 	used_platform = platform_idx;
 }
 
+int getUsedPlatform(){
+	return used_platform;
+}
+
 void opencl_global_gl_context()
 {
 #if defined(__APPLE__) || defined(__MACOSX)

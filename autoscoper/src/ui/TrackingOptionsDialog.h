@@ -31,6 +31,9 @@ class TrackingOptionsDialog : public QDialog{
 		void track();
 		void retrack();
 
+		
+		bool inActive;
+
 	public slots:
 		void on_pushButton_OK_clicked(bool checked);
 		void on_pushButton_Cancel_clicked(bool checked);

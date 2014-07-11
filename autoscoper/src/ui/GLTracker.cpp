@@ -21,7 +21,6 @@ GLTracker::GLTracker(Tracker * tracker , QWidget *parent)
 	initializeGL();
 }
 
-
 void GLTracker::initializeGL(){
 	std::cout << "Graphics Card Vendor"<< glGetString(GL_VENDOR)   << std::endl;
 	std::cout << glGetString(GL_RENDERER) << std::endl;

@@ -401,6 +401,9 @@ Trial</string>
     <addaction name="actionExport_Tracking"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
+    <addaction name="separator"/>
+    <addaction name="actionSaveForBatch"/>
+    <addaction name="actionLoad_xml_batch"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -558,6 +561,16 @@ Trial</string>
   <action name="actionLayoutCameraViews">
    <property name="text">
     <string>Layout Camera Views</string>
+   </property>
+  </action>
+  <action name="actionSaveForBatch">
+   <property name="text">
+    <string>save xml for batch</string>
+   </property>
+  </action>
+  <action name="actionLoad_xml_batch">
+   <property name="text">
+    <string>load xml batch</string>
    </property>
   </action>
  </widget>

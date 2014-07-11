@@ -26,6 +26,8 @@ class FilterDockWidget : public QDockWidget{
 		void clearTree();
 		void addCamera(View * view);
 		void toggle_drrs();
+		void saveAllSettings(QString directory);
+		void loadAllSettings(QString directory);
 
 		AutoscoperMainWindow * getMainWindow(){return mainwindow;};
 

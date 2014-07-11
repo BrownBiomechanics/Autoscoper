@@ -26,6 +26,14 @@ void FilterDockWidget::toggle_drrs(){
 	dock->treeWidget->toggle_drrs();
 }
 
+void FilterDockWidget::saveAllSettings(QString directory){
+	dock->treeWidget->saveAllSettings(directory);
+}
+
+void FilterDockWidget::loadAllSettings(QString directory){
+	dock->treeWidget->loadAllSettings(directory);
+}
+
 void FilterDockWidget::addCamera(View * view){
 	dock->treeWidget->addCamera(view);
 }

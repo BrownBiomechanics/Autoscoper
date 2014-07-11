@@ -26,6 +26,9 @@ class FilterTreeWidget : public QTreeWidget{
 		void redrawGL();
 		void toggle_drrs();
 
+		void saveAllSettings(QString directory);
+		void loadAllSettings(QString directory);
+
 	private:
 		void printTree();
 		void resetFilterTree();

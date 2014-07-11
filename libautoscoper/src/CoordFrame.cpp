@@ -49,6 +49,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -446,9 +447,40 @@ string CoordFrame::to_string() const
        << translation_[0] << ", "
        << translation_[1] << ", "
        << translation_[2] << ", "
-       << 1.0 << endl;
+       << 1.0;
 
     return ss.str();
+}
+
+void CoordFrame::from_string(std::string str) 
+{
+	std::vector< double > vd;
+    double d = 0.0;
+	std::size_t pos = 0;
+    while (pos < str.size ())
+        if ((pos = str.find_first_of (',',pos)) != std::string::npos)
+            str[pos] = ' ';
+	
+	std::stringstream ss(str);
+
+	while (ss >> d)
+        vd.push_back (d);
+
+	rotation_[0] = vd[0];
+	rotation_[2] = vd[1];
+	rotation_[1] = vd[2];
+
+	rotation_[3] = vd[4];
+	rotation_[4] = vd[5];
+	rotation_[5]= vd[6];
+
+	rotation_[6] = vd[8];
+	rotation_[7] = vd[9];
+	rotation_[8]= vd[10];
+
+	translation_[0]= vd[12];
+	translation_[1] = vd[13];
+	translation_[2] = vd[14];
 }
 
 } // namespace XROMM

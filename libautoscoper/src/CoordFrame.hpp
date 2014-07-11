@@ -105,6 +105,8 @@ public:
 
     std::string to_string() const;
 
+    void from_string(std::string str); 
+
 private:
 
     double rotation_[9];

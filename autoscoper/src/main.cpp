@@ -13,11 +13,16 @@
 int main ( int argc, char **argv )
 {
 	QApplication app (argc, argv);
-
-	AutoscoperMainWindow *widget = new AutoscoperMainWindow();
-	widget->show();
-
-	return app.exec();
+	
+	if(argc <= 1){ 
+		AutoscoperMainWindow *widget = new AutoscoperMainWindow();
+		widget->show();
+		return app.exec();
+	}else{
+		fprintf(stderr, "Start Batch %s\n", argv[1]);
+		AutoscoperMainWindow *widget = new AutoscoperMainWindow(true);
+		widget->runBatch(argv[1], true);
+	}
 }
 
 

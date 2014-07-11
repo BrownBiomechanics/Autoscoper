@@ -171,6 +171,59 @@ void FilterTreeWidget::action_SaveSettings_triggered(){
 	}
 }
 
+void FilterTreeWidget::saveAllSettings(QString directory){
+	for(int i=0;i<this->topLevelItemCount(); ++i){
+		CameraTreeWidgetItem * camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));
+		if(camera){
+			QString filename = directory + camera->getName() + ".vie"; 
+			std::ofstream file(filename.toAscii().constData(), std::ios::out);
+			for(int j=0;j<camera->childCount(); ++j){
+				ModelViewTreeWidgetItem * model = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(j));
+				if(model){
+					model->save(file);
+				}
+			}
+			file.close();
+		}
+	}
+} 
+
+void FilterTreeWidget::loadAllSettings(QString directory){
+	for(int i=0;i<this->topLevelItemCount(); ++i){
+		CameraTreeWidgetItem * camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));
+		if(camera){
+			QString filename = directory + camera->getName() + ".vie"; 
+			std::ifstream file(filename.toStdString().c_str(), std::ios::in);
+			std::string line, key;
+			while (std::getline(file,line)) {
+				if (line.compare("DrrRenderer_begin") == 0) {
+					for(int i = 0 ; i < camera->childCount(); i ++){
+						ModelViewTreeWidgetItem * modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(i));
+						if(modelviewItem && modelviewItem->getType() == 1){
+							modelviewItem->loadSettings(file);
+						}
+					}
+				}else if(line.compare("DrrFilters_begin") == 0){
+					for(int i = 0 ; i < camera->childCount(); i ++){
+						ModelViewTreeWidgetItem * modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(i));
+						if(modelviewItem && modelviewItem->getType() == 1){
+							modelviewItem->loadFilters(file);
+						}
+					}
+				}else if(line.compare("RadFilters_begin") == 0){
+					for(int i = 0 ; i < camera->childCount(); i ++){
+						ModelViewTreeWidgetItem * modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(i));
+						if(modelviewItem && modelviewItem->getType() == 0){
+							modelviewItem->loadFilters(file);
+						}
+					}
+				}
+			}
+			file.close();
+		}
+	}
+} 
+
 void FilterTreeWidget::toggle_drrs(){
 	for(int i=0;i<this->topLevelItemCount(); ++i){
 		CameraTreeWidgetItem * camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));
