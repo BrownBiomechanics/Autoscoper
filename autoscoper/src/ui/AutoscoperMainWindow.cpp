@@ -986,6 +986,7 @@ void AutoscoperMainWindow::on_actionSaveForBatch_triggered(bool checked){
 				QXmlStreamWriter xmlWriter(&file);
 				xmlWriter.writeStartDocument();
 				xmlWriter.setAutoFormatting(true);
+				xmlWriter.writeStartElement("Batch");
 				//save GPU_devices
 				xmlWriter.writeStartElement("GPUDevice");
 				xmlWriter.writeCharacters(QString::number(xromm::gpu::getUsedPlatform()));
@@ -1034,6 +1035,7 @@ void AutoscoperMainWindow::on_actionSaveForBatch_triggered(bool checked){
 				//save TrackingOptions
 				TrackingOptionsDialog * tracking_dialog_tmp;
 				tracking_dialog_tmp = new TrackingOptionsDialog(this);
+				tracking_dialog_tmp->setRange(timeline_widget->getPosition_graph()->min_frame,timeline_widget->getPosition_graph()->max_frame, tracker->trial()->num_frames-1);
 				tracking_dialog_tmp->inActive = true;
 				tracking_dialog_tmp->exec();
 				xmlWriter.writeStartElement("TrackingOptions");
@@ -1044,6 +1046,7 @@ void AutoscoperMainWindow::on_actionSaveForBatch_triggered(bool checked){
 				xmlWriter.writeEndElement();
 
 				delete tracking_dialog_tmp;
+				xmlWriter.writeEndDocument();
 				xmlWriter.writeEndDocument();
 				file.close();
 			}
