@@ -5,6 +5,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
 
 find_package( TiffIO REQUIRED )
 
+FIND_PACKAGE( OpenCV REQUIRED )
+
 SET(libautoscoper_HEADERS 
 	src/Backtrace.hpp
 	src/Camera.hpp
@@ -36,8 +38,7 @@ SET(libautoscoper_SOURCES
 	src/VolumeDescription.cpp
 )
 
-
-include_directories( ${TIFFIO_INCLUDE_DIRS} )
+include_directories(${OPENCV_INCLUDE_DIRS} ${TIFFIO_INCLUDE_DIRS})
 
 IF(BUILD_WITH_CUDA)
 	find_package( CUDA REQUIRED )
