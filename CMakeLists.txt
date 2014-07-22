@@ -27,5 +27,13 @@ IF(BUILD_WITH_CUDA)
 	ADD_DEFINITIONS(-DWITH_CUDA)
 ENDIF()
 
+FIND_PACKAGE(Qt4)
+
+#Build Libtiff from QT 3rdPartySources
+IF(WIN32)
+EXECUTE_PROCESS(COMMAND ${QT_QMAKE_EXECUTABLE} -config staticlib -t vclib -r ${QT_LIBRARY_DIR}/../src/3rdparty/libtiff.pri)
+EXECUTE_PROCESS(COMMAND msbuild libtiff.vcxproj /p:configuration=release)
+ENDIF()
+
 add_subdirectory (libautoscoper) 
 add_subdirectory (autoscoper)

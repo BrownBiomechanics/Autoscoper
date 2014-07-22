@@ -96,7 +96,7 @@ ELSE (NOT BUILD_WITH_CUDA)
 	)
 ENDIF()
 
-include_directories (${OPENCV_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GLUT_INCLUDE_DIR}  ../math ../libautoscoper/src ) 
+include_directories (${OPENCV_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GLUT_INCLUDE_DIR}  ../math ../libautoscoper/src) 
 
 link_directories (${LIBRARY_OUTPUT_PATH}) 
 
@@ -107,4 +107,4 @@ add_executable (autoscoper  ${autoscoper_SOURCES} ${autoscoper_HEADERS}
 		${autoscoper_RESOURCES_RCC} 
 		src/ui/autoscoper_resource.qrc) 
 
-TARGET_LINK_LIBRARIES(autoscoper libautoscoper ${OpenCV_LIBS} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${GPU_LIBRARIES} ${TIFFIO_LIBRARIES} ${QT_LIBRARIES} )
+TARGET_LINK_LIBRARIES(autoscoper libautoscoper ${OpenCV_LIBS} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${GPU_LIBRARIES} ${QT_LIBRARIES} ../Release/libtiff)
