@@ -52,10 +52,10 @@ struct Quat
     
     explicit Quat(const T* q)
     {
-        w = q.w;
-        x = q.x;
-        y = q.y;
-        z = q.z;
+        w = q->w;
+        x = q->x;
+        y = q->y;
+        z = q->z;
     }
 
     //! Returns a zero quaternion

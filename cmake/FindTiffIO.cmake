@@ -14,7 +14,9 @@ FIND_PACKAGE( PackageHandleStandardArgs )
 IF (APPLE)
 
   FIND_LIBRARY(TIFFIO_LIBRARIES tiffio DOC "TiffIO lib for OSX")
+  FIND_LIBRARY(LZMA_LIBRARIES lzma DOC "LZMA lib for OSX")
   FIND_PATH(TIFFIO_INCLUDE_DIRS tiffio.h DOC "Include for TiffIO on OSX")
+
 
 ELSE (APPLE)
 

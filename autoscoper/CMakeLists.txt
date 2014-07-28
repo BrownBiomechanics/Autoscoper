@@ -12,6 +12,10 @@ FIND_PACKAGE( OpenGL )
 
 FIND_PACKAGE( OpenCV REQUIRED )
 
+IF(APPLE)
+	FIND_PACKAGE(TiffIO)
+ENDIF()
+
 #ADD QT4 SUPPORT
 FIND_PACKAGE(Qt4 REQUIRED COMPONENTS QtCore QtGui QtOpenGL )
 set(QT_USE_QTOPENGL TRUE)
@@ -100,11 +104,41 @@ include_directories (${OPENCV_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GLUT_INCLUDE_D
 
 link_directories (${LIBRARY_OUTPUT_PATH}) 
 
-add_executable (autoscoper  ${autoscoper_SOURCES} ${autoscoper_HEADERS}
+
+# Set some Win32 Specific Settings
+IF(WIN32)
+	SET(GUI_TYPE WIN32)
+	SET(QT_USE_QMAIN true)
+ENDIF(WIN32)
+
+# Set some Apple MacOS Specific settings
+IF (APPLE)
+	SET(GUI_TYPE MACOSX_BUNDLE)
+	#set( MACOSX_BUNDLE_ICON_FILE xromm.icns )
+# Allows for bundle re-creation just by running "make". Also installs bundle icon
+#add_custom_target(osx_bundle_dirs
+#    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/bin/Undistortion.app/Contents/Resources
+#    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/bin/Undistortion.app/Contents/MacOS
+#    COMMAND cp ${CMAKE_SOURCE_DIR}/src/ui/ui-files/images/icons/${MACOSX_BUNDLE_ICON_FILE}
+#            ${CMAKE_CURRENT_BINARY_DIR}/bin/Undistortion.app/Contents/Resources/${MACOSX_BUNDLE_ICON_FILE})
+ENDIF (APPLE)
+
+add_executable (autoscoper  ${GUI_TYPE} ${autoscoper_SOURCES} ${autoscoper_HEADERS}
 		${autoscoper_FORMS_SOURCES} 
 		${autoscoper_FORMS_HEADERS}
 		${autoscoper_FORMS_HEADERS_GEN} 
 		${autoscoper_RESOURCES_RCC} 
 		src/ui/autoscoper_resource.qrc) 
 
+IF(APPLE)
+TARGET_LINK_LIBRARIES(autoscoper libautoscoper ${OpenCV_LIBS} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${GPU_LIBRARIES} ${QT_LIBRARIES} ${TIFFIO_LIBRARIES} ${LZMA_LIBRARIES} )
+#Copy shared QT libs and build dog
+ADD_CUSTOM_COMMAND(TARGET autoscoper
+          POST_BUILD
+          COMMAND /opt/local/bin/macdeployqt ${CMAKE_BINARY_DIR}/bin/autoscoper.app/ -dmg
+)
+
+ELSE()
 TARGET_LINK_LIBRARIES(autoscoper libautoscoper ${OpenCV_LIBS} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${GPU_LIBRARIES} ${QT_LIBRARIES} ../Release/libtiff)
+ENDIF()
+

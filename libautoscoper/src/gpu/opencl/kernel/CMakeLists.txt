@@ -26,7 +26,7 @@ foreach(SHADER_FILENAME ${opencl_shaders})
                        COMMAND cmake -DSHADER_FILENAME=${SHADER_FILENAME}
                                      -DOUTPUT_FOLDER=${CMAKE_CURRENT_BINARY_DIR}/gpu/opencl/kernel
                                      -P ${CMAKE_CURRENT_SOURCE_DIR}/gpu/opencl/kernel/cmake/shader_to_header.cmake
-                       DEPENDS ${SHADER_FILENAME}
+                       DEPENDS src/${SHADER_FILENAME}
                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endforeach()
 

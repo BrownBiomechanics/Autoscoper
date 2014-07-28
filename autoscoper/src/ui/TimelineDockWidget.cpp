@@ -10,6 +10,7 @@
 
 #include <QGLContext>
 #include <QTimer>
+#include <math.h>
 
 TimelineDockWidget::TimelineDockWidget(QWidget *parent) :
 										QDockWidget(parent),

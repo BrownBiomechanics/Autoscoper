@@ -42,7 +42,6 @@
 #include "Tracker.hpp"
 
 #include <algorithm>
-#include <dirent.h>
 #include <fstream>
 #include <iostream>
 #include <string>

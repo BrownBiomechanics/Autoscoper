@@ -13,6 +13,9 @@
 #include <iostream>
 
 #ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
+#include <OpenGL/glu.h>
 #else
 #include <GL/glew.h> // For windows to support glMultTransposeMatrix
 #include <GL/gl.h>

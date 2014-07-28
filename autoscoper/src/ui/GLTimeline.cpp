@@ -27,7 +27,7 @@
 #include "Tracker.hpp"
 
 #include <sstream>
-
+#include <math.h>
 #include <QMouseEvent>
 
 GLTimeline::GLTimeline(QWidget *parent)

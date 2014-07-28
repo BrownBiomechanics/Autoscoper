@@ -19,6 +19,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <math.h>       /* exp */
 
 #include <View.hpp>
 #ifdef WITH_CUDA

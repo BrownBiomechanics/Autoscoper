@@ -42,7 +42,13 @@
 #include <cstring>
 #include <algorithm>
 #include <iostream>
-#include <dirent.h>
+#ifdef WIN32
+#include "Win32/dirent.h"
+#elif __APPLE__
+#include <sys/types.h>
+#include <sys/dir.h>
+#endif
+
 #include <stdexcept>
 
 #include "Video.hpp"

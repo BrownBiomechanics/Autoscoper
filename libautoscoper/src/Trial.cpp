@@ -43,7 +43,6 @@
 
 #include <algorithm>
 #include <cstring>
-#include <dirent.h>
 #include <fstream>
 #include <iostream>
 #include <sstream>

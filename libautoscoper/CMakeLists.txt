@@ -6,6 +6,9 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
 find_package( Qt REQUIRED )
 
 FIND_PACKAGE( OpenCV REQUIRED )
+IF(APPLE)
+	FIND_PACKAGE(TiffIO)
+ENDIF()
 
 SET(libautoscoper_HEADERS 
 	src/Backtrace.hpp
@@ -53,6 +56,10 @@ ELSE(NOT BUILD_WITH_CUDA)
 	ADD_DEPENDENCIES(libautoscoper ${SHADER_TO_HEADER})
 ENDIF()
 
+IF(APPLE)
+include_directories(${OPENCV_INCLUDE_DIRS} ${TIFFIO_INCLUDE_DIRS})
+ELSE()
 include_directories(${OPENCV_INCLUDE_DIRS} ${QT_QTCORE_INCLUDE_DIR}/../ ${QT_QTCORE_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR}/../../src/3rdparty/libtiff/libtiff/)
+ENDIF()
 
 
