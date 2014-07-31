@@ -44,9 +44,9 @@ SET(autoscoper_FORMS_HEADERS
 		src/ui/GLTracker.h
 		src/ui/Manip3D.hpp
 		src/core/History.hpp
-		src/ui/OpenCLPlatformSelectDialog.cpp
-		src/ui/CameraBox.cpp
-		src/ui/NewTrialDialog.cpp
+		src/ui/OpenCLPlatformSelectDialog.h
+		src/ui/CameraBox.h
+		src/ui/NewTrialDialog.h
 )
 SET(autoscoper_FORMS_SOURCES
      	src/ui/AutoscoperMainWindow.cpp
