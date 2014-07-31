@@ -4,6 +4,7 @@
 
 #define GL_GLEXT_PROTOTYPES 1
 #include <GL/glew.h>
+#include <iostream>
 
 #include "ui/GLTracker.h"
 #include "Tracker.hpp"

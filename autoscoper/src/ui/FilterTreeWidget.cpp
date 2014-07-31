@@ -111,7 +111,7 @@ void FilterTreeWidget::action_LoadSettings_triggered(){
 			return;
 		}
 
-		std::ifstream file(filename.toStdString().c_str(), std::ios::in);
+		std::ifstream file(filename.toAscii().constData(), std::ios::in);
 		if (!file) {
 			std::cerr << "Import: Unable to open file for writing" << std::endl;
 			return;
@@ -154,7 +154,7 @@ void FilterTreeWidget::action_SaveSettings_triggered(){
 			return;
 		}
 
-		std::ofstream file(filename.toStdString().c_str(), std::ios::out);
+		std::ofstream file(filename.toAscii().constData(), std::ios::out);
 		if (!file) {
 			std::cerr << "Export: Unable to open file for writing" << std::endl;
 			return;
@@ -193,7 +193,7 @@ void FilterTreeWidget::loadAllSettings(QString directory){
 		CameraTreeWidgetItem * camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));
 		if(camera){
 			QString filename = directory + camera->getName() + ".vie"; 
-			std::ifstream file(filename.toStdString().c_str(), std::ios::in);
+			std::ifstream file(filename.toAscii().constData(), std::ios::in);
 			std::string line, key;
 			while (std::getline(file,line)) {
 				if (line.compare("DrrRenderer_begin") == 0) {
@@ -339,11 +339,11 @@ void FilterTreeWidget::printTree(){
 	for(int i=0;i<this->topLevelItemCount(); ++i){
 		CameraTreeWidgetItem * camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));
 		if(camera){
-			fprintf(stderr,"Camera%d %s\n",i, camera->getName().toStdString().c_str());
+			fprintf(stderr,"Camera%d %s\n",i, camera->getName().toAscii().constData());
 			for(int j=0;j<camera->childCount(); ++j){
 				ModelViewTreeWidgetItem * model = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(j));
 				if(model){
-					fprintf(stderr,"    Model%d %s\n",j,model->getName().toStdString().c_str());
+					fprintf(stderr,"    Model%d %s\n",j,model->getName().toAscii().constData());
 					fprintf(stderr,"---------------------\n");
 					model->printFilters();
 					fprintf(stderr,"---------------------\n");
@@ -351,7 +351,7 @@ void FilterTreeWidget::printTree(){
 						FilterTreeWidgetItem * filter = dynamic_cast<FilterTreeWidgetItem*> (model->child(k));
 						if(filter){
 							
-							fprintf(stderr,"          Filter%d %s\n",k,filter->getName().toStdString().c_str());
+							fprintf(stderr,"          Filter%d %s\n",k,filter->getName().toAscii().constData());
 							if(filter->childCount()>0){
 								fprintf(stderr,"Filter has Children\n");
 							}

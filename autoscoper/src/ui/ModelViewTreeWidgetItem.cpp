@@ -269,7 +269,7 @@ void ModelViewTreeWidgetItem::removeFilter(FilterTreeWidgetItem* filterItem, boo
 
 void ModelViewTreeWidgetItem::printFilters(){
 	for(int i = 0; i < filterTreeWidgets.size(); i++){
-		fprintf(stderr,"          Filter%d %s\n",i,filterTreeWidgets[i]->getName().toStdString().c_str());
+		fprintf(stderr,"          Filter%d %s\n",i,filterTreeWidgets[i]->getName().toAscii().constData());
 	}
 }
 

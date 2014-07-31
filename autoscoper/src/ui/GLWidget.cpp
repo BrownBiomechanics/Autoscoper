@@ -59,7 +59,7 @@ void GLWidget::resizeGL(int w, int h){
 
 #ifdef WITH_CUDA
 	// Unregister and delete the pixel buffer if it already exists.
-    if (!glIsBufferARB(view->pbo)) {
+    if (!glIsBufferARB(viewdata.pbo)) {
         CALL_GL(glDeleteBuffersARB(1, &viewdata.pbo));
         CALL_GL(glGenBuffersARB(1, &viewdata.pbo));
     }

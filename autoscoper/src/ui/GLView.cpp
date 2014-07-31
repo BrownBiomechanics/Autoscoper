@@ -485,9 +485,9 @@ void GLView::paintGL()
 			glRasterPos2i(0, 0);
 
 			#ifdef WITH_CUDA
-			CALL_GL(glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, view->pbo));
-			CALL_GL(glDrawPixels(view->window_width,
-							view->window_height,
+			CALL_GL(glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, viewdata.pbo));
+			CALL_GL(glDrawPixels(viewdata.window_width,
+							viewdata.window_height,
 							GL_RGB, GL_FLOAT, 0));
 			CALL_GL(glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0));
 			#else

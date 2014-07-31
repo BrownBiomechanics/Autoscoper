@@ -570,7 +570,7 @@ QString AutoscoperMainWindow::get_filename(bool save, QString type)
 void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_matrix,bool save_as_rows,bool save_with_commas,bool convert_to_cm,bool convert_to_rad,bool interpolate){
 	const char* s = save_with_commas? "," :" ";
 
-	std::ofstream file(filename.toStdString().c_str(), ios::out);
+	std::ofstream file(filename.toAscii().constData(), ios::out);
 
 	file.precision(16);
 	file.setf(ios::fixed,ios::floatfield);
@@ -679,7 +679,7 @@ void AutoscoperMainWindow::save_tracking_results(QString filename)
 void AutoscoperMainWindow::load_tracking_results(QString filename, bool save_as_matrix,bool save_as_rows,bool save_with_commas,bool convert_to_cm,bool convert_to_rad,bool interpolate){
 	char s = save_with_commas? ',': ' ';
 
-		std::ifstream file(filename.toStdString().c_str(), ios::in);
+		std::ifstream file(filename.toAscii().constData(), ios::in);
 
 		tracker->trial()->x_curve.clear();
 		tracker->trial()->y_curve.clear();
@@ -791,11 +791,11 @@ void AutoscoperMainWindow::openTrial(){
 
 void AutoscoperMainWindow::openTrial(QString filename){
     try {
-		Trial * trial = new Trial(filename.toStdString().c_str());
+		Trial * trial = new Trial(filename.toAscii().constData());
 		tracker->load(*trial);
 		delete trial;
 
-		trial_filename = filename.toStdString();
+		trial_filename = filename.toAscii();
 		is_trial_saved = true;
 		is_tracking_saved = true;
 
@@ -955,7 +955,7 @@ void AutoscoperMainWindow::on_actionSave_as_triggered(bool checked){
 	QString filename = get_filename(true);
     if (filename.compare("") != 0) {
         try {
-			trial_filename = filename.toStdString().c_str();
+			trial_filename = filename.toAscii().constData();
 			tracker->trial()->save(trial_filename);
             is_tracking_saved = true;
         }
@@ -998,11 +998,12 @@ void AutoscoperMainWindow::on_actionSaveForBatch_triggered(bool checked){
 				xmlWriter.writeStartDocument();
 				xmlWriter.setAutoFormatting(true);
 				xmlWriter.writeStartElement("Batch");
+#ifndef WITH_CUDA
 				//save GPU_devices
 				xmlWriter.writeStartElement("GPUDevice");
 				xmlWriter.writeCharacters(QString::number(xromm::gpu::getUsedPlatform()));
 				xmlWriter.writeEndElement();
-
+#endif
 				//save Trial
 				QString trial_filename = inputPath + OS_SEP + "trial.cfg";
 				tracker->trial()->save(trial_filename.toAscii().constData());
@@ -1101,9 +1102,11 @@ void AutoscoperMainWindow::runBatch(QString batchfile, bool saveData){
 						QString name = xmlReader.name().toString();
 						if (name == "GPUDevice")
 						{
+#ifndef WITH_CUDA
 							fprintf(stderr,"Load GPUDevice Setting\n");
 							xromm::gpu::setUsedPlatform(xmlReader.readElementText().toInt());
 							QApplication::processEvents();
+#endif
 						}
 						else if (name == "Trial")
 						{
