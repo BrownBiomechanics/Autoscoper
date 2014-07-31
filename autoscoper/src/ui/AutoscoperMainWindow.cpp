@@ -795,7 +795,7 @@ void AutoscoperMainWindow::openTrial(QString filename){
 		tracker->load(*trial);
 		delete trial;
 
-		trial_filename = filename.toAscii();
+		trial_filename = filename.toAscii().constData();
 		is_trial_saved = true;
 		is_tracking_saved = true;
 
