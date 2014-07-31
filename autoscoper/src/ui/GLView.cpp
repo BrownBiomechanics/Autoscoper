@@ -21,6 +21,7 @@
 #include "ui/GLView.h"
 #include "ui/AutoscoperMainWindow.h"
 #include "ui/CameraViewWidget.h"
+#include "ui/WorldViewWindow.h"
 #include "ui/TimelineDockWidget.h"
 
 #include "Tracker.hpp"
@@ -58,6 +59,11 @@ void GLView::setStaticView(bool staticView){
 	if(viewdata.m_isStaticView){
 		const double xyzypr[6] = {250.0f, 250.0f, 250.0f, 0.0f, 45.0f, -35.0f};
 		defaultViewMatrix = CoordFrame::from_xyzypr(xyzypr);
+
+		viewdata.ratio = 1.0f;
+		viewdata.fovy = 53.13f;
+		viewdata.near_clip = 1.0f;
+		viewdata.far_clip = 10000.0f;
 	}
 }
 
@@ -74,7 +80,16 @@ void GLView::setView(View * view){
 // the mouse located at pixel coordinates x,y.
 void GLView::select_manip_in_view(double x, double y, int button)
 {
-	CameraViewWidget * cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
+	AutoscoperMainWindow * mainwindow;
+	CameraViewWidget * cameraViewWidget;
+	if (viewdata.m_isStaticView) {
+		WorldViewWindow * worldviewWidget = dynamic_cast <WorldViewWindow *> ( this->parent());
+        mainwindow = worldviewWidget->getMainWindow();
+	}else{
+		cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
+		mainwindow = cameraViewWidget->getMainWindow();
+	}
+
 
     // Setup the view from this perspective so that we can simply call set_view
     // on the manipulator
@@ -91,7 +106,7 @@ void GLView::select_manip_in_view(double x, double y, int button)
 	if (viewdata.m_isStaticView) {
         viewMatrix = defaultViewMatrix;
 	}else{
-		viewMatrix = cameraViewWidget->getMainWindow()->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame();
+		viewMatrix = mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame();
 	}
     double m[16];
     viewMatrix.inverse().to_matrix(m);
@@ -99,14 +114,21 @@ void GLView::select_manip_in_view(double x, double y, int button)
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrixd(m);
 
-    cameraViewWidget->getMainWindow()->getManipulator()->set_view();
-    cameraViewWidget->getMainWindow()->getManipulator()->set_size(viewdata.scale*cameraViewWidget->getMainWindow()->getManipulator()->get_pivotSize());
-    cameraViewWidget->getMainWindow()->getManipulator()->on_mouse_press(x,viewdata.window_height-y);
+    mainwindow->getManipulator()->set_view();
+    mainwindow->getManipulator()->set_size(viewdata.scale*mainwindow->getManipulator()->get_pivotSize());
+    mainwindow->getManipulator()->on_mouse_press(x,viewdata.window_height-y);
 }
 
  void GLView::wheelEvent(QWheelEvent *e)
  {
-	 CameraViewWidget * cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
+	AutoscoperMainWindow * mainwindow;
+	if (viewdata.m_isStaticView) {
+		WorldViewWindow * worldviewWidget = dynamic_cast <WorldViewWindow *> ( this->parent());
+        mainwindow = worldviewWidget->getMainWindow();
+	}else{
+		CameraViewWidget * cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
+		mainwindow = cameraViewWidget->getMainWindow();
+	}
 
 	 if ( Qt::ControlModifier & e->modifiers() ) {
 		 if (e->delta() > 0) {
@@ -117,12 +139,19 @@ void GLView::select_manip_in_view(double x, double y, int button)
         }
 
         update_viewport(&viewdata);
-        cameraViewWidget->getMainWindow()->redrawGL();
+        mainwindow->redrawGL();
     }
  }
 
 void GLView::mousePressEvent(QMouseEvent *e){
-	CameraViewWidget * cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
+	AutoscoperMainWindow * mainwindow;
+	if (viewdata.m_isStaticView) {
+		WorldViewWindow * worldviewWidget = dynamic_cast <WorldViewWindow *> ( this->parent());
+        mainwindow = worldviewWidget->getMainWindow();
+	}else{
+		CameraViewWidget * cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
+		mainwindow = cameraViewWidget->getMainWindow();
+	}
 
 	press_x = e->x();
     press_y = e->y();
@@ -131,15 +160,22 @@ void GLView::mousePressEvent(QMouseEvent *e){
 
     select_manip_in_view(e->x(),e->y(),e->button());
 
-	cameraViewWidget->getMainWindow()->redrawGL();
+	mainwindow->redrawGL();
 }
 
 // Moves the manipulator and volume based on the view, the selected axis, and
 // the direction of the motion.
 void GLView::move_manip_in_view(double x, double y, bool out_of_plane)
 {
-	CameraViewWidget * cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
-	AutoscoperMainWindow * mainwindow = cameraViewWidget->getMainWindow();
+	AutoscoperMainWindow * mainwindow;
+	CameraViewWidget * cameraViewWidget;
+	if (viewdata.m_isStaticView) {
+		WorldViewWindow * worldviewWidget = dynamic_cast <WorldViewWindow *> ( this->parent());
+        mainwindow = worldviewWidget->getMainWindow();
+	}else{
+		cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
+		mainwindow = cameraViewWidget->getMainWindow();
+	}
 
 	if (mainwindow->getPosition_graph()->frame_locks.at(mainwindow->getTracker()->trial()->frame)) {
         return;
@@ -161,7 +197,7 @@ void GLView::move_manip_in_view(double x, double y, bool out_of_plane)
 		if (viewdata.m_isStaticView) {
 			viewMatrix = defaultViewMatrix;
 		}else{
-			viewMatrix = cameraViewWidget->getMainWindow()->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame();
+			viewMatrix = mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame();
 		}
 
 
@@ -191,6 +227,15 @@ void GLView::move_manip_in_view(double x, double y, bool out_of_plane)
 }
 
 void GLView::mouseMoveEvent(QMouseEvent *e){
+	AutoscoperMainWindow * mainwindow;
+	if (viewdata.m_isStaticView) {
+		WorldViewWindow * worldviewWidget = dynamic_cast <WorldViewWindow *> ( this->parent());
+        mainwindow = worldviewWidget->getMainWindow();
+	}else{
+		CameraViewWidget * cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
+		mainwindow = cameraViewWidget->getMainWindow();
+	}
+	
 	double dx = e->x() - prevx;
     double dy = e->y() - prevy;
 
@@ -259,8 +304,6 @@ void GLView::mouseMoveEvent(QMouseEvent *e){
             }
         }
     }
-	CameraViewWidget * cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
-	AutoscoperMainWindow * mainwindow = cameraViewWidget->getMainWindow();
 
     mainwindow->update_xyzypr();
 
@@ -269,21 +312,35 @@ void GLView::mouseMoveEvent(QMouseEvent *e){
 }
 
 void GLView::mouseReleaseEvent(QMouseEvent *e){
-	CameraViewWidget * cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
-   
-	cameraViewWidget->getMainWindow()->getManipulator()->on_mouse_release(e->x(),e->y());
+	AutoscoperMainWindow * mainwindow;
+	if (viewdata.m_isStaticView) {
+		WorldViewWindow * worldviewWidget = dynamic_cast <WorldViewWindow *> ( this->parent());
+        mainwindow = worldviewWidget->getMainWindow();
+	}else{
+		CameraViewWidget * cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
+		mainwindow = cameraViewWidget->getMainWindow();
+	}
 
-    cameraViewWidget->getMainWindow()->update_graph_min_max(cameraViewWidget->getMainWindow()->getTracker()->trial()->frame);
+	mainwindow->getManipulator()->on_mouse_release(e->x(),e->y());
 
-	cameraViewWidget->getMainWindow()->redrawGL();
+    mainwindow->update_graph_min_max(mainwindow->getTracker()->trial()->frame);
+
+	mainwindow->redrawGL();
 }
 
 void GLView::paintGL()
 {
-	CameraViewWidget * cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
-	AutoscoperMainWindow * mainwindow = cameraViewWidget->getMainWindow();
+	AutoscoperMainWindow * mainwindow;
+	CameraViewWidget * cameraViewWidget;
+	if (viewdata.m_isStaticView) {
+		WorldViewWindow * worldviewWidget = dynamic_cast <WorldViewWindow *> ( this->parent());
+        mainwindow = worldviewWidget->getMainWindow();
+	}else{
+		cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
+		mainwindow = cameraViewWidget->getMainWindow();
+	}
 
-	if(mainwindow && cameraViewWidget){
+	if(mainwindow){
 		update_scale_in_view(&viewdata);
 		update_viewport(&viewdata);
 		
@@ -302,15 +359,16 @@ void GLView::paintGL()
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
 			gluPerspective(viewdata.fovy,viewdata.ratio,viewdata.near_clip,viewdata.far_clip);
+			fprintf(stderr, "%lf %lf %lf %lf \n", viewdata.fovy,viewdata.ratio,viewdata.near_clip,viewdata.far_clip);
 			glMatrixMode(GL_MODELVIEW);
 			glLoadMatrixd(m);
+
 
 			// Draw background
 			float top_color[3] = {0.20f,0.35f,0.50f};
 			float bot_color[3] = {0.10f,0.17f,0.25f};
 
 			draw_gradient(top_color,bot_color);	
-			// Draw image planes
 			for (unsigned int i = 0; i < mainwindow->getTracker()->trial()->cameras.size(); ++i) {
 				draw_textured_quad(mainwindow->getTracker()->trial()->cameras.at(i).image_plane(),
 					(*mainwindow->getTextures())[i]);
@@ -346,7 +404,6 @@ void GLView::paintGL()
 			}
 
 			if (!mainwindow->getTracker()->views().empty()) {
-
 				CoordFrame modelview = defaultViewMatrix.inverse()*CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()))* *mainwindow->getVolume_matrix();
 
 				double imv[16];
@@ -394,7 +451,7 @@ void GLView::paintGL()
 			}
 			return;
 		}
-		else{
+		else if(cameraViewWidget){
 			CoordFrame modelview  = mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame().inverse()
 									* CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()))
 									* (*mainwindow->getVolume_matrix());
@@ -468,10 +525,17 @@ void GLView::update_scale_in_view(ViewData* view)
 {
     // Determine the distance from the center of the pivot point to the
     // center of the view.
-	CameraViewWidget * cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
-	AutoscoperMainWindow * mainwindow = cameraViewWidget->getMainWindow();
-	
-	CoordFrame mat = CoordFrame::from_matrix(trans(cameraViewWidget->getMainWindow()->getManipulator()->transform()));
+	AutoscoperMainWindow* mainwindow;
+	CameraViewWidget * cameraViewWidget;
+	if (viewdata.m_isStaticView) {
+		WorldViewWindow * worldviewWidget = dynamic_cast <WorldViewWindow *> ( this->parent());
+        mainwindow = worldviewWidget->getMainWindow();
+	}else{
+		cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
+		mainwindow = cameraViewWidget->getMainWindow();
+	}
+
+	CoordFrame mat = CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()));
     
 	double dist_vec[3];
 	if (view->m_isStaticView) {
@@ -500,18 +564,20 @@ void GLView::update_scale_in_view(ViewData* view)
 
 void GLView::draw_manip_from_view(const ViewData* view)
 {
-	CameraViewWidget * cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
-   
-	if ( cameraViewWidget->getMainWindow()->getManipulator()->get_movePivot()) {
-        glEnable(GL_LINE_STIPPLE);
-        glLineStipple(2,0x3333);
-    }
+	AutoscoperMainWindow * mainwindow;
+	if (viewdata.m_isStaticView) {
+		WorldViewWindow * worldviewWidget = dynamic_cast <WorldViewWindow *> ( this->parent());
+        mainwindow = worldviewWidget->getMainWindow();
+	}else{
+		CameraViewWidget * cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
+		mainwindow = cameraViewWidget->getMainWindow();
+	}
 	
 	glLineWidth(1.0);
-	cameraViewWidget->getMainWindow()->getManipulator()->set_size(view->scale*cameraViewWidget->getMainWindow()->getManipulator()->get_pivotSize());
-    cameraViewWidget->getMainWindow()->getManipulator()->draw();
+	mainwindow->getManipulator()->set_size(view->scale*mainwindow->getManipulator()->get_pivotSize());
+    mainwindow->getManipulator()->draw();
 
-   if ( cameraViewWidget->getMainWindow()->getManipulator()->get_movePivot()) {
+   if ( mainwindow->getManipulator()->get_movePivot()) {
         glLineStipple(1,0);
         glDisable(GL_LINE_STIPPLE);
     }
@@ -730,13 +796,13 @@ void GLView::draw_camera()
 void GLView::draw_textured_quad(const double* pts, unsigned int texid)
 {
     glPushAttrib(GL_ENABLE_BIT);
-
+	
     //glColor3f(1.0f,1.0f,1.0f);
 
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D,texid);
     glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
-
+	
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 0.0f);
     glVertex3d(pts[0], pts[1],  pts[2]);

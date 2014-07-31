@@ -47,6 +47,7 @@ SET(autoscoper_FORMS_HEADERS
 		src/ui/OpenCLPlatformSelectDialog.h
 		src/ui/CameraBox.h
 		src/ui/NewTrialDialog.h
+		src/ui/WorldViewWindow.h
 )
 SET(autoscoper_FORMS_SOURCES
      	src/ui/AutoscoperMainWindow.cpp
@@ -69,6 +70,7 @@ SET(autoscoper_FORMS_SOURCES
 		src/ui/OpenCLPlatformSelectDialog.cpp
 		src/ui/CameraBox.cpp
 		src/ui/NewTrialDialog.cpp
+		src/ui/WorldViewWindow.cpp
 )
 
 #QT DESIGNER UI FILES

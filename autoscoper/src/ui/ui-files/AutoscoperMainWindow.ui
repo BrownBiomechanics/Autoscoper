@@ -435,6 +435,7 @@ Trial</string>
      <string>View</string>
     </property>
     <addaction name="actionLayoutCameraViews"/>
+    <addaction name="actionShow_world_view"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -571,6 +572,14 @@ Trial</string>
   <action name="actionLoad_xml_batch">
    <property name="text">
     <string>load xml batch</string>
+   </property>
+  </action>
+  <action name="actionShow_world_view">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show world view</string>
    </property>
   </action>
  </widget>

@@ -21,6 +21,7 @@ class FilterDockWidget;
 class CameraViewWidget;
 class TimelineDockWidget;
 class TrackingOptionsDialog;
+class WorldViewWindow;
 class QGLContext;
 class Manip3D;
 struct GraphData;
@@ -77,6 +78,8 @@ class AutoscoperMainWindow : public QMainWindow{
 		//Manipulator
 		Manip3D * manipulator;
 		CoordFrame * volume_matrix;
+		//WortldView
+		WorldViewWindow * worldview;
 
 		//History
 		History *history;
@@ -141,6 +144,7 @@ class AutoscoperMainWindow : public QMainWindow{
 
 		//View
 		void on_actionLayoutCameraViews_triggered(bool checked);
+		void on_actionShow_world_view_triggered(bool checked);
 
 		//Toolbar
 		void on_toolButtonOpenTrial_clicked();

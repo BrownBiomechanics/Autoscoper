@@ -11,6 +11,7 @@
 #include "ui_TrackingOptionsDialog.h"
 #include "ui/OpenCLPlatformSelectDialog.h"
 #include "Manip3D.hpp"
+#include "ui/WorldViewWindow.h"
 
 #include "ui/NewTrialDialog.h"
 #include "ui_NewTrialDialog.h"
@@ -80,6 +81,13 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 	timeline_widget->setSharedGLContext(shared_glcontext);
 
 	tracking_dialog = NULL;
+
+	worldview = new WorldViewWindow(this);
+	worldview->setSharedGLContext(shared_glcontext);	
+	addDockWidget(Qt::BottomDockWidgetArea, worldview);
+	worldview->setFloating(true);
+	worldview->hide();
+
 
 	setupShortcuts();
 
@@ -216,6 +224,7 @@ void AutoscoperMainWindow::frame_changed()
             tracker->trial()->videos.at(i).height(),
             tracker->trial()->videos.at(i).bps());
 
+		((QGLContext*) shared_glcontext)->makeCurrent();
         glBindTexture(GL_TEXTURE_2D,textures[i]);
         glTexImage2D(GL_TEXTURE_2D,
                      0,
@@ -451,6 +460,7 @@ void AutoscoperMainWindow::setupUI()
     }
 	relayoutCameras(1);
     textures.resize(tracker->trial()->cameras.size());
+	((QGLContext*) shared_glcontext)->makeCurrent();
     for (unsigned i = 0; i < textures.size(); i++) {
         glGenTextures(1,&textures[i]);
         glBindTexture(GL_TEXTURE_2D,textures[i]);
@@ -490,6 +500,7 @@ void AutoscoperMainWindow::redrawGL(){
 	for (unsigned int i = 0; i < cameraViews.size(); i++) {
 		cameraViews[i]->draw();
     }
+	worldview->draw();
 	timeline_widget->draw();
 }
 
@@ -1383,8 +1394,15 @@ void AutoscoperMainWindow::on_actionLayoutCameraViews_triggered(bool triggered){
     if (ok)relayoutCameras(rows);
 }
 
-//Toolbar
+void AutoscoperMainWindow::on_actionShow_world_view_triggered(bool checked){
+	if(checked){
+		worldview->show();
+	}else{
+		worldview->hide();
+	}
+}
 
+//Toolbar
 void AutoscoperMainWindow::on_toolButtonOpenTrial_clicked(){
 	save_trial_prompt();
     save_tracking_prompt();
