@@ -15,7 +15,7 @@ NewTrialDialog::NewTrialDialog(QWidget *parent) :
 												diag(new Ui::NewTrialDialog){
 	diag->setupUi(this);
 
-	nbCams = 2;
+	nbCams = 1;
 	diag->label_CameraNb->setText(QString::number(nbCams));
 
 	for (int i = 0; i < nbCams ; i ++){
@@ -36,7 +36,7 @@ NewTrialDialog::~NewTrialDialog(){
 }
 
 void NewTrialDialog::on_toolButton_CameraMinus_clicked(){
-	if(nbCams > 2){
+	if(nbCams > 1){
 		diag->gridLayout_6->removeWidget(cameras[nbCams-1]);
 		delete cameras[nbCams-1];
 		cameras.pop_back();

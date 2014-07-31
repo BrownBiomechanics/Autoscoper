@@ -121,10 +121,10 @@ Trial::Trial(const string& filename)
     // Close the file.
     file.close();
 
-    // Check that this is a valid trial
-    if (mayaCams.size() < 2) {
-        throw runtime_error("There must be at least two mayacam files.");
-    }
+	// Check that this is a valid trial
+	if (mayaCams.size() < 1) {
+		throw runtime_error("There must be at least one mayacam files.");
+	}
     if (mayaCams.size() != camRootDirs.size()) {
         throw runtime_error("The number of cameras and videos must match.");
     }
