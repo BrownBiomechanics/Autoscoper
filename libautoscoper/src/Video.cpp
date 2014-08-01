@@ -43,6 +43,7 @@
 #include <algorithm>
 #include <iostream>
 #ifdef WIN32
+#include <windows.h>
 #include "Win32/dirent.h"
 #elif __APPLE__
 #include <sys/types.h>
