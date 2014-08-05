@@ -30,7 +30,7 @@ OpenCLPlatformSelectDialog::~OpenCLPlatformSelectDialog(){
 void OpenCLPlatformSelectDialog::on_comboBox_currentIndexChanged ( int index ){
 	
 	QString text = "";
-	for (int i = 0 ; i < platforms[index].size();i++){
+	for (int i = 1 ; i < platforms[index].size();i++){
 		text = text + QString::fromStdString(platforms[index][i]) + '\n';
 	}
 

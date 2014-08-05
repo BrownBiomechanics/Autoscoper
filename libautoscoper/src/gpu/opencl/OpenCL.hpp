@@ -19,7 +19,10 @@ void opencl_global_gl_context();
 cl_int opencl_global_context();
 std::vector< std::vector<std::string> > get_platforms();
 void setUsedPlatform(int platform_idx);
-int getUsedPlatform();
+void setUsedPlatform(int platform, int device);
+std::pair<int,int> getUsedPlatform();
+
+
 
 class Buffer;
 class GLBuffer;

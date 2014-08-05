@@ -95,6 +95,7 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 	if(!skipGpuDevice){
 		OpenCLPlatformSelectDialog * dialog = new OpenCLPlatformSelectDialog(this);
 		if (dialog->getNumberPlatforms() > 1)dialog->exec();
+		else{xromm::gpu::setUsedPlatform(0); }
 		delete dialog;
 	}
 #endif
@@ -1001,7 +1002,8 @@ void AutoscoperMainWindow::on_actionSaveForBatch_triggered(bool checked){
 #ifndef WITH_CUDA
 				//save GPU_devices
 				xmlWriter.writeStartElement("GPUDevice");
-				xmlWriter.writeCharacters(QString::number(xromm::gpu::getUsedPlatform()));
+				xmlWriter.writeAttribute("Platform", QString::number(xromm::gpu::getUsedPlatform().first));
+				xmlWriter.writeAttribute("Device", QString::number(xromm::gpu::getUsedPlatform().second));
 				xmlWriter.writeEndElement();
 #endif
 				//save Trial
@@ -1104,7 +1106,8 @@ void AutoscoperMainWindow::runBatch(QString batchfile, bool saveData){
 						{
 #ifndef WITH_CUDA
 							fprintf(stderr,"Load GPUDevice Setting\n");
-							xromm::gpu::setUsedPlatform(xmlReader.readElementText().toInt());
+							QXmlStreamAttributes attr = xmlReader.attributes() ;					
+							xromm::gpu::setUsedPlatform(attr.value("Platform").toString().toInt(),attr.value("Device").toString().toInt());
 							QApplication::processEvents();
 #endif
 						}
