@@ -61,6 +61,30 @@
 using namespace std;
 
 template <class T>
+void flipVolume(const T* data,
+				T* dest,
+                int width,
+                int height,
+                int depth,
+                bool flipX,
+				bool flipY,
+				bool flipZ)
+{
+	int x,y,z;
+    for (int k = 0; k < depth; k++) {
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                x = flipX ? (width-1) - j : j;
+				y = flipY ? (height-1) - i : i;
+				z = flipZ ? (depth-1) - k : k;
+
+				dest[z*width*height+y*width+x]= data[k*width*height+i*width+j];
+            }
+        }
+    }
+}
+
+template <class T>
 void cropVolume(const T* data,
                 int width,
                 int height,
@@ -147,9 +171,21 @@ VolumeDescription::VolumeDescription(const Volume& volume)
 {
     // Crop the volume
     int min[3], max[3];
+	vector<char> data_flipped(volume.width()*volume.height()*volume.depth()*(volume.bps()/8));
+    
     switch(volume.bps()) {
         case 8: {
-            cropVolume((unsigned char*)volume.data(),
+			flipVolume((unsigned char*)volume.data(),
+					(unsigned char*)&data_flipped[0],
+                    (int)volume.width(),
+                    (int)volume.height(),
+                    (int)volume.depth(),
+					(bool)volume.flipX(),
+                    (bool)volume.flipY(),
+                    (bool)volume.flipZ()
+			);
+
+            cropVolume((unsigned char*)&data_flipped[0],
                     (int)volume.width(),
                     (int)volume.height(),
                     (int)volume.depth(),
@@ -158,7 +194,16 @@ VolumeDescription::VolumeDescription(const Volume& volume)
             break;
         }
         case 16: {
-            cropVolume((unsigned short*)volume.data(),
+			flipVolume((unsigned short*)volume.data(),
+					(unsigned short*)&data_flipped[0],
+                    (int)volume.width(),
+                    (int)volume.height(),
+                    (int)volume.depth(),
+					(bool)volume.flipX(),
+                    (bool)volume.flipY(),
+                    (bool)volume.flipZ()
+			);
+            cropVolume((unsigned short*)&data_flipped[0],
                     (int)volume.width(),
                     (int)volume.height(),
                     (int)volume.depth(),
@@ -186,7 +231,7 @@ VolumeDescription::VolumeDescription(const Volume& volume)
         case 8: {
             unsigned char minVal, maxVal;
             copyVolume((unsigned char*)&data[0],
-                    (unsigned char*)volume.data(),
+                    (unsigned char*)&data_flipped[0],
                     (int)volume.width(),
                     (int)volume.height(),
                     (int)volume.depth(),
@@ -201,7 +246,7 @@ VolumeDescription::VolumeDescription(const Volume& volume)
         case 16: {
             unsigned short minVal, maxVal;
             copyVolume((unsigned short*)&data[0],
-                    (unsigned short*)volume.data(),
+                    (unsigned short*)&data_flipped[0],
                     (int)volume.width(),
                     (int)volume.height(),
                     (int)volume.depth(),
@@ -227,12 +272,6 @@ VolumeDescription::VolumeDescription(const Volume& volume)
     invTrans_[0] = -min[0]/(float)dim[0];
     invTrans_[1] = -((volume.height()-max[1]-1)/(float)dim[1]);
     invTrans_[2] = min[2]/(float)dim[2];
-
-    flips_[0] = volume.flipX();
-    flips_[1] = volume.flipY();
-    flips_[2] = volume.flipZ();
-
-
     // Free any previously allocated memory.
 	
 #ifdef WITH_CUDA

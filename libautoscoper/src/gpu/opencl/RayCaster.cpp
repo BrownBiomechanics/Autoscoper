@@ -165,9 +165,6 @@ RayCaster::render(const Buffer* buffer, unsigned width, unsigned height)
 	Kernel* kernel = raycaster_program_.compile(
 									RayCaster_cl, "volume_render_kernel");
 
-	Buffer* b_flip = new Buffer(3*sizeof(int), CL_MEM_READ_ONLY);
-	b_flip->read(volumeDescription_->flips());
-
 	Buffer* b_imv = new Buffer(12*sizeof(float), CL_MEM_READ_ONLY);
 	b_imv->read(invModelView_);
 
@@ -182,7 +179,6 @@ RayCaster::render(const Buffer* buffer, unsigned width, unsigned height)
 	kernel->addArg(rayIntensity_);
 	kernel->addArg(cutoff_);
 	kernel->addBufferArg(b_viewport_);
-	kernel->addBufferArg(b_flip);
 	kernel->addBufferArg(b_imv);
 	kernel->addImageArg(volumeDescription_->image());
 
@@ -190,7 +186,6 @@ RayCaster::render(const Buffer* buffer, unsigned width, unsigned height)
 
 	delete kernel;
 	delete b_imv;
-	delete b_flip;
 }
 
 } } // namespace xromm::opencl

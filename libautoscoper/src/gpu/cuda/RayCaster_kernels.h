@@ -60,8 +60,7 @@ void volume_render(float* buffer,
                    const float* invModelViewMat,
                    float step,
                    float intensity,
-                   float cutoff,
-                   const int* flip);
+                   float cutoff);
 
 } // namespace gpu
 

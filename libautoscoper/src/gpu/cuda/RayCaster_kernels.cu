@@ -67,7 +67,6 @@ static texture<unsigned short, 3, cudaReadModeNormalizedFloat> tex;
 
 static __constant__ float4 d_viewport;
 static __constant__ float3x4 d_invModelView;
-static __constant__ int3 d_flip;
 
 namespace xromm
 {
@@ -95,16 +94,12 @@ void volume_viewport(float x, float y, float width, float height)
 
 void volume_render(float* buffer, size_t width, size_t height,
                    const float* invModelView, float step, float intensity,
-                   float cutoff, const int* flip)
+                   float cutoff)
 {
     // Copy the matrix to the device.
     cutilSafeCall(cudaMemcpyToSymbol(d_invModelView,
                                      invModelView,
                                      sizeof(float3x4)));
-    
-    cutilSafeCall(cudaMemcpyToSymbol(d_flip,
-                                     flip,
-                                     sizeof(int3)));
     
     // Calculate the block and grid sizes.
     dim3 blockDim(16, 16);
@@ -212,10 +207,7 @@ void cuda_volume_render_kernel(float* buffer, size_t width, size_t height,
     float density = 0.0f;
     while (t > _near) {
         float3 point = ray.origin+t*ray.direction;
-        float sample = tex3D(tex,
-                (d_flip.x == 1? 1.0f-point.x: point.x),
-                (d_flip.y == 1? point.y: 1.0f-point.y),
-                (d_flip.z == 1? point.z+1.0f: -point.z));
+        float sample = tex3D(tex,point.x,1.0f-point.y,-point.z);
         density += sample > cutoff? step*sample: 0.0f;
         t -= 1.0f;
     }

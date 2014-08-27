@@ -4,7 +4,6 @@ void volume_render_kernel(__global float* buffer,
                           unsigned width, unsigned height,
                           float step, float intensity, float cutoff,
                           __constant float* viewport,
-                          __constant int* flip,
                           __constant float* imv,
                           __read_only image3d_t image)
 {
@@ -62,11 +61,7 @@ void volume_render_kernel(__global float* buffer,
     float density = 0.f;
     while (t > near) {
         const float3 point = ray_origin+t*ray_direction;
-        const float val = read_imagef(image, sampler, (float4)(
-                (flip[0] == 1 ? 1.f-point.x : point.x),
-                (flip[1] == 1 ? point.y      : 1.f-point.y),
-                (flip[2] == 1 ? point.z+1.f : -point.z),
-				0) ).x;
+        const float val = read_imagef(image, sampler, (float4)(point.x, 1.f-point.y, -point.z, 0) ).x;
         density += val > cutoff ? step*val : 0.f;
         t -= 1.f;
     }

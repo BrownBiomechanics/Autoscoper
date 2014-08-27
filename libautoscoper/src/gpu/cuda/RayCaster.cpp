@@ -146,8 +146,7 @@ RayCaster::render(float* buffer, size_t width, size_t height)
                   invModelView_, 
                   sampleDistance_,
                   rayIntensity_,
-                  cutoff_,
-                  volumeDescription_->flips());
+                  cutoff_);
 }
 
 /*
