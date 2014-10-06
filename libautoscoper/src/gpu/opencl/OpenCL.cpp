@@ -55,7 +55,7 @@ static bool inited_ = false;
 static bool gl_inited_ = false;
 static int used_platform = 0;
 static int used_device = 0;
-std::vector <std::pair<int,int>> platform_device_keys;
+std::vector <std::pair<int,int> > platform_device_keys;
 
 #if defined(__APPLE__) || defined(__MACOSX)
 static CGLShareGroupObj share_group_;
