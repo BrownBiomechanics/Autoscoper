@@ -5,8 +5,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
 
 find_package( Qt REQUIRED )
 
-FIND_PACKAGE( OpenCV REQUIRED )
-
 IF(NOT QT_TIFFIO)
 	FIND_PACKAGE(TiffIO)
 ENDIF()
@@ -58,9 +56,9 @@ ELSE(NOT BUILD_WITH_CUDA)
 ENDIF()
 
 IF(QT_TIFFIO)
-	include_directories(${OPENCV_INCLUDE_DIRS} ${QT_QTCORE_INCLUDE_DIR}/../ ${QT_QTCORE_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR}/../../src/3rdparty/libtiff/libtiff/)
+	include_directories(${QT_QTCORE_INCLUDE_DIR}/../ ${QT_QTCORE_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR}/../../src/3rdparty/libtiff/libtiff/)
 ELSE()
-	include_directories(${OPENCV_INCLUDE_DIRS} ${TIFFIO_INCLUDE_DIRS})
+	include_directories(${TIFFIO_INCLUDE_DIRS})
 ENDIF()
 
 
