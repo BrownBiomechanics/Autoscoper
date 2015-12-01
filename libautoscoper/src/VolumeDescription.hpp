@@ -37,7 +37,7 @@
 // ---------------------------------
 
 /// \file VolumeDescription.hpp
-/// \author Andy Loomis, Mark Howison
+/// \author Andy Loomis, Mark Howison, Benjamin Knorlein
 
 #ifndef XROMM_GPU_VOLUME_DESCRIPTION_HPP
 #define XROMM_GPU_VOLUME_DESCRIPTION_HPP

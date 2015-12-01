@@ -37,7 +37,7 @@
 // ---------------------------------
 
 /// \file Tracker.hpp
-/// \author Andy Loomis
+/// \author Andy Loomis, Benjamin Knorlein
 
 #include "Tracker.hpp"
 

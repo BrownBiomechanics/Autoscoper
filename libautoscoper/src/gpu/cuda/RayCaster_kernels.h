@@ -37,7 +37,7 @@
 // ---------------------------------
 
 /// \file VolumeRenderer_kernels.h
-/// \author Andy Loomis
+/// \author Andy Loomis, Benjamin Knorlein
 
 #ifndef XROMM_GPU_VOLUME_RENDERER_KERNELS_H
 #define XROMM_GPU_VOLUME_RENDERER_KERNELS_H

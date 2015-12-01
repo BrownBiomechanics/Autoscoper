@@ -37,7 +37,7 @@
 // ---------------------------------
 
 /// \file CoordFrame.hpp
-/// \author Andy Loomis
+/// \author Andy Loomis, Benjamin Knorlein
 
 #ifndef XROMM_COORD_FRAME_HPP
 #define XROMM_COORD_FRAME_HPP

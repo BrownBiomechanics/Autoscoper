@@ -37,7 +37,7 @@
 // ----------------------------------
 
 /// \file Video.cpp
-/// \author Andy Loomis
+/// \author Andy Loomis, Benjamin Knorlein
 
 #include <cstring>
 #include <algorithm>

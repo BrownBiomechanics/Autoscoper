@@ -37,7 +37,7 @@
 // ---------------------------------
 
 /// \file RayCaster.cpp
-/// \author Andy Loomis, Mark Howison
+/// \author Andy Loomis, Mark Howison, Benjamin Knorlein
 
 #include <cstdlib>
 #include <iostream>

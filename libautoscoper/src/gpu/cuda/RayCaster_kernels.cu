@@ -37,7 +37,7 @@
 // ---------------------------------
 
 /// \file  RayCaster_kernels.cu
-/// \author Andy Loomis
+/// \author Andy Loomis, Benjamin Knorlein
 
 #include "RayCaster_kernels.h"
 

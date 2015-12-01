@@ -37,7 +37,7 @@
 // ---------------------------------
 
 /// \file CoordFrame.cpp
-/// \author Andy Loomis
+/// \author Andy Loomis, Benjamin Knorlein
 
 #include "CoordFrame.hpp"
 

@@ -37,7 +37,7 @@
 // ---------------------------------
 
 //! \file History.hpp
-//! \author Andy Loomis
+//! \author Andy Loomis, Benjamin Knorlein
 
 #ifndef HISTORY_HPP
 #define HISTORY_HPP

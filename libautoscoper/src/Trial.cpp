@@ -37,7 +37,7 @@
 // ---------------------------------
 
 /// \file Trial.cpp
-/// \author Andy Loomis
+/// \author Andy Loomis, Benjamin Knorlein
 
 #include "Trial.hpp"
 
