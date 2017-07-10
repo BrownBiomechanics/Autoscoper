@@ -78,7 +78,7 @@ private:
 	bool draw_marquee;
 	float marquee[4];
 	bool modify_nodes;
-
+	bool glutIsInitialised;
 	void mouse_to_graph(double mouse_x, double mouse_y, double& graph_x, double& graph_y);
 	void draw_curve(const KeyCurve& curve);
 };

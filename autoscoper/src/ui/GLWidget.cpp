@@ -57,6 +57,7 @@
 #include <GL/glut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <GL/glut.h>
 #endif
 
 #include "ui/GLWidget.h"

@@ -146,6 +146,38 @@ Trial::Trial(const string& filename)
         }
     }
 
+	// First load the volumes as more continous memory is required than for the videos.
+	volumes.clear();
+	for (unsigned int i = 0; i < volumeFiles.size(); ++i) {
+
+		try {
+			Volume volume(volumeFiles[i]);
+
+			int flip_x = 0, flip_y = 0, flip_z = 0;
+			if (i < volumeFlips.size()) {
+				stringstream volume_flip(volumeFlips[i]);
+				volume_flip >> flip_x >> flip_y >> flip_z;
+			}
+
+			volume.flipX(flip_x);
+			volume.flipY(flip_y);
+			volume.flipZ(flip_z);
+
+			float scaleX, scaleY, scaleZ;
+			stringstream voxelSize(voxelSizes[i]);
+			voxelSize >> scaleX >> scaleY >> scaleZ;
+
+			volume.scaleX(scaleX);
+			volume.scaleY(scaleY);
+			volume.scaleZ(scaleZ);
+
+			volumes.push_back(volume);
+		}
+		catch (exception& e) {
+			throw e;
+		}
+	}
+
     int maxVideoFrames = 0;
     videos.clear();
     for (unsigned int i = 0; i < camRootDirs.size(); ++i) {
@@ -158,38 +190,6 @@ Trial::Trial(const string& filename)
         }
         catch (exception& e) {
             cerr << e.what() << endl;
-        }
-    }
-
-    // Load the volumes.
-    volumes.clear();
-    for (unsigned int i = 0; i < volumeFiles.size(); ++i) {
-
-        try {
-            Volume volume(volumeFiles[i]);
-
-            int flip_x = 0, flip_y = 0, flip_z = 0;
-            if (i < volumeFlips.size()) {
-                stringstream volume_flip(volumeFlips[i]);
-                volume_flip >> flip_x >> flip_y >> flip_z;
-            }
-
-            volume.flipX(flip_x);
-            volume.flipY(flip_y);
-            volume.flipZ(flip_z);
-
-            float scaleX, scaleY, scaleZ;
-            stringstream voxelSize(voxelSizes[i]);
-            voxelSize >> scaleX >> scaleY >> scaleZ;
-
-            volume.scaleX(scaleX);
-            volume.scaleY(scaleY);
-            volume.scaleZ(scaleZ);
-
-            volumes.push_back(volume);
-        }
-        catch (exception& e) {
-            throw e;
         }
     }
 

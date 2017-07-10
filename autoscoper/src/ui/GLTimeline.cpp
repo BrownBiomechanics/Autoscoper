@@ -72,7 +72,7 @@
 #include <QMouseEvent>
 
 GLTimeline::GLTimeline(QWidget *parent)
-    : GLWidget(parent)
+: GLWidget(parent), glutIsInitialised(false)
 {
 	m_trial = NULL;
 	m_position_graph = NULL;
@@ -366,6 +366,14 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent *e){
 
 void GLTimeline::paintGL()
 {
+	if (!glutIsInitialised)
+	{
+		int argc = 0;
+		char **argv = NULL;
+		glutInit(&argc,argv);
+		glutIsInitialised = true;
+	}
+
 	if(m_position_graph){
 		glPushAttrib(GL_ENABLE_BIT);
 		glDisable(GL_DEPTH_TEST);
