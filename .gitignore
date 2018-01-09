@@ -1,3 +1,4 @@
 build*/*
+external/*
 /.project
 .DS_Store

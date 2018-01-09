@@ -1,17 +1,21 @@
 PROJECT(Autoscoper)
 
-option(BUILD_WITH_CUDA "Build With CUDA instead of OpenCL" OFF)
+cmake_policy(SET CMP0048 NEW)
 
-IF(WIN32)
-	option(QT_TIFFIO "USE TIFFIO FROM QT" ON)
-ELSE()
-	SET(QT_TIFFIO OFF)
-ENDIF()
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set (CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "default install path" FORCE )
+endif()
+
+option(BUILD_WITH_CUDA "Build With CUDA instead of OpenCL" OFF)
 
 #SET BUILD-TYPE TO RELEASE IF NOT DEFINED
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE Release)
 endif(NOT CMAKE_BUILD_TYPE)
+
+if(NOT CMAKE_DEBUG_POSTFIX)
+  set(CMAKE_DEBUG_POSTFIX d)
+endif()
 
 if(NOT CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
         add_definitions(-DQT_NO_DEBUG_OUTPUT)
@@ -26,26 +30,47 @@ set(BUILD_SHARED_LIBS ON)
 message(STATUS "Building ${PROJECT_NAME} in ${CMAKE_BUILD_TYPE} mode")
 cmake_minimum_required(VERSION 2.8.8)
 
-SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/bin)
-SET(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/bin)
+SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+SET(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
 IF(BUILD_WITH_CUDA)
 	ADD_DEFINITIONS(-DWITH_CUDA)
 ENDIF()
 
 #ADD QT4 SUPPORT
-FIND_PACKAGE(Qt4 REQUIRED COMPONENTS QtCore QtGui QtOpenGL )
+FIND_PACKAGE(Qt4 REQUIRED COMPONENTS QtCore QtGui QtOpenGL)
 SET(QT_USE_QTOPENGL TRUE)
 INCLUDE(${QT_USE_FILE})
 SET(CMAKE_AUTOMOC ON)
 
-FIND_PACKAGE(Qt4)
 
-#Build Libtiff from QT 3rdPartySources
-IF(QT_TIFFIO)
-	EXECUTE_PROCESS(COMMAND ${QT_QMAKE_EXECUTABLE} -config staticlib -t vclib -r ${QT_LIBRARY_DIR}/../src/3rdparty/libtiff.pri)
-	EXECUTE_PROCESS(COMMAND msbuild libtiff.vcxproj /p:configuration=release)
-ENDIF()
+set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+set(EXTERNAL_DIR_NAME external)
+set(EXTERNAL_DIR ${PROJECT_ROOT}/${EXTERNAL_DIR_NAME})
+file(MAKE_DIRECTORY ${EXTERNAL_DIR})
+
+
+# When we autobuild dependencies, we install them in CMAKE_INSTALL_PREFIX, and then look for them
+# there using find_package().  So, this makes sure the install prefix is in the path that 
+# find_package() searches.
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_INSTALL_PREFIX}/external)
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX}/external)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+
+option(AUTOBUILD_DEPENDENCIES "If enabled, dependencies that cmake cannot find on the system will be downloaded to the `external' directory and built and installed to CMAKE_INSTALL_PREFIX during the configure process as a precursor to the build process." ON)
+
+if (AUTOBUILD_DEPENDENCIES)
+    message(STATUS "AUTOBUILD_DEPENDENCIES is ON.")
+else()
+    message(STATUS "AUTOBUILD_DEPENDENCIES is OFF.")
+endif()
 
 add_subdirectory (libautoscoper) 
 add_subdirectory (autoscoper)
+
+file(GLOB external_dlls "${CMAKE_INSTALL_PREFIX}/external/bin/*.dll")
+file(GLOB external_dllsd "${CMAKE_INSTALL_PREFIX}/external/bin/*d.dll")
+list(REMOVE_ITEM external_dlls ${external_dllsd})
+
+install(FILES ${external_dlls} DESTINATION bin/Release CONFIGURATIONS Release)
+install(FILES ${external_dllsd} DESTINATION bin/Debug CONFIGURATIONS Debug)

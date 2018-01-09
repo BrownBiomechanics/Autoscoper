@@ -49,12 +49,10 @@
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
-#include <GLUT/glut.h>
 #else
 #ifdef _WIN32
   #include <windows.h>
 #endif
-#include <GL/glut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #endif
@@ -72,7 +70,7 @@
 #include <QMouseEvent>
 
 GLTimeline::GLTimeline(QWidget *parent)
-: GLWidget(parent), glutIsInitialised(false)
+: GLWidget(parent)
 {
 	m_trial = NULL;
 	m_position_graph = NULL;
@@ -90,15 +88,13 @@ void GLTimeline::setGraphData(GraphData* position_graph){
 }
 
 // Renders a bitmap string at the specified position using glut.
-void render_bitmap_string(double x,
+void GLTimeline::render_bitmap_string(double x,
                                  double y,
-                                 void* font,
                                  const char* string)
 {
-    glRasterPos2d(x,y);
-    for (const char* c = string; *c != '\0'; ++c) {
-        glutBitmapCharacter(font, *c);
-    }
+	setFont(QFont(this->font().family(), 10));
+	QFontMetrics fm(this->font());
+	renderText(x - fm.width(string) * 0.5, y, string);
 }
 
 void GLTimeline::mouse_to_graph(double mouse_x,
@@ -366,14 +362,6 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent *e){
 
 void GLTimeline::paintGL()
 {
-	if (!glutIsInitialised)
-	{
-		int argc = 0;
-		char **argv = NULL;
-		glutInit(&argc,argv);
-		glutIsInitialised = true;
-	}
-
 	if(m_position_graph){
 		glPushAttrib(GL_ENABLE_BIT);
 		glDisable(GL_DEPTH_TEST);
@@ -452,31 +440,25 @@ void GLTimeline::paintGL()
 		glEnd();
 
 		// Draw grid labels.
-		double char_width = 8.0*(m_position_graph->max_frame-m_position_graph->min_frame-frame_offset)/
-							viewdata.viewport_width;
-		double char_height = 13.0*(m_position_graph->max_value-m_position_graph->min_value-value_offset)/
-							 viewdata.viewport_height;
+		double char_width = viewdata.viewport_width / (m_position_graph->max_frame - m_position_graph->min_frame + frame_offset);
+		double char_height = viewdata.viewport_height / (max_value - min_value);
 
 		glColor3f(0.0f,0.0f,0.0f);
 		for (double x = m_position_graph->min_frame; x <= max_frame; x += frame_dist) {
 			std::stringstream ss; ss << (int)x;
-			render_bitmap_string(x-char_width*ss.str().length()/2.0,
-								 min_value+char_height/2.0,
-								 GLUT_BITMAP_8_BY_13,
+			render_bitmap_string((x + frame_offset)* char_width, viewdata.viewport_height - 8,
 								 ss.str().c_str());
 		}
 		for (double y = 0; y < max_value; y += value_dist) {
 			std::stringstream ss; ss << (int)(y+0.5);
-			render_bitmap_string(min_frame+char_width/2.0,
-								 y-char_height/2.0,
-								 GLUT_BITMAP_8_BY_13,
+			render_bitmap_string(frame_offset* char_width * 0.5,
+				y * char_height + viewdata.viewport_height*0.5,
 								 ss.str().c_str());
 		}
 		for (double y = 0; y > min_value-value_offset; y -= value_dist) {
 			std::stringstream ss; ss << (int)(y+0.5);
-			render_bitmap_string(min_frame+char_width/2.0,
-								 y-char_height/2.0,
-								 GLUT_BITMAP_8_BY_13,
+			render_bitmap_string(frame_offset* char_width * 0.5,
+				y * char_height + viewdata.viewport_height*0.5,
 								 ss.str().c_str());
 		}
 

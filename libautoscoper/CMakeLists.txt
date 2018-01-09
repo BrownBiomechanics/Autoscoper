@@ -1,13 +1,5 @@
 SET(CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
-
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
-
-find_package( Qt REQUIRED )
-
-IF(NOT QT_TIFFIO)
-	FIND_PACKAGE(TiffIO)
-ENDIF()
 
 SET(libautoscoper_HEADERS 
 	src/Backtrace.hpp
@@ -40,25 +32,24 @@ SET(libautoscoper_SOURCES
 	src/VolumeDescription.cpp
 )
 
-
 IF(BUILD_WITH_CUDA)
 	find_package( CUDA REQUIRED )
 	include (${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/CMakeLists.txt)
-	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/cutil)
 	#SET(CUDA_NVCC_FLAGS "-arch=sm_13" CACHE STRING "nvcc flags" FORCE)
 	CUDA_ADD_LIBRARY(libautoscoper STATIC ${libautoscoper_SOURCES} ${libautoscoper_HEADERS} ${cuda_HEADERS} ${cuda_SOURCES} ${cuda_KERNEL_HEADERS} ${cuda_KERNEL})
+	target_include_directories(libautoscoper ${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/cutil)	
 ELSE(NOT BUILD_WITH_CUDA)
 	find_package( OpenCL REQUIRED )
 	include (${CMAKE_CURRENT_SOURCE_DIR}/gpu/opencl/CMakeLists.txt) 
-	include_directories(${OPENCL_INCLUDE_DIRS} )
 	add_library (libautoscoper STATIC ${libautoscoper_SOURCES} ${libautoscoper_HEADERS} ${opencl_SOURCES} ${opencl_HEADERS})
+	target_include_directories(libautoscoper PUBLIC  ${OPENCL_INCLUDE_DIRS} )
 	ADD_DEPENDENCIES(libautoscoper ${SHADER_TO_HEADER})
 ENDIF()
 
-IF(QT_TIFFIO)
-	include_directories(${QT_QTCORE_INCLUDE_DIR}/../ ${QT_QTCORE_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR}/../../src/3rdparty/libtiff/libtiff/)
-ELSE()
-	include_directories(${TIFFIO_INCLUDE_DIRS})
-ENDIF()
+include(UseLIBTIFF)
+UseLIBTIFF(libautoscoper PUBLIC)
 
+target_include_directories(libautoscoper PUBLIC  ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+
+install(TARGETS libautoscoper DESTINATION lib)
 

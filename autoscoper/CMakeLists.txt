@@ -1,17 +1,6 @@
 SET(CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 
-FIND_PACKAGE(GLEW REQUIRED)
-
-FIND_PACKAGE(GLUT REQUIRED)
-
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
-
-FIND_PACKAGE( OpenGL )
-
-IF(NOT QT_TIFFIO)
-	FIND_PACKAGE(TiffIO)
-ENDIF()
+FIND_PACKAGE(OpenGL)
 
 #ADD QT4 SUPPORT
 FIND_PACKAGE(Qt4 REQUIRED COMPONENTS QtCore QtGui QtOpenGL )
@@ -91,19 +80,6 @@ SET(autoscoper_RESOURCES
 )
 QT4_ADD_RESOURCES(autoscoper_RESOURCES_RCC ${autoscoper_RESOURCES})
 
-IF(BUILD_WITH_CUDA)
-ELSE (NOT BUILD_WITH_CUDA)	
-	find_package( OpenCL REQUIRED )
-	include_directories(${OPENCL_INCLUDE_DIRS} )
-	SET(GPU_LIBRARIES
-		${OPENCL_LIBRARIES}
-	)
-ENDIF()
-
-include_directories (${GLEW_INCLUDE_DIR} ${GLUT_INCLUDE_DIR}  ../math ../libautoscoper/src) 
-
-link_directories (${LIBRARY_OUTPUT_PATH}) 
-
 
 # Set some Win32 Specific Settings
 IF(WIN32)
@@ -129,19 +105,31 @@ add_executable (autoscoper  ${GUI_TYPE} ${autoscoper_SOURCES} ${autoscoper_HEADE
 		${autoscoper_FORMS_HEADERS_GEN} 
 		${autoscoper_RESOURCES_RCC} 
 		src/ui/autoscoper_resource.qrc) 
-
-IF(APPLE)
-	TARGET_LINK_LIBRARIES(autoscoper libautoscoper ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${GPU_LIBRARIES} ${QT_LIBRARIES} ${TIFFIO_LIBRARIES} ${LZMA_LIBRARIES} )
-	#Copy shared QT libs and build dog
-	ADD_CUSTOM_COMMAND(TARGET autoscoper
-			  POST_BUILD
-			  COMMAND /opt/local/bin/macdeployqt ${CMAKE_BINARY_DIR}/bin/autoscoper.app/ -dmg
+		
+IF(BUILD_WITH_CUDA)
+ELSE (NOT BUILD_WITH_CUDA)	
+	find_package( OpenCL REQUIRED )
+	target_include_directories(autoscoper PUBLIC ${OPENCL_INCLUDE_DIRS} )
+	SET(GPU_LIBRARIES
+		${OPENCL_LIBRARIES}
 	)
-ELSE()
-	IF(QT_TIFFIO)
-		TARGET_LINK_LIBRARIES(autoscoper libautoscoper ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${GPU_LIBRARIES} ${QT_LIBRARIES} ../Release/libtiff)
-	ELSE()
-		TARGET_LINK_LIBRARIES(autoscoper libautoscoper ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${GPU_LIBRARIES} ${QT_LIBRARIES} ${TIFFIO_LIBRARIES})
-	ENDIF()
 ENDIF()
 
+target_link_libraries(autoscoper PUBLIC libautoscoper ${OPENGL_LIBRARIES} ${GPU_LIBRARIES} ${QT_LIBRARIES})
+target_include_directories(autoscoper PUBLIC  ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(autoscoper PUBLIC  ../math ../libautoscoper/src) 
+
+include(UseGLEW)
+UseGLEW(autoscoper PUBLIC)
+
+include(UseLIBTIFF) 
+UseLIBTIFF(autoscoper PUBLIC)
+
+install(TARGETS autoscoper DESTINATION bin/Debug CONFIGURATIONS Debug)
+install(TARGETS autoscoper DESTINATION bin/Release CONFIGURATIONS Release)
+
+get_filename_component(QT4_DIR ${QT_QMAKE_EXECUTABLE} DIRECTORY)
+IF(WIN32)
+	install(FILES ${QT4_DIR}/QtOpenGL4.dll ${QT4_DIR}/QtGui4.dll  ${QT4_DIR}/QtCore4.dll DESTINATION bin/Release CONFIGURATIONS Release)
+	install(FILES ${QT4_DIR}/QtOpenGLd4.dll ${QT4_DIR}/QtGuid4.dll ${QT4_DIR}/QtCored4.dll DESTINATION bin/Debug CONFIGURATIONS Debug)
+ENDIF(WIN32)

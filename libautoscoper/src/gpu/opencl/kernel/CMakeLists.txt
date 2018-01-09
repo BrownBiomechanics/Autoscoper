@@ -23,7 +23,7 @@ foreach(SHADER_FILENAME ${opencl_shaders})
     list(APPEND GENERATED_LIST ${SHADER_NAME})
 
     add_custom_command(OUTPUT  ${SHADER_NAME}
-                       COMMAND cmake -DSHADER_FILENAME=${SHADER_FILENAME}
+                       COMMAND ${CMAKE_COMMAND} -DSHADER_FILENAME=${SHADER_FILENAME}
                                      -DOUTPUT_FOLDER=${CMAKE_CURRENT_BINARY_DIR}/gpu/opencl/kernel
                                      -P ${CMAKE_CURRENT_SOURCE_DIR}/gpu/opencl/kernel/cmake/shader_to_header.cmake
                        DEPENDS src/${SHADER_FILENAME}
