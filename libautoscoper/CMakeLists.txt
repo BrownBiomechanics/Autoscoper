@@ -34,15 +34,16 @@ SET(libautoscoper_SOURCES
 
 IF(BUILD_WITH_CUDA)
 	find_package( CUDA REQUIRED )
+	set(CUDA_LIBRARIES PUBLIC ${CUDA_LIBRARIES})
 	include (${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/CMakeLists.txt)
 	#SET(CUDA_NVCC_FLAGS "-arch=sm_13" CACHE STRING "nvcc flags" FORCE)
 	CUDA_ADD_LIBRARY(libautoscoper STATIC ${libautoscoper_SOURCES} ${libautoscoper_HEADERS} ${cuda_HEADERS} ${cuda_SOURCES} ${cuda_KERNEL_HEADERS} ${cuda_KERNEL})
-	target_include_directories(libautoscoper ${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/cutil)	
+	target_include_directories(libautoscoper PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/cutil)	
 ELSE(NOT BUILD_WITH_CUDA)
 	find_package( OpenCL REQUIRED )
 	include (${CMAKE_CURRENT_SOURCE_DIR}/gpu/opencl/CMakeLists.txt) 
 	add_library (libautoscoper STATIC ${libautoscoper_SOURCES} ${libautoscoper_HEADERS} ${opencl_SOURCES} ${opencl_HEADERS})
-	target_include_directories(libautoscoper PUBLIC  ${OPENCL_INCLUDE_DIRS} )
+	target_include_directories(libautoscoper PUBLIC  ${OpenCL_INCLUDE_DIRS} )
 	ADD_DEPENDENCIES(libautoscoper ${SHADER_TO_HEADER})
 ENDIF()
 

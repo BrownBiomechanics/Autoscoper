@@ -111,7 +111,7 @@ ELSE (NOT BUILD_WITH_CUDA)
 	find_package( OpenCL REQUIRED )
 	target_include_directories(autoscoper PUBLIC ${OPENCL_INCLUDE_DIRS} )
 	SET(GPU_LIBRARIES
-		${OPENCL_LIBRARIES}
+		${OpenCL_LIBRARIES}
 	)
 ENDIF()
 
