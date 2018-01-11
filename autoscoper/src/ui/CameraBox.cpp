@@ -58,7 +58,7 @@ CameraBox::~CameraBox(){
 		
 void CameraBox::on_toolButton_MayaCam_clicked(){
 	QString fileName = QFileDialog::getOpenFileName(this,
-									tr("Open MayaCam File"), QDir::currentPath(),tr("MayaCam File (*.csv)"));
+									tr("Open MayaCam File"), QDir::currentPath(),tr("MayaCam File (*.csv *.txt)"));
 	if ( fileName.isNull() == false )
     {
 		widget->lineEdit_MayaCam->setText(fileName);

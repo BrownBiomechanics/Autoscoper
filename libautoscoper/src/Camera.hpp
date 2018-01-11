@@ -65,10 +65,6 @@ public:
 
     const std::string& mayacam() const { return mayacam_; }
 
-    double field_of_view() const { return field_of_view_; }
-
-    double aspect_ratio() const { return aspect_ratio_; }
-
     const CoordFrame& coord_frame() const { return coord_frame_; }
 
     const double* image_plane() const { return image_plane_; }
@@ -79,15 +75,16 @@ private:
 
     std::string mayacam_; // filename
 
-    double field_of_view_; // horizontal
-
-    double aspect_ratio_; // width / height
-
     CoordFrame coord_frame_;
 
     double image_plane_[12];
 
     double viewport_[4];
+
+	void loadMayaCam1(const std::string& mayacam);
+
+	void loadMayaCam2(const std::string& mayacam);
+
 };
 
 } // namespace xromm
