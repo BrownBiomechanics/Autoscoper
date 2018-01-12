@@ -48,6 +48,8 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <fstream>
+#include <sstream>
 
 #include "Camera.hpp"
 
@@ -60,6 +62,7 @@
 #include "gpu/cuda/RadRenderer.hpp"
 #else
 #include "gpu/opencl/Compositor.hpp"
+#include "gpu/opencl/Merger.hpp"
 #include "gpu/opencl/RayCaster.hpp"
 #include "gpu/opencl/RadRenderer.hpp"
 #endif
@@ -77,11 +80,9 @@ View::View(Camera& camera)
 	camera_ = &camera;
 	drr_enabled = true;
 	rad_enabled = true;
-	drrRenderer_ = new RayCaster();
 	radRenderer_ = new RadRenderer();
 	maxWidth_ = 2048;
 	maxHeight_ = 2048;
-	drrBuffer_ = 0;
 	drrFilterBuffer_ = 0;
 	radBuffer_ = 0;
 	radFilterBuffer_ = 0;
@@ -91,7 +92,10 @@ View::View(Camera& camera)
 
 View::~View()
 {
-    delete drrRenderer_;
+	for (int i = 0; i < drrRenderer_.size(); i++){
+		delete drrRenderer_[i];
+	}
+	drrBuffer_.clear();
     delete radRenderer_;
 
     std::vector<Filter*>::iterator iter;
@@ -110,11 +114,21 @@ View::~View()
     cutilSafeCall(cudaFree(radFilterBuffer_));
 #else
     delete filterBuffer_;
-    delete drrBuffer_;
+	for (int i = 0; i < drrBuffer_.size(); i++){
+		delete drrBuffer_[i];
+	}
+	drrBuffer_.clear();
+	delete drrBufferMerged_;
+	delete drrFilterBuffer_;
     delete drrFilterBuffer_;
     delete radBuffer_;
     delete radFilterBuffer_;
 #endif
+}
+
+void View::addDrrRenderer(){
+	drrRenderer_.push_back(new RayCaster());
+	drrBuffer_.push_back(0);
 }
 
 void
@@ -197,8 +211,12 @@ View::renderDrr(Buffer* buffer, unsigned width, unsigned height)
     filter(drrFilters_, drrBuffer_, buffer, width, height);
 #else
 	init(width, height);
-    drrRenderer_->render(drrBuffer_, width, height);
-    filter(drrFilters_, drrBuffer_, buffer, width, height);
+	drrBufferMerged_->fill(0x00);
+	for (int i = 0; i < drrRenderer_.size(); i++){
+		drrRenderer_[i]->render(drrBuffer_[i], width, height);
+		merge(drrBufferMerged_, drrBuffer_[i], drrBufferMerged_, width, height);
+	}
+	filter(drrFilters_, drrBufferMerged_, buffer, width, height);
 #endif
 }
 
@@ -235,6 +253,66 @@ View::renderDrr(unsigned int pbo, unsigned width, unsigned height)
 
 	delete buffer;
 #endif
+}
+
+void View::saveImage(std::string filename, int width, int height)
+{
+	fprintf(stderr, "Write to %s with size %d %d\n", filename.c_str(), width, height);
+
+	Buffer* buffer = new Buffer(maxWidth_*maxHeight_*sizeof(float));
+#ifdef WITH_CUDA
+	init();
+
+	if (width > maxWidth_ || height > maxHeight_) {
+		cerr << "View::renderDrr(): ERROR: Buffer too large." << endl;
+	}
+	if (width > maxWidth_) {
+		width = maxWidth_;
+	}
+	if (height > maxHeight_) {
+		height = maxHeight_;
+	}
+
+	drrRenderer_->render(drrBuffer_, width, height);
+	filter(drrFilters_, drrBuffer_, buffer, width, height);
+#else
+	init(width, height);
+
+	drrBufferMerged_->fill(0x00);
+	for(int i = 0; i < drrRenderer_.size(); i++){
+		drrRenderer_[i]->render(drrBuffer_[i], width, height);
+		merge(drrBufferMerged_, drrBuffer_[i], drrBufferMerged_, width, height);
+	}
+	filter(drrFilters_, drrBufferMerged_, buffer, width, height);
+
+#endif
+	float* host_image = new float[width*height];
+	unsigned char* uchar_image = new unsigned char[width*height];
+
+	// Copy the image to the host
+	buffer->write(host_image, width*height*sizeof(float));
+	//cudaMemcpy(host_image,dev_image,width*height*sizeof(float),cudaMemcpyDeviceToHost);
+
+	// Copy to a char array
+	/*for (int i = 0; i < width*height; i++) {
+	uchar_image[i] = (int)(255*(1.0 - host_image[i]));
+	}*/
+	for (int y = 0; y < height; y++){
+		for (int x = 0; x < width; x++){
+			uchar_image[y*width + x] = (int)(255 * (1.0 - host_image[(height - y - 1)*width + x]));
+		}
+	}
+	ofstream file(filename.c_str(), ios::out);
+	file << "P2" << endl;
+	file << width << " " << height << endl;
+	file << 255 << endl;
+	for (int i = 0; i < width*height; i++) {
+		file << (int)uchar_image[i] << " ";
+	}
+
+	delete[] uchar_image;
+	delete[] host_image;
+	delete buffer;
 }
 
 void
@@ -340,8 +418,11 @@ View::init(unsigned width, unsigned height)
 
     if (!inited_) {
         filterBuffer_    = new Buffer(maxWidth_*maxHeight_*sizeof(float));
-        drrBuffer_       = new Buffer(maxWidth_*maxHeight_*sizeof(float));
-        drrFilterBuffer_ = new Buffer(maxWidth_*maxHeight_*sizeof(float));
+		for (int i = 0; i < drrBuffer_.size(); i++){
+			drrBuffer_[i] = new Buffer(maxWidth_*maxHeight_*sizeof(float));
+		}
+		drrBufferMerged_ = new Buffer(maxWidth_*maxHeight_*sizeof(float));
+		drrFilterBuffer_ = new Buffer(maxWidth_*maxHeight_*sizeof(float));
         radBuffer_       = new Buffer(maxWidth_*maxHeight_*sizeof(float));
         radFilterBuffer_ = new Buffer(maxWidth_*maxHeight_*sizeof(float));
 		inited_ = true;

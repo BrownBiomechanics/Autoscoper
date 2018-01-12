@@ -1,23 +1,23 @@
 // ----------------------------------
 // Copyright (c) 2011, Brown University
 // All rights reserved.
-//
+// 
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
 // met:
-//
+// 
 // (1) Redistributions of source code must retain the above copyright
 // notice, this list of conditions and the following disclaimer.
-//
+// 
 // (2) Redistributions in binary form must reproduce the above copyright
 // notice, this list of conditions and the following disclaimer in the
 // documentation and/or other materials provided with the distribution.
-//
+// 
 // (3) Neither the name of Brown University nor the names of its
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY BROWN UNIVERSITY ìAS ISî WITH NO
+// 
+// THIS SOFTWARE IS PROVIDED BY BROWN UNIVERSITY ‚ÄúAS IS‚Äù WITH NO
 // WARRANTIES OR REPRESENTATIONS OF ANY KIND WHATSOEVER EITHER EXPRESS OR
 // IMPLIED, INCLUDING WITHOUT LIMITATION ANY WARRANTY OF DESIGN OR
 // MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, EACH OF WHICH ARE
@@ -34,47 +34,24 @@
 // SUCH DAMAGE. ANY RECIPIENT OR USER OF THIS SOFTWARE ACKNOWLEDGES THE
 // FOREGOING, AND ACCEPTS ALL RISKS AND LIABILITIES THAT MAY ARISE FROM
 // THEIR USE OF THE SOFTWARE.
-// ---------------------------------
+// ----------------------------------
 
-/// \file CameraViewWidget.cpp
-/// \author Benjamin Knorlein, Andy Loomis
+/// \file Merger.h
+/// \author Andy Loomis, Mark Howison
 
+#ifndef XROMM_MERGER_H
+#define XROMM_MERGER_H
 
-#ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
-#endif
+#include "OpenCL.hpp"
 
-#include "ui/CameraViewWidget.h"
-#include "ui_CameraViewWidget.h"
-#include "ui/AutoscoperMainWindow.h"
+namespace xromm { namespace gpu {
 
-#include <QGLContext>
+void merge(const Buffer* src1,
+               const Buffer* src2,
+               const Buffer* dest,
+               unsigned width,
+               unsigned height);
 
-CameraViewWidget::CameraViewWidget(int id, View * view, QString name,QWidget *parent) :
-											QWidget(parent),
-												widget(new Ui::CameraViewWidget){
-	widget->setupUi(this);
-	m_name = name;
-	m_id = id;
-	widget->cameraTitleLabel->setText(m_name);
-	widget->glView->setView(view);
-	mainwindow  = dynamic_cast <AutoscoperMainWindow *> ( parent);
-}
+} } // namespace xromm::opencl
 
-CameraViewWidget::~CameraViewWidget(){
-
-}
-
-void CameraViewWidget::setSharedGLContext(const QGLContext * sharedContext){
-	QGLContext* context = new QGLContext(sharedContext->format(), widget->glView);
-	context->create(sharedContext);
-	widget->glView->setContext(context,sharedContext,true);
-}
-
-void CameraViewWidget::draw(){
-	widget->glView->update();
-}
-
-void CameraViewWidget::saveFrame(QString filename){
-	widget->glView->saveView(filename.toStdString().c_str());
-}
+#endif // XROMM_MERGER_H

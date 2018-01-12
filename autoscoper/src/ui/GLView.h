@@ -67,6 +67,7 @@ public:
 
 	void setView(View * view);
 	void setStaticView(bool staticView);
+	void saveView(std::string filename);
 
 protected:
     void paintGL();

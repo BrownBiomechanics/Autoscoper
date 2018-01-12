@@ -404,6 +404,8 @@ Trial</string>
     <addaction name="separator"/>
     <addaction name="actionSaveForBatch"/>
     <addaction name="actionLoad_xml_batch"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_Test_Sequence"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -573,6 +575,11 @@ Trial</string>
    <property name="text">
     <string>load xml batch</string>
    </property>
+  </action>
+  <action name="actionSave_Test_Sequence">
+    <property name="text">
+      <string>Save Test Sequence</string>
+    </property>
   </action>
   <action name="actionShow_world_view">
    <property name="checkable">

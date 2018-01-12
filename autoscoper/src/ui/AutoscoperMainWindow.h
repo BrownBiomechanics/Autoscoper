@@ -61,6 +61,7 @@ class GLTracker;
 class FilterDockWidget;
 class CameraViewWidget;
 class TimelineDockWidget;
+class VolumeDockWidget;
 class TrackingOptionsDialog;
 class WorldViewWindow;
 class QGLContext;
@@ -76,9 +77,7 @@ class AutoscoperMainWindow : public QMainWindow{
 		~AutoscoperMainWindow();
 
 		Tracker * getTracker(){return tracker;};
-		Manip3D * getManipulator(){return manipulator;}
-		CoordFrame * getVolume_matrix(){return volume_matrix;}
-		void setVolume_matrix(CoordFrame matrix);
+		Manip3D * getManipulator(int idx = -1);
 		std::vector<unsigned int> *getTextures(){return &textures;}
 
 		GraphData* getPosition_graph();
@@ -94,12 +93,14 @@ class AutoscoperMainWindow : public QMainWindow{
 		QString get_filename(bool save = true, QString type = "");
 		void update_graph_min_max(GraphData* graph, int frame = -1);
 		void frame_changed();
+		void volume_changed();
 		void runBatch(QString batchfile,bool saveData = false);
 
 	private:
 		Ui::AutoscoperMainWindow *ui;
 		FilterDockWidget* filters_widget;
 		TimelineDockWidget* timeline_widget;
+		VolumeDockWidget* volumes_widget;
 		TrackingOptionsDialog* tracking_dialog;
 
 		std::vector <CameraViewWidget * > cameraViews;
@@ -117,8 +118,7 @@ class AutoscoperMainWindow : public QMainWindow{
 		const QGLContext* shared_glcontext;
 
 		//Manipulator
-		Manip3D * manipulator;
-		CoordFrame * volume_matrix;
+		std::vector <Manip3D *> manipulator;
 		//WortldView
 		WorldViewWindow * worldview;
 
@@ -140,7 +140,7 @@ class AutoscoperMainWindow : public QMainWindow{
 		//temporary maybe rename/order
 		void timelineSetValue(int value);
 
-		void set_manip_matrix(const CoordFrame& frame);
+		void set_manip_matrix(int idx, const CoordFrame& frame);
 		std::vector<unsigned int> textures;
 		void reset_graph();
 		
@@ -163,6 +163,7 @@ class AutoscoperMainWindow : public QMainWindow{
 		void on_actionImport_Tracking_triggered(bool checked);
 		void on_actionExport_Tracking_triggered(bool checked);
 		void on_actionQuit_triggered(bool checked);
+		void on_actionSave_Test_Sequence_triggered(bool checked);
 		void on_actionSaveForBatch_triggered(bool checked);
 		void on_actionLoad_xml_batch_triggered(bool checked);
 

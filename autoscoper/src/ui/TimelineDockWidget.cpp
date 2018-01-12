@@ -296,16 +296,16 @@ void TimelineDockWidget::setValuesEnabled(bool enabled){
 
 void TimelineDockWidget::update_graph_min_max(int frame)
 {
-    if (!mainwindow->getTracker()->trial() || mainwindow->getTracker()->trial()->x_curve.empty()) {
-        position_graph->max_value = 180.0;
+	if (!mainwindow->getTracker()->trial() || mainwindow->getTracker()->trial()->getXCurve(-1)->empty()) {
+		position_graph->max_value = 180.0;
         position_graph->min_value = -180.0;
     }
     // If a frame is specified then only check that frame for a new minimum and
     // maximum.
     else if (frame != -1) {
         if (position_graph->show_x) {
-            float x_value = mainwindow->getTracker()->trial()->x_curve(frame);
-            if (x_value > position_graph->max_value) {
+			float x_value = (*mainwindow->getTracker()->trial()->getXCurve(-1))(frame);
+			if (x_value > position_graph->max_value) {
                 position_graph->max_value = x_value;
             }
             if (x_value < position_graph->min_value) {
@@ -313,8 +313,8 @@ void TimelineDockWidget::update_graph_min_max(int frame)
             }
         }
         if (position_graph->show_y) {
-            float y_value = mainwindow->getTracker()->trial()->y_curve(frame);
-            if (y_value > position_graph->max_value) {
+			float y_value = (*mainwindow->getTracker()->trial()->getYCurve(-1))(frame);
+			if (y_value > position_graph->max_value) {
                 position_graph->max_value = y_value;
             }
             if (y_value < position_graph->min_value) {
@@ -322,8 +322,8 @@ void TimelineDockWidget::update_graph_min_max(int frame)
             }
         }
         if (position_graph->show_z) {
-            float z_value = mainwindow->getTracker()->trial()->z_curve(frame);
-            if (z_value > position_graph->max_value) {
+			float z_value = (*mainwindow->getTracker()->trial()->getZCurve(-1))(frame);
+			if (z_value > position_graph->max_value) {
                 position_graph->max_value = z_value;
             }
             if (z_value < position_graph->min_value) {
@@ -331,8 +331,8 @@ void TimelineDockWidget::update_graph_min_max(int frame)
             }
         }
         if (position_graph->show_yaw) {
-            float yaw_value = mainwindow->getTracker()->trial()->yaw_curve(frame);
-            if (yaw_value > position_graph->max_value) {
+			float yaw_value = (*mainwindow->getTracker()->trial()->getYawCurve(-1))(frame);
+			if (yaw_value > position_graph->max_value) {
                 position_graph->max_value = yaw_value;
             }
             if (yaw_value < position_graph->min_value) {
@@ -340,8 +340,8 @@ void TimelineDockWidget::update_graph_min_max(int frame)
             }
         }
         if (position_graph->show_pitch) {
-            float pitch_value = mainwindow->getTracker()->trial()->pitch_curve(frame);
-            if (pitch_value > position_graph->max_value) {
+			float pitch_value = (*mainwindow->getTracker()->trial()->getPitchCurve(-1))(frame);
+			if (pitch_value > position_graph->max_value) {
                 position_graph->max_value = pitch_value;
             }
             if (pitch_value < position_graph->min_value) {
@@ -349,8 +349,8 @@ void TimelineDockWidget::update_graph_min_max(int frame)
             }
         }
         if (position_graph->show_roll) {
-            float roll_value = mainwindow->getTracker()->trial()->roll_curve(frame);
-            if (roll_value > position_graph->max_value) {
+			float roll_value = (*mainwindow->getTracker()->trial()->getRollCurve(-1))(frame);
+			if (roll_value > position_graph->max_value) {
                 position_graph->max_value = roll_value;
             }
             if (roll_value < position_graph->min_value) {
@@ -368,8 +368,8 @@ void TimelineDockWidget::update_graph_min_max(int frame)
             for (frame = floor(position_graph->min_frame);
                  frame < position_graph->max_frame;
                  frame += 1.0f) {
-                float x_value = mainwindow->getTracker()->trial()->x_curve(frame);
-                if (x_value > position_graph->max_value) {
+				float x_value = (*mainwindow->getTracker()->trial()->getXCurve(-1))(frame);
+				if (x_value > position_graph->max_value) {
                     position_graph->max_value = x_value;
                 }
                 if (x_value < position_graph->min_value) {
@@ -381,8 +381,8 @@ void TimelineDockWidget::update_graph_min_max(int frame)
             for (frame = floor(position_graph->min_frame);
                  frame < position_graph->max_frame;
                  frame += 1.0f) {
-                float y_value = mainwindow->getTracker()->trial()->y_curve(frame);
-                if (y_value > position_graph->max_value) {
+				float y_value = (*mainwindow->getTracker()->trial()->getYCurve(-1))(frame);
+				if (y_value > position_graph->max_value) {
                     position_graph->max_value = y_value;
                 }
                 if (y_value < position_graph->min_value) {
@@ -394,8 +394,8 @@ void TimelineDockWidget::update_graph_min_max(int frame)
             for (frame = floor(position_graph->min_frame);
                  frame < position_graph->max_frame;
                  frame += 1.0f) {
-                float z_value = mainwindow->getTracker()->trial()->z_curve(frame);
-                if (z_value > position_graph->max_value) {
+				float z_value = (*mainwindow->getTracker()->trial()->getZCurve(-1))(frame);
+				if (z_value > position_graph->max_value) {
                     position_graph->max_value = z_value;
                 }
                 if (z_value < position_graph->min_value) {
@@ -407,8 +407,8 @@ void TimelineDockWidget::update_graph_min_max(int frame)
             for (frame = floor(position_graph->min_frame);
                  frame < position_graph->max_frame;
                  frame += 1.0f) {
-                float yaw_value = mainwindow->getTracker()->trial()->yaw_curve(frame);
-                if (yaw_value > position_graph->max_value) {
+				float yaw_value = (*mainwindow->getTracker()->trial()->getYawCurve(-1))(frame);
+				if (yaw_value > position_graph->max_value) {
                     position_graph->max_value = yaw_value;
                 }
                 if (yaw_value < position_graph->min_value) {
@@ -420,8 +420,8 @@ void TimelineDockWidget::update_graph_min_max(int frame)
             for (frame = floor(position_graph->min_frame);
                  frame < position_graph->max_frame;
                  frame += 1.0f) {
-                float pitch_value = mainwindow->getTracker()->trial()->pitch_curve(frame);
-                if (pitch_value > position_graph->max_value) {
+				float pitch_value = (*mainwindow->getTracker()->trial()->getPitchCurve(-1))(frame);
+				if (pitch_value > position_graph->max_value) {
                     position_graph->max_value = pitch_value;
                 }
                 if (pitch_value < position_graph->min_value) {
@@ -433,8 +433,8 @@ void TimelineDockWidget::update_graph_min_max(int frame)
             for (frame = floor(position_graph->min_frame);
                  frame < position_graph->max_frame;
                  frame += 1.0f) {
-                float roll_value = mainwindow->getTracker()->trial()->roll_curve(frame);
-                if (roll_value > position_graph->max_value) {
+				float roll_value = (*mainwindow->getTracker()->trial()->getRollCurve(-1))(frame);
+				if (roll_value > position_graph->max_value) {
                     position_graph->max_value = roll_value;
                 }
                 if (roll_value < position_graph->min_value) {

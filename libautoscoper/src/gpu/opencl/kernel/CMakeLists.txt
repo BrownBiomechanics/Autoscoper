@@ -10,6 +10,7 @@ set(opencl_shaders
 	gpu/opencl/kernel/RayCaster.cl
 	gpu/opencl/kernel/SharpenFilter.cl
 	gpu/opencl/kernel/SobelFilter.cl
+	gpu/opencl/kernel/Merger.cl
 )
 
 foreach(SHADER_FILENAME ${opencl_shaders})

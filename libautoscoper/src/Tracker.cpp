@@ -112,8 +112,7 @@ void save_debug_image(const gpu::Buffer* dev_image, int width, int height)
 #endif
 
 Tracker::Tracker()
-    : volumeDescription_(0),
-      rendered_drr_(NULL),
+    : rendered_drr_(NULL),
       rendered_rad_(NULL)
 {
     g_markerless = this;
@@ -121,6 +120,10 @@ Tracker::Tracker()
 
 Tracker::~Tracker()
 {
+	for (int i = 0; i < volumeDescription_.size(); i++){
+		delete volumeDescription_[i];
+	}
+	volumeDescription_.clear();
 }
 
 void Tracker::init()
@@ -140,8 +143,13 @@ void Tracker::load(const Trial& trial)
     }
     views_.clear();
 
-    delete volumeDescription_;
-    volumeDescription_ = new gpu::VolumeDescription(trial_.volumes.front());
+	for (int i = 0; i < volumeDescription_.size(); i++){
+		delete volumeDescription_[i];
+	}
+	volumeDescription_.clear();
+	for (int i = 0; i < trial_.volumes.size(); i++){
+		volumeDescription_.push_back(new gpu::VolumeDescription(trial_.volumes[i]));
+	}
 
 	unsigned npixels = trial_.render_width*trial_.render_height;
 #ifdef WITH_CUDA
@@ -163,7 +171,10 @@ void Tracker::load(const Trial& trial)
 
         gpu::View* view = new gpu::View(camera);
 
-        view->drrRenderer()->setVolume(*volumeDescription_);
+		for (int i = 0; i < volumeDescription_.size(); i++){
+			view->addDrrRenderer();
+			view->drrRenderer(i)->setVolume(*volumeDescription_[i]);
+		}
 
         view->radRenderer()->set_image_plane(camera.viewport()[0],
                                              camera.viewport()[1],
@@ -207,37 +218,38 @@ void Tracker::optimize(int frame, int dFrame, int repeats)
                        (int)trial_.frame:
                        (int)trial_.num_frames-trial_.frame-1;
     if (trial_.guess == 2 && framesBehind > 1) {
-        double xyzypr1[6] = { trial_.x_curve(trial_.frame-2*dFrame),
-                              trial_.y_curve(trial_.frame-2*dFrame),
-                              trial_.z_curve(trial_.frame-2*dFrame),
-                              trial_.yaw_curve(trial_.frame-2*dFrame),
-                              trial_.pitch_curve(trial_.frame-2*dFrame),
-                              trial_.roll_curve(trial_.frame-2*dFrame) };
-        double xyzypr2[6] = { trial_.x_curve(trial_.frame-dFrame),
-                              trial_.y_curve(trial_.frame-dFrame),
-                              trial_.z_curve(trial_.frame-dFrame),
-                              trial_.yaw_curve(trial_.frame-dFrame),
-                              trial_.pitch_curve(trial_.frame-dFrame),
-                              trial_.roll_curve(trial_.frame-dFrame) };
+		double xyzypr1[6] = { (*trial_.getXCurve(-1))(trial_.frame - 2 * dFrame),
+			(*trial_.getYCurve(-1))(trial_.frame - 2 * dFrame),
+			(*trial_.getZCurve(-1))(trial_.frame - 2 * dFrame),
+			(*trial_.getYawCurve(-1))(trial_.frame - 2 * dFrame),
+			(*trial_.getPitchCurve(-1))(trial_.frame - 2 * dFrame),
+			(*trial_.getRollCurve(-1))(trial_.frame - 2 * dFrame) };
+		double xyzypr2[6] = { (*trial_.getXCurve(-1))(trial_.frame - dFrame),
+			(*trial_.getYCurve(-1))(trial_.frame - dFrame),
+			(*trial_.getZCurve(-1))(trial_.frame - dFrame),
+			(*trial_.getYawCurve(-1))(trial_.frame - dFrame),
+			(*trial_.getPitchCurve(-1))(trial_.frame - dFrame),
+			(*trial_.getRollCurve(-1))(trial_.frame - dFrame) };
+
 
         CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr1).linear_extrap(
                              CoordFrame::from_xyzypr(xyzypr2));
 
         xcframe.to_xyzypr(xyzypr1);
-        trial_.x_curve.insert(trial_.frame,xyzypr1[0]);
-        trial_.y_curve.insert(trial_.frame,xyzypr1[1]);
-        trial_.z_curve.insert(trial_.frame,xyzypr1[2]);
-        trial_.yaw_curve.insert(trial_.frame,xyzypr1[3]);
-        trial_.pitch_curve.insert(trial_.frame,xyzypr1[4]);
-        trial_.roll_curve.insert(trial_.frame,xyzypr1[5]);
+		trial_.getXCurve(-1)->insert(trial_.frame, xyzypr1[0]);
+		trial_.getYCurve(-1)->insert(trial_.frame, xyzypr1[1]);
+		trial_.getZCurve(-1)->insert(trial_.frame, xyzypr1[2]);
+		trial_.getYawCurve(-1)->insert(trial_.frame, xyzypr1[3]);
+		trial_.getPitchCurve(-1)->insert(trial_.frame, xyzypr1[4]);
+		trial_.getRollCurve(-1)->insert(trial_.frame, xyzypr1[5]);
     }
     else if (trial_.guess == 1 && framesBehind > 0) {
-        trial_.x_curve.insert(trial_.frame, trial_.x_curve(trial_.frame-dFrame));
-        trial_.y_curve.insert(trial_.frame, trial_.y_curve(trial_.frame-dFrame));
-        trial_.z_curve.insert(trial_.frame, trial_.z_curve(trial_.frame-dFrame));
-        trial_.yaw_curve.insert(trial_.frame, trial_.yaw_curve(trial_.frame-dFrame));
-        trial_.pitch_curve.insert(trial_.frame, trial_.pitch_curve(trial_.frame-dFrame));
-        trial_.roll_curve.insert(trial_.frame, trial_.roll_curve(trial_.frame-dFrame));
+		trial_.getXCurve(-1)->insert(trial_.frame, (*trial_.getXCurve(-1))(trial_.frame - dFrame));
+		trial_.getYCurve(-1)->insert(trial_.frame, (*trial_.getYCurve(-1))(trial_.frame - dFrame));
+		trial_.getZCurve(-1)->insert(trial_.frame, (*trial_.getZCurve(-1))(trial_.frame - dFrame));
+		trial_.getYawCurve(-1)->insert(trial_.frame, (*trial_.getYawCurve(-1))(trial_.frame - dFrame));
+		trial_.getPitchCurve(-1)->insert(trial_.frame, (*trial_.getPitchCurve(-1))(trial_.frame - dFrame));
+		trial_.getRollCurve(-1)->insert(trial_.frame, (*trial_.getRollCurve(-1))(trial_.frame - dFrame));
     }
 
     int totalIter = 0;
@@ -267,29 +279,29 @@ void Tracker::optimize(int frame, int dFrame, int repeats)
 
         AMOEBA(P, Y, NDIM, FTOL, &ITER);
 
-        double xyzypr[6] = { trial_.x_curve(trial_.frame),
-                             trial_.y_curve(trial_.frame),
-                             trial_.z_curve(trial_.frame),
-                             trial_.yaw_curve(trial_.frame),
-                             trial_.pitch_curve(trial_.frame),
-                             trial_.roll_curve(trial_.frame) };
+		double xyzypr[6] = { (*trial_.getXCurve(-1))(trial_.frame),
+			(*trial_.getYCurve(-1))(trial_.frame),
+			(*trial_.getZCurve(-1))(trial_.frame),
+			(*trial_.getYawCurve(-1))(trial_.frame),
+			(*trial_.getPitchCurve(-1))(trial_.frame),
+			(*trial_.getRollCurve(-1))(trial_.frame) };
         CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
-        CoordFrame manip = xcframe*trial_.volumeTrans.inverse();
+		CoordFrame manip = xcframe* (trial_.getVolumeMatrix(-1))->inverse();
         manip.rotate(manip.rotation()+6, (P[1]+1)[3]);
         manip.rotate(manip.rotation()+3, (P[1]+1)[4]);
         manip.rotate(manip.rotation()+0, (P[1]+1)[5]);
         manip.translate(P[1]+1);
 
-        xcframe = manip*trial_.volumeTrans;
+		xcframe = manip* *(trial_.getVolumeMatrix(-1));
         xcframe.to_xyzypr(xyzypr);
 
-        trial_.x_curve.insert(trial_.frame,xyzypr[0]);
-        trial_.y_curve.insert(trial_.frame,xyzypr[1]);
-        trial_.z_curve.insert(trial_.frame,xyzypr[2]);
-        trial_.yaw_curve.insert(trial_.frame,xyzypr[3]);
-        trial_.pitch_curve.insert(trial_.frame,xyzypr[4]);
-        trial_.roll_curve.insert(trial_.frame,xyzypr[5]);
+		trial_.getXCurve(-1)->insert(trial_.frame, xyzypr[0]);
+		trial_.getYCurve(-1)->insert(trial_.frame, xyzypr[1]);
+		trial_.getZCurve(-1)->insert(trial_.frame, xyzypr[2]);
+		trial_.getYawCurve(-1)->insert(trial_.frame, xyzypr[3]);
+		trial_.getPitchCurve(-1)->insert(trial_.frame, xyzypr[4]);
+		trial_.getRollCurve(-1)->insert(trial_.frame, xyzypr[5]);
 
         totalIter += ITER;
     }
@@ -302,28 +314,29 @@ double Tracker::minimizationFunc(const double* values) const
 {
     // Construct a coordinate frame from the given values
 
-    double xyzypr[6] = { trial_.x_curve(trial_.frame),
-                         trial_.y_curve(trial_.frame),
-                         trial_.z_curve(trial_.frame),
-                         trial_.yaw_curve(trial_.frame),
-                         trial_.pitch_curve(trial_.frame),
-                         trial_.roll_curve(trial_.frame) };
+	double xyzypr[6] = { (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame),
+		(*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame),
+		(*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame),
+		(*(const_cast<Trial&>(trial_)).getYawCurve(-1))(trial_.frame),
+		(*(const_cast<Trial&>(trial_)).getPitchCurve(-1))(trial_.frame),
+		(*(const_cast<Trial&>(trial_)).getRollCurve(-1))(trial_.frame) };
     CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
-    CoordFrame manip = xcframe*trial_.volumeTrans.inverse();
+	CoordFrame manip = xcframe* (const_cast<Trial&>(trial_)).getVolumeMatrix(-1)->inverse();
     manip.rotate(manip.rotation()+6, values[3]);
     manip.rotate(manip.rotation()+3, values[4]);
     manip.rotate(manip.rotation()+0, values[5]);
     manip.translate(values);
-    xcframe = manip*trial_.volumeTrans;
+	xcframe = manip* *((const_cast<Trial&>(trial_)).getVolumeMatrix(-1));
 
     double* correlations = new double[views_.size()];
     for (unsigned int i = 0; i < views_.size(); ++i) {
 
+		int idx = 0;
         // Set the modelview matrix for DRR rendering
         CoordFrame modelview = views_[i]->camera()->coord_frame().inverse()*xcframe;
         double imv[16]; modelview.inverse().to_matrix_row_order(imv);
-        views_[i]->drrRenderer()->setInvModelView(imv);
+		views_[i]->drrRenderer(idx)->setInvModelView(imv);
 
         // Calculate the viewport surrounding the volume
         double viewport[4];
@@ -334,7 +347,7 @@ double Tracker::minimizationFunc(const double* values) const
         unsigned render_height = viewport[3] * trial_.render_height / views_[i]->camera()->viewport()[3];
 
         // Set the viewports
-        views_[i]->drrRenderer()->setViewport(viewport[0],viewport[1],
+		views_[i]->drrRenderer(idx)->setViewport(viewport[0], viewport[1],
                                               viewport[2],viewport[3]);
         views_[i]->radRenderer()->set_viewport(viewport[0],viewport[1],
                                                viewport[2],viewport[3]);
@@ -369,12 +382,14 @@ Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) const
     double min_max[4] = {1.0,1.0,-1.0,-1.0};
     double corners[24] = {0,0,-1,0,0,0, 0,1,-1,0,1,0, 1,0,-1,1,0,0,1,1,-1,1,1,0};
 
+	int idx = 0;
+
     for (int j = 0; j < 8; j++) {
 
         // Calculate the loaction of the corner in object space
-        corners[3*j+0] = (corners[3*j+0]-volumeDescription_->invTrans()[0])/volumeDescription_->invScale()[0];
-        corners[3*j+1] = (corners[3*j+1]-volumeDescription_->invTrans()[1])/volumeDescription_->invScale()[1];
-        corners[3*j+2] = (corners[3*j+2]-volumeDescription_->invTrans()[2])/volumeDescription_->invScale()[2];
+		corners[3 * j + 0] = (corners[3 * j + 0] - volumeDescription_[idx]->invTrans()[0]) / volumeDescription_[idx]->invScale()[0];
+		corners[3 * j + 1] = (corners[3 * j + 1] - volumeDescription_[idx]->invTrans()[1]) / volumeDescription_[idx]->invScale()[1];
+		corners[3 * j + 2] = (corners[3 * j + 2] - volumeDescription_[idx]->invTrans()[2]) / volumeDescription_[idx]->invScale()[2];
 
         // Calculate the location of the corner in camera space
         double corner[3];

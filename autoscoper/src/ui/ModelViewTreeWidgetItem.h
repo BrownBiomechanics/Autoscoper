@@ -67,9 +67,6 @@ class ModelViewTreeWidgetItem : public QObject ,public  QTreeWidgetItem
 
 public:
     ModelViewTreeWidgetItem(int type, std::vector<Filter*>* filters);
-	
-	//ModelViewTreeWidgetItem(QString _name, std::vector<Filter*>* filters);
-	//ModelViewTreeWidgetItem(QString _name, std::vector<Filter*>* filters, QTreeWidget * parent);
 	~ModelViewTreeWidgetItem();
 
 	QString getName(){return name;}

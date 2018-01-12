@@ -50,6 +50,7 @@
 #include "KeyCurve.hpp"
 #include "Video.hpp"
 #include "Volume.hpp"
+#include "VolumeTransform.hpp"
 
 namespace xromm
 {
@@ -71,17 +72,13 @@ public:
     std::vector<Camera> cameras;
     std::vector<Video>  videos;
     std::vector<Volume> volumes;
+	std::vector<VolumeTransform> volumestransform;
 
     // State information
     int frame;
     int num_frames;
-
-    KeyCurve x_curve;
-    KeyCurve y_curve;
-    KeyCurve z_curve;
-    KeyCurve yaw_curve;
-    KeyCurve pitch_curve;
-    KeyCurve roll_curve;
+	int current_volume;
+	int num_volumes;
 
     //Controls for the optimization process
     int guess;
@@ -89,7 +86,14 @@ public:
     int render_width;
     int render_height;
 
-    CoordFrame volumeTrans;
+	KeyCurve * getXCurve(int volumeID);
+	KeyCurve * getYCurve(int volumeID);
+	KeyCurve * getZCurve(int volumeID);
+	KeyCurve * getYawCurve(int volumeID);
+	KeyCurve * getPitchCurve(int volumeID);
+	KeyCurve * getRollCurve(int volumeID);
+
+	CoordFrame * getVolumeMatrix(int volumeID); // Pivot
 };
 
 } // namespace xromm

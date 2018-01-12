@@ -65,6 +65,7 @@
 
 #include "Tracker.hpp"
 #include "View.hpp"
+#include "Trial.hpp"
 
 #include "Manip3D.hpp"
 
@@ -222,7 +223,7 @@ void GLView::move_manip_in_view(double x, double y, bool out_of_plane)
 
     CoordFrame frame;
 	if (mainwindow->getManipulator()->get_movePivot()) {
-        frame = (CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()))* *mainwindow->getVolume_matrix());
+		frame = (CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()))* *mainwindow->getTracker()->trial()->getVolumeMatrix(-1));
     }
 
     if (!out_of_plane) {
@@ -261,7 +262,7 @@ void GLView::move_manip_in_view(double x, double y, bool out_of_plane)
 	
 	if (mainwindow->getManipulator()->get_movePivot()) {
         CoordFrame new_manip_matrix = CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()));
-		mainwindow->setVolume_matrix(new_manip_matrix.inverse()*frame);
+		*(mainwindow->getTracker()->trial()->getVolumeMatrix(-1)) = new_manip_matrix.inverse()*frame;
     }
 }
 
@@ -443,18 +444,20 @@ void GLView::paintGL()
 			}
 
 			if (!mainwindow->getTracker()->views().empty()) {
-				CoordFrame modelview = defaultViewMatrix.inverse()*CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()))* *mainwindow->getVolume_matrix();
+				float width = 2.0f / viewdata.zoom, height = 2.0f / viewdata.zoom;
+				float x = viewdata.zoom_x - width / 2.0f, y = viewdata.zoom_y - height / 2.0f;
 
-				double imv[16];
-				modelview.inverse().to_matrix_row_order(imv);
-				mainwindow->getTracker()->view(0)->drrRenderer()->setInvModelView(imv);
+				for (int idx_volume = 0; idx_volume < mainwindow->getTracker()->trial()->num_volumes; idx_volume++){
+					CoordFrame modelview = defaultViewMatrix.inverse()*CoordFrame::from_matrix(trans(mainwindow->getManipulator(idx_volume)->transform()))* *mainwindow->getTracker()->trial()->getVolumeMatrix(idx_volume);
 
-				float width = 2.0f/viewdata.zoom, height = 2.0f/viewdata.zoom;
-				float x = viewdata.zoom_x-width/2.0f, y = viewdata.zoom_y-height/2.0f;
+					double imv[16];
+					modelview.inverse().to_matrix_row_order(imv);
+					mainwindow->getTracker()->view(0)->drrRenderer(idx_volume)->setInvModelView(imv);
 
-				mainwindow->getTracker()->view(0)->drrRenderer()->setViewport(
-					viewdata.ratio*x, y, viewdata.ratio*width, height);
-            
+					mainwindow->getTracker()->view(0)->drrRenderer(idx_volume)->setViewport(
+						viewdata.ratio*x, y, viewdata.ratio*width, height);
+				}
+
 				mainwindow->getTracker()->view(0)->renderDrr(viewdata.pbo,viewdata.window_width,viewdata.window_height);
 
 				glViewport(0, 0, viewdata.window_width, viewdata.window_height);
@@ -491,20 +494,23 @@ void GLView::paintGL()
 			return;
 		}
 		else if(cameraViewWidget){
-			CoordFrame modelview  = mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame().inverse()
-									* CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()))
-									* (*mainwindow->getVolume_matrix());
-
-			double imv[16];
-			modelview.inverse().to_matrix_row_order(imv);
-			m_view->drrRenderer()->setInvModelView(imv);
-
 			float temp = 2.0f*sqrt(5.0)*sin(M_PI*viewdata.fovy/360.0);
 			float width = temp/viewdata.zoom, height = temp/viewdata.zoom;
 			float x = viewdata.zoom_x-width/2.0f, y = viewdata.zoom_y-height/2.0f;
 
-			m_view->drrRenderer()->setViewport(
-				viewdata.ratio*x, y, viewdata.ratio*width, height);
+			for (int idx_volume = 0; idx_volume < mainwindow->getTracker()->trial()->num_volumes; idx_volume++){
+				CoordFrame modelview = mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame().inverse()
+					* CoordFrame::from_matrix(trans(mainwindow->getManipulator(idx_volume)->transform()))
+					* (*mainwindow->getTracker()->trial()->getVolumeMatrix(idx_volume));
+				double imv[16];
+				modelview.inverse().to_matrix_row_order(imv);
+				int idx = mainwindow->getTracker()->trial()->current_volume;
+				m_view->drrRenderer(idx_volume)->setInvModelView(imv);
+
+				m_view->drrRenderer(idx_volume)->setViewport(
+					viewdata.ratio*x, y, viewdata.ratio*width, height);
+			}
+
 			m_view->radRenderer()->set_viewport(
 				viewdata.ratio*x, y, viewdata.ratio*width, height);
 
@@ -559,6 +565,62 @@ void GLView::paintGL()
 		}
 	}
 }
+
+void GLView::saveView(std::string filename){
+	CameraViewWidget * cameraViewWidget = dynamic_cast <CameraViewWidget *> (this->parent());
+	AutoscoperMainWindow * mainwindow = cameraViewWidget->getMainWindow();
+
+	// Calculate the minimum and maximum values of the bounding box
+	// corners after they have been projected onto the view plane
+	double min_max[4] = { 1.0, 1.0, -1.0, -1.0 };
+
+	for (int j = 0; j < 4; j++) {
+		// Calculate the location of the corner in camera space
+		double corner[3];
+		m_view->camera()->coord_frame().inverse().point_to_world_space(&m_view->camera()->image_plane()[3 * j], corner);
+
+		// Calculate its projection onto the film plane, where z = -2
+		double film_plane[3];
+		film_plane[0] = -2 * corner[0] / corner[2];
+		film_plane[1] = -2 * corner[1] / corner[2];
+
+		// Update the min and max values
+		if (min_max[0] > film_plane[0]) {
+			min_max[0] = film_plane[0];
+		}
+		if (min_max[1] > film_plane[1]) {
+			min_max[1] = film_plane[1];
+		}
+		if (min_max[2] < film_plane[0]) {
+			min_max[2] = film_plane[0];
+		}
+		if (min_max[3] < film_plane[1]) {
+			min_max[3] = film_plane[1];
+		}
+	}
+
+	double viewport[4];
+	viewport[0] = min_max[0];
+	viewport[1] = min_max[1];
+	viewport[2] = min_max[2] - min_max[0];
+	viewport[3] = min_max[3] - min_max[1];
+
+	for (int idx_volume = 0; idx_volume < mainwindow->getTracker()->trial()->num_volumes; idx_volume++){
+		CoordFrame modelview = mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame().inverse()
+			* CoordFrame::from_matrix(trans(mainwindow->getManipulator(idx_volume)->transform()))
+			* (*mainwindow->getTracker()->trial()->getVolumeMatrix(idx_volume));
+		double imv[16];
+		modelview.inverse().to_matrix_row_order(imv);
+		int idx = mainwindow->getTracker()->trial()->current_volume;
+		m_view->drrRenderer(idx_volume)->setInvModelView(imv);
+
+		m_view->drrRenderer(idx_volume)->setViewport(viewport[0], viewport[1],
+			viewport[2], viewport[3]);
+	}
+
+	m_view->saveImage(filename, m_view->camera()->size()[0], m_view->camera()->size()[1]);
+}
+
 
 void GLView::update_scale_in_view(ViewData* view)
 {

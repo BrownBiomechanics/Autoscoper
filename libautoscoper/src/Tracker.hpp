@@ -94,7 +94,7 @@ private:
     void calculate_viewport(const CoordFrame& modelview, double* viewport) const;
 
     Trial trial_;
-    gpu::VolumeDescription* volumeDescription_;
+	std::vector <gpu::VolumeDescription*> volumeDescription_;
     std::vector<gpu::View*> views_;
 #ifdef WITH_CUDA
 	Buffer* rendered_drr_;

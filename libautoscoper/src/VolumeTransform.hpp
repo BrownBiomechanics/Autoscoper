@@ -36,45 +36,42 @@
 // THEIR USE OF THE SOFTWARE.
 // ---------------------------------
 
-/// \file CameraViewWidget.cpp
-/// \author Benjamin Knorlein, Andy Loomis
+/// \file Trial.hpp
+/// \author Andy Loomis
 
+#ifndef XROMM_VOLUME_TRANSFORM_HPP
+#define XROMM_VOLUME_TRANSFORM_HPP
 
-#ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
-#endif
+#include <vector>
 
-#include "ui/CameraViewWidget.h"
-#include "ui_CameraViewWidget.h"
-#include "ui/AutoscoperMainWindow.h"
+#include "KeyCurve.hpp"
+#include "CoordFrame.hpp"
+namespace xromm
+{
+// The trial class contains all of the state information for an autoscoper run.
+// It should eventually become an in-memory representation of the xromm
+// autoscoper file format. Currently that file format does not however hold the
+// tracking information.
 
-#include <QGLContext>
+class VolumeTransform
+{
+public:
 
-CameraViewWidget::CameraViewWidget(int id, View * view, QString name,QWidget *parent) :
-											QWidget(parent),
-												widget(new Ui::CameraViewWidget){
-	widget->setupUi(this);
-	m_name = name;
-	m_id = id;
-	widget->cameraTitleLabel->setText(m_name);
-	widget->glView->setView(view);
-	mainwindow  = dynamic_cast <AutoscoperMainWindow *> ( parent);
-}
+    // Loads a trial file
+    VolumeTransform();
+	~VolumeTransform();
 
-CameraViewWidget::~CameraViewWidget(){
+    KeyCurve x_curve;
+    KeyCurve y_curve;
+    KeyCurve z_curve;
+    KeyCurve yaw_curve;
+    KeyCurve pitch_curve;
+    KeyCurve roll_curve;
 
-}
+    CoordFrame volumeTrans; //FromWorldToVolume
+	CoordFrame volumeMatrix; //FromWorldToPivot
+};
 
-void CameraViewWidget::setSharedGLContext(const QGLContext * sharedContext){
-	QGLContext* context = new QGLContext(sharedContext->format(), widget->glView);
-	context->create(sharedContext);
-	widget->glView->setContext(context,sharedContext,true);
-}
+} // namespace xromm
 
-void CameraViewWidget::draw(){
-	widget->glView->update();
-}
-
-void CameraViewWidget::saveFrame(QString filename){
-	widget->glView->saveView(filename.toStdString().c_str());
-}
+#endif // XROMM_VOLUME_TRANSFORM

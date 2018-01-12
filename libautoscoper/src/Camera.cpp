@@ -142,19 +142,19 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 		//         camera's local space. These values are calculated using the
 		//         values in lines 4 and 5.
 		// Line 4: u0, v0, Z
-		// Line 5: scale, image_width, image_height
+		// Line 5: scale, size_[0], size_[1]
 		//
 		// If the image width and height are set to 0 they are assumed to be 1024.
 		//
 		// The equations used to calculate the position and size of the film plane
 		// are as follows:
 		//
-		// image_plane_x = scale*(image_width/2-u0)
-		// image_plane_y = scale*(image_height/2-v0)
+		// image_plane_x = scale*(size_[0]/2-u0)
+		// image_plane_y = scale*(size_[1]/2-v0)
 		// image_plane_z = -scale*Z
 		//
-		// image_plane_width = scale*image_width
-		// image_plane_height = scale*image_height
+		// image_plane_width = scale*size_[0]
+		// image_plane_height = scale*size_[1]
 		//
 		// All units are in centimeters
 
@@ -167,11 +167,11 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 		double z = csv_vals[3][2];
 
 		// Default to 1024x1024
-		double image_width = csv_vals[4][1];
-		if (image_width == 0) image_width = 1024;
+		size_[0] = csv_vals[4][1];
+		if (size_[0] == 0) size_[0] = 1024;
 
-		double image_height = csv_vals[4][2];
-		if (image_height == 0) image_height = 1024;
+		size_[1] = csv_vals[4][2];
+		if (size_[1] == 0) size_[1] = 1024;
 
 		// Calculate the cameras local coordinate frame
 		double xyzypr[6] = { translation[0], translation[1], translation[2],
@@ -179,10 +179,10 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 		coord_frame_ = CoordFrame::from_xyzypr(xyzypr);
 
 		// Calculate the viewport
-		viewport_[0] = (2.0f*u0 - image_width) / z;
-		viewport_[1] = (2.0f*v0 - image_height) / z;
-		viewport_[2] = -2.0f*image_width / z;
-		viewport_[3] = -2.0f*image_height / z;
+		viewport_[0] = (2.0f*u0 - size_[0]) / z;
+		viewport_[1] = (2.0f*v0 - size_[1]) / z;
+		viewport_[2] = -2.0f*size_[0] / z;
+		viewport_[3] = -2.0f*size_[1] / z;
 
 		// Choose the scaling factor such that the image plane will be on the
 		// other side of the origin from the camera. The values in the mayacam
@@ -192,16 +192,16 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 			translation[2] * translation[2]);
 		double scale = -1.5*distance / z;
 		
-		image_plane_trans[0] = scale*(image_width / 2.0 - u0);
-		image_plane_trans[1] = scale*(image_height / 2.0 - v0);
+		image_plane_trans[0] = scale*(size_[0] / 2.0 - u0);
+		image_plane_trans[1] = scale*(size_[1] / 2.0 - v0);
 		image_plane_trans[2] = scale*z;
 
 		// Calculate the vertices at the corner of the image plane.
 		double image_plane_center[3];
 		coord_frame_.point_to_world_space(image_plane_trans, image_plane_center);
 
-		double half_width = scale*image_width / 2.0;
-		double half_height = scale*image_height / 2.0;
+		double half_width = scale*size_[0] / 2.0;
+		double half_height = scale*size_[1] / 2.0;
 
 		double right[3] = { coord_frame_.rotation()[0],
 			coord_frame_.rotation()[1],
@@ -242,7 +242,6 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 
 	void Camera::loadMayaCam2(const std::string& mayacam)
 	{
-		double size[2];
 		double K[3][3];
 
 		double rotation[3][3];
@@ -262,7 +261,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 				case 1: //size
 					for (int j = 0; j < 2 && getline(csv_line_stream, csv_val, ','); ++j) {
 						istringstream csv_val_stream(csv_val);
-						if (!(csv_val_stream >> size[j])) {
+						if (!(csv_val_stream >> size_[j])) {
 							throw runtime_error("Invalid MayaCam file");
 						}
 					}
@@ -309,7 +308,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 			rotation[i][0] = -rotation[i][0];
 			rotation[i][2] = -rotation[i][2];
 		}
-		K[2][1] = (size[1] - 1) - K[2][1];
+		K[2][1] = (size_[1] - 1) - K[2][1];
 
 		//invert rotation
 		for (int i = 0; i < 3; i++)
@@ -342,10 +341,10 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 		coord_frame_ = CoordFrame(&rotation[0][0], translation);
 
 		// Calculate the viewport
-		viewport_[0] = -(2.0f*K[2][0] - size[0]) / K[0][0];
-		viewport_[1] = -(2.0f*K[2][1] - size[1]) / K[1][1];
-		viewport_[2] = 2.0f*size[0] / K[0][0];
-		viewport_[3] = 2.0f*size[1] / K[1][1];
+		viewport_[0] = -(2.0f*K[2][0] - size_[0]) / K[0][0];
+		viewport_[1] = -(2.0f*K[2][1] - size_[1]) / K[1][1];
+		viewport_[2] = 2.0f*size_[0] / K[0][0];
+		viewport_[3] = 2.0f*size_[1] / K[1][1];
 
 
 		// Choose the scaling factor such that the image plane will be on the
@@ -358,16 +357,16 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 		double scale = -1.5*distance / z;
 	
 		double image_plane_trans[3];
-		image_plane_trans[0] = scale*(size[0] / 2.0 - K[2][0]);
-		image_plane_trans[1] = scale*(size[1] / 2.0 - K[2][1]);
+		image_plane_trans[0] = scale*(size_[0] / 2.0 - K[2][0]);
+		image_plane_trans[1] = scale*(size_[1] / 2.0 - K[2][1]);
 		image_plane_trans[2] = scale*z;
 
 		// Calculate the vertices at the corner of the image plane.
 		double image_plane_center[3];
 		coord_frame_.point_to_world_space(image_plane_trans, image_plane_center);
 
-		double half_width = scale*size[0] / 2.0;
-		double half_height = scale*size[1] / 2.0;
+		double half_width = scale*size_[0] / 2.0;
+		double half_height = scale*size_[1] / 2.0;
 
 		double right[3] = { coord_frame_.rotation()[0],
 			coord_frame_.rotation()[1],

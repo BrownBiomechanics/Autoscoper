@@ -71,6 +71,8 @@ public:
 
     const double* viewport() const { return viewport_; }
 
+	const double* size() const { return size_; }
+
 private:
 
     std::string mayacam_; // filename
@@ -80,6 +82,8 @@ private:
     double image_plane_[12];
 
     double viewport_[4];
+
+	double size_[2];
 
 	void loadMayaCam1(const std::string& mayacam);
 

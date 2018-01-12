@@ -91,23 +91,6 @@ ModelViewTreeWidgetItem::ModelViewTreeWidgetItem(int type, std::vector<Filter*>*
 	init();
 }
 
-
-//ModelViewTreeWidgetItem::ModelViewTreeWidgetItem(QString _name, std::vector<Filter*>* filters):QTreeWidgetItem(MODEL_VIEW), QObject()
-//{
-//	setName(_name);
-//	m_filters = filters;
-//
-//	init();
-//}
-//
-//ModelViewTreeWidgetItem::ModelViewTreeWidgetItem(QString _name, std::vector<Filter*>* filters, QTreeWidget * parent):QTreeWidgetItem(parent, MODEL_VIEW), QObject(parent)
-//{
-//	setName(_name);
-//	m_filters = filters;
-//
-//	init();
-//}
-
 void ModelViewTreeWidgetItem::save(std::ofstream & file){
 	if(m_type == 0){
 		file << "RadFilters_begin" << std::endl;
@@ -328,7 +311,8 @@ void ModelViewTreeWidgetItem::resetVectors(){
 
 void ModelViewTreeWidgetItem::updateModelview(){
 	if(m_type == 1){
-		xromm::gpu::RayCaster* rayCaster = ((CameraTreeWidgetItem*) QTreeWidgetItem::parent())->getView()->drrRenderer();
+		int idx = 0;
+		xromm::gpu::RayCaster* rayCaster = ((CameraTreeWidgetItem*)QTreeWidgetItem::parent())->getView()->drrRenderer(idx);  // not sure if this is correct. Dont we have to go through all drrRenderer
 
 		double value = exp(7*parameters[0]->value-5);
 		rayCaster->setSampleDistance(value);	

@@ -276,74 +276,74 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent *e){
             //double y_sense = (max_value-min_value)/viewdata.viewport_height;
 
             if (timelineDockWidget->getPosition_graph()->show_x) {
-				KeyCurve::iterator it = mainwindow->getTracker()->trial()->x_curve.begin();
-                while (it != mainwindow->getTracker()->trial()->x_curve.end()) {
-                    if (mainwindow->getTracker()->trial()->x_curve.time(it) > min_x &&
-                        mainwindow->getTracker()->trial()->x_curve.time(it) < max_x &&
-                        mainwindow->getTracker()->trial()->x_curve.value(it) > min_y &&
-                        mainwindow->getTracker()->trial()->x_curve.value(it) < max_y) {
-                        new_nodes.push_back(make_pair(make_pair(&mainwindow->getTracker()->trial()->x_curve,it),NODE));
+				KeyCurve::iterator it = mainwindow->getTracker()->trial()->getXCurve(-1)->begin();
+				while (it != mainwindow->getTracker()->trial()->getXCurve(-1)->end()) {
+					if (mainwindow->getTracker()->trial()->getXCurve(-1)->time(it) > min_x &&
+						mainwindow->getTracker()->trial()->getXCurve(-1)->time(it) < max_x &&
+						mainwindow->getTracker()->trial()->getXCurve(-1)->value(it) > min_y &&
+						mainwindow->getTracker()->trial()->getXCurve(-1)->value(it) < max_y) {
+						new_nodes.push_back(make_pair(make_pair(mainwindow->getTracker()->trial()->getXCurve(-1), it), NODE));
                     }
                     ++it;
                 }
             }
             if (timelineDockWidget->getPosition_graph()->show_y) {
-                KeyCurve::iterator it = mainwindow->getTracker()->trial()->y_curve.begin();
-                while (it != mainwindow->getTracker()->trial()->y_curve.end()) {
-                    if (mainwindow->getTracker()->trial()->y_curve.time(it) > min_x &&
-                        mainwindow->getTracker()->trial()->y_curve.time(it) < max_x &&
-                        mainwindow->getTracker()->trial()->y_curve.value(it) > min_y &&
-                        mainwindow->getTracker()->trial()->y_curve.value(it) < max_y) {
-                        new_nodes.push_back(make_pair(make_pair(&mainwindow->getTracker()->trial()->y_curve,it),NODE));
-                    }
+				KeyCurve::iterator it = mainwindow->getTracker()->trial()->getYCurve(-1)->begin();
+				while (it != mainwindow->getTracker()->trial()->getYCurve(-1)->end()) {
+					if (mainwindow->getTracker()->trial()->getYCurve(-1)->time(it) > min_x &&
+						mainwindow->getTracker()->trial()->getYCurve(-1)->time(it) < max_x &&
+						mainwindow->getTracker()->trial()->getYCurve(-1)->value(it) > min_y &&
+						mainwindow->getTracker()->trial()->getYCurve(-1)->value(it) < max_y) {
+						new_nodes.push_back(make_pair(make_pair(mainwindow->getTracker()->trial()->getYCurve(-1), it), NODE));
+					}
                     ++it;
                 }
             }
             if (timelineDockWidget->getPosition_graph()->show_z) {
-                KeyCurve::iterator it = mainwindow->getTracker()->trial()->z_curve.begin();
-                while (it != mainwindow->getTracker()->trial()->z_curve.end()) {
-                    if (mainwindow->getTracker()->trial()->z_curve.time(it) > min_x &&
-                        mainwindow->getTracker()->trial()->z_curve.time(it) < max_x &&
-                        mainwindow->getTracker()->trial()->z_curve.value(it) > min_y &&
-                        mainwindow->getTracker()->trial()->z_curve.value(it) < max_y) {
-                        new_nodes.push_back(make_pair(make_pair(&mainwindow->getTracker()->trial()->z_curve,it),NODE));
-                    }
+				KeyCurve::iterator it = mainwindow->getTracker()->trial()->getZCurve(-1)->begin();
+				while (it != mainwindow->getTracker()->trial()->getZCurve(-1)->end()) {
+					if (mainwindow->getTracker()->trial()->getZCurve(-1)->time(it) > min_x &&
+						mainwindow->getTracker()->trial()->getZCurve(-1)->time(it) < max_x &&
+						mainwindow->getTracker()->trial()->getZCurve(-1)->value(it) > min_y &&
+						mainwindow->getTracker()->trial()->getZCurve(-1)->value(it) < max_y) {
+						new_nodes.push_back(make_pair(make_pair(mainwindow->getTracker()->trial()->getZCurve(-1), it), NODE));
+					}
                     ++it;
                 }
             }
             if (timelineDockWidget->getPosition_graph()->show_yaw) {
-                KeyCurve::iterator it = mainwindow->getTracker()->trial()->yaw_curve.begin();
-                while (it != mainwindow->getTracker()->trial()->yaw_curve.end()) {
-                    if (mainwindow->getTracker()->trial()->yaw_curve.time(it) > min_x &&
-                        mainwindow->getTracker()->trial()->yaw_curve.time(it) < max_x &&
-                        mainwindow->getTracker()->trial()->yaw_curve.value(it) > min_y &&
-                        mainwindow->getTracker()->trial()->yaw_curve.value(it) < max_y) {
-                        new_nodes.push_back(make_pair(make_pair(&mainwindow->getTracker()->trial()->yaw_curve,it),NODE));
-                    }
+				KeyCurve::iterator it = mainwindow->getTracker()->trial()->getYawCurve(-1)->begin();
+				while (it != mainwindow->getTracker()->trial()->getYawCurve(-1)->end()) {
+					if (mainwindow->getTracker()->trial()->getYawCurve(-1)->time(it) > min_x &&
+						mainwindow->getTracker()->trial()->getYawCurve(-1)->time(it) < max_x &&
+						mainwindow->getTracker()->trial()->getYawCurve(-1)->value(it) > min_y &&
+						mainwindow->getTracker()->trial()->getYawCurve(-1)->value(it) < max_y) {
+						new_nodes.push_back(make_pair(make_pair(mainwindow->getTracker()->trial()->getYawCurve(-1), it), NODE));
+					}
                     ++it;
                 }
             }
             if (timelineDockWidget->getPosition_graph()->show_pitch) {
-                KeyCurve::iterator it = mainwindow->getTracker()->trial()->pitch_curve.begin();
-                while (it != mainwindow->getTracker()->trial()->pitch_curve.end()) {
-                    if (mainwindow->getTracker()->trial()->pitch_curve.time(it) > min_x &&
-                        mainwindow->getTracker()->trial()->pitch_curve.time(it) < max_x &&
-                        mainwindow->getTracker()->trial()->pitch_curve.value(it) > min_y &&
-                        mainwindow->getTracker()->trial()->pitch_curve.value(it) < max_y) {
-                        new_nodes.push_back(make_pair(make_pair(&mainwindow->getTracker()->trial()->pitch_curve,it),NODE));
-                    }
+				KeyCurve::iterator it = mainwindow->getTracker()->trial()->getPitchCurve(-1)->begin();
+				while (it != mainwindow->getTracker()->trial()->getPitchCurve(-1)->end()) {
+					if (mainwindow->getTracker()->trial()->getPitchCurve(-1)->time(it) > min_x &&
+						mainwindow->getTracker()->trial()->getPitchCurve(-1)->time(it) < max_x &&
+						mainwindow->getTracker()->trial()->getPitchCurve(-1)->value(it) > min_y &&
+						mainwindow->getTracker()->trial()->getPitchCurve(-1)->value(it) < max_y) {
+						new_nodes.push_back(make_pair(make_pair(mainwindow->getTracker()->trial()->getPitchCurve(-1), it), NODE));
+					}
                     ++it;
                 }
             }
             if (timelineDockWidget->getPosition_graph()->show_roll) {
-                KeyCurve::iterator it = mainwindow->getTracker()->trial()->roll_curve.begin();
-                while (it != mainwindow->getTracker()->trial()->roll_curve.end()) {
-                    if (mainwindow->getTracker()->trial()->roll_curve.time(it) > min_x &&
-                        mainwindow->getTracker()->trial()->roll_curve.time(it) < max_x &&
-                        mainwindow->getTracker()->trial()->roll_curve.value(it) > min_y &&
-                        mainwindow->getTracker()->trial()->roll_curve.value(it) < max_y) {
-                        new_nodes.push_back(make_pair(make_pair(&mainwindow->getTracker()->trial()->roll_curve,it),NODE));
-                    }
+				KeyCurve::iterator it = mainwindow->getTracker()->trial()->getRollCurve(-1)->begin();
+				while (it != mainwindow->getTracker()->trial()->getRollCurve(-1)->end()) {
+					if (mainwindow->getTracker()->trial()->getRollCurve(-1)->time(it) > min_x &&
+						mainwindow->getTracker()->trial()->getRollCurve(-1)->time(it) < max_x &&
+						mainwindow->getTracker()->trial()->getRollCurve(-1)->value(it) > min_y &&
+						mainwindow->getTracker()->trial()->getRollCurve(-1)->value(it) < max_y) {
+						new_nodes.push_back(make_pair(make_pair(mainwindow->getTracker()->trial()->getRollCurve(-1), it), NODE));
+					}
                     ++it;
                 }
             }
@@ -513,32 +513,32 @@ void GLTimeline::paintGL()
 
 			if (m_position_graph->show_x) {
 				glColor3f(1.0f,0.0f,0.0f);
-				draw_curve(m_trial->x_curve);
+				draw_curve(*m_trial->getXCurve(-1));
 			}
 
 			if (m_position_graph->show_y) {
 				glColor3f(0.0f,1.0f,0.0f);
-				draw_curve(m_trial->y_curve);
+				draw_curve(*m_trial->getYCurve(-1));
 			}
 
 			if (m_position_graph->show_z) {
 				glColor3f(0.0f,0.0f,1.0f);
-				draw_curve(m_trial->z_curve);
+				draw_curve(*m_trial->getZCurve(-1));
 			}
 
 			if (m_position_graph->show_yaw) {
 				glColor3f(1.0f,1.0f,0.0f);
-				draw_curve(m_trial->yaw_curve);
+				draw_curve(*m_trial->getYawCurve(-1));
 			}
 
 			if (m_position_graph->show_pitch) {
 				glColor3f(1.0f,0.0f,1.0f);
-				draw_curve(m_trial->pitch_curve);
+				draw_curve(*m_trial->getPitchCurve(-1));
 			}
 
 			if (m_position_graph->show_roll) {
 				glColor3f(0.0f,1.0f,1.0f);
-				draw_curve(m_trial->roll_curve);
+				draw_curve(*m_trial->getRollCurve(-1));
 			}
 		}
 		float a = (max_frame+1-min_frame)/(max_value-min_value)*

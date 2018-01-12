@@ -141,20 +141,18 @@ void TrackingOptionsDialog::on_pushButton_OK_clicked(bool checked){
 
 		bool reverse = diag->checkBox_Reverse->checkState() != Qt::Unchecked;
 
-		mainwindow->getTracker()->trial()->volumeTrans = *mainwindow->getVolume_matrix();
-
 		mainwindow->push_state();
 
 		if (mainwindow->getTracker()->trial()->guess == 0) {
 			double xyzypr[6];
-			(CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()))*(*mainwindow->getVolume_matrix())).to_xyzypr(xyzypr);
+			(CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()))*(*mainwindow->getTracker()->trial()->getVolumeMatrix(-1))).to_xyzypr(xyzypr);
 
-			mainwindow->getTracker()->trial()->x_curve.insert(from_frame,xyzypr[0]);
-			mainwindow->getTracker()->trial()->y_curve.insert(from_frame,xyzypr[1]);
-			mainwindow->getTracker()->trial()->z_curve.insert(from_frame,xyzypr[2]);
-			mainwindow->getTracker()->trial()->yaw_curve.insert(from_frame,xyzypr[3]);
-			mainwindow->getTracker()->trial()->pitch_curve.insert(from_frame,xyzypr[4]);
-			mainwindow->getTracker()->trial()->roll_curve.insert(from_frame,xyzypr[5]);
+			mainwindow->getTracker()->trial()->getXCurve(-1)->insert(from_frame, xyzypr[0]);
+			mainwindow->getTracker()->trial()->getYCurve(-1)->insert(from_frame, xyzypr[1]);
+			mainwindow->getTracker()->trial()->getZCurve(-1)->insert(from_frame, xyzypr[2]);
+			mainwindow->getTracker()->trial()->getYawCurve(-1)->insert(from_frame, xyzypr[3]);
+			mainwindow->getTracker()->trial()->getPitchCurve(-1)->insert(from_frame, xyzypr[4]);
+			mainwindow->getTracker()->trial()->getRollCurve(-1)->insert(from_frame, xyzypr[5]);
 		}
 
 		if (!frame_optimizing) {

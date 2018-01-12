@@ -10,6 +10,7 @@ SET(opencl_HEADERS
 	src/gpu/opencl/RayCaster.hpp
 	src/gpu/opencl/SharpenFilter.hpp
 	src/gpu/opencl/SobelFilter.hpp
+	src/gpu/opencl/Merger.hpp
 )
 
 SET(opencl_SOURCES
@@ -22,6 +23,7 @@ SET(opencl_SOURCES
 	src/gpu/opencl/RayCaster.cpp
 	src/gpu/opencl/SharpenFilter.cpp
 	src/gpu/opencl/SobelFilter.cpp
+	src/gpu/opencl/Merger.cpp
 )
 
 

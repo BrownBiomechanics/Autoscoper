@@ -77,9 +77,13 @@ class CameraViewWidget : public QWidget{
 
 		int getID(){return m_id;};
 
+		QString getName(){ return m_name; };
+
 		AutoscoperMainWindow * getMainWindow(){return mainwindow;};
 
 		void draw();
+
+		void saveFrame(QString filename);
 
 	protected:
 
