@@ -36,24 +36,23 @@
 // THEIR USE OF THE SOFTWARE.
 // ----------------------------------
 
-/// \file Compositor_kernels.cu
-/// \author Andy Loomis
+/// \file Merger_kernels.cu
+/// \author Benjamin Knorlein
 
-#include "Compositor_kernels.h"
-
+#include "Merger_kernels.h"
 
 // Define the cuda compositiing kernel
 __global__
-void composite_kernel(float* src1,
+void merge_kernel(float* src1,
                       float* src2,
                       float* dest,
                       size_t width,
                       size_t height);
 
-
 namespace xromm {
 	namespace gpu {
-void composite(float* src1,
+
+void merge(float* src1,
                float* src2,
                float* dest,
                size_t width,
@@ -65,7 +64,7 @@ void composite(float* src1,
                  (height+blockDim.y-1)/blockDim.y);
     
     // Call the kernel
-    composite_kernel<<<gridDim, blockDim>>>(src1,src2,dest,width,height);
+    merge_kernel<<<gridDim, blockDim>>>(src1,src2,dest,width,height);
 }
 
 } // namespace gpu
@@ -73,22 +72,22 @@ void composite(float* src1,
 } // namespace xromm
 
 __global__
-void composite_kernel(float* src1,
-                      float* src2,
-                      float* dest,
-                      size_t width,
-                      size_t height)
+void merge_kernel(float* src1,
+float* src2,
+float* dest,
+size_t width,
+size_t height)
 {
-    int x = blockIdx.x*blockDim.x+threadIdx.x;
-    int y = blockIdx.y*blockDim.y+threadIdx.y;
+	int x = blockIdx.x*blockDim.x + threadIdx.x;
+	int y = blockIdx.y*blockDim.y + threadIdx.y;
 
-    if (x > width-1 || y > height-1) {
-        return;
-    }
+	if (x > width - 1 || y > height - 1) {
+		return;
+	}
 
-    // src1 maps to orange and src2 to blue
-    dest[3*(y*width+x)+0] = src1[y*width+x];
-    dest[3*(y*width+x)+1] = src1[y*width+x]/2.0f+src2[y*width+x]/2.0f;
-    dest[3*(y*width+x)+2] = src2[y*width+x];
+	const unsigned int xy = y*width + x;
+
+	// src1 maps to orange and src2 to blue
+	dest[xy] = min(src1[xy] + src2[xy], 1.0);
 }
 

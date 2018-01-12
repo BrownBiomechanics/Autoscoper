@@ -60,6 +60,7 @@
 #include "gpu/cuda/Compositor_kernels.h"
 #include "gpu/cuda/RayCaster.hpp"
 #include "gpu/cuda/RadRenderer.hpp"
+#include "gpu/cuda/Merger_kernels.h"
 #else
 #include "gpu/opencl/Compositor.hpp"
 #include "gpu/opencl/Merger.hpp"
@@ -95,7 +96,6 @@ View::~View()
 	for (int i = 0; i < drrRenderer_.size(); i++){
 		delete drrRenderer_[i];
 	}
-	drrBuffer_.clear();
     delete radRenderer_;
 
     std::vector<Filter*>::iterator iter;
@@ -108,7 +108,10 @@ View::~View()
     }
 #ifdef WITH_CUDA
 	cutilSafeCall(cudaFree(filterBuffer_));
-    cutilSafeCall(cudaFree(drrBuffer_));
+	for(int i = 0; i < drrBuffer_.size(); i++){
+		cutilSafeCall(cudaFree(drrBuffer_[i]));
+	}
+	cutilSafeCall(cudaFree(drrBufferMerged_));
     cutilSafeCall(cudaFree(drrFilterBuffer_));
     cutilSafeCall(cudaFree(radBuffer_));
     cutilSafeCall(cudaFree(radFilterBuffer_));
@@ -117,13 +120,13 @@ View::~View()
 	for (int i = 0; i < drrBuffer_.size(); i++){
 		delete drrBuffer_[i];
 	}
-	drrBuffer_.clear();
 	delete drrBufferMerged_;
 	delete drrFilterBuffer_;
     delete drrFilterBuffer_;
     delete radBuffer_;
     delete radFilterBuffer_;
 #endif
+	drrBuffer_.clear();
 }
 
 void View::addDrrRenderer(){
@@ -207,8 +210,12 @@ View::renderDrr(Buffer* buffer, unsigned width, unsigned height)
         height = maxHeight_;
     }
 
-    drrRenderer_->render(drrBuffer_, width, height);
-    filter(drrFilters_, drrBuffer_, buffer, width, height);
+	cudaMemset(drrBufferMerged_, 0, width*height*sizeof(float));
+	for (int i = 0; i < drrRenderer_.size(); i++){
+		drrRenderer_[i]->render(drrBuffer_[i], width, height);
+		gpu::merge(drrBufferMerged_, drrBuffer_[i], drrBufferMerged_, width, height);
+	}
+	filter(drrFilters_, drrBufferMerged_, buffer, width, height);
 #else
 	init(width, height);
 	drrBufferMerged_->fill(0x00);
@@ -273,8 +280,13 @@ void View::saveImage(std::string filename, int width, int height)
 		height = maxHeight_;
 	}
 
-	drrRenderer_->render(drrBuffer_, width, height);
-	filter(drrFilters_, drrBuffer_, buffer, width, height);
+	cudaMemset(drrBufferMerged_, 0, width*height*sizeof(float));
+	for (int i = 0; i < drrRenderer_.size(); i++){
+		drrRenderer_[i]->render(drrBuffer_[i], width, height);
+		gpu::merge(drrBufferMerged_, drrBuffer_[i], drrBufferMerged_, width, height);
+	}
+	filter(drrFilters_, drrBufferMerged_, buffer, width, height);
+
 #else
 	init(width, height);
 
@@ -290,13 +302,12 @@ void View::saveImage(std::string filename, int width, int height)
 	unsigned char* uchar_image = new unsigned char[width*height];
 
 	// Copy the image to the host
+#ifdef WITH_CUDA
+	cudaMemcpy(host_image, buffer, width*height*sizeof(float), cudaMemcpyDeviceToHost);
+#else
 	buffer->write(host_image, width*height*sizeof(float));
-	//cudaMemcpy(host_image,dev_image,width*height*sizeof(float),cudaMemcpyDeviceToHost);
+#endif
 
-	// Copy to a char array
-	/*for (int i = 0; i < width*height; i++) {
-	uchar_image[i] = (int)(255*(1.0 - host_image[i]));
-	}*/
 	for (int y = 0; y < height; y++){
 		for (int x = 0; x < width; x++){
 			uchar_image[y*width + x] = (int)(255 * (1.0 - host_image[(height - y - 1)*width + x]));
@@ -396,16 +407,13 @@ void
 View::init()
 {
     if (!filterBuffer_) {
-        cutilSafeCall(cudaMalloc((void**)&filterBuffer_,
-                                 maxWidth_*maxHeight_*sizeof(float)));
-        cutilSafeCall(cudaMalloc((void**)&drrBuffer_,
-                                 maxWidth_*maxHeight_*sizeof(float)));
-        cutilSafeCall(cudaMalloc((void**)&drrFilterBuffer_,
-                                 maxWidth_*maxHeight_*sizeof(float)));
-        cutilSafeCall(cudaMalloc((void**)&radBuffer_,
-                                 maxWidth_*maxHeight_*sizeof(float)));
-        cutilSafeCall(cudaMalloc((void**)&radFilterBuffer_,
-                                 maxWidth_*maxHeight_*sizeof(float)));
+        cutilSafeCall(cudaMalloc((void**)&filterBuffer_, maxWidth_*maxHeight_*sizeof(float)));
+		for(int i = 0 ; i < drrBuffer_.size(); i ++)
+			cutilSafeCall(cudaMalloc((void**)&drrBuffer_[i], maxWidth_*maxHeight_*sizeof(float)));
+		cutilSafeCall(cudaMalloc((void**)&drrBufferMerged_, maxWidth_*maxHeight_*sizeof(float)));
+        cutilSafeCall(cudaMalloc((void**)&drrFilterBuffer_, maxWidth_*maxHeight_*sizeof(float)));
+        cutilSafeCall(cudaMalloc((void**)&radBuffer_, maxWidth_*maxHeight_*sizeof(float)));
+        cutilSafeCall(cudaMalloc((void**)&radFilterBuffer_, maxWidth_*maxHeight_*sizeof(float)));
     }
 }
 #else

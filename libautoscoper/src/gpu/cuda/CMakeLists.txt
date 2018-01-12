@@ -27,6 +27,7 @@ SET(cuda_KERNEL_HEADERS
 	src/gpu/cuda/RayCaster_kernels.h
 	src/gpu/cuda/SharpenFilter_kernels.h
 	src/gpu/cuda/SobelFilter_kernels.h
+	src/gpu/cuda/Merger_kernels.h
 )
 
 SET(cuda_KERNEL
@@ -38,4 +39,5 @@ SET(cuda_KERNEL
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/RayCaster_kernels.cu
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/SharpenFilter_kernels.cu
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/SobelFilter_kernels.cu
+	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/Merger_kernels.cu
 )

@@ -36,59 +36,20 @@
 // THEIR USE OF THE SOFTWARE.
 // ----------------------------------
 
-/// \file Compositor_kernels.cu
-/// \author Andy Loomis
+/// \file Merger_kernels.h
+/// \author Benjamin Knorlein
 
-#include "Compositor_kernels.h"
+#ifndef XROMM_GPU_MERGER_KERNELS_H
+#define XROMM_GPU_MERGER_KERNELS_H
 
+namespace xromm { namespace gpu {
 
-// Define the cuda compositiing kernel
-__global__
-void composite_kernel(float* src1,
-                      float* src2,
-                      float* dest,
-                      size_t width,
-                      size_t height);
-
-
-namespace xromm {
-	namespace gpu {
-void composite(float* src1,
+void merge(float* src1,
                float* src2,
                float* dest,
                size_t width,
-               size_t height)
-{
-    // Calculate the block and grid sizes.
-    dim3 blockDim(16, 16);
-    dim3 gridDim((width+blockDim.x-1)/blockDim.x,
-                 (height+blockDim.y-1)/blockDim.y);
-    
-    // Call the kernel
-    composite_kernel<<<gridDim, blockDim>>>(src1,src2,dest,width,height);
-}
+               size_t height);
 
-} // namespace gpu
+} } // namespace xromm::cuda
 
-} // namespace xromm
-
-__global__
-void composite_kernel(float* src1,
-                      float* src2,
-                      float* dest,
-                      size_t width,
-                      size_t height)
-{
-    int x = blockIdx.x*blockDim.x+threadIdx.x;
-    int y = blockIdx.y*blockDim.y+threadIdx.y;
-
-    if (x > width-1 || y > height-1) {
-        return;
-    }
-
-    // src1 maps to orange and src2 to blue
-    dest[3*(y*width+x)+0] = src1[y*width+x];
-    dest[3*(y*width+x)+1] = src1[y*width+x]/2.0f+src2[y*width+x]/2.0f;
-    dest[3*(y*width+x)+2] = src2[y*width+x];
-}
-
+#endif // XROMM_GPU_MERGER_KERNELS_H

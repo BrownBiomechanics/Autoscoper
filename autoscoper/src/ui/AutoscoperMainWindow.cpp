@@ -1129,11 +1129,12 @@ void AutoscoperMainWindow::on_actionSaveForBatch_triggered(bool checked){
 				xmlWriter.writeStartElement("Batch");
 				xmlWriter.setAutoFormatting(true);
 				//save GPU_devices
+#ifndef WITH_CUDA
 				xmlWriter.writeStartElement("GPUDevice");
 				xmlWriter.writeAttribute("Platform", QString::number(xromm::gpu::getUsedPlatform().first));
 				xmlWriter.writeAttribute("Device", QString::number(xromm::gpu::getUsedPlatform().second));
 				xmlWriter.writeEndElement();
-
+#endif
 				//save Trial
 				QString trial_filename = inputPath + OS_SEP + "trial.cfg";
 				tracker->trial()->save(trial_filename.toAscii().constData());
@@ -1236,9 +1237,11 @@ void AutoscoperMainWindow::runBatch(QString batchfile, bool saveData){
 						QString name = xmlReader.name().toString();
 						if (name == "GPUDevice")
 						{
+#ifndef WITH_CUDA
 							fprintf(stderr, "Load GPUDevice Setting\n");
 							xromm::gpu::setUsedPlatform(xmlReader.readElementText().toInt());
 							QApplication::processEvents();
+#endif
 						}
 						else if (name == "Trial")
 						{
