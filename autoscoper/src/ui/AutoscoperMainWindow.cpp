@@ -308,6 +308,7 @@ void AutoscoperMainWindow::volume_changed()
 	getManipulator()->set_movePivot(ui->toolButtonMovePivot->isChecked());
 
 	//update_xyzypr_and_coord_frame();
+	timeline_widget->getSelectedNodes()->clear();
 	update_graph_min_max(timeline_widget->getPosition_graph());
 
 	redrawGL();
@@ -951,13 +952,14 @@ void AutoscoperMainWindow::newTrial(){
 void AutoscoperMainWindow::push_state()
 {
     State current_state;
-    //current_state.x_curve = tracker->trial()->x_curve;
-    //current_state.y_curve = tracker->trial()->y_curve;
-    //current_state.z_curve = tracker->trial()->z_curve;
-    //current_state.x_rot_curve = tracker->trial()->yaw_curve;
-    //current_state.y_rot_curve = tracker->trial()->pitch_curve;
-    //current_state.z_rot_curve = tracker->trial()->roll_curve;
-
+	for (int i = 0; i < tracker->trial()->num_volumes; i++){
+		current_state.x_curve.push_back(*tracker->trial()->getXCurve(i));
+		current_state.y_curve.push_back(*tracker->trial()->getYCurve(i));
+		current_state.z_curve.push_back(*tracker->trial()->getZCurve(i));
+		current_state.x_rot_curve.push_back(*tracker->trial()->getYawCurve(i));
+		current_state.y_rot_curve.push_back(*tracker->trial()->getPitchCurve(i));
+		current_state.z_rot_curve.push_back(*tracker->trial()->getRollCurve(i));
+	}
     history->push(current_state);
 
     first_undo = true;
@@ -976,12 +978,14 @@ void AutoscoperMainWindow::undo_state()
 
         State undo_state = history->undo();
 
-        //tracker->trial()->x_curve = undo_state.x_curve;
-        //tracker->trial()->y_curve = undo_state.y_curve;
-        //tracker->trial()->z_curve = undo_state.z_curve;
-        //tracker->trial()->yaw_curve = undo_state.x_rot_curve;
-        //tracker->trial()->pitch_curve = undo_state.y_rot_curve;
-        //tracker->trial()->roll_curve = undo_state.z_rot_curve;
+		for (int i = 0; i < tracker->trial()->num_volumes; i++){
+			*tracker->trial()->getXCurve(i) = undo_state.x_curve[i];
+			*tracker->trial()->getYCurve(i) = undo_state.y_curve[i];
+			*tracker->trial()->getZCurve(i) = undo_state.z_curve[i];
+			*tracker->trial()->getYawCurve(i) = undo_state.x_rot_curve[i];
+			*tracker->trial()->getPitchCurve(i) = undo_state.y_rot_curve[i];
+			*tracker->trial()->getRollCurve(i) = undo_state.z_rot_curve[i];
+		}
 
         timeline_widget->getSelectedNodes()->clear();
 
@@ -997,13 +1001,14 @@ void AutoscoperMainWindow::redo_state()
     if (history->can_redo()) {
         State redo_state = history->redo();
 
-        //tracker->trial()->x_curve = redo_state.x_curve;
-        //tracker->trial()->y_curve = redo_state.y_curve;
-        //tracker->trial()->z_curve = redo_state.z_curve;
-        //tracker->trial()->yaw_curve = redo_state.x_rot_curve;
-        //tracker->trial()->pitch_curve = redo_state.y_rot_curve;
-        //tracker->trial()->roll_curve = redo_state.z_rot_curve;
-
+		for (int i = 0; i < tracker->trial()->num_volumes; i++){
+			*tracker->trial()->getXCurve(i) = redo_state.x_curve[i];
+			*tracker->trial()->getYCurve(i) = redo_state.y_curve[i];
+			*tracker->trial()->getZCurve(i) = redo_state.z_curve[i];
+			*tracker->trial()->getYawCurve(i) = redo_state.x_rot_curve[i];
+			*tracker->trial()->getPitchCurve(i) = redo_state.y_rot_curve[i];
+			*tracker->trial()->getRollCurve(i) = redo_state.z_rot_curve[i];
+		}
 		timeline_widget->getSelectedNodes()->clear();
 
         update_graph_min_max(timeline_widget->getPosition_graph());
@@ -1015,12 +1020,14 @@ void AutoscoperMainWindow::redo_state()
 
 void AutoscoperMainWindow::reset_graph()
 {
-    //tracker->trial()->x_curve.clear();
-    //tracker->trial()->y_curve.clear();
-    //tracker->trial()->z_curve.clear();
-    //tracker->trial()->yaw_curve.clear();
-    //tracker->trial()->pitch_curve.clear();
-    //tracker->trial()->roll_curve.clear();
+	for (int i = 0; i < tracker->trial()->num_volumes; i++){
+		tracker->trial()->getXCurve(i)->clear();
+		tracker->trial()->getYCurve(i)->clear();
+		tracker->trial()->getZCurve(i)->clear();
+		tracker->trial()->getYawCurve(i)->clear();
+		tracker->trial()->getPitchCurve(i)->clear();
+		tracker->trial()->getRollCurve(i)->clear();
+	}
 
 	timeline_widget->getCopiedNodes()->clear();
 }
@@ -1377,10 +1384,27 @@ void AutoscoperMainWindow::on_actionPaste_triggered(bool checked){
     if (!timeline_widget->getCopiedNodes()->empty()) {
         float frame_offset = timeline_widget->getCopiedNodes()->front().first->time(timeline_widget->getCopiedNodes()->front().second);
         for (unsigned i = 0; i < timeline_widget->getCopiedNodes()->size(); i++) {
-            float frame = tracker->trial()->frame+(*timeline_widget->getCopiedNodes())[i].first->time((*timeline_widget->getCopiedNodes())[i].second)-frame_offset;
+			float frame = tracker->trial()->frame + (*timeline_widget->getCopiedNodes())[i].first->time((*timeline_widget->getCopiedNodes())[i].second) - frame_offset;
 			if (!timeline_widget->getPosition_graph()->frame_locks.at((int)frame)) {
-                (*timeline_widget->getCopiedNodes())[i].first->insert(frame,(*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
-            }
+				if ((*timeline_widget->getCopiedNodes())[i].first->type == KeyCurve::X_CURVE){
+					getTracker()->trial()->getXCurve(-1)->insert(frame, (*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
+				}
+				else if ((*timeline_widget->getCopiedNodes())[i].first->type == KeyCurve::Y_CURVE){
+					getTracker()->trial()->getYCurve(-1)->insert(frame, (*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
+				}
+				else if ((*timeline_widget->getCopiedNodes())[i].first->type == KeyCurve::Z_CURVE){
+					getTracker()->trial()->getZCurve(-1)->insert(frame, (*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
+				}
+				else if ((*timeline_widget->getCopiedNodes())[i].first->type == KeyCurve::YAW_CURVE){
+					getTracker()->trial()->getYawCurve(-1)->insert(frame, (*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
+				}
+				else if ((*timeline_widget->getCopiedNodes())[i].first->type == KeyCurve::PITCH_CURVE){
+					getTracker()->trial()->getPitchCurve(-1)->insert(frame, (*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
+				}
+				else if ((*timeline_widget->getCopiedNodes())[i].first->type == KeyCurve::ROLL_CURVE){
+					getTracker()->trial()->getRollCurve(-1)->insert(frame, (*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
+				}
+			}
         }
         timeline_widget->getSelectedNodes()->clear();
     }
