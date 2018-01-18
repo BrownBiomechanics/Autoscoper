@@ -154,9 +154,11 @@ void GLView::select_manip_in_view(double x, double y, int button)
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrixd(m);
 
-    mainwindow->getManipulator()->set_view();
-    mainwindow->getManipulator()->set_size(viewdata.scale*mainwindow->getManipulator()->get_pivotSize());
-    mainwindow->getManipulator()->on_mouse_press(x,viewdata.window_height-y);
+	if (mainwindow->getManipulator()){
+		mainwindow->getManipulator()->set_view();
+		mainwindow->getManipulator()->set_size(viewdata.scale*mainwindow->getManipulator()->get_pivotSize());
+		mainwindow->getManipulator()->on_mouse_press(x, viewdata.window_height - y);
+	}
 }
 
  void GLView::wheelEvent(QWheelEvent *e)
@@ -221,49 +223,52 @@ void GLView::move_manip_in_view(double x, double y, bool out_of_plane)
         return;
     }
 
-    CoordFrame frame;
-	if (mainwindow->getManipulator()->get_movePivot()) {
-		frame = (CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()))* *mainwindow->getTracker()->trial()->getVolumeMatrix(-1));
-    }
-
-    if (!out_of_plane) {
-		mainwindow->getManipulator()->set_size(viewdata.scale*mainwindow->getManipulator()->get_pivotSize());
-        mainwindow->getManipulator()->on_mouse_move(x,viewdata.window_height-y);
-    }
-    else if (mainwindow->getManipulator()->selection() == Manip3D::VIEW_PLANE) {
-		CoordFrame mmat = CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()));
-		
-		CoordFrame viewMatrix;
-		if (viewdata.m_isStaticView) {
-			viewMatrix = defaultViewMatrix;
-		}else{
-			viewMatrix = mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame();
+	if (mainwindow->getManipulator()) {
+		CoordFrame frame;
+		if (mainwindow->getManipulator()->get_movePivot()) {
+			frame = (CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()))* *mainwindow->getTracker()->trial()->getVolumeMatrix(-1));
 		}
 
+		if (!out_of_plane) {
+			mainwindow->getManipulator()->set_size(viewdata.scale*mainwindow->getManipulator()->get_pivotSize());
+			mainwindow->getManipulator()->on_mouse_move(x, viewdata.window_height - y);
+		}
+		else if (mainwindow->getManipulator()->selection() == Manip3D::VIEW_PLANE) {
+			CoordFrame mmat = CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()));
 
-        double zdir[3] = { mmat.translation()[0]-viewMatrix.translation()[0],
-                           mmat.translation()[1]-viewMatrix.translation()[1],
-                           mmat.translation()[2]-viewMatrix.translation()[2]};
-        double mag = sqrt(zdir[0]*zdir[0]+zdir[1]*zdir[1]+zdir[2]*zdir[2]);
-        zdir[0] /= mag;
-        zdir[1] /= mag;
-        zdir[2] /= mag;
+			CoordFrame viewMatrix;
+			if (viewdata.m_isStaticView) {
+				viewMatrix = defaultViewMatrix;
+			}
+			else{
+				viewMatrix = mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame();
+			}
 
-        double ztrans[3] = { (x-y)/2.0*zdir[0],(x-y)/2.0*zdir[1],(x-y)/2.0*zdir[2] };
 
-        mmat.translate(ztrans);
+			double zdir[3] = { mmat.translation()[0] - viewMatrix.translation()[0],
+				mmat.translation()[1] - viewMatrix.translation()[1],
+				mmat.translation()[2] - viewMatrix.translation()[2] };
+			double mag = sqrt(zdir[0] * zdir[0] + zdir[1] * zdir[1] + zdir[2] * zdir[2]);
+			zdir[0] /= mag;
+			zdir[1] /= mag;
+			zdir[2] /= mag;
 
-		double m[16];
-		mmat.to_matrix_row_order(m);
-		mainwindow->getManipulator()->set_transform(Mat4d(m));
+			double ztrans[3] = { (x - y) / 2.0*zdir[0], (x - y) / 2.0*zdir[1], (x - y) / 2.0*zdir[2] };
 
-        mainwindow->getManipulator()->set_selection(Manip3D::VIEW_PLANE);
-    }
-	
-	if (mainwindow->getManipulator()->get_movePivot()) {
-        CoordFrame new_manip_matrix = CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()));
-		*(mainwindow->getTracker()->trial()->getVolumeMatrix(-1)) = new_manip_matrix.inverse()*frame;
-    }
+			mmat.translate(ztrans);
+
+			double m[16];
+			mmat.to_matrix_row_order(m);
+			mainwindow->getManipulator()->set_transform(Mat4d(m));
+
+			mainwindow->getManipulator()->set_selection(Manip3D::VIEW_PLANE);
+		}
+
+		if (mainwindow->getManipulator()->get_movePivot()) {
+			CoordFrame new_manip_matrix = CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()));
+			*(mainwindow->getTracker()->trial()->getVolumeMatrix(-1)) = new_manip_matrix.inverse()*frame;
+		}
+	}
 }
 
 void GLView::mouseMoveEvent(QMouseEvent *e){
@@ -361,7 +366,8 @@ void GLView::mouseReleaseEvent(QMouseEvent *e){
 		mainwindow = cameraViewWidget->getMainWindow();
 	}
 
-	mainwindow->getManipulator()->on_mouse_release(e->x(),e->y());
+	if (mainwindow->getManipulator())
+		mainwindow->getManipulator()->on_mouse_release(e->x(),e->y());
 
     mainwindow->update_graph_min_max(mainwindow->getTracker()->trial()->frame);
 
@@ -636,31 +642,33 @@ void GLView::update_scale_in_view(ViewData* view)
 		mainwindow = cameraViewWidget->getMainWindow();
 	}
 
-	CoordFrame mat = CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()));
-    
-	double dist_vec[3];
-	if (view->m_isStaticView) {
-        dist_vec[0] = mat.translation()[0]-
-                      defaultViewMatrix.translation()[0];
-        dist_vec[2] = mat.translation()[1]-
-                      defaultViewMatrix.translation()[1];
-        dist_vec[1] = mat.translation()[2]-
-                      defaultViewMatrix.translation()[2];
-    }
-    else {
-		dist_vec[0] = mat.translation()[0]-
-			mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame().translation()[0];
-		dist_vec[1] = mat.translation()[1]-
-			mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame().translation()[1];
-		dist_vec[2] = mat.translation()[2]-
-			mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame().translation()[2];
-	}
-    double dist = sqrt(dist_vec[0]*dist_vec[0]+
-                       dist_vec[1]*dist_vec[1]+
-                       dist_vec[2]*dist_vec[2]);
+	if (mainwindow->getManipulator()){
+		CoordFrame mat = CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()));
 
-    // Adjust the size of the pivot based on the distance.
-    view->scale = 2.0*dist*tan(view->fovy*M_PI/360.0)*view->near_clip/view->zoom;
+		double dist_vec[3];
+		if (view->m_isStaticView) {
+			dist_vec[0] = mat.translation()[0] -
+				defaultViewMatrix.translation()[0];
+			dist_vec[2] = mat.translation()[1] -
+				defaultViewMatrix.translation()[1];
+			dist_vec[1] = mat.translation()[2] -
+				defaultViewMatrix.translation()[2];
+		}
+		else {
+			dist_vec[0] = mat.translation()[0] -
+				mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame().translation()[0];
+			dist_vec[1] = mat.translation()[1] -
+				mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame().translation()[1];
+			dist_vec[2] = mat.translation()[2] -
+				mainwindow->getTracker()->trial()->cameras.at(cameraViewWidget->getID()).coord_frame().translation()[2];
+		}
+		double dist = sqrt(dist_vec[0] * dist_vec[0] +
+			dist_vec[1] * dist_vec[1] +
+			dist_vec[2] * dist_vec[2]);
+
+		// Adjust the size of the pivot based on the distance.
+		view->scale = 2.0*dist*tan(view->fovy*M_PI / 360.0)*view->near_clip / view->zoom;
+	}
 }
 
 void GLView::draw_manip_from_view(const ViewData* view)
@@ -674,14 +682,16 @@ void GLView::draw_manip_from_view(const ViewData* view)
 		mainwindow = cameraViewWidget->getMainWindow();
 	}
 	
-	glLineWidth(1.0);
-	mainwindow->getManipulator()->set_size(view->scale*mainwindow->getManipulator()->get_pivotSize());
-    mainwindow->getManipulator()->draw();
+	if (mainwindow->getManipulator()){
+		glLineWidth(1.0);
+		mainwindow->getManipulator()->set_size(view->scale*mainwindow->getManipulator()->get_pivotSize());
+		mainwindow->getManipulator()->draw();
 
-   if ( mainwindow->getManipulator()->get_movePivot()) {
-        glLineStipple(1,0);
-        glDisable(GL_LINE_STIPPLE);
-    }
+		if (mainwindow->getManipulator()->get_movePivot()) {
+			glLineStipple(1, 0);
+			glDisable(GL_LINE_STIPPLE);
+		}
+	}
 }
 
 void GLView::enable_headlight()

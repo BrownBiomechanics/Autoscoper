@@ -311,18 +311,19 @@ void ModelViewTreeWidgetItem::resetVectors(){
 
 void ModelViewTreeWidgetItem::updateModelview(){
 	if(m_type == 1){
-		int idx = 0;
-		xromm::gpu::RayCaster* rayCaster = ((CameraTreeWidgetItem*)QTreeWidgetItem::parent())->getView()->drrRenderer(idx);  // not sure if this is correct. Dont we have to go through all drrRenderer
+		for (int idx = 0; idx < ((CameraTreeWidgetItem*)QTreeWidgetItem::parent())->getView()->nbDrrRenderer(); idx++){
+			xromm::gpu::RayCaster* rayCaster = ((CameraTreeWidgetItem*)QTreeWidgetItem::parent())->getView()->drrRenderer(idx);  // not sure if this is correct. Dont we have to go through all drrRenderer
 
-		double value = exp(7*parameters[0]->value-5);
-		rayCaster->setSampleDistance(value);	
+			double value = exp(7 * parameters[0]->value - 5);
+			rayCaster->setSampleDistance(value);
 
-		value = exp(15*parameters[1]->value-5);
-		rayCaster->setRayIntensity(value);	
+			value = exp(15 * parameters[1]->value - 5);
+			rayCaster->setRayIntensity(value);
 
-		value = parameters[2]->value;
-		value = value*(rayCaster->getMaxCutoff()-rayCaster->getMinCutoff()) +rayCaster->getMinCutoff();
-		rayCaster->setCutoff(value);	
+			value = parameters[2]->value;
+			value = value*(rayCaster->getMaxCutoff() - rayCaster->getMinCutoff()) + rayCaster->getMinCutoff();
+			rayCaster->setCutoff(value);
+		}
 	}
 
 	FilterTreeWidget * filterTreeWidget = dynamic_cast <FilterTreeWidget *>(treeWidget());

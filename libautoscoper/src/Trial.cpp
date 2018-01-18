@@ -258,6 +258,9 @@ void Trial::save(const std::string& filename)
 }
 
 KeyCurve * Trial::getXCurve(int volumeID){
+	if (volumestransform.size() <= 0)
+		return NULL;
+
 	if (volumeID < volumestransform.size() &&
 		volumeID >= 0){
 		return &volumestransform[volumeID].x_curve;
@@ -268,6 +271,9 @@ KeyCurve * Trial::getXCurve(int volumeID){
 }
 
 KeyCurve * Trial::getYCurve(int volumeID){
+	if (volumestransform.size() <= 0)
+		return NULL;
+
 	if (volumeID < volumestransform.size() &&
 		volumeID >= 0){
 		return &volumestransform[volumeID].y_curve;
@@ -278,6 +284,9 @@ KeyCurve * Trial::getYCurve(int volumeID){
 }
 
 KeyCurve * Trial::getZCurve(int volumeID){
+	if (volumestransform.size() <= 0)
+		return NULL;
+
 	if (volumeID < volumestransform.size() &&
 		volumeID >= 0){
 		return &volumestransform[volumeID].z_curve;
@@ -288,6 +297,9 @@ KeyCurve * Trial::getZCurve(int volumeID){
 }
 
 KeyCurve * Trial::getYawCurve(int volumeID){
+	if (volumestransform.size() <= 0)
+		return NULL;
+
 	if (volumeID < volumestransform.size() &&
 		volumeID >= 0){
 		return &volumestransform[volumeID].yaw_curve;
@@ -298,6 +310,9 @@ KeyCurve * Trial::getYawCurve(int volumeID){
 }
 
 KeyCurve * Trial::getPitchCurve(int volumeID){
+	if (volumestransform.size() <= 0)
+		return NULL;
+
 	if (volumeID < volumestransform.size() &&
 		volumeID >= 0){
 		return &volumestransform[volumeID].pitch_curve;
@@ -308,6 +323,9 @@ KeyCurve * Trial::getPitchCurve(int volumeID){
 }
 
 KeyCurve * Trial::getRollCurve(int volumeID){
+	if (volumestransform.size() <= 0)
+		return NULL;
+
 	if (volumeID < volumestransform.size() &&
 		volumeID >= 0){
 		return &volumestransform[volumeID].roll_curve;
@@ -318,6 +336,9 @@ KeyCurve * Trial::getRollCurve(int volumeID){
 }
 
 CoordFrame * Trial::getVolumeMatrix(int volumeID){
+	if (volumestransform.size() <= 0)
+		return NULL;
+
 	if (volumeID < volumestransform.size() &&
 		volumeID >= 0){
 		return &volumestransform[volumeID].volumeMatrix;

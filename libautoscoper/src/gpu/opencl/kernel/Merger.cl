@@ -13,7 +13,7 @@ void merge_kernel(__global const float* src1,
 	const uint xy = y*width + x;	
 
     // src1 maps to orange and src2 to blue
-    dest[xy] = min(src1[xy] + src2[xy],1.0);
+	dest[xy] = min(src1[xy] + src2[xy], 1.0f);
 }
 
 // vim: ts=4 syntax=cpp noexpandtab

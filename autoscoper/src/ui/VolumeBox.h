@@ -36,55 +36,35 @@
 // THEIR USE OF THE SOFTWARE.
 // ---------------------------------
 
-/// \file NewTrialDialog.h
-/// \author Benjamin Knorlein, Andy Loomis
+/// \file VolumeBox.h
+/// \author Benjamin Knorlein
 
-#ifndef NEWTRIALDIALOG_H_
-#define NEWTRIALDIALOG_H_
+#ifndef VOLUMEBOX_H_
+#define VOLUMEBOX_H_
 
-#include <QDialog>
+#include <QWidget>
 
 namespace Ui {
-	class NewTrialDialog;
+	class VolumeBox;
 }
 
-
-#include "Trial.hpp"
-using xromm::Trial;
-
-class CameraBox;
-class VolumeBox;
-
-class NewTrialDialog : public QDialog{
+class VolumeBox : public QWidget{
 
 	Q_OBJECT
 
 	private:
-		std::vector <CameraBox *> cameras;	
-		std::vector <VolumeBox *> volumes;
-		int nbCams;
-		int nbVolumes;
-		bool run();
+		
 
 	public:
-		explicit NewTrialDialog(QWidget *parent = 0);
-		~NewTrialDialog();
+		explicit VolumeBox(QWidget *parent = 0);
+		~VolumeBox();
 
-		Ui::NewTrialDialog *diag;
+		Ui::VolumeBox *widget;
 
-		Trial trial;
-	
 	public slots:
 
-		void on_toolButton_CameraMinus_clicked();
-		void on_toolButton_CameraPlus_clicked();
-
-		void on_toolButtonVolumeMinus_clicked();
-		void on_toolButton_VolumePlus_clicked();
-		
-		void on_pushButton_OK_clicked();
-		void on_pushButton_Cancel_clicked();
+		void on_toolButton_VolumeFile_clicked();
 
 };
 
-#endif /* NEWTRIALDIALOG_H_ */
+#endif /* VOLUMEBOX_H_ */

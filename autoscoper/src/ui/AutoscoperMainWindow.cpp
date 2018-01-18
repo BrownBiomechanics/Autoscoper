@@ -305,7 +305,8 @@ void AutoscoperMainWindow::volume_changed()
 		timeline_widget->setValuesEnabled(true);
 	}
 
-	getManipulator()->set_movePivot(ui->toolButtonMovePivot->isChecked());
+	if (getManipulator(-1))
+		getManipulator(-1)->set_movePivot(ui->toolButtonMovePivot->isChecked());
 
 	//update_xyzypr_and_coord_frame();
 	timeline_widget->getSelectedNodes()->clear();
@@ -317,13 +318,15 @@ void AutoscoperMainWindow::volume_changed()
 
 void AutoscoperMainWindow::update_xyzypr()
 {
-    double xyzypr[6];
-	(CoordFrame::from_matrix(trans(getManipulator(-1)->transform())) * *tracker->trial()->getVolumeMatrix(-1)).to_xyzypr(xyzypr);
+	if (getManipulator(-1) && tracker->trial()->getVolumeMatrix(-1)){
+		double xyzypr[6];
+		(CoordFrame::from_matrix(trans(getManipulator(-1)->transform())) * *tracker->trial()->getVolumeMatrix(-1)).to_xyzypr(xyzypr);
 
-    ////Update the spin buttons.
-    timeline_widget->setSpinButtonUpdate(false);
-    timeline_widget->setValues(&xyzypr[0]);
-	timeline_widget->setSpinButtonUpdate(true);
+		////Update the spin buttons.
+		timeline_widget->setSpinButtonUpdate(false);
+		timeline_widget->setValues(&xyzypr[0]);
+		timeline_widget->setSpinButtonUpdate(true);
+	}
 	redrawGL();
 }
 
@@ -648,16 +651,28 @@ QString AutoscoperMainWindow::get_filename(bool save, QString type)
 	return FileName;
 }
 
-void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate){
+void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume){
 	const char* s = save_with_commas ? "," : " ";
 
 	std::ofstream file(filename.toAscii().constData(), ios::out);
+
+	int start, stop;
+	if (volume == -1)
+	{
+		start = 0;
+		stop = tracker->trial()->num_volumes;
+	}
+	else
+	{
+		start = volume;
+		stop = volume + 1;
+	}
 
 	file.precision(16);
 	file.setf(ios::fixed, ios::floatfield);
 	bool invalid;
 	for (int i = 0; i < tracker->trial()->num_frames; ++i) {
-		for (int j = 0; j < tracker->trial()->num_volumes; j++){
+		for (int j = start; j < stop; j++){
 			if (!interpolate) {
 				if (tracker->trial()->getXCurve(-1)->find(i) ==
 					tracker->trial()->getXCurve(-1)->end() &&
@@ -758,21 +773,33 @@ void AutoscoperMainWindow::save_tracking_results(QString filename)
 		bool save_with_commas = diag->diag->radioButton_SeperatorComma->isChecked();
 		bool convert_to_cm = diag->diag->radioButton_TranslationCM->isChecked();
 		bool convert_to_rad = diag->diag->radioButton_RotationRadians->isChecked();
-		bool interpolate = diag->diag->radioButton_InterpolationSpline->isChecked();
-
-		save_tracking_results(filename, save_as_matrix,save_as_rows,save_with_commas,convert_to_cm,convert_to_rad,interpolate);
+		bool interpolate = diag->diag->radioButton_InterpolationSpline->isChecked();		
+		int volume = -1;
+		if (diag->diag->radioButton_VolumeCurrent->isChecked()) volume = tracker->trial()->current_volume;
+		save_tracking_results(filename, save_as_matrix,save_as_rows,save_with_commas,convert_to_cm,convert_to_rad,interpolate, volume);
 
 		is_tracking_saved = true;
 	}
 	delete diag;
 }
 
-void AutoscoperMainWindow::load_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate){
+void AutoscoperMainWindow::load_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume){
 	char s = save_with_commas ? ',' : ' ';
 
+	int start, stop;
+	if (volume == -1)
+	{
+		start = 0;
+		stop = tracker->trial()->num_volumes;
+	}
+	else
+	{
+		start = volume;
+		stop = volume + 1;
+	}
 	std::ifstream file(filename.toStdString().c_str(), ios::in);
 
-	for (int j = 0; j < tracker->trial()->num_volumes; j++){
+	for (int j = start; j < stop; j++){
 		tracker->trial()->getXCurve(j)->clear();
 		tracker->trial()->getYCurve(j)->clear();
 		tracker->trial()->getZCurve(j)->clear();
@@ -785,7 +812,7 @@ void AutoscoperMainWindow::load_tracking_results(QString filename, bool save_as_
 	string line, value;
 	for (int i = 0; i < tracker->trial()->num_frames && getline(file, line); ++i) {
 		istringstream lineStream(line);
-		for (int k = 0; k < tracker->trial()->num_volumes; k++){
+		for (int k = start; k < stop; k++){
 			for (int j = 0; j < (save_as_matrix ? 16 : 6) && getline(lineStream, value, s); ++j) {
 				istringstream valStream(value);
 				valStream >> m[j];
@@ -869,8 +896,10 @@ void AutoscoperMainWindow::load_tracking_results(QString filename)
 		bool convert_to_cm = diag->diag->radioButton_TranslationCM->isChecked();
 		bool convert_to_rad = diag->diag->radioButton_RotationRadians->isChecked();
 		bool interpolate = diag->diag->radioButton_InterpolationSpline->isChecked();
+		int volume = -1;
+		if (diag->diag->radioButton_VolumeCurrent->isChecked()) volume = tracker->trial()->current_volume;
 
-		load_tracking_results(filename, save_as_matrix, save_as_rows, save_with_commas, convert_to_cm, convert_to_rad, interpolate);
+		load_tracking_results(filename, save_as_matrix, save_as_rows, save_with_commas, convert_to_cm, convert_to_rad, interpolate, volume);
 	}
 	delete diag;
 }

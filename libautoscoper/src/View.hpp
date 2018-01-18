@@ -100,6 +100,7 @@ public:
     void renderRad(unsigned int pbo, unsigned int width, unsigned int height);
 
     void renderDrr(Buffer* buffer, unsigned int width, unsigned int height);
+	void renderDrrSingle(int volume, Buffer* buffer, unsigned width, unsigned height);
     void renderDrr(unsigned int  pbo, unsigned int width, unsigned int height);
 
     void render(GLBuffer* buffer, unsigned int width, unsigned int height);
@@ -107,6 +108,11 @@ public:
 
     bool drr_enabled;
     bool rad_enabled;
+
+	const unsigned int nbDrrRenderer()
+	{
+		return drrRenderer_.size();
+	}
 
 private:
 #ifdef WITH_CUDA

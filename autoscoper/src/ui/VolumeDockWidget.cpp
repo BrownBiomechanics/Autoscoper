@@ -30,9 +30,9 @@ void VolumeDockWidget::addVolume(const std::string& filename){
 	QTreeWidgetItem* volumeItem = new QTreeWidgetItem();
 	QFileInfo fi (QString::fromStdString(filename));
 
-
 	volumeItem->setText(0,fi.completeBaseName());
 	dock->treeWidget->addTopLevelItem(volumeItem);
+	dock->treeWidget->setCurrentItem(volumeItem);
 }
 
 void VolumeDockWidget::on_treeWidget_currentItemChanged ( QTreeWidgetItem * current, QTreeWidgetItem * previous) {

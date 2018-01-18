@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>VolumeBox</class>
+ <widget class="QWidget" name="VolumeBox">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>701</width>
+    <height>103</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="margin">
+    <number>0</number>
+   </property>
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="groupBox_Volume">
+     <property name="title">
+      <string>Volume</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_5">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Scale XYZ</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>File</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QToolButton" name="toolButton_FlipX">
+        <property name="text">
+         <string>X</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLineEdit" name="lineEdit_ScaleY"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Flip XYZ</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLineEdit" name="lineEdit_ScaleZ"/>
+      </item>
+      <item row="3" column="3">
+       <widget class="QToolButton" name="toolButton_FlipZ">
+        <property name="text">
+         <string>Z</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QToolButton" name="toolButton_FlipY">
+        <property name="text">
+         <string>Y</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="lineEdit_ScaleX"/>
+      </item>
+      <item row="0" column="1" colspan="4">
+       <widget class="QLineEdit" name="lineEdit_VolumeFile">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QToolButton" name="toolButton_VolumeFile">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4" colspan="2">
+       <widget class="QComboBox" name="comboBox_Units">
+        <property name="currentIndex">
+         <number>-1</number>
+        </property>
+        <property name="maxVisibleItems">
+         <number>12</number>
+        </property>
+        <item>
+         <property name="text">
+          <string>um</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>mm</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>cm</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

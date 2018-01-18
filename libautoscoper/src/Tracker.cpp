@@ -65,10 +65,13 @@
 #include "DownhillSimplex.hpp"
 #include "Camera.hpp"
 #include "CoordFrame.hpp"
+#include <cuda_runtime_api.h>
 
 using namespace std;
 
 static bool firstRun = true;
+
+#define DEBUG 1
 
 // XXX
 // Set callback for Downhill Simplex. This is really a hack so that we can use
@@ -81,23 +84,39 @@ double FUNC(double* P) { return g_markerless->minimizationFunc(P+1); }
 namespace xromm {
 
 #if DEBUG
-void save_debug_image(const gpu::Buffer* dev_image, int width, int height)
+#ifdef WITH_CUDA
+	void save_debug_image(const Buffer* dev_image, int width, int height)
+#else
+	void save_debug_image(const gpu::Buffer* dev_image, int width, int height)
+#endif
 {
 	static int count = 0;
 	float* host_image = new float[width*height];
 	unsigned char* uchar_image = new unsigned char[width*height];
 
-	// Copy the image to the host
+#ifdef WITH_CUDA
+	cudaMemcpy(host_image, dev_image, width*height*sizeof(float), cudaMemcpyDeviceToHost);
+#else
 	dev_image->write(host_image, width*height*sizeof(float));
-	//cudaMemcpy(host_image,dev_image,width*height*sizeof(float),cudaMemcpyDeviceToHost);
+#endif
+#undef max
+#undef min
+	float minim = std::numeric_limits<float>::max();
+	float maxim = std::numeric_limits<float>::min();
 
 	// Copy to a char array
 	for (int i = 0; i < width*height; i++) {
-		uchar_image[i] = (int)(255*host_image[i]);
+		if (host_image[i] > maxim) maxim = host_image[i];
+		if (host_image[i] < minim) minim = host_image[i];
+	}
+
+	// Copy to a char array
+	for (int i = 0; i < width*height; i++) {
+		uchar_image[i] = (int)(255*(host_image[i] - minim)/(maxim - minim));
 	}
 
 	char filename[256];
-	sprintf(filename,"image_%02d.ppm",count++);
+	sprintf(filename,"pgm//image_%02d.pgm",count++);
 	ofstream file(filename,ios::out);
 	file << "P2" << endl;
 	file << width << " " << height << endl;
@@ -332,7 +351,7 @@ double Tracker::minimizationFunc(const double* values) const
     double* correlations = new double[views_.size()];
     for (unsigned int i = 0; i < views_.size(); ++i) {
 
-		int idx = 0;
+		int idx = trial_.current_volume;
         // Set the modelview matrix for DRR rendering
         CoordFrame modelview = views_[i]->camera()->coord_frame().inverse()*xcframe;
         double imv[16]; modelview.inverse().to_matrix_row_order(imv);
@@ -353,17 +372,17 @@ double Tracker::minimizationFunc(const double* values) const
                                                viewport[2],viewport[3]);
 
         // Render the DRR and Radiograph
-        views_[i]->renderDrr(rendered_drr_,render_width,render_height);
+		views_[i]->renderDrrSingle(idx, rendered_drr_, render_width, render_height);
         views_[i]->renderRad(rendered_rad_,render_width,render_height);
+
+#if DEBUG
+		save_debug_image(rendered_drr_, render_width, render_height);
+		save_debug_image(rendered_rad_, render_width, render_height);
+#endif
 
         // Calculate the correlation
         correlations[i] = 1.0-gpu::ncc(rendered_drr_,rendered_rad_,
                                           render_width*render_height);
-
-#if DEBUG
-        save_debug_image(rendered_drr_,render_width,render_height);
-        save_debug_image(rendered_rad_,render_width,render_height);
-#endif
     }
 
     double correlation = correlations[0];
@@ -382,7 +401,7 @@ Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) const
     double min_max[4] = {1.0,1.0,-1.0,-1.0};
     double corners[24] = {0,0,-1,0,0,0, 0,1,-1,0,1,0, 1,0,-1,1,0,0,1,1,-1,1,1,0};
 
-	int idx = 0;
+	int idx = trial_.current_volume;
 
     for (int j = 0; j < 8; j++) {
 

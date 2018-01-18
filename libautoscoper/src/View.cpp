@@ -227,6 +227,30 @@ View::renderDrr(Buffer* buffer, unsigned width, unsigned height)
 #endif
 }
 
+void View::renderDrrSingle(int volume, Buffer* buffer, unsigned width, unsigned height)
+{
+#ifdef WITH_CUDA
+	init();
+
+	if (width > maxWidth_ || height > maxHeight_) {
+		cerr << "View::renderDrr(): ERROR: Buffer too large." << endl;
+	}
+	if (width > maxWidth_) {
+		width = maxWidth_;
+	}
+	if (height > maxHeight_) {
+		height = maxHeight_;
+	}
+
+	drrRenderer_[volume]->render(drrBuffer_[volume], width, height);
+	filter(drrFilters_, drrBuffer_[volume], buffer, width, height);
+#else
+	init(width, height);
+	drrRenderer_[volume]->render(drrBuffer_[volume], width, height);
+	filter(drrFilters_, drrBuffer_[volume], buffer, width, height);
+#endif
+}
+
 void
 View::renderDrr(unsigned int pbo, unsigned width, unsigned height)
 {
@@ -391,6 +415,7 @@ View::render(unsigned int pbo, unsigned width, unsigned height)
 
     cutilSafeCall(cudaGraphicsUnmapResources(1, &pboCudaResource, 0));
 	cutilSafeCall(cudaGraphicsUnregisterResource(pboCudaResource));
+	delete[] buffer;
 #else
 	GLBuffer* buffer = new GLBuffer(pbo, CL_MEM_WRITE_ONLY);
 
@@ -420,8 +445,8 @@ View::init()
 void
 View::init(unsigned width, unsigned height)
 {
-    if (width > maxWidth_ || height > maxHeight_) {
-		throw runtime_error("View::renderDrr(): Buffer too large");
+	if (width*height > maxWidth_ * maxHeight_) {
+		throw runtime_error("GPU Buffers too small");
     }
 
     if (!inited_) {

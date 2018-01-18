@@ -17,6 +17,10 @@
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <widget class="QTreeWidget" name="treeWidget">
+      <property name="styleSheet">
+       <string notr="true">QTreeView::item:selected{background-color: #be0000;} //light blue
+</string>
+      </property>
       <attribute name="headerVisible">
        <bool>false</bool>
       </attribute>

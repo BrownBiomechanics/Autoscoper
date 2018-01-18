@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>317</height>
+    <width>434</width>
+    <height>384</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,79 +20,117 @@
    <property name="verticalSpacing">
     <number>15</number>
    </property>
-   <item row="4" column="4">
-    <spacer name="horizontalSpacer_4">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
    <item row="2" column="0" colspan="5">
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="styleSheet">
+      <string notr="true">QGroupBox {
+    border: 1px solid gray;
+    border-radius: 9px;
+    margin-top: 0.5em;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 10px;
+    padding: 0 3px 0 3px;
+}</string>
      </property>
+     <property name="title">
+      <string>Units</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="1" column="1" colspan="3">
+       <widget class="QFrame" name="frame_5">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_8">
+         <property name="topMargin">
+          <number>3</number>
+         </property>
+         <property name="bottomMargin">
+          <number>3</number>
+         </property>
+         <property name="verticalSpacing">
+          <number>3</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QRadioButton" name="radioButton_TranslationMM">
+           <property name="text">
+            <string>mm</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QRadioButton" name="radioButton_TranslationCM">
+           <property name="text">
+            <string>cm</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Translation</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Rotation</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1" colspan="3">
+       <widget class="QFrame" name="frame_6">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_9">
+         <property name="topMargin">
+          <number>3</number>
+         </property>
+         <property name="bottomMargin">
+          <number>3</number>
+         </property>
+         <property name="verticalSpacing">
+          <number>3</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QRadioButton" name="radioButton_RoationDegrees">
+           <property name="text">
+            <string>degrees</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QRadioButton" name="radioButton_RotationRadians">
+           <property name="text">
+            <string>radians</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+     <zorder>label_5</zorder>
+     <zorder>label_6</zorder>
+     <zorder>frame_5</zorder>
+     <zorder>frame_6</zorder>
     </widget>
    </item>
-   <item row="4" column="1">
-    <widget class="QPushButton" name="pushButton_Cancel">
-     <property name="maximumSize">
-      <size>
-       <width>150</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>Cancel</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <spacer name="horizontalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="4" column="2">
-    <spacer name="horizontalSpacer_3">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="4" column="3">
-    <widget class="QPushButton" name="pushButton_OK">
-     <property name="maximumSize">
-      <size>
-       <width>150</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>OK</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" colspan="5">
+   <item row="1" column="0" colspan="5">
     <widget class="QGroupBox" name="groupBox_2">
      <property name="styleSheet">
       <string notr="true">QGroupBox {
@@ -285,8 +323,80 @@ QGroupBox::title {
      </layout>
     </widget>
    </item>
-   <item row="1" column="0" colspan="5">
-    <widget class="QGroupBox" name="groupBox">
+   <item row="5" column="0">
+    <spacer name="horizontalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="5" column="2">
+    <spacer name="horizontalSpacer_3">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="5" column="4">
+    <spacer name="horizontalSpacer_4">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="5" column="1">
+    <widget class="QPushButton" name="pushButton_Cancel">
+     <property name="maximumSize">
+      <size>
+       <width>150</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="5">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="3">
+    <widget class="QPushButton" name="pushButton_OK">
+     <property name="maximumSize">
+      <size>
+       <width>150</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>OK</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="5">
+    <widget class="QGroupBox" name="groupBox_3">
      <property name="styleSheet">
       <string notr="true">QGroupBox {
     border: 1px solid gray;
@@ -301,18 +411,18 @@ QGroupBox::title {
 }</string>
      </property>
      <property name="title">
-      <string>Units</string>
+      <string>Volumes</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="1" column="1" colspan="3">
-       <widget class="QFrame" name="frame_5">
+     <layout class="QGridLayout" name="gridLayout_10">
+      <item row="1" column="1" colspan="2">
+       <widget class="QFrame" name="frame_7">
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QGridLayout" name="gridLayout_8">
+        <layout class="QGridLayout" name="gridLayout_11">
          <property name="topMargin">
           <number>3</number>
          </property>
@@ -323,16 +433,16 @@ QGroupBox::title {
           <number>3</number>
          </property>
          <item row="0" column="0">
-          <widget class="QRadioButton" name="radioButton_TranslationMM">
+          <widget class="QRadioButton" name="radioButton_VolumeCurrent">
            <property name="text">
-            <string>mm</string>
+            <string>current</string>
            </property>
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QRadioButton" name="radioButton_TranslationCM">
+          <widget class="QRadioButton" name="radioButton_VolumeAll">
            <property name="text">
-            <string>cm</string>
+            <string>all</string>
            </property>
           </widget>
          </item>
@@ -340,60 +450,13 @@ QGroupBox::title {
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label_5">
+       <widget class="QLabel" name="label_7">
         <property name="text">
-         <string>Translation</string>
+         <string>Volume</string>
         </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_6">
-        <property name="text">
-         <string>Rotation</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1" colspan="3">
-       <widget class="QFrame" name="frame_6">
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_9">
-         <property name="topMargin">
-          <number>3</number>
-         </property>
-         <property name="bottomMargin">
-          <number>3</number>
-         </property>
-         <property name="verticalSpacing">
-          <number>3</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="QRadioButton" name="radioButton_RoationDegrees">
-           <property name="text">
-            <string>degrees</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QRadioButton" name="radioButton_RotationRadians">
-           <property name="text">
-            <string>radians</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
        </widget>
       </item>
      </layout>
-     <zorder>groupBox_2</zorder>
-     <zorder>label_5</zorder>
-     <zorder>label_6</zorder>
-     <zorder>frame_5</zorder>
-     <zorder>frame_6</zorder>
     </widget>
    </item>
   </layout>

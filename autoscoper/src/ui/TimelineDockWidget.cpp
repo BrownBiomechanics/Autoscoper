@@ -296,6 +296,9 @@ void TimelineDockWidget::setValuesEnabled(bool enabled){
 
 void TimelineDockWidget::update_graph_min_max(int frame)
 {
+	if (!mainwindow->getTracker()->trial()->getXCurve(-1))
+		return;
+
 	if (!mainwindow->getTracker()->trial() || mainwindow->getTracker()->trial()->getXCurve(-1)->empty()) {
 		position_graph->max_value = 180.0;
         position_graph->min_value = -180.0;

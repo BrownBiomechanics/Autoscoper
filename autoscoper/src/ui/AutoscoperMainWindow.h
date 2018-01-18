@@ -146,10 +146,10 @@ class AutoscoperMainWindow : public QMainWindow{
 		
 		void save_tracking_prompt();
 		void save_trial_prompt();
-		void save_tracking_results(QString filename, bool save_as_matrix,bool save_as_rows,bool save_with_commas,bool convert_to_cm,bool convert_to_rad,bool interpolate);
+		void save_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume = -1);
 		void save_tracking_results(QString filename);
 		void load_tracking_results(QString filename);
-		void load_tracking_results(QString filename, bool save_as_matrix,bool save_as_rows,bool save_with_commas,bool convert_to_cm,bool convert_to_rad,bool interpolate);
+		void load_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume = -1);
 	protected:
 		void closeEvent(QCloseEvent *event);
 

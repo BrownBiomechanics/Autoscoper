@@ -37,6 +37,7 @@ SET(autoscoper_FORMS_HEADERS
 		src/ui/NewTrialDialog.h
 		src/ui/VolumeDockWidget.h
 		src/ui/WorldViewWindow.h
+		src/ui/VolumeBox.h
 )
 SET(autoscoper_FORMS_SOURCES
      	src/ui/AutoscoperMainWindow.cpp
@@ -61,6 +62,7 @@ SET(autoscoper_FORMS_SOURCES
 		src/ui/NewTrialDialog.cpp
 		src/ui/WorldViewWindow.cpp
 		src/ui/VolumeDockWidget.cpp
+		src/ui/VolumeBox.cpp
 )
 
 #QT DESIGNER UI FILES
@@ -75,6 +77,7 @@ SET(autoscoper_FORMS
 		src/ui/ui-files/CameraBox.ui
 		src/ui/ui-files/NewTrialDialog.ui
 		src/ui/ui-files/VolumeDockWidget.ui
+		src/ui/ui-files/VolumeBox.ui
 )
 
 QT4_WRAP_UI(autoscoper_FORMS_HEADERS_GEN ${autoscoper_FORMS})

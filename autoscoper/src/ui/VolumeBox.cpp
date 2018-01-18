@@ -36,55 +36,30 @@
 // THEIR USE OF THE SOFTWARE.
 // ---------------------------------
 
-/// \file NewTrialDialog.h
-/// \author Benjamin Knorlein, Andy Loomis
+/// \file VolumeBox.cpp
+/// \author Benjamin Knorlein
 
-#ifndef NEWTRIALDIALOG_H_
-#define NEWTRIALDIALOG_H_
+#include "ui/VolumeBox.h"
+#include "ui_VolumeBox.h"
 
-#include <QDialog>
+#include <QFileDialog>
 
-namespace Ui {
-	class NewTrialDialog;
+
+VolumeBox::VolumeBox(QWidget *parent) :
+												QWidget(parent),
+												widget(new Ui::VolumeBox){
+	widget->setupUi(this);
 }
 
+VolumeBox::~VolumeBox(){
+	delete widget;
+}
 
-#include "Trial.hpp"
-using xromm::Trial;
-
-class CameraBox;
-class VolumeBox;
-
-class NewTrialDialog : public QDialog{
-
-	Q_OBJECT
-
-	private:
-		std::vector <CameraBox *> cameras;	
-		std::vector <VolumeBox *> volumes;
-		int nbCams;
-		int nbVolumes;
-		bool run();
-
-	public:
-		explicit NewTrialDialog(QWidget *parent = 0);
-		~NewTrialDialog();
-
-		Ui::NewTrialDialog *diag;
-
-		Trial trial;
-	
-	public slots:
-
-		void on_toolButton_CameraMinus_clicked();
-		void on_toolButton_CameraPlus_clicked();
-
-		void on_toolButtonVolumeMinus_clicked();
-		void on_toolButton_VolumePlus_clicked();
-		
-		void on_pushButton_OK_clicked();
-		void on_pushButton_Cancel_clicked();
-
-};
-
-#endif /* NEWTRIALDIALOG_H_ */
+void VolumeBox::on_toolButton_VolumeFile_clicked(){
+	QString fileName = QFileDialog::getOpenFileName(this,
+		tr("Open Volume File"), QDir::currentPath(), tr("Volume Object File (*.tif)"));
+	if (fileName.isNull() == false)
+	{
+		widget->lineEdit_VolumeFile->setText(fileName);
+	}
+}

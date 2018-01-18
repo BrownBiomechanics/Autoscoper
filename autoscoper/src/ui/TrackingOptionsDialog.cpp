@@ -84,7 +84,7 @@ void TrackingOptionsDialog::frame_optimize()
             return;
          }
 
-		  mainwindow->getTracker()->optimize(frame, d_frame, num_repeats);
+		mainwindow->getTracker()->optimize(frame, d_frame, num_repeats);
 
           mainwindow->update_graph_min_max(mainwindow->getPosition_graph(), mainwindow->getTracker()->trial()->frame);
 
@@ -137,7 +137,7 @@ void TrackingOptionsDialog::on_pushButton_OK_clicked(bool checked){
 		from_frame = diag->spinBox_FrameStart->value();
 		to_frame = diag->spinBox_FrameEnd->value();
 
-		num_repeats = diag->spinBox_NumberRefinements->value();
+ 		num_repeats = diag->spinBox_NumberRefinements->value();
 
 		bool reverse = diag->checkBox_Reverse->checkState() != Qt::Unchecked;
 
