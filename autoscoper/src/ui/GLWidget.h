@@ -42,7 +42,7 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 
 // OpenGL error checking
 #if defined GLDEBUG  
@@ -83,7 +83,7 @@ struct ViewData
 };
 
 
-class GLWidget: public QGLWidget
+class GLWidget : public QOpenGLWidget
 {
     Q_OBJECT
 

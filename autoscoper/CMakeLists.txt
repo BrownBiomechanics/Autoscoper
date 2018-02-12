@@ -3,9 +3,8 @@ SET(CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 FIND_PACKAGE(OpenGL)
 
 #ADD QT4 SUPPORT
-FIND_PACKAGE(Qt4 REQUIRED COMPONENTS QtCore QtGui QtOpenGL )
-set(QT_USE_QTOPENGL TRUE)
-INCLUDE(${QT_USE_FILE})
+FIND_PACKAGE(Qt5 COMPONENTS Core Widgets GUI OpenGL REQUIRED)
+cmake_policy(SET CMP0020 OLD)
 SET(CMAKE_AUTOMOC ON)
 
 SET(autoscoper_SOURCES
@@ -80,18 +79,14 @@ SET(autoscoper_FORMS
 		src/ui/ui-files/VolumeBox.ui
 )
 
-QT4_WRAP_UI(autoscoper_FORMS_HEADERS_GEN ${autoscoper_FORMS})
+QT5_WRAP_UI(autoscoper_FORMS_HEADERS_GEN ${autoscoper_FORMS})
 SET(autoscoper_RESOURCES 
 		src/ui/autoscoper_resource.qrc
 )
-QT4_ADD_RESOURCES(autoscoper_RESOURCES_RCC ${autoscoper_RESOURCES})
+QT5_ADD_RESOURCES(autoscoper_RESOURCES_RCC ${autoscoper_RESOURCES})
 
 
 # Set some Win32 Specific Settings
-IF(WIN32)
-	SET(GUI_TYPE WIN32)
-	SET(QT_USE_QMAIN true)
-ENDIF(WIN32)
 
 # Set some Apple MacOS Specific settings
 IF (APPLE)
@@ -121,9 +116,22 @@ ELSE (NOT BUILD_WITH_CUDA)
 	)
 ENDIF()
 
-target_link_libraries(autoscoper PUBLIC libautoscoper ${OPENGL_LIBRARIES} ${GPU_LIBRARIES} ${QT_LIBRARIES})
-target_include_directories(autoscoper PUBLIC  ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(autoscoper PUBLIC  ../math ../libautoscoper/src) 
+target_link_libraries(autoscoper PUBLIC libautoscoper 
+	${OPENGL_LIBRARIES} 
+	${GPU_LIBRARIES}   
+	${Qt5Core_LIBRARIES}
+	${Qt5Widgets_LIBRARIES}
+	${Qt5OpenGL_LIBRARIES}
+	${Qt5GUI_LIBRARIES})
+	
+target_include_directories(autoscoper PUBLIC  ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
+target_include_directories(autoscoper PUBLIC  
+	../math 
+	../libautoscoper/src  
+	${Qt5Core_INCLUDE_DIRS}
+	${Qt5Widgets_INCLUDE_DIRS}
+	${Qt5OpenGL_INCLUDE_DIRS}
+	${Qt5GUI_INCLUDE_DIRS}) 
 
 include(UseGLEW)
 UseGLEW(autoscoper PUBLIC)
@@ -134,8 +142,7 @@ UseLIBTIFF(autoscoper PUBLIC)
 install(TARGETS autoscoper DESTINATION bin/Debug CONFIGURATIONS Debug)
 install(TARGETS autoscoper DESTINATION bin/Release CONFIGURATIONS Release)
 
-get_filename_component(QT4_DIR ${QT_QMAKE_EXECUTABLE} DIRECTORY)
 IF(WIN32)
-	install(FILES ${QT4_DIR}/QtOpenGL4.dll ${QT4_DIR}/QtGui4.dll  ${QT4_DIR}/QtCore4.dll DESTINATION bin/Release CONFIGURATIONS Release)
-	install(FILES ${QT4_DIR}/QtOpenGLd4.dll ${QT4_DIR}/QtGuid4.dll ${QT4_DIR}/QtCored4.dll DESTINATION bin/Debug CONFIGURATIONS Debug)
+	install(FILES ${_qt5Core_install_prefix}/bin/Qt5OpenGL.dll ${_qt5Core_install_prefix}/bin/Qt5Widgets.dll ${_qt5Core_install_prefix}/bin/Qt5Gui.dll  ${_qt5Core_install_prefix}/bin/Qt5Core.dll DESTINATION bin/Release CONFIGURATIONS Release)
+	install(FILES ${_qt5Core_install_prefix}/bin/Qt5OpenGLd.dll ${_qt5Core_install_prefix}/bin/Qt5Widgetsd.dll ${_qt5Core_install_prefix}/bin/Qt5Guid.dll ${_qt5Core_install_prefix}/bin/Qt5Cored.dll DESTINATION bin/Debug CONFIGURATIONS Debug)
 ENDIF(WIN32)

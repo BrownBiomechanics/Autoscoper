@@ -49,21 +49,36 @@
 
 #include "ui/GLTracker.h"
 #include "Tracker.hpp"
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
+
 #ifdef WITH_CUDA
 #else
 #include <gpu/opencl/OpenCL.hpp>
 #endif
 
 GLTracker::GLTracker(Tracker * tracker , QWidget *parent)
-    : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
+	: QOpenGLWidget(parent)
 {
 	m_tracker = tracker;
     setAutoFillBackground(false);
-	makeCurrent();
+	//makeCurrent();
+	show();
 	initializeGL();
+	//shared_context = new QOpenGLContext(this);
+	//context()->setShareContext(shared_context);
+	//shared_context->create();
+	hide();
+}
+
+GLTracker::~GLTracker()
+{ 
+	delete shared_context;
 }
 
 void GLTracker::initializeGL(){
+	glewInit();
+
 	std::cout << "Graphics Card Vendor"<< glGetString(GL_VENDOR)   << std::endl;
 	std::cout << glGetString(GL_RENDERER) << std::endl;
 	std::cout << glGetString(GL_VERSION)  << std::endl;
@@ -72,8 +87,7 @@ void GLTracker::initializeGL(){
 
 	std::cerr << "Initializing OpenGL..." << std::endl;
 
-	glewInit();
-
+	
     glDisable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.5,0.5,0.5,1.0);

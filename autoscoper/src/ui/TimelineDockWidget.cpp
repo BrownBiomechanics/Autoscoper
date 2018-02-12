@@ -49,7 +49,7 @@
 
 #include "Tracker.hpp"
 
-#include <QGLContext>
+#include <QOpenGLContext>
 #include <QTimer>
 #include <math.h>
 
@@ -80,6 +80,7 @@ TimelineDockWidget::TimelineDockWidget(QWidget *parent) :
 	play_tag = 0;
 	play_timer = new QTimer(this);
     connect(play_timer, SIGNAL(timeout()), this, SLOT(play_update()));
+
 }
 
 TimelineDockWidget::~TimelineDockWidget(){
@@ -95,10 +96,8 @@ void TimelineDockWidget::draw(){
 	dock->gltimeline->update();
 }
 
-void TimelineDockWidget::setSharedGLContext(const QGLContext * sharedContext){
-	QGLContext* context = new QGLContext(sharedContext->format(), dock->gltimeline);
-	context->create(sharedContext);
-	dock->gltimeline->setContext(context,sharedContext,true);
+void TimelineDockWidget::setSharedGLContext(QOpenGLContext * sharedContext){
+//	dock->gltimeline->setSharedGLContext(sharedContext);
 }
 
 void TimelineDockWidget::setFramesRange(int firstFrame, int lastFrame ){

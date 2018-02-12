@@ -48,7 +48,7 @@
 #include "ui_CameraViewWidget.h"
 #include "ui/AutoscoperMainWindow.h"
 
-#include <QGLContext>
+#include <QOpenGLContext>
 
 CameraViewWidget::CameraViewWidget(int id, View * view, QString name,QWidget *parent) :
 											QWidget(parent),
@@ -65,10 +65,9 @@ CameraViewWidget::~CameraViewWidget(){
 
 }
 
-void CameraViewWidget::setSharedGLContext(const QGLContext * sharedContext){
-	QGLContext* context = new QGLContext(sharedContext->format(), widget->glView);
-	context->create(sharedContext);
-	widget->glView->setContext(context,sharedContext,true);
+void CameraViewWidget::setSharedGLContext(QOpenGLContext * sharedContext){
+	widget->glView->context()->setShareContext(sharedContext); 
+	widget->glView->context()->create();
 }
 
 void CameraViewWidget::draw(){

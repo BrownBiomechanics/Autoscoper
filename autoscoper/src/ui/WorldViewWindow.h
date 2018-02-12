@@ -21,7 +21,7 @@ class WorldViewWindow : public QDockWidget
 public:
     WorldViewWindow(QWidget *parent);
 	GLView *openGL;
-	void setSharedGLContext(const QGLContext * sharedContext);
+	void setSharedGLContext(QOpenGLContext * sharedContext);
 
 	AutoscoperMainWindow * getMainWindow(){return mainwindow;};
 	void draw();

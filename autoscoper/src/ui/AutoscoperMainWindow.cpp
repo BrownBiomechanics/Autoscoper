@@ -41,7 +41,7 @@
 
 #include "ui/AutoscoperMainWindow.h"
 #include "ui_AutoscoperMainWindow.h"
-#include <QtGui/QGridLayout>
+#include <QGridLayout>
 #include "ui/FilterDockWidget.h"
 #include "ui/CameraViewWidget.h"
 #include "ui/TimelineDockWidget.h"
@@ -99,7 +99,7 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 	//Init Tracker and get SharedGLContext
 	tracker = new Tracker();
 	gltracker = new GLTracker(tracker,NULL);
-	shared_glcontext = gltracker->context();
+	//shared_glcontext = gltracker->getSharedContext();
 	
 	//History
 	history = new History(10);
@@ -116,28 +116,27 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 	volumes_widget = new VolumeDockWidget(this);
 	this->addDockWidget(Qt::LeftDockWidgetArea, volumes_widget);
 
+#ifndef WITH_CUDA
+	if (!skipGpuDevice){
+		OpenCLPlatformSelectDialog * dialog = new OpenCLPlatformSelectDialog(this);
+		if (dialog->getNumberPlatforms() > 1)dialog->exec();
+		else{ xromm::gpu::setUsedPlatform(0); }
+		delete dialog;
+}
+
 	timeline_widget =  new TimelineDockWidget(this);
 	this->addDockWidget(Qt::BottomDockWidgetArea, timeline_widget);
-	timeline_widget->setSharedGLContext(shared_glcontext);
+	
 
 	tracking_dialog = NULL;
 
 	worldview = new WorldViewWindow(this);
-	worldview->setSharedGLContext(shared_glcontext);	
+		
 	addDockWidget(Qt::BottomDockWidgetArea, worldview);
 	worldview->setFloating(true);
 	worldview->hide();
 
-
 	setupShortcuts();
-
-#ifndef WITH_CUDA
-	if(!skipGpuDevice){
-		OpenCLPlatformSelectDialog * dialog = new OpenCLPlatformSelectDialog(this);
-		if (dialog->getNumberPlatforms() > 1)dialog->exec();
-		else{xromm::gpu::setUsedPlatform(0); }
-		delete dialog;
-	}
 #endif
 }
 
@@ -276,7 +275,7 @@ void AutoscoperMainWindow::frame_changed()
             tracker->trial()->videos.at(i).height(),
             tracker->trial()->videos.at(i).bps());
 
-		((QGLContext*) shared_glcontext)->makeCurrent();
+		//((QGLContext*) shared_glcontext)->makeCurrent();
         glBindTexture(GL_TEXTURE_2D,textures[i]);
         glTexImage2D(GL_TEXTURE_2D,
                      0,
@@ -540,12 +539,12 @@ void AutoscoperMainWindow::setupUI()
     //Add the new cameras
     for (unsigned int i = 0; i < tracker->trial()->cameras.size(); i++) {
 		cameraViews.push_back(new CameraViewWidget(i, tracker->view(i),tracker->trial()->cameras[i].mayacam().c_str(), this));
-		cameraViews[i]->setSharedGLContext(shared_glcontext);	
+		//cameraViews[i]->setSharedGLContext(shared_glcontext);	
 		filters_widget->addCamera(tracker->view(i));
     }
 	relayoutCameras(1);
     textures.resize(tracker->trial()->cameras.size());
-	((QGLContext*) shared_glcontext)->makeCurrent();
+	//QOpenGLContext::globalShareContext()->makeCurrent();
     for (unsigned i = 0; i < textures.size(); i++) {
         glGenTextures(1,&textures[i]);
         glBindTexture(GL_TEXTURE_2D,textures[i]);
@@ -654,7 +653,7 @@ QString AutoscoperMainWindow::get_filename(bool save, QString type)
 void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume){
 	const char* s = save_with_commas ? "," : " ";
 
-	std::ofstream file(filename.toAscii().constData(), ios::out);
+	std::ofstream file(filename.toStdString(), ios::out);
 
 	int start, stop;
 	if (volume == -1)
@@ -915,11 +914,11 @@ void AutoscoperMainWindow::openTrial(){
 
 void AutoscoperMainWindow::openTrial(QString filename){
     try {
-		Trial * trial = new Trial(filename.toAscii().constData());
+		Trial * trial = new Trial(filename.toStdString());
 		tracker->load(*trial);
 		delete trial;
 
-		trial_filename = filename.toAscii().constData();
+		trial_filename = filename.toStdString();
 		is_trial_saved = true;
 		is_tracking_saved = true;
 
@@ -1095,7 +1094,7 @@ void AutoscoperMainWindow::on_actionSave_as_triggered(bool checked){
 	QString filename = get_filename(true);
     if (filename.compare("") != 0) {
         try {
-			trial_filename = filename.toAscii().constData();
+			trial_filename = filename.toStdString();
 			tracker->trial()->save(trial_filename);
             is_tracking_saved = true;
         }
@@ -1166,7 +1165,7 @@ void AutoscoperMainWindow::on_actionSaveForBatch_triggered(bool checked){
 #endif
 				//save Trial
 				QString trial_filename = inputPath + OS_SEP + "trial.cfg";
-				tracker->trial()->save(trial_filename.toAscii().constData());
+				tracker->trial()->save(trial_filename.toStdString());
 				xmlWriter.writeStartElement("Trial");
 				xmlWriter.writeCharacters(trial_filename);
 				xmlWriter.writeEndElement();
@@ -1287,7 +1286,7 @@ void AutoscoperMainWindow::runBatch(QString batchfile, bool saveData){
 							int id = attr.value("id").toString().toInt();
 							fprintf(stderr, "Load Pivot %d Setting\n", id);
 							QString pivot_data = xmlReader.readElementText();
-							tracker->trial()->getVolumeMatrix(id)->from_string(pivot_data.toAscii().constData());
+							tracker->trial()->getVolumeMatrix(id)->from_string(pivot_data.toStdString());
 						}
 						else if (name == "TrackingData")
 						{
@@ -1344,7 +1343,7 @@ void AutoscoperMainWindow::runBatch(QString batchfile, bool saveData){
 
 			QFileInfo info(trackdata_filename);
 			QString tracking_filename_out = info.absolutePath() + OS_SEP + info.completeBaseName() + "_tracked.tra";
-			fprintf(stderr, "Save Data to %s\n", tracking_filename_out.toAscii().constData());
+			fprintf(stderr, "Save Data to %s\n", tracking_filename_out.toStdString());
 			save_tracking_results(tracking_filename_out, save_as_matrix, save_as_rows, save_with_commas, convert_to_cm, convert_to_rad, interpolate);
 		}
 
@@ -1360,7 +1359,7 @@ void AutoscoperMainWindow::on_actionLoad_xml_batch_triggered(bool checked){
 									tr("Open XML File"), QDir::currentPath(),tr("XML Files (") + tr(" *.xml)"));
 	if ( inputfile.isNull() == false )
     {
-		fprintf(stderr,"%s\n",inputfile.toAscii().constData());
+		fprintf(stderr,"%s\n",inputfile.toStdString());
 		runBatch(inputfile);
     }
 }
@@ -1575,7 +1574,7 @@ void AutoscoperMainWindow::on_actionSmooth_Tangents_triggered(bool checked){
 void AutoscoperMainWindow::on_actionLayoutCameraViews_triggered(bool triggered){
 	
 	bool ok;
-    int rows = QInputDialog::getInteger(this, tr("Layput Camera Views"),
+    int rows = QInputDialog::getInt(this, tr("Layput Camera Views"),
                                           tr("Number of Rows"),1,1,10,1, &ok);
     if (ok)relayoutCameras(rows);
 }

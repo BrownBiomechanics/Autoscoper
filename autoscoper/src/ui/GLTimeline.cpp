@@ -97,6 +97,16 @@ void GLTimeline::render_bitmap_string(double x,
 	renderText(x - fm.width(string) * 0.5, y, string);
 }
 
+void GLTimeline::renderText(double textPosX, double textPosY, QString text)
+{
+	QPainter painter(this);
+	painter.setPen(Qt::yellow);
+	painter.setFont(QFont("Helvetica", 8));
+	painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
+	painter.drawText(textPosX, textPosY, text); // z = pointT4.z + distOverOp / 4
+	painter.end();
+}
+
 void GLTimeline::mouse_to_graph(double mouse_x,
                double mouse_y,
                double& graph_x,

@@ -45,6 +45,7 @@
 
 #include "ui/WorldViewWindow.h"
 #include "ui/AutoscoperMainWindow.h"
+#include <QOpenGLContext>
 
 WorldViewWindow::WorldViewWindow(QWidget *parent):QDockWidget(parent)
 {
@@ -69,10 +70,9 @@ void  WorldViewWindow::resizeEvent ( QResizeEvent * event )
 	openGL->repaint();
 }
 
-void WorldViewWindow::setSharedGLContext(const QGLContext * sharedContext){
-	QGLContext* context = new QGLContext(sharedContext->format(), openGL);
-	context->create(sharedContext);
-	openGL->setContext(context,sharedContext,true);
+void WorldViewWindow::setSharedGLContext(QOpenGLContext * sharedContext){
+	openGL->context()->setShareContext(sharedContext);
+	openGL->context()->create();
 }
 
 void WorldViewWindow::draw(){

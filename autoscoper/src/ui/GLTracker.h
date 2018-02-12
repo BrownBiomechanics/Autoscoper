@@ -42,7 +42,7 @@
 #ifndef GLTRACKER_H
 #define GLTRACKER_H
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 
 namespace xromm {
 	class Trial;
@@ -50,12 +50,15 @@ namespace xromm {
 }
 using xromm::Tracker;
 
-class GLTracker: public QGLWidget
+class GLTracker : public QOpenGLWidget
 {
     Q_OBJECT
 
 public:
     GLTracker(Tracker * tracker , QWidget *parent = NULL);
+	virtual ~GLTracker();
+	
+	QOpenGLContext * getSharedContext(){ return shared_context; }
 
 public slots:
     //void animate();
@@ -64,8 +67,10 @@ protected:
     void paintGL();
 	void initializeGL();
 
+	
 private:
 	Tracker * m_tracker;
+	QOpenGLContext * shared_context;
 };
 
 

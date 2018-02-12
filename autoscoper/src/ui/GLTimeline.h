@@ -82,6 +82,7 @@ private:
 	void mouse_to_graph(double mouse_x, double mouse_y, double& graph_x, double& graph_y);
 	void draw_curve(const KeyCurve& curve);
 	void render_bitmap_string(double x, double y, const char* string);
+	void renderText(double textPosX, double textPosY, QString text);
 };
 
 

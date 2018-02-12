@@ -66,7 +66,7 @@
 #endif
 
 GLWidget::GLWidget(QWidget *parent)
-    : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
+    : QOpenGLWidget(parent)
 {
     setAutoFillBackground(false);
 

@@ -115,7 +115,7 @@ class AutoscoperMainWindow : public QMainWindow{
 		//Tracker
 		Tracker * tracker;
 		GLTracker * gltracker;
-		const QGLContext* shared_glcontext;
+		QOpenGLContext* shared_glcontext;
 
 		//Manipulator
 		std::vector <Manip3D *> manipulator;
