@@ -73,8 +73,6 @@ class CameraViewWidget : public QWidget{
 
 		Ui::CameraViewWidget *widget;
 
-		void setSharedGLContext(QOpenGLContext * sharedContext);
-
 		int getID(){return m_id;};
 
 		QString getName(){ return m_name; };

@@ -65,11 +65,6 @@ CameraViewWidget::~CameraViewWidget(){
 
 }
 
-void CameraViewWidget::setSharedGLContext(QOpenGLContext * sharedContext){
-	widget->glView->context()->setShareContext(sharedContext); 
-	widget->glView->context()->create();
-}
-
 void CameraViewWidget::draw(){
 	widget->glView->update();
 }

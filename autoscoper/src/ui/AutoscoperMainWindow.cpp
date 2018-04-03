@@ -115,7 +115,18 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 
 	volumes_widget = new VolumeDockWidget(this);
 	this->addDockWidget(Qt::LeftDockWidgetArea, volumes_widget);
+	timeline_widget = new TimelineDockWidget(this);
+	this->addDockWidget(Qt::BottomDockWidgetArea, timeline_widget);
+	tracking_dialog = NULL;
 
+	worldview = new WorldViewWindow(this);
+		
+
+	addDockWidget(Qt::BottomDockWidgetArea, worldview);
+	worldview->setFloating(true);
+	worldview->hide();
+
+	setupShortcuts();
 #ifndef WITH_CUDA
 	if (!skipGpuDevice){
 		OpenCLPlatformSelectDialog * dialog = new OpenCLPlatformSelectDialog(this);
@@ -124,19 +135,9 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 		delete dialog;
 }
 #endif
-	timeline_widget =  new TimelineDockWidget(this);
-	this->addDockWidget(Qt::BottomDockWidgetArea, timeline_widget);
 	
 
-	tracking_dialog = NULL;
 
-	worldview = new WorldViewWindow(this);
-		
-	addDockWidget(Qt::BottomDockWidgetArea, worldview);
-	worldview->setFloating(true);
-	worldview->hide();
-
-	setupShortcuts();
 }
 
 AutoscoperMainWindow::~AutoscoperMainWindow(){
@@ -539,7 +540,6 @@ void AutoscoperMainWindow::setupUI()
     //Add the new cameras
     for (unsigned int i = 0; i < tracker->trial()->cameras.size(); i++) {
 		cameraViews.push_back(new CameraViewWidget(i, tracker->view(i),tracker->trial()->cameras[i].mayacam().c_str(), this));
-		//cameraViews[i]->setSharedGLContext(shared_glcontext);	
 		filters_widget->addCamera(tracker->view(i));
     }
 	relayoutCameras(1);

@@ -62,12 +62,8 @@ GLTracker::GLTracker(Tracker * tracker , QWidget *parent)
 {
 	m_tracker = tracker;
     setAutoFillBackground(false);
-	//makeCurrent();
 	show();
 	initializeGL();
-	//shared_context = new QOpenGLContext(this);
-	//context()->setShareContext(shared_context);
-	//shared_context->create();
 	hide();
 }
 
@@ -86,7 +82,6 @@ void GLTracker::initializeGL(){
 	m_tracker->init();
 
 	std::cerr << "Initializing OpenGL..." << std::endl;
-
 	
     glDisable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);

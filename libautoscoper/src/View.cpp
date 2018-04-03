@@ -419,7 +419,7 @@ View::render(unsigned int pbo, unsigned width, unsigned height)
 
     cutilSafeCall(cudaGraphicsUnmapResources(1, &pboCudaResource, 0));
 	cutilSafeCall(cudaGraphicsUnregisterResource(pboCudaResource));
-	delete[] buffer;
+
 #else
 	GLBuffer* buffer = new GLBuffer(pbo, CL_MEM_WRITE_ONLY);
 

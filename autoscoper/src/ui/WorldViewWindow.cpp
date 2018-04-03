@@ -70,11 +70,6 @@ void  WorldViewWindow::resizeEvent ( QResizeEvent * event )
 	openGL->repaint();
 }
 
-void WorldViewWindow::setSharedGLContext(QOpenGLContext * sharedContext){
-	openGL->context()->setShareContext(sharedContext);
-	openGL->context()->create();
-}
-
 void WorldViewWindow::draw(){
 	openGL->update();
 }
