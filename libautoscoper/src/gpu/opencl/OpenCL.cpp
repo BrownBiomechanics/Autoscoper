@@ -970,6 +970,21 @@ void Buffer::fill(const char c) const
 #endif
 }
 
+void Buffer::fill(const float val) const
+{
+#ifdef CL_VERSION_1_2
+	err_ = clEnqueueFillBuffer(queue_, buffer_, &val, sizeof(float), 0, size_, 0, NULL, NULL);
+	CHECK_CL
+#else
+	float* tmp = (float*)new char[size_];
+	memset(tmp, val, size_);
+	err_ = clEnqueueWriteBuffer(
+		queue_, buffer_, CL_TRUE, 0, size_, (void*)tmp, 0, NULL, NULL);
+	CHECK_CL
+		delete tmp;
+#endif
+}
+
 GLBuffer::GLBuffer(GLuint pbo, cl_mem_flags access)
 {
 	err_ = opencl_global_context();

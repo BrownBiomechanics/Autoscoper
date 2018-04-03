@@ -122,6 +122,9 @@ class AutoscoperMainWindow : public QMainWindow{
 		//WortldView
 		WorldViewWindow * worldview;
 
+		//Threshold
+		double background_threshold_;
+
 		//History
 		History *history;
 		bool first_undo;
@@ -174,6 +177,7 @@ class AutoscoperMainWindow : public QMainWindow{
 		void on_actionCopy_triggered(bool checked);
 		void on_actionPaste_triggered(bool checked);
 		void on_actionDelete_triggered(bool checked);
+		void on_actionSet_Background_triggered(bool checked);
 
 		//Tracking
 		void on_actionImport_triggered(bool checked);

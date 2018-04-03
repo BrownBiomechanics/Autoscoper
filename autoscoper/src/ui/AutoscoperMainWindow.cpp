@@ -91,7 +91,7 @@
 
 AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) :
 												QMainWindow(parent),
-												ui(new Ui::AutoscoperMainWindow){
+												ui(new Ui::AutoscoperMainWindow), background_threshold_(-1.0){
 	
 	//Setup UI
 	ui->setupUi(this);
@@ -123,7 +123,7 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 		else{ xromm::gpu::setUsedPlatform(0); }
 		delete dialog;
 }
-
+#endif
 	timeline_widget =  new TimelineDockWidget(this);
 	this->addDockWidget(Qt::BottomDockWidgetArea, timeline_widget);
 	
@@ -137,7 +137,6 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 	worldview->hide();
 
 	setupShortcuts();
-#endif
 }
 
 AutoscoperMainWindow::~AutoscoperMainWindow(){
@@ -296,6 +295,7 @@ void AutoscoperMainWindow::frame_changed()
 
 void AutoscoperMainWindow::volume_changed()
 {
+	
 	// Lock or unlock the position
 	if (timeline_widget->getPosition_graph()->frame_locks.at(tracker->trial()->frame)) {
 		timeline_widget->setValuesEnabled(false);
@@ -1464,6 +1464,20 @@ void AutoscoperMainWindow::on_actionDelete_triggered(bool checked){
 
 		redrawGL();
     }
+}
+
+void AutoscoperMainWindow::on_actionSet_Background_triggered(bool checked)
+{
+	bool ok;
+	double threshold = QInputDialog::getDouble(this, "Enter threshold", "threshold in percent", 0.2, 0.0, 1.0, 0.01, &ok);
+	if (ok){
+		if (background_threshold_ < 0){
+			for (xromm::Video vi : tracker->trial()->videos)
+				vi.create_background_image();
+		}
+
+		background_threshold_ = threshold;
+	}
 }
 
 //Tracking menu

@@ -60,11 +60,12 @@ using namespace std;
 namespace xromm
 {
 
-Video::Video(const string& dirname)
-    : dirname_(dirname),
-      filenames_(),
-      frame_(),
-      image_(new TiffImage())
+	Video::Video(const string& dirname)
+		: dirname_(dirname),
+		filenames_(),
+		frame_(),
+		image_(new TiffImage()),
+		background_(new TiffImage())
 {
     DIR *dir = opendir(dirname_.c_str());
     if (dir == 0) {
@@ -106,11 +107,13 @@ Video::Video(const Video& video)
       frame_()
 {
     image_ = tiffImageCopy(video.image_);
+	background_ = tiffImageCopy(video.background_);
 }
 
 Video::~Video()
 {
     if (image_) tiffImageFree(image_);
+	if (background_)tiffImageFree(background_);
 }
 
 Video&
@@ -123,10 +126,81 @@ Video::operator=(const Video& video)
     if (image_) tiffImageFree(image_);
     image_ = tiffImageCopy(video.image_);
 
+	if (background_)tiffImageFree(background_);
+	background_ = tiffImageCopy(video.background_);
+
     return *this;
 }
 
-void
+int Video::create_background_image()
+{
+	if (filenames_.size() < 2)
+		return -1;
+
+	TiffImage* tmp_image = new TiffImage();
+	//Read tmp_image
+	TIFFSetWarningHandler(0);
+
+	//Read _background
+	TIFF* tif = TIFFOpen(filenames_.at(0).c_str(), "r");
+	
+	if (!tif) {
+		cerr << "Video::frame(): Unable to open image. " << endl;
+		return -2;
+	}
+
+	tiffImageFree(background_);
+	tiffImageRead(tif, background_);
+	TIFFClose(tif);
+
+	memset(background_->data, 0, background_->dataSize);
+	tif = TIFFOpen("background.tif", "w");
+	tiffImageWrite(tif, background_);
+	TIFFClose(tif);
+	for (int i = 0; i < filenames_.size(); i++){
+		tif = TIFFOpen(filenames_.at(i).c_str(), "r");
+		if (!tif) {
+			cerr << "Video::frame(): Unable to open image. " << endl;
+			return -2;
+		}
+
+		tiffImageFree(tmp_image);
+		tiffImageRead(tif, tmp_image);
+		TIFFClose(tif);
+
+		if (background_->bitsPerSample == 8){
+			unsigned char * ptr = reinterpret_cast<unsigned char*> (tmp_image->data);
+			unsigned char * ptr_b = reinterpret_cast<unsigned char*> (background_->data);
+			for (; ptr < reinterpret_cast<unsigned char*>(tmp_image->data) + tmp_image->dataSize; ptr++, ptr_b++)
+			{
+				if (*ptr > *ptr_b)
+					*ptr_b = *ptr;
+			}
+		}
+		else
+		{
+			unsigned short * ptr = static_cast<unsigned short*> (tmp_image->data);
+			unsigned short * ptr_b = reinterpret_cast<unsigned short*> (background_->data);
+			for (; ptr < reinterpret_cast<unsigned short*>(tmp_image->data) + tmp_image->dataSize; ptr++, ptr_b++)
+			{
+				if (*ptr != 0 && *ptr_b == 0)
+					*ptr_b = 255;
+			}
+		}
+
+		tif = TIFFOpen("background.tif", "w");
+		tiffImageWrite(tif, background_);
+		TIFFClose(tif);
+	}
+
+	tiffImageFree(tmp_image);
+
+	return 1;
+}
+
+
+
+	void
 Video::set_frame(size_type i)
 {
     if (i >= filenames_.size()) {

@@ -41,6 +41,8 @@
 
 #include "Compositor_kernels.h"
 
+#include <thrust/device_ptr.h>
+#include <thrust/fill.h>
 
 // Define the cuda compositiing kernel
 __global__
@@ -66,6 +68,13 @@ void composite(float* src1,
     
     // Call the kernel
     composite_kernel<<<gridDim, blockDim>>>(src1,src2,dest,width,height);
+}
+
+void fill(float* src1, unsigned int size, float val)
+{
+	thrust::device_ptr<float> dev_ptr(src1);
+	thrust::fill(dev_ptr, dev_ptr + size, 1.0);
+
 }
 
 } // namespace gpu

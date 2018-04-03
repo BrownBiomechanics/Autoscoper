@@ -144,6 +144,9 @@ private:
     Buffer* radFilterBuffer_;
     Buffer* filterBuffer_;
 
+	Buffer* backgroundmask_;
+	Buffer* drr_mask_;
+
 	bool inited_;
 };
 

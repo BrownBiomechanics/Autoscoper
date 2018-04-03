@@ -126,7 +126,7 @@ public:
 	void write(void* buf, size_t size=0) const;
 	void copy(const Buffer* dst, size_t size=0) const;
 	void fill(const char c) const;
-
+	void fill(float val) const;
 	friend class Kernel;
 
 protected:

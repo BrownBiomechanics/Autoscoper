@@ -72,6 +72,8 @@ public:
 
     // Accessors
 
+	int create_background_image();
+
     const std::string& dirname() const { return dirname_; }
 
     const std::string& filename(size_type i) const { return filenames_.at(i); }
@@ -101,6 +103,8 @@ private:
     size_type frame_;
 
     TiffImage* image_;
+
+	TiffImage* background_;
 };
 
 } // namespace xromm

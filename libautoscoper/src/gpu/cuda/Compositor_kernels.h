@@ -50,6 +50,8 @@ void composite(float* src1,
                size_t width,
                size_t height);
 
+void fill(float* src1, unsigned int size, float val);
+
 } } // namespace xromm::cuda
 
 #endif // XROMM_GPU_COMPOSITOR_KERNELS_H

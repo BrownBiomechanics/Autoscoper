@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>774</width>
-    <height>695</height>
+    <width>920</width>
+    <height>974</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -383,8 +383,8 @@ Trial</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>774</width>
-     <height>21</height>
+     <width>920</width>
+     <height>43</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -418,6 +418,8 @@ Trial</string>
     <addaction name="actionCopy"/>
     <addaction name="actionPaste"/>
     <addaction name="actionDelete"/>
+    <addaction name="separator"/>
+    <addaction name="actionSet_Background"/>
    </widget>
    <widget class="QMenu" name="menuTracking">
     <property name="title">
@@ -577,9 +579,9 @@ Trial</string>
    </property>
   </action>
   <action name="actionSave_Test_Sequence">
-    <property name="text">
-      <string>Save Test Sequence</string>
-    </property>
+   <property name="text">
+    <string>Save Test Sequence</string>
+   </property>
   </action>
   <action name="actionShow_world_view">
    <property name="checkable">
@@ -587,6 +589,11 @@ Trial</string>
    </property>
    <property name="text">
     <string>Show world view</string>
+   </property>
+  </action>
+  <action name="actionSet_Background">
+   <property name="text">
+    <string>Set Background</string>
    </property>
   </action>
  </widget>

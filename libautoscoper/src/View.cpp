@@ -61,6 +61,7 @@
 #include "gpu/cuda/RayCaster.hpp"
 #include "gpu/cuda/RadRenderer.hpp"
 #include "gpu/cuda/Merger_kernels.h"
+
 #else
 #include "gpu/opencl/Compositor.hpp"
 #include "gpu/opencl/Merger.hpp"
@@ -125,6 +126,9 @@ View::~View()
     delete drrFilterBuffer_;
     delete radBuffer_;
     delete radFilterBuffer_;
+
+	delete backgroundmask_;
+	delete drr_mask_;
 #endif
 	drrBuffer_.clear();
 }
@@ -439,6 +443,11 @@ View::init()
         cutilSafeCall(cudaMalloc((void**)&drrFilterBuffer_, maxWidth_*maxHeight_*sizeof(float)));
         cutilSafeCall(cudaMalloc((void**)&radBuffer_, maxWidth_*maxHeight_*sizeof(float)));
         cutilSafeCall(cudaMalloc((void**)&radFilterBuffer_, maxWidth_*maxHeight_*sizeof(float)));
+		cutilSafeCall(cudaMalloc((void**)&backgroundmask_, maxWidth_*maxHeight_*sizeof(float)));
+		cutilSafeCall(cudaMalloc((void**)&drr_mask_, maxWidth_*maxHeight_*sizeof(float)));
+		// fill the array
+		gpu::fill(backgroundmask_, maxWidth_*maxHeight_, 1.0f);
+		gpu::fill(drr_mask_, maxWidth_*maxHeight_, 1.0f);
     }
 }
 #else
@@ -458,6 +467,10 @@ View::init(unsigned width, unsigned height)
 		drrFilterBuffer_ = new Buffer(maxWidth_*maxHeight_*sizeof(float));
         radBuffer_       = new Buffer(maxWidth_*maxHeight_*sizeof(float));
         radFilterBuffer_ = new Buffer(maxWidth_*maxHeight_*sizeof(float));
+		backgroundmask_  = new Buffer(maxWidth_*maxHeight_*sizeof(float));
+		drr_mask_		 = new Buffer(maxWidth_*maxHeight_*sizeof(float));
+		backgroundmask_->fill(1.0f);
+		drr_mask_->fill(1.0f);
 		inited_ = true;
     }
 }
