@@ -65,13 +65,13 @@ namespace xromm
 		filenames_(),
 		frame_(),
 		image_(new TiffImage()),
-		background_(new TiffImage())
+		background_(NULL)
 {
     DIR *dir = opendir(dirname_.c_str());
     if (dir == 0) {
         throw runtime_error("Unable to open directory: " + dirname_);
     }
-
+	
     struct dirent *ent;
     while ((ent = readdir(dir)) != NULL) {
 
@@ -104,16 +104,20 @@ namespace xromm
 Video::Video(const Video& video)
     : dirname_(video.dirname_),
       filenames_(video.filenames_),
-      frame_()
+      frame_(),
+	  background_(NULL)
 {
     image_ = tiffImageCopy(video.image_);
-	background_ = tiffImageCopy(video.background_);
+	if (video.background_){
+		background_ = new float[image_->width*image_->height];
+		memcpy(background_, video.background_, image_->width * image_->height * sizeof(float));
+	}
 }
 
 Video::~Video()
 {
     if (image_) tiffImageFree(image_);
-	if (background_)tiffImageFree(background_);
+	if (background_) delete[] background_;
 }
 
 Video&
@@ -126,9 +130,11 @@ Video::operator=(const Video& video)
     if (image_) tiffImageFree(image_);
     image_ = tiffImageCopy(video.image_);
 
-	if (background_)tiffImageFree(background_);
-	background_ = tiffImageCopy(video.background_);
-
+	if (video.background_){
+		if (background_) delete[] background_;
+		background_ = new float[image_->width*image_->height];
+		memcpy(background_, video.background_, image_->width * image_->height * sizeof(float));
+	}
     return *this;
 }
 
@@ -137,26 +143,16 @@ int Video::create_background_image()
 	if (filenames_.size() < 2)
 		return -1;
 
-	TiffImage* tmp_image = new TiffImage();
-	//Read tmp_image
-	TIFFSetWarningHandler(0);
-
-	//Read _background
-	TIFF* tif = TIFFOpen(filenames_.at(0).c_str(), "r");
 	
-	if (!tif) {
-		cerr << "Video::frame(): Unable to open image. " << endl;
-		return -2;
-	}
+	if (background_) delete[] background_;
+	background_ = new float[width()*height()];
+	memset(background_, 0, width()*height()*sizeof(float));
+	
+	//Read tmp_image
+	TiffImage* tmp_image = new TiffImage();
+	TIFFSetWarningHandler(0);
+	TIFF* tif;
 
-	tiffImageFree(background_);
-	tiffImageRead(tif, background_);
-	TIFFClose(tif);
-
-	memset(background_->data, 0, background_->dataSize);
-	tif = TIFFOpen("background.tif", "w");
-	tiffImageWrite(tif, background_);
-	TIFFClose(tif);
 	for (int i = 0; i < filenames_.size(); i++){
 		tif = TIFFOpen(filenames_.at(i).c_str(), "r");
 		if (!tif) {
@@ -168,29 +164,27 @@ int Video::create_background_image()
 		tiffImageRead(tif, tmp_image);
 		TIFFClose(tif);
 
-		if (background_->bitsPerSample == 8){
+		if (tmp_image->bitsPerSample == 8){
 			unsigned char * ptr = reinterpret_cast<unsigned char*> (tmp_image->data);
-			unsigned char * ptr_b = reinterpret_cast<unsigned char*> (background_->data);
+			float* ptr_b = background_;
 			for (; ptr < reinterpret_cast<unsigned char*>(tmp_image->data) + tmp_image->dataSize; ptr++, ptr_b++)
 			{
-				if (*ptr > *ptr_b)
-					*ptr_b = *ptr;
+				float val = *ptr;
+				if (val / 255 > *ptr_b)
+					*ptr_b = val / 255;
 			}
 		}
 		else
 		{
 			unsigned short * ptr = static_cast<unsigned short*> (tmp_image->data);
-			unsigned short * ptr_b = reinterpret_cast<unsigned short*> (background_->data);
+			float * ptr_b = background_;
 			for (; ptr < reinterpret_cast<unsigned short*>(tmp_image->data) + tmp_image->dataSize; ptr++, ptr_b++)
 			{
-				if (*ptr != 0 && *ptr_b == 0)
-					*ptr_b = 255;
+				float val = *ptr;
+				if (val / 65535  > *ptr_b)
+					*ptr_b = val / 65535;
 			}
 		}
-
-		tif = TIFFOpen("background.tif", "w");
-		tiffImageWrite(tif, background_);
-		TIFFClose(tif);
 	}
 
 	tiffImageFree(tmp_image);
@@ -245,6 +239,7 @@ Video::data() const
 {
     return image_->data;
 }
+
 
 } // namespace xromm
 

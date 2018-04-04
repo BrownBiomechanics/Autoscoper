@@ -115,18 +115,7 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 
 	volumes_widget = new VolumeDockWidget(this);
 	this->addDockWidget(Qt::LeftDockWidgetArea, volumes_widget);
-	timeline_widget = new TimelineDockWidget(this);
-	this->addDockWidget(Qt::BottomDockWidgetArea, timeline_widget);
-	tracking_dialog = NULL;
 
-	worldview = new WorldViewWindow(this);
-		
-
-	addDockWidget(Qt::BottomDockWidgetArea, worldview);
-	worldview->setFloating(true);
-	worldview->hide();
-
-	setupShortcuts();
 #ifndef WITH_CUDA
 	if (!skipGpuDevice){
 		OpenCLPlatformSelectDialog * dialog = new OpenCLPlatformSelectDialog(this);
@@ -135,9 +124,19 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 		delete dialog;
 }
 #endif
+	timeline_widget =  new TimelineDockWidget(this);
+	this->addDockWidget(Qt::BottomDockWidgetArea, timeline_widget);
 	
 
+	tracking_dialog = NULL;
 
+	worldview = new WorldViewWindow(this);
+		
+	addDockWidget(Qt::BottomDockWidgetArea, worldview);
+	worldview->setFloating(true);
+	worldview->hide();
+
+	setupShortcuts();
 }
 
 AutoscoperMainWindow::~AutoscoperMainWindow(){
@@ -540,6 +539,7 @@ void AutoscoperMainWindow::setupUI()
     //Add the new cameras
     for (unsigned int i = 0; i < tracker->trial()->cameras.size(); i++) {
 		cameraViews.push_back(new CameraViewWidget(i, tracker->view(i),tracker->trial()->cameras[i].mayacam().c_str(), this));
+		//cameraViews[i]->setSharedGLContext(shared_glcontext);	
 		filters_widget->addCamera(tracker->view(i));
     }
 	relayoutCameras(1);
@@ -1469,14 +1469,17 @@ void AutoscoperMainWindow::on_actionDelete_triggered(bool checked){
 void AutoscoperMainWindow::on_actionSet_Background_triggered(bool checked)
 {
 	bool ok;
-	double threshold = QInputDialog::getDouble(this, "Enter threshold", "threshold in percent", 0.2, 0.0, 1.0, 0.01, &ok);
+	double threshold = QInputDialog::getDouble(this, "Enter threshold", "threshold in percent", 0.2, 0.0, 1.0, 4, &ok);
 	if (ok){
 		if (background_threshold_ < 0){
-			for (xromm::Video vi : tracker->trial()->videos)
+			for (xromm::Video &vi : tracker->trial()->videos)
 				vi.create_background_image();
+			
+			tracker->updateBackground();	
 		}
-
+		
 		background_threshold_ = threshold;
+		tracker->setBackgroundThreshold(background_threshold_);
 	}
 }
 

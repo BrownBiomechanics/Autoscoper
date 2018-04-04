@@ -48,6 +48,8 @@
 __global__
 void composite_kernel(float* src1,
                       float* src2,
+					  float* src3,
+					  float* src4,
                       float* dest,
                       size_t width,
                       size_t height);
@@ -57,6 +59,8 @@ namespace xromm {
 	namespace gpu {
 void composite(float* src1,
                float* src2,
+			   float* src3,
+			   float* src4,
                float* dest,
                size_t width,
                size_t height)
@@ -67,7 +71,7 @@ void composite(float* src1,
                  (height+blockDim.y-1)/blockDim.y);
     
     // Call the kernel
-    composite_kernel<<<gridDim, blockDim>>>(src1,src2,dest,width,height);
+    composite_kernel<<<gridDim, blockDim>>>(src1,src2,src3,src4,dest,width,height);
 }
 
 void fill(float* src1, unsigned int size, float val)
@@ -84,6 +88,8 @@ void fill(float* src1, unsigned int size, float val)
 __global__
 void composite_kernel(float* src1,
                       float* src2,
+					  float* src3,
+					  float* src4,
                       float* dest,
                       size_t width,
                       size_t height)
@@ -95,9 +101,11 @@ void composite_kernel(float* src1,
         return;
     }
 
+	float multi = (src3[y*width + x] < 0.5f) ? 0.0f : 1.0f;
+
     // src1 maps to orange and src2 to blue
     dest[3*(y*width+x)+0] = src1[y*width+x];
-    dest[3*(y*width+x)+1] = src1[y*width+x]/2.0f+src2[y*width+x]/2.0f;
-    dest[3*(y*width+x)+2] = src2[y*width+x];
+	dest[3 * (y*width + x) + 1] = multi* (src1[y*width + x] / 2.0f + src2[y*width + x] / 2.0f);
+	dest[3 * (y*width + x) + 2] = src2[y*width + x];
 }
 

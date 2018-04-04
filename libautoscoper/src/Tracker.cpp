@@ -203,6 +203,10 @@ void Tracker::load(const Trial& trial)
                                      video.width(),
                                      video.height(),
                                      video.bps());
+		view->backgroundRenderer()->set_image_plane(camera.viewport()[0],
+			camera.viewport()[1],
+			camera.viewport()[2],
+			camera.viewport()[3]);
 
         views_.push_back(view);
     }
@@ -389,11 +393,26 @@ double Tracker::minimizationFunc(const double* values) const
     for (unsigned int i = 1; i < trial_.cameras.size(); ++i) {
         correlation *= correlations[i];
     }
-	delete correlations;
+	delete[] correlations;
 
     return correlation;
 }
-void
+
+	void Tracker::updateBackground()
+	{
+		for (unsigned int i = 0; i < views_.size(); ++i) {
+			views_[i]->updateBackground(trial_.videos[i].background(), trial_.videos[i].width(), trial_.videos[i].height());
+		}
+	}
+
+	void Tracker::setBackgroundThreshold(float threshold)
+	{
+		for (unsigned int i = 0; i < views_.size(); ++i) {
+			views_[i]->setBackgroundThreshold(threshold);
+		}
+	}
+
+	void
 Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) const
 {
     // Calculate the minimum and maximum values of the bounding box

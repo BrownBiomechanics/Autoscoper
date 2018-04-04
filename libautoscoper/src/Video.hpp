@@ -94,6 +94,8 @@ public:
 
     const void* data() const;
 
+	const float* background() const { return background_; }
+
 private:
 
     std::string dirname_;
@@ -104,7 +106,7 @@ private:
 
     TiffImage* image_;
 
-	TiffImage* background_;
+	float* background_;
 };
 
 } // namespace xromm

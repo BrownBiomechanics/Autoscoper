@@ -11,6 +11,8 @@ set(opencl_shaders
 	gpu/opencl/kernel/SharpenFilter.cl
 	gpu/opencl/kernel/SobelFilter.cl
 	gpu/opencl/kernel/Merger.cl
+	gpu/opencl/kernel/BackgroundRenderer.cl
+	gpu/opencl/kernel/DRRBackground.cl
 )
 
 foreach(SHADER_FILENAME ${opencl_shaders})

@@ -1,23 +1,23 @@
 // ----------------------------------
 // Copyright (c) 2011, Brown University
 // All rights reserved.
-//
+// 
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
 // met:
-//
+// 
 // (1) Redistributions of source code must retain the above copyright
 // notice, this list of conditions and the following disclaimer.
-//
+// 
 // (2) Redistributions in binary form must reproduce the above copyright
 // notice, this list of conditions and the following disclaimer in the
 // documentation and/or other materials provided with the distribution.
-//
+// 
 // (3) Neither the name of Brown University nor the names of its
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY BROWN UNIVERSITY ìAS ISî WITH NO
+// 
+// THIS SOFTWARE IS PROVIDED BY BROWN UNIVERSITY ‚ÄúAS IS‚Äù WITH NO
 // WARRANTIES OR REPRESENTATIONS OF ANY KIND WHATSOEVER EITHER EXPRESS OR
 // IMPLIED, INCLUDING WITHOUT LIMITATION ANY WARRANTY OF DESIGN OR
 // MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, EACH OF WHICH ARE
@@ -36,45 +36,53 @@
 // THEIR USE OF THE SOFTWARE.
 // ---------------------------------
 
-/// \file WorldViewWindow.cpp
-/// \author Benjamin Knorlein, Andy Loomis
+/// \file BackgroundRenderer.hpp
+/// \author Ben Knorlein
 
-#ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
-#endif
+#ifndef XROMM_GPU_BACKGROUND_RENDERER_HPP
+#define XROMM_GPU_BACKGROUND_RENDERER_HPP
 
-#include "ui/WorldViewWindow.h"
-#include "ui/AutoscoperMainWindow.h"
-#include <QOpenGLContext>
+#include <string>
 
-WorldViewWindow::WorldViewWindow(QWidget *parent):QDockWidget(parent)
+struct cudaArray;
+
+namespace xromm { namespace gpu
 {
-    setWindowTitle(tr("World view"));
-	
-    openGL = new GLView(this);
-	openGL->setStaticView(true);
-	setFeatures(QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable);
-	setAllowedAreas(Qt::AllDockWidgetAreas);
-	setMinimumSize(0,0);
-	setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
-	this->resize(500,500);
-    layout = new QGridLayout;
-    layout->addWidget(openGL, 0, 0);
-	setWidget(openGL);
-	
-	mainwindow  = dynamic_cast <AutoscoperMainWindow *> ( parent);
-}
 
-void  WorldViewWindow::resizeEvent ( QResizeEvent * event )
+	class BackgroundRenderer
 {
-	openGL->repaint();
-}
+public:
 
-void WorldViewWindow::setSharedGLContext(QOpenGLContext * sharedContext){
-	openGL->context()->setShareContext(sharedContext);
-	openGL->context()->create();
-}
+	BackgroundRenderer();
 
-void WorldViewWindow::draw(){
-	openGL->update();
-}
+	~BackgroundRenderer();
+
+private:
+
+	BackgroundRenderer(const BackgroundRenderer& renderer);
+
+	BackgroundRenderer& operator=(const BackgroundRenderer& renderer);
+
+public:
+
+	void set_back(const void* data, size_t width, size_t height);
+
+    void set_image_plane(float x, float y, float width, float height);
+
+    void set_viewport(float x, float y, float width, float height); 
+
+	void render(float* buffer, size_t width, size_t height, float threshold) const;
+
+private:
+
+    cudaArray* array_;
+
+    float image_plane_[4];
+    
+    float viewport_[4];
+};
+
+} } // namespace xromm::cuda
+
+#endif // XROMM_GPU_BACKGROUND_RENDERER_HPP
+

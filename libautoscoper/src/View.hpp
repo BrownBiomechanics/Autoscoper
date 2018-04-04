@@ -61,6 +61,7 @@ namespace gpu
 
 class RayCaster;
 class RadRenderer;
+class BackgroundRenderer;
 class Filter;
 
 // This class encapsulates everything related to the rendering of the drrs and
@@ -91,13 +92,15 @@ public:
     const std::vector<Filter*>& drrFilters() const { return drrFilters_; }
     std::vector<Filter*>& radFilters() { return radFilters_; }
     const std::vector<Filter*>& radFilters() const { return radFilters_; }
+	BackgroundRenderer* backgroundRenderer() { return backgroundRenderer_; }
 
 	void addDrrRenderer();
 	void saveImage(std::string filename, int width, int height);
 
     // Rendering functions
     void renderRad(Buffer* buffer, unsigned int width, unsigned int height);
-    void renderRad(unsigned int pbo, unsigned int width, unsigned int height);
+
+	void renderBackground(unsigned width, unsigned height);
 
     void renderDrr(Buffer* buffer, unsigned int width, unsigned int height);
 	void renderDrrSingle(int volume, Buffer* buffer, unsigned width, unsigned height);
@@ -108,6 +111,9 @@ public:
 
     bool drr_enabled;
     bool rad_enabled;
+
+	void updateBackground(const float * buffer, unsigned int width, unsigned int height);
+	void setBackgroundThreshold(float threshold){ backgroundThreshold_ = threshold; }
 
 	const unsigned int nbDrrRenderer()
 	{
@@ -131,6 +137,8 @@ private:
 	std::vector <RayCaster*> drrRenderer_;
     RadRenderer* radRenderer_;
 
+	BackgroundRenderer* backgroundRenderer_;
+
     std::vector<Filter*> drrFilters_;
     std::vector<Filter*> radFilters_;
 
@@ -145,6 +153,7 @@ private:
     Buffer* filterBuffer_;
 
 	Buffer* backgroundmask_;
+	float backgroundThreshold_;
 	Buffer* drr_mask_;
 
 	bool inited_;

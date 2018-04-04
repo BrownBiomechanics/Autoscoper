@@ -11,6 +11,8 @@ SET(opencl_HEADERS
 	src/gpu/opencl/SharpenFilter.hpp
 	src/gpu/opencl/SobelFilter.hpp
 	src/gpu/opencl/Merger.hpp
+	src/gpu/opencl/BackgroundRenderer.hpp
+	src/gpu/opencl/DRRBackground.hpp
 )
 
 SET(opencl_SOURCES
@@ -24,6 +26,8 @@ SET(opencl_SOURCES
 	src/gpu/opencl/SharpenFilter.cpp
 	src/gpu/opencl/SobelFilter.cpp
 	src/gpu/opencl/Merger.cpp
+	src/gpu/opencl/BackgroundRenderer.cpp
+	src/gpu/opencl/DRRBackground.cpp
 )
 
 

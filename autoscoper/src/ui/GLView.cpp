@@ -520,6 +520,9 @@ void GLView::paintGL()
 			m_view->radRenderer()->set_viewport(
 				viewdata.ratio*x, y, viewdata.ratio*width, height);
 
+			m_view->backgroundRenderer()->set_viewport(
+				viewdata.ratio*x, y, viewdata.ratio*width, height);
+
 			m_view->render(viewdata.pbo,viewdata.window_width, viewdata.window_height);
 
 			glViewport(0, 0,viewdata.window_width, viewdata.window_height);

@@ -52,6 +52,8 @@ static Program compositor_kernel_;
 
 void composite(const Buffer* src1,
                const Buffer* src2,
+			   const Buffer* src3,
+			   const Buffer* src4,
                const GLBuffer* dest,
                unsigned width,
                unsigned height)
@@ -64,6 +66,8 @@ void composite(const Buffer* src1,
     
 	kernel->addBufferArg(src1);
 	kernel->addBufferArg(src2);
+	kernel->addBufferArg(src3);
+	kernel->addBufferArg(src4);
 	kernel->addGLBufferArg(dest);
 	kernel->addArg(width);
 	kernel->addArg(height);

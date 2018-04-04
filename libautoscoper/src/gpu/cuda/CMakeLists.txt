@@ -6,6 +6,7 @@ SET(cuda_HEADERS
 	src/gpu/cuda/RayCaster.hpp
 	src/gpu/cuda/SharpenFilter.hpp
 	src/gpu/cuda/SobelFilter.hpp
+	src/gpu/cuda/BackgroundRenderer.hpp
 )
 
 SET(cuda_SOURCES
@@ -16,6 +17,7 @@ SET(cuda_SOURCES
 	src/gpu/cuda/RayCaster.cpp
 	src/gpu/cuda/SharpenFilter.cpp
 	src/gpu/cuda/SobelFilter.cpp
+	src/gpu/cuda/BackgroundRenderer.cpp
 )
 
 SET(cuda_KERNEL_HEADERS
@@ -28,6 +30,8 @@ SET(cuda_KERNEL_HEADERS
 	src/gpu/cuda/SharpenFilter_kernels.h
 	src/gpu/cuda/SobelFilter_kernels.h
 	src/gpu/cuda/Merger_kernels.h
+	src/gpu/cuda/BackgroundRenderer_kernels.h
+	src/gpu/cuda/DRRBackground_kernels.h
 )
 
 SET(cuda_KERNEL
@@ -40,4 +44,6 @@ SET(cuda_KERNEL
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/SharpenFilter_kernels.cu
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/SobelFilter_kernels.cu
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/Merger_kernels.cu
+	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/BackgroundRenderer_kernels.cu
+	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda//DRRBackground_kernels.cu
 )

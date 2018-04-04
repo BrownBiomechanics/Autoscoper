@@ -61,15 +61,19 @@
 #include "gpu/cuda/RayCaster.hpp"
 #include "gpu/cuda/RadRenderer.hpp"
 #include "gpu/cuda/Merger_kernels.h"
-
+#include "gpu/cuda/BackgroundRenderer.hpp"
+#include "gpu/cuda/DRRBackground_kernels.h"
 #else
 #include "gpu/opencl/Compositor.hpp"
 #include "gpu/opencl/Merger.hpp"
 #include "gpu/opencl/RayCaster.hpp"
 #include "gpu/opencl/RadRenderer.hpp"
+#include "gpu/opencl/BackgroundRenderer.hpp"
+#include "gpu/opencl/DRRBackground.hpp"
 #endif
 
 #include "Filter.hpp"
+
 
 
 using namespace std;
@@ -83,12 +87,14 @@ View::View(Camera& camera)
 	drr_enabled = true;
 	rad_enabled = true;
 	radRenderer_ = new RadRenderer();
+	backgroundRenderer_ = new BackgroundRenderer();
 	maxWidth_ = 2048;
 	maxHeight_ = 2048;
 	drrFilterBuffer_ = 0;
 	radBuffer_ = 0;
 	radFilterBuffer_ = 0;
 	filterBuffer_ = 0;
+	backgroundThreshold_ = -1.0f;
 	inited_ = false;
 }
 
@@ -98,6 +104,7 @@ View::~View()
 		delete drrRenderer_[i];
 	}
     delete radRenderer_;
+	delete backgroundRenderer_;
 
     std::vector<Filter*>::iterator iter;
     for (iter = drrFilters_.begin(); iter != drrFilters_.end(); ++iter) {
@@ -164,38 +171,29 @@ View::renderRad(Buffer* buffer, unsigned width, unsigned height)
 }
 
 void
-View::renderRad(unsigned int pbo, unsigned width, unsigned height)
+View::renderBackground(unsigned width, unsigned height)
 {
+	if (backgroundThreshold_ < 0.0)
+		return;
+
 #ifdef WITH_CUDA
-	struct cudaGraphicsResource* pboCudaResource;
-    cutilSafeCall(cudaGraphicsGLRegisterBuffer(&pboCudaResource, pbo,
-        cudaGraphicsMapFlagsWriteDiscard));
+	init();
 
-    float* buffer = NULL;
-    size_t numOfBytes;
-    cutilSafeCall(cudaGraphicsMapResources(1, &pboCudaResource, 0));
-    cutilSafeCall(cudaGraphicsResourceGetMappedPointer((void**)&buffer,
-                                                       &numOfBytes,
-                                                       pboCudaResource));
+	if (width > maxWidth_ || height > maxHeight_) {
+		cerr << "View::renderBackground(): ERROR: Buffer too large." << endl;
+	}
+	if (width > maxWidth_) {
+		width = maxWidth_;
+	}
+	if (height > maxHeight_) {
+		height = maxHeight_;
+	}
 
-    renderRad(radFilterBuffer_, width, height);
-    gpu::composite(radFilterBuffer_,
-                    radFilterBuffer_,
-                    buffer,
-                    width,
-                    height);
-
-    cutilSafeCall(cudaGraphicsUnmapResources(1, &pboCudaResource, 0));
-    cutilSafeCall(cudaGraphicsUnregisterResource(pboCudaResource));
+	backgroundRenderer_->render(backgroundmask_, width, height, backgroundThreshold_);
+	
 #else
-	GLBuffer* buffer = new GLBuffer(pbo, CL_MEM_WRITE_ONLY);
-
-	init(width, height);
-    renderRad(radFilterBuffer_, width, height);
-    composite(radFilterBuffer_, radFilterBuffer_, buffer, width, height);
-
-	delete buffer;
-#endif
+	backgroundRenderer_->render(backgroundmask_, width, height,  backgroundThreshold_);
+#endif 
 }
 
 void
@@ -220,14 +218,16 @@ View::renderDrr(Buffer* buffer, unsigned width, unsigned height)
 		gpu::merge(drrBufferMerged_, drrBuffer_[i], drrBufferMerged_, width, height);
 	}
 	filter(drrFilters_, drrBufferMerged_, buffer, width, height);
+	drr_background(drrBufferMerged_, drr_mask_, width, height);
 #else
 	init(width, height);
-	drrBufferMerged_->fill(0x00);
+	drrBufferMerged_->fill((char) 0x00);
 	for (int i = 0; i < drrRenderer_.size(); i++){
 		drrRenderer_[i]->render(drrBuffer_[i], width, height);
 		merge(drrBufferMerged_, drrBuffer_[i], drrBufferMerged_, width, height);
 	}
 	filter(drrFilters_, drrBufferMerged_, buffer, width, height);
+	drr_background(drrBufferMerged_, drr_mask_, width, height);
 #endif
 }
 
@@ -248,6 +248,7 @@ void View::renderDrrSingle(int volume, Buffer* buffer, unsigned width, unsigned 
 
 	drrRenderer_[volume]->render(drrBuffer_[volume], width, height);
 	filter(drrFilters_, drrBuffer_[volume], buffer, width, height);
+
 #else
 	init(width, height);
 	drrRenderer_[volume]->render(drrBuffer_[volume], width, height);
@@ -271,8 +272,13 @@ View::renderDrr(unsigned int pbo, unsigned width, unsigned height)
                                                        pboCudaResource));
 
     renderDrr(drrFilterBuffer_, width, height);
+
+	gpu::fill(backgroundmask_, maxWidth_*maxHeight_, 1.0f);
+
     gpu::composite(drrFilterBuffer_,
                     drrFilterBuffer_,
+					backgroundmask_,
+					drr_mask_,
                     buffer,
                     width,
                     height);
@@ -284,7 +290,8 @@ View::renderDrr(unsigned int pbo, unsigned width, unsigned height)
 
 	init(width, height);
     renderDrr(drrFilterBuffer_, width, height);
-    composite(drrFilterBuffer_, drrFilterBuffer_, buffer, width, height);
+	backgroundmask_->fill(1.0f);
+	composite(drrFilterBuffer_, drrFilterBuffer_, backgroundmask_, drr_mask_, buffer, width, height);
 
 	delete buffer;
 #endif
@@ -318,7 +325,7 @@ void View::saveImage(std::string filename, int width, int height)
 #else
 	init(width, height);
 
-	drrBufferMerged_->fill(0x00);
+	drrBufferMerged_->fill((char)0x00);
 	for(int i = 0; i < drrRenderer_.size(); i++){
 		drrRenderer_[i]->render(drrBuffer_[i], width, height);
 		merge(drrBufferMerged_, drrBuffer_[i], drrBufferMerged_, width, height);
@@ -374,29 +381,34 @@ View::render(GLBuffer* buffer, unsigned width, unsigned height)
         cudaMemset(radFilterBuffer_,0,width*height*sizeof(float));
     }
 
+	renderBackground(width, height);
+	
     gpu::composite(drrFilterBuffer_,
                     radFilterBuffer_,
+					backgroundmask_,
+					drr_mask_,
                     buffer,
                     width,
                     height);
 #else
 	init(width, height);
-
+	const char c = 0x00;
     if (drr_enabled) {
         renderDrr(drrFilterBuffer_, width, height);
     }
     else {
-		drrFilterBuffer_->fill(0x00);
+		drrFilterBuffer_->fill(c);
     }
 
     if (rad_enabled) {
         renderRad(radFilterBuffer_, width, height);
     }
     else {
-		radFilterBuffer_->fill(0x00);
+		radFilterBuffer_->fill(c);
     }
+	renderBackground(width, height);
 
-    composite(drrFilterBuffer_, radFilterBuffer_, buffer, width, height);
+	composite(drrFilterBuffer_, radFilterBuffer_, backgroundmask_, drr_mask_, buffer, width, height);
 #endif
 }
 
@@ -428,6 +440,12 @@ View::render(unsigned int pbo, unsigned width, unsigned height)
 
 	delete buffer;
 #endif
+}
+
+
+void View::updateBackground(const float* buffer, unsigned width, unsigned height)
+{
+	backgroundRenderer_->set_back(buffer,width,height);
 }
 
 
