@@ -1646,7 +1646,8 @@ void AutoscoperMainWindow::on_toolButtonMovePivot_clicked(){
 }
 
 void AutoscoperMainWindow::on_toolButtonTrack_clicked(){
-	if(tracking_dialog == NULL)tracking_dialog = new TrackingOptionsDialog(this);
+	if(tracking_dialog == NULL)
+		tracking_dialog = new TrackingOptionsDialog(this);
 
 	tracking_dialog->setRange(timeline_widget->getPosition_graph()->min_frame,timeline_widget->getPosition_graph()->max_frame, 
 		tracker->trial()->num_frames-1);
@@ -1655,7 +1656,8 @@ void AutoscoperMainWindow::on_toolButtonTrack_clicked(){
 }
 
 void AutoscoperMainWindow::on_toolButtonRetrack_clicked(){
-	if(tracking_dialog == NULL)tracking_dialog = new TrackingOptionsDialog(this);
+	if(tracking_dialog == NULL)
+		tracking_dialog = new TrackingOptionsDialog(this);
 
 	tracking_dialog->setRange(timeline_widget->getPosition_graph()->min_frame,timeline_widget->getPosition_graph()->max_frame, 
 		tracker->trial()->num_frames-1);

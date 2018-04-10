@@ -52,7 +52,7 @@ void ncc_init(unsigned max_n);
 
 void ncc_deinit();
 
-float ncc(Buffer* f, Buffer* g, unsigned n);
+float ncc(Buffer* f, Buffer* g, Buffer* mask, unsigned n);
 
 } // namespace gpu
 

@@ -55,6 +55,8 @@
 #ifdef WITH_CUDA
 #include "gpu/cuda/CudaWrap.hpp"
 #include "gpu/cuda/Ncc_kernels.h"
+#include "gpu/cuda/Compositor_kernels.h"
+#include "gpu/cuda/Mult_kernels.h"
 #else
 #include "gpu/opencl/Ncc.hpp"
 #endif
@@ -66,12 +68,13 @@
 #include "Camera.hpp"
 #include "CoordFrame.hpp"
 #include <cuda_runtime_api.h>
+#include "gpu/opencl/Mult.hpp"
 
 using namespace std;
 
 static bool firstRun = true;
 
-#define DEBUG 1
+#define DEBUG 0
 
 // XXX
 // Set callback for Downhill Simplex. This is really a hack so that we can use
@@ -132,7 +135,9 @@ namespace xromm {
 
 Tracker::Tracker()
     : rendered_drr_(NULL),
-      rendered_rad_(NULL)
+      rendered_rad_(NULL),
+	  drr_mask_(NULL),
+	  background_mask_(NULL)
 {
     g_markerless = this;
 }
@@ -174,9 +179,17 @@ void Tracker::load(const Trial& trial)
 #ifdef WITH_CUDA
 	gpu::cudaMallocWrap(rendered_drr_,trial_.render_width*trial_.render_height*sizeof(float));
     gpu::cudaMallocWrap(rendered_rad_,trial_.render_width*trial_.render_height*sizeof(float));
+	gpu::cudaMallocWrap(drr_mask_, trial_.render_width*trial_.render_height*sizeof(float));
+	gpu::cudaMallocWrap(background_mask_, trial_.render_width*trial_.render_height*sizeof(float));
+	gpu::fill(drr_mask_, trial_.render_width*trial_.render_height, 1.0f);
+	gpu::fill(background_mask_, trial_.render_width*trial_.render_height, 1.0f);
 #else
 	rendered_drr_ = new gpu::Buffer(npixels*sizeof(float));
 	rendered_rad_ = new gpu::Buffer(npixels*sizeof(float));
+	drr_mask_ = new gpu::Buffer(npixels*sizeof(float));
+	background_mask_ = new gpu::Buffer(npixels*sizeof(float));
+	drr_mask_->fill(1.0f);
+	background_mask_->fill(1.0f);
 #endif
 
     gpu::ncc_init(npixels);
@@ -240,6 +253,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats)
     int framesBehind = (dFrame > 0)?
                        (int)trial_.frame:
                        (int)trial_.num_frames-trial_.frame-1;
+
     if (trial_.guess == 2 && framesBehind > 1) {
 		double xyzypr1[6] = { (*trial_.getXCurve(-1))(trial_.frame - 2 * dFrame),
 			(*trial_.getYCurve(-1))(trial_.frame - 2 * dFrame),
@@ -343,7 +357,7 @@ double Tracker::minimizationFunc(const double* values) const
 		(*(const_cast<Trial&>(trial_)).getYawCurve(-1))(trial_.frame),
 		(*(const_cast<Trial&>(trial_)).getPitchCurve(-1))(trial_.frame),
 		(*(const_cast<Trial&>(trial_)).getRollCurve(-1))(trial_.frame) };
-    CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
+    CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr); 
 
 	CoordFrame manip = xcframe* (const_cast<Trial&>(trial_)).getVolumeMatrix(-1)->inverse();
     manip.rotate(manip.rotation()+6, values[3]);
@@ -379,19 +393,32 @@ double Tracker::minimizationFunc(const double* values) const
 		views_[i]->renderDrrSingle(idx, rendered_drr_, render_width, render_height);
         views_[i]->renderRad(rendered_rad_,render_width,render_height);
 
+		//render masks
+		views_[i]->backgroundRenderer()->set_viewport(viewport[0], viewport[1],
+			viewport[2], viewport[3]);
+
+		views_[i]->renderBackground(background_mask_,render_width, render_height);
+		views_[i]->renderDRRMask(rendered_drr_, drr_mask_, render_width, render_height);
+
+		gpu::multiply(background_mask_, drr_mask_, drr_mask_, render_width, render_height);
+		gpu::multiply(rendered_rad_, drr_mask_, rendered_rad_, render_width, render_height);
+		gpu::multiply(rendered_drr_, drr_mask_, rendered_drr_, render_width, render_height);
+
 #if DEBUG
 		save_debug_image(rendered_drr_, render_width, render_height);
 		save_debug_image(rendered_rad_, render_width, render_height);
+		save_debug_image(drr_mask_, render_width, render_height);
+		save_debug_image(background_mask_, render_width, render_height);
 #endif
 
         // Calculate the correlation
-        correlations[i] = 1.0-gpu::ncc(rendered_drr_,rendered_rad_,
-                                          render_width*render_height);
+		correlations[i] = 1.0 - gpu::ncc(rendered_drr_, rendered_rad_, drr_mask_,
+			render_width*render_height);
     }
 
     double correlation = correlations[0];
     for (unsigned int i = 1; i < trial_.cameras.size(); ++i) {
-        correlation *= correlations[i];
+        correlation += correlations[i];
     }
 	delete[] correlations;
 

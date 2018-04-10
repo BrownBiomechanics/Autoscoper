@@ -185,10 +185,11 @@ void ncc_deinit()
 	g_max_n = 0;
 }
 
-float ncc(Buffer* f, Buffer* g, unsigned n)
+float ncc(Buffer* f, Buffer* g, Buffer* mask, unsigned n)
 {
-	float meanF = ncc_sum(f,n)/n;
-	float meanG = ncc_sum(g,n)/n;
+	float nbPixel = ncc_sum(mask, n);
+	float meanF = ncc_sum(f, n) / nbPixel;
+	float meanG = ncc_sum(g, n) / nbPixel;
 
 #if DEBUG
 	cerr << "meanF: " << meanF << endl;
@@ -207,6 +208,7 @@ float ncc(Buffer* f, Buffer* g, unsigned n)
 	kernel->addArg(meanF);
 	kernel->addBufferArg(g);
 	kernel->addArg(meanG);
+	kernel->addBufferArg(mask);
 	kernel->addBufferArg(d_nums);
 	kernel->addBufferArg(d_den1s);
 	kernel->addBufferArg(d_den2s);
@@ -221,7 +223,7 @@ float ncc(Buffer* f, Buffer* g, unsigned n)
 	if (den < 1e-5) {
 		return 1e5;
 	}
-
+	
 	return ncc_sum(d_nums,n)/den;
 }
 

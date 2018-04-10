@@ -73,7 +73,7 @@ __global__
 void sum_kernel(float* f, float* sums, unsigned int n);
 
 __global__
-void cuda_ncc_kernel(float* f, float meanF, float* g, float meanG,
+void cuda_ncc_kernel(float* f, float meanF, float* g, float meanG, float* mask,
                      float* nums, float* den1s, float* den2s,
                      unsigned int n);
 
@@ -115,15 +115,16 @@ void ncc_deinit()
     g_maxNumThreads = 0;
 }
 
-float ncc(float* f, float* g, unsigned int n)
+float ncc(float* f, float* g, float* mask, unsigned int n)
 {
-    float meanF = sum(f,n)/n;
-    float meanG = sum(g,n)/n;
+	float nbPixel = sum(mask, n);
+	float meanF = sum(f, n) / nbPixel;
+	float meanG = sum(g, n) / nbPixel;
 
     unsigned int numThreads, numBlocks, sizeMem;
     get_device_params(n, g_maxNumThreads, numThreads, numBlocks, sizeMem);
 
-    cuda_ncc_kernel<<<numBlocks, numThreads, sizeMem>>>(f, meanF, g, meanG,
+	cuda_ncc_kernel << <numBlocks, numThreads, sizeMem >> >(f, meanF, g, meanG, mask,
                                                         d_nums, d_den1s,
                                                         d_den2s, n);
 
@@ -196,13 +197,13 @@ void sum_kernel(float* f, float* sums, unsigned int n)
 }
 
 __global__
-void cuda_ncc_kernel(float* f, float meanF, float* g, float meanG,
+void cuda_ncc_kernel(float* f, float meanF, float* g, float meanG, float* mask,
                      float* nums, float* den1s, float* den2s,
                      unsigned int n)
 {
     unsigned int i = blockDim.x*blockIdx.x+threadIdx.x;
 
-    if (i < n) {
+	if (i < n && mask[i] > 0.5f) {
         float fMinusMean = f[i]-meanF;
         float gMinusMean = g[i]-meanG;
 

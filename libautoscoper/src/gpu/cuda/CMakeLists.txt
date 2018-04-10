@@ -32,6 +32,7 @@ SET(cuda_KERNEL_HEADERS
 	src/gpu/cuda/Merger_kernels.h
 	src/gpu/cuda/BackgroundRenderer_kernels.h
 	src/gpu/cuda/DRRBackground_kernels.h
+	src/gpu/cuda/Mult_kernels.h
 )
 
 SET(cuda_KERNEL
@@ -46,4 +47,5 @@ SET(cuda_KERNEL
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/Merger_kernels.cu
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/BackgroundRenderer_kernels.cu
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda//DRRBackground_kernels.cu
+	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda//Mult_kernels.cu
 )

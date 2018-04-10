@@ -13,6 +13,7 @@ set(opencl_shaders
 	gpu/opencl/kernel/Merger.cl
 	gpu/opencl/kernel/BackgroundRenderer.cl
 	gpu/opencl/kernel/DRRBackground.cl
+	gpu/opencl/kernel/Mult.cl
 )
 
 foreach(SHADER_FILENAME ${opencl_shaders})

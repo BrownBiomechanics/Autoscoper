@@ -84,7 +84,7 @@ void TrackingOptionsDialog::frame_optimize()
             return;
          }
 
-		mainwindow->getTracker()->optimize(frame, d_frame, num_repeats);
+		  mainwindow->getTracker()->optimize(frame, d_frame, num_repeats);
 
           mainwindow->update_graph_min_max(mainwindow->getPosition_graph(), mainwindow->getTracker()->trial()->frame);
 
@@ -161,7 +161,7 @@ void TrackingOptionsDialog::on_pushButton_OK_clicked(bool checked){
 				int tmp = from_frame;
 				from_frame = to_frame;
 				to_frame = tmp;
-				d_frame = from_frame > to_frame? 1: -1;
+				d_frame = from_frame > to_frame? -1: 1;
 			}
 			else {
 				frame = from_frame;

@@ -1,22 +1,22 @@
 // ----------------------------------
 // Copyright (c) 2011, Brown University
 // All rights reserved.
-//
+// 
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
 // met:
-//
+// 
 // (1) Redistributions of source code must retain the above copyright
 // notice, this list of conditions and the following disclaimer.
-//
+// 
 // (2) Redistributions in binary form must reproduce the above copyright
 // notice, this list of conditions and the following disclaimer in the
 // documentation and/or other materials provided with the distribution.
-//
+// 
 // (3) Neither the name of Brown University nor the names of its
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
-//
+// 
 // THIS SOFTWARE IS PROVIDED BY BROWN UNIVERSITY “AS IS” WITH NO
 // WARRANTIES OR REPRESENTATIONS OF ANY KIND WHATSOEVER EITHER EXPRESS OR
 // IMPLIED, INCLUDING WITHOUT LIMITATION ANY WARRANTY OF DESIGN OR
@@ -34,85 +34,60 @@
 // SUCH DAMAGE. ANY RECIPIENT OR USER OF THIS SOFTWARE ACKNOWLEDGES THE
 // FOREGOING, AND ACCEPTS ALL RISKS AND LIABILITIES THAT MAY ARISE FROM
 // THEIR USE OF THE SOFTWARE.
-// ---------------------------------
+// ----------------------------------
 
-/// \file Tracker.hpp
-/// \author Andy Loomis
+/// \file Mult_kernels.cu
+/// \author Benjamin Knorlein
 
-#ifndef XROMM_TRACKER_H
-#define XROMM_TRACKER_H
+#include "Mult_kernels.h"
 
-#include <vector>
-#include <string>
+// Define the cuda compositiing kernel
+__global__
+void mult_kernel(float* src1,
+                      float* src2,
+                      float* dest,
+                      size_t width,
+                      size_t height);
 
-#include "Filter.hpp"
+namespace xromm {
+	namespace gpu {
 
-#ifdef WITH_CUDA
-#include "gpu/cuda/RayCaster.hpp"
-#include "gpu/cuda/RadRenderer.hpp"
-#include "gpu/cuda/BackgroundRenderer.hpp"
-
-#else
-#include "gpu/opencl/RayCaster.hpp"
-#include "gpu/opencl/RadRenderer.hpp"
-#include "gpu/opencl/BackgroundRenderer.hpp"
-#include "gpu/opencl/OpenCL.hpp"
-#endif
-#include "Trial.hpp"
-
-
-namespace xromm
+		void multiply(float* src1,
+               float* src2,
+               float* dest,
+               size_t width,
+               size_t height)
 {
-
-class Camera;
-class CoordFrame;
-
-namespace gpu
-{
-
-class Filter;
-class View;
-class VolumeDescription;
+    // Calculate the block and grid sizes.
+    dim3 blockDim(16, 16);
+    dim3 gridDim((width+blockDim.x-1)/blockDim.x,
+                 (height+blockDim.y-1)/blockDim.y);
+    
+    // Call the kernel
+    mult_kernel<<<gridDim, blockDim>>>(src1,src2,dest,width,height);
+}
 
 } // namespace gpu
 
-class Tracker
+} // namespace xromm
+
+__global__
+void mult_kernel(float* src1,
+float* src2,
+float* dest,
+size_t width,
+size_t height)
 {
-public:
+	int x = blockIdx.x*blockDim.x + threadIdx.x;
+	int y = blockIdx.y*blockDim.y + threadIdx.y;
 
-    Tracker();
-    ~Tracker();
-	void init();
-    void load(const Trial& trial);
-    Trial* trial() { return &trial_; }
-    void optimize(int frame, int dframe, int repeats = 1);
-    double minimizationFunc(const double* values) const;
-    std::vector<gpu::View*>& views() { return views_; }
-    const std::vector<gpu::View*>& views() const { return views_; }
-    gpu::View* view(size_t i) { return views_.at(i); }
-    const gpu::View* view(size_t i) const { return views_.at(i); }
-	void updateBackground();
-	void setBackgroundThreshold(float threshold);
+	if (x > width - 1 || y > height - 1) {
+		return;
+	}
 
-private:
-    void calculate_viewport(const CoordFrame& modelview, double* viewport) const;
+	const unsigned int xy = y*width + x;
 
-    Trial trial_;
-	std::vector <gpu::VolumeDescription*> volumeDescription_;
-    std::vector<gpu::View*> views_;
-#ifdef WITH_CUDA
-	Buffer* rendered_drr_;
-	Buffer* rendered_rad_;
-	Buffer* background_mask_;
-	Buffer* drr_mask_;
-#else
-	gpu::Buffer* rendered_drr_;
-	gpu::Buffer* rendered_rad_;
-	gpu::Buffer* background_mask_;
-	gpu::Buffer* drr_mask_;
-#endif
-};
+	// src1 maps to orange and src2 to blue
+	dest[xy] = src1[xy] * src2[xy];
+}
 
-} // namespace XROMM
-
-#endif // XROMM_TRACKER_H

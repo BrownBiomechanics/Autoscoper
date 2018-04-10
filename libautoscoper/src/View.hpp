@@ -100,7 +100,8 @@ public:
     // Rendering functions
     void renderRad(Buffer* buffer, unsigned int width, unsigned int height);
 
-	void renderBackground(unsigned width, unsigned height);
+	void renderBackground(Buffer* buffer,unsigned width, unsigned height);
+	void renderDRRMask(Buffer* in_buffer, Buffer* out_buffer,unsigned width, unsigned height);
 
     void renderDrr(Buffer* buffer, unsigned int width, unsigned int height);
 	void renderDrrSingle(int volume, Buffer* buffer, unsigned width, unsigned height);
