@@ -69,6 +69,7 @@ class FilterDockWidget : public QDockWidget{
 		void toggle_drrs();
 		void saveAllSettings(QString directory);
 		void loadAllSettings(QString directory);
+		void loadFilterSettings(int camera, QString filename);
 
 		AutoscoperMainWindow * getMainWindow(){return mainwindow;};
 

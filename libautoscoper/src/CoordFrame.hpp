@@ -65,6 +65,10 @@ public:
 
     static CoordFrame from_xyzypr(const double* xyzypr);
 
+	static CoordFrame from_xyzquat(const double* xyzijk);
+
+	static CoordFrame from_xyzAxis_angle(const double* xyzijk);
+
     void to_xyzypr(double* xyzypr) const;
 
     static CoordFrame from_matrix(const double* m);
@@ -105,14 +109,18 @@ public:
 
     std::string to_string() const;
 
-    void from_string(std::string str); 
+    void from_string(std::string str);
 
 private:
 
     double rotation_[9];
 
     double translation_[3];
+
+	void rotateQuat(double x, double y, double z);
 };
+
+std::ostream& operator<<(std::ostream& os, const CoordFrame& frame);
 
 } // namespace XROMM
 

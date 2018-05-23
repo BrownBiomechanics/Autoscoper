@@ -96,9 +96,6 @@ void TimelineDockWidget::draw(){
 	dock->gltimeline->update();
 }
 
-void TimelineDockWidget::setSharedGLContext(QOpenGLContext * sharedContext){
-//	dock->gltimeline->setSharedGLContext(sharedContext);
-}
 
 void TimelineDockWidget::setFramesRange(int firstFrame, int lastFrame ){
 	dock->spinBox_FirstFrame->setMinimum(firstFrame);

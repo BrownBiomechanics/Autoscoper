@@ -80,7 +80,6 @@ class TimelineDockWidget : public QDockWidget{
 		explicit TimelineDockWidget(QWidget *parent = 0);
 		~TimelineDockWidget();
 		
-		void setSharedGLContext(QOpenGLContext * sharedContext);
 		void setFramesRange(int firstFrame, int lastFrame );
 		GraphData* getPosition_graph(){return position_graph;}
 		AutoscoperMainWindow * getMainWindow(){return mainwindow;};

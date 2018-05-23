@@ -50,6 +50,8 @@
 #        pragma comment(linker, "/SUBSYSTEM:CONSOLE")
 #endif
 
+#include "net/Socket.h"
+
 
 int main ( int argc, char **argv )
 {
@@ -58,13 +60,20 @@ int main ( int argc, char **argv )
 	
 	if(argc <= 1){ 
 		AutoscoperMainWindow *widget = new AutoscoperMainWindow();
+		Socket* socket = new Socket(widget, 30000);
 		widget->show();
-		return app.exec();
+		int ret = app.exec();
+		delete socket;
+		return ret;
+
 	}else{
 		fprintf(stderr, "Start Batch %s\n", argv[1]);
 		AutoscoperMainWindow *widget = new AutoscoperMainWindow(true);
+		Socket* socket = new Socket(widget, 30000);
 		widget->runBatch(argv[1], true);
+		delete socket;
 	}
+	
 }
 
 

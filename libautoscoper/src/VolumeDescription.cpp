@@ -264,6 +264,11 @@ VolumeDescription::VolumeDescription(const Volume& volume)
             exit(0);
     }
 
+	//calculate translation to center pivot
+	transCenter_[0] = - volume.scaleX() * 0.5 * (min[0] + max[0]);
+	transCenter_[1] = - volume.scaleY() * 0.5 * (min[1] + max[1]);
+	transCenter_[2] = volume.scaleZ() * 0.5 * (min[2] + max[2]);
+
     // Calculate the offset and size of the sub-volume
     invScale_[0] = 1.0f/(float)(volume.scaleX()*dim[0]);
     invScale_[1] = 1.0f/(float)(volume.scaleY()*dim[1]);

@@ -3,7 +3,7 @@ SET(CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 FIND_PACKAGE(OpenGL)
 
 #ADD QT4 SUPPORT
-FIND_PACKAGE(Qt5 COMPONENTS Core Widgets GUI OpenGL REQUIRED)
+FIND_PACKAGE(Qt5 COMPONENTS Core Widgets GUI OpenGL Network REQUIRED)
 cmake_policy(SET CMP0020 OLD)
 SET(CMAKE_AUTOMOC ON)
 
@@ -37,6 +37,7 @@ SET(autoscoper_FORMS_HEADERS
 		src/ui/VolumeDockWidget.h
 		src/ui/WorldViewWindow.h
 		src/ui/VolumeBox.h
+		src/net/Socket.h
 )
 SET(autoscoper_FORMS_SOURCES
      	src/ui/AutoscoperMainWindow.cpp
@@ -62,6 +63,7 @@ SET(autoscoper_FORMS_SOURCES
 		src/ui/WorldViewWindow.cpp
 		src/ui/VolumeDockWidget.cpp
 		src/ui/VolumeBox.cpp
+		src/net/Socket.cpp
 )
 
 #QT DESIGNER UI FILES
@@ -122,6 +124,7 @@ target_link_libraries(autoscoper PUBLIC libautoscoper
 	${Qt5Core_LIBRARIES}
 	${Qt5Widgets_LIBRARIES}
 	${Qt5OpenGL_LIBRARIES}
+	${Qt5Network_LIBRARIES}
 	${Qt5GUI_LIBRARIES})
 	
 target_include_directories(autoscoper PUBLIC  ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
@@ -131,6 +134,7 @@ target_include_directories(autoscoper PUBLIC
 	${Qt5Core_INCLUDE_DIRS}
 	${Qt5Widgets_INCLUDE_DIRS}
 	${Qt5OpenGL_INCLUDE_DIRS}
+	${Qt5Network_INCLUDE_DIRS}
 	${Qt5GUI_INCLUDE_DIRS}) 
 
 include(UseGLEW)

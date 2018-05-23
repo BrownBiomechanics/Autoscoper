@@ -263,7 +263,48 @@ void FilterTreeWidget::loadAllSettings(QString directory){
 			file.close();
 		}
 	}
-} 
+}
+
+void FilterTreeWidget::loadFilterSettings(int camera, QString filename)
+{
+	unsigned int start = (camera == -1) ? 0 : camera;
+	unsigned int stop = (camera == -1) ? this->topLevelItemCount() : camera + 1;
+
+	for (int i = start; i < stop; ++i){
+		CameraTreeWidgetItem * camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));
+		if (camera){
+			std::ifstream file(filename.toStdString(), std::ios::in);
+			std::string line, key;
+			while (std::getline(file, line)) {
+				if (line.compare("DrrRenderer_begin") == 0) {
+					for (int i = 0; i < camera->childCount(); i++){
+						ModelViewTreeWidgetItem * modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(i));
+						if (modelviewItem && modelviewItem->getType() == 1){
+							modelviewItem->loadSettings(file);
+						}
+					}
+				}
+				else if (line.compare("DrrFilters_begin") == 0){
+					for (int i = 0; i < camera->childCount(); i++){
+						ModelViewTreeWidgetItem * modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(i));
+						if (modelviewItem && modelviewItem->getType() == 1){
+							modelviewItem->loadFilters(file);
+						}
+					}
+				}
+				else if (line.compare("RadFilters_begin") == 0){
+					for (int i = 0; i < camera->childCount(); i++){
+						ModelViewTreeWidgetItem * modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(i));
+						if (modelviewItem && modelviewItem->getType() == 0){
+							modelviewItem->loadFilters(file);
+						}
+					}
+				}
+			}
+			file.close();
+		}
+	}
+}
 
 void FilterTreeWidget::toggle_drrs(){
 	for(int i=0;i<this->topLevelItemCount(); ++i){

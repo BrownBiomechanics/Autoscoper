@@ -75,6 +75,11 @@ void FilterDockWidget::loadAllSettings(QString directory){
 	dock->treeWidget->loadAllSettings(directory);
 }
 
+void FilterDockWidget::loadFilterSettings(int camera, QString filename)
+{
+	dock->treeWidget->loadFilterSettings(camera, filename);
+}
+
 void FilterDockWidget::addCamera(View * view){
 	dock->treeWidget->addCamera(view);
 }

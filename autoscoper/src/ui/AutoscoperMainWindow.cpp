@@ -110,11 +110,14 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 	is_trial_saved = true;
 	is_tracking_saved = true;
 
+	setDockNestingEnabled(true);
+
 	filters_widget =  new FilterDockWidget(this);
 	this->addDockWidget(Qt::LeftDockWidgetArea, filters_widget);
 
 	volumes_widget = new VolumeDockWidget(this);
 	this->addDockWidget(Qt::LeftDockWidgetArea, volumes_widget);
+	this->setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
 
 #ifndef WITH_CUDA
 	if (!skipGpuDevice){
@@ -124,17 +127,16 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 		delete dialog;
 }
 #endif
-	timeline_widget =  new TimelineDockWidget(this);
-	this->addDockWidget(Qt::BottomDockWidgetArea, timeline_widget);
-	
-
-	tracking_dialog = NULL;
 
 	worldview = new WorldViewWindow(this);
-		
-	addDockWidget(Qt::BottomDockWidgetArea, worldview);
+	addDockWidget(Qt::TopDockWidgetArea, worldview);
 	worldview->setFloating(true);
 	worldview->hide();
+	
+	timeline_widget = new TimelineDockWidget(this);
+	this->addDockWidget(Qt::BottomDockWidgetArea, timeline_widget, Qt::Horizontal);
+	resizeDocks({ timeline_widget}, { 300 }, Qt::Horizontal);
+	tracking_dialog = NULL;
 
 	setupShortcuts();
 }
@@ -759,6 +761,51 @@ void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_
 		file << endl;
 	}
 	file.close();
+}
+
+void AutoscoperMainWindow::loadFilterSettings(int camera, QString filename)
+{
+	filters_widget->loadFilterSettings(camera, filename);
+}
+
+std::vector<double> AutoscoperMainWindow::getPose(unsigned int volume, unsigned int frame)
+{
+	std::vector<double> pose(6,0);
+	pose[0] = (*tracker->trial()->getXCurve(volume))(frame);
+	pose[1] = (*tracker->trial()->getYCurve(volume))(frame);
+	pose[2] = (*tracker->trial()->getZCurve(volume))(frame);
+	pose[3] = (*tracker->trial()->getYawCurve(volume))(frame);
+	pose[4] = (*tracker->trial()->getPitchCurve(volume))(frame);
+	pose[5] = (*tracker->trial()->getRollCurve(volume))(frame);
+	return pose;
+}
+
+void AutoscoperMainWindow::setPose(std::vector<double> pose, unsigned volume, unsigned frame)
+{
+	tracker->trial()->getXCurve(volume)->insert(frame, pose[0]);
+	tracker->trial()->getYCurve(volume)->insert(frame, pose[1]);
+	tracker->trial()->getZCurve(volume)->insert(frame, pose[2]);
+	tracker->trial()->getYawCurve(volume)->insert(frame, pose[3]);
+	tracker->trial()->getPitchCurve(volume)->insert(frame, pose[4]);
+	tracker->trial()->getRollCurve(volume)->insert(frame, pose[5]);
+}
+
+void AutoscoperMainWindow::setBackground(double threshold)
+{
+	if (background_threshold_ < 0){
+		for (xromm::Video &vi : tracker->trial()->videos)
+			vi.create_background_image();
+
+		tracker->updateBackground();
+	}
+
+	background_threshold_ = threshold;
+	tracker->setBackgroundThreshold(background_threshold_);
+}
+
+std::vector<double> AutoscoperMainWindow::getNCC(unsigned volumeID, double* xyzpr)
+{
+	return tracker->trackFrame(volumeID, xyzpr);
 }
 
 void AutoscoperMainWindow::save_tracking_results(QString filename)
@@ -1471,15 +1518,7 @@ void AutoscoperMainWindow::on_actionSet_Background_triggered(bool checked)
 	bool ok;
 	double threshold = QInputDialog::getDouble(this, "Enter threshold", "threshold in percent", 0.2, 0.0, 1.0, 4, &ok);
 	if (ok){
-		if (background_threshold_ < 0){
-			for (xromm::Video &vi : tracker->trial()->videos)
-				vi.create_background_image();
-			
-			tracker->updateBackground();	
-		}
-		
-		background_threshold_ = threshold;
-		tracker->setBackgroundThreshold(background_threshold_);
+		setBackground(threshold);
 	}
 }
 

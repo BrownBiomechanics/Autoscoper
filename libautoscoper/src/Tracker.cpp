@@ -172,7 +172,10 @@ void Tracker::load(const Trial& trial)
 	}
 	volumeDescription_.clear();
 	for (int i = 0; i < trial_.volumes.size(); i++){
-		volumeDescription_.push_back(new gpu::VolumeDescription(trial_.volumes[i]));
+		gpu::VolumeDescription * v_desc = new gpu::VolumeDescription(trial_.volumes[i]);
+		volumeDescription_.push_back(v_desc);
+		//center pivot
+		trial_.getVolumeMatrix(i)->translate(v_desc->transCenter());
 	}
 
 	unsigned npixels = trial_.render_width*trial_.render_height;
@@ -324,14 +327,13 @@ void Tracker::optimize(int frame, int dFrame, int repeats)
 			(*trial_.getRollCurve(-1))(trial_.frame) };
         CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
-		CoordFrame manip = xcframe* (trial_.getVolumeMatrix(-1))->inverse();
-        manip.rotate(manip.rotation()+6, (P[1]+1)[3]);
-        manip.rotate(manip.rotation()+3, (P[1]+1)[4]);
-        manip.rotate(manip.rotation()+0, (P[1]+1)[5]);
-        manip.translate(P[1]+1);
 
-		xcframe = manip* *(trial_.getVolumeMatrix(-1));
+		CoordFrame manip = CoordFrame::from_xyzAxis_angle(P[1] + 1);
+		xcframe = xcframe * trial_.getVolumeMatrix(-1)->inverse() * manip * *trial_.getVolumeMatrix(-1);
         xcframe.to_xyzypr(xyzypr);
+
+		xcframe = xcframe * trial_.getVolumeMatrix(-1)->inverse() * manip * *trial_.getVolumeMatrix(-1);
+
 
 		trial_.getXCurve(-1)->insert(trial_.frame, xyzypr[0]);
 		trial_.getYCurve(-1)->insert(trial_.frame, xyzypr[1]);
@@ -347,6 +349,59 @@ void Tracker::optimize(int frame, int dFrame, int repeats)
          << " done in " << totalIter << " total iterations" << endl;
 }
 
+std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) const
+	{
+		std::vector<double> correlations;
+		CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
+
+		for (unsigned int i = 0; i < views_.size(); ++i) {
+			// Set the modelview matrix for DRR rendering
+			CoordFrame modelview = views_[i]->camera()->coord_frame().inverse()*xcframe;
+			double imv[16]; modelview.inverse().to_matrix_row_order(imv);
+			views_[i]->drrRenderer(volumeID)->setInvModelView(imv);
+
+			// Calculate the viewport surrounding the volume
+			double viewport[4];
+			this->calculate_viewport(modelview, viewport);
+
+			// Calculate the size of the image to render
+			unsigned render_width = viewport[2] * trial_.render_width / views_[i]->camera()->viewport()[2];
+			unsigned render_height = viewport[3] * trial_.render_height / views_[i]->camera()->viewport()[3];
+
+			// Set the viewports
+			views_[i]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1],
+				viewport[2], viewport[3]);
+			views_[i]->radRenderer()->set_viewport(viewport[0], viewport[1],
+				viewport[2], viewport[3]);
+
+			// Render the DRR and Radiograph
+			views_[i]->renderDrrSingle(volumeID, rendered_drr_, render_width, render_height);
+			views_[i]->renderRad(rendered_rad_, render_width, render_height);
+
+			//render masks
+			views_[i]->backgroundRenderer()->set_viewport(viewport[0], viewport[1],
+				viewport[2], viewport[3]);
+
+			views_[i]->renderBackground(background_mask_, render_width, render_height);
+			views_[i]->renderDRRMask(rendered_drr_, drr_mask_, render_width, render_height);
+
+			gpu::multiply(background_mask_, drr_mask_, drr_mask_, render_width, render_height);
+			gpu::multiply(rendered_rad_, drr_mask_, rendered_rad_, render_width, render_height);
+			gpu::multiply(rendered_drr_, drr_mask_, rendered_drr_, render_width, render_height);
+
+#if DEBUG
+			save_debug_image(rendered_drr_, render_width, render_height);
+			save_debug_image(rendered_rad_, render_width, render_height);
+			save_debug_image(drr_mask_, render_width, render_height);
+			save_debug_image(background_mask_, render_width, render_height);
+#endif
+
+			// Calculate the correlation
+			correlations.push_back(1.0 - gpu::ncc(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
+		}
+		return correlations;
+	}
+
 double Tracker::minimizationFunc(const double* values) const
 {
     // Construct a coordinate frame from the given values
@@ -359,68 +414,18 @@ double Tracker::minimizationFunc(const double* values) const
 		(*(const_cast<Trial&>(trial_)).getRollCurve(-1))(trial_.frame) };
     CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr); 
 
-	CoordFrame manip = xcframe* (const_cast<Trial&>(trial_)).getVolumeMatrix(-1)->inverse();
-    manip.rotate(manip.rotation()+6, values[3]);
-    manip.rotate(manip.rotation()+3, values[4]);
-    manip.rotate(manip.rotation()+0, values[5]);
-    manip.translate(values);
-	xcframe = manip* *((const_cast<Trial&>(trial_)).getVolumeMatrix(-1));
 
-    double* correlations = new double[views_.size()];
-    for (unsigned int i = 0; i < views_.size(); ++i) {
+	CoordFrame manip = CoordFrame::from_xyzAxis_angle(values);
+	xcframe = xcframe * (const_cast<Trial&>(trial_)).getVolumeMatrix(-1)->inverse() * manip * *(const_cast<Trial&>(trial_)).getVolumeMatrix(-1);
 
-		int idx = trial_.current_volume;
-        // Set the modelview matrix for DRR rendering
-        CoordFrame modelview = views_[i]->camera()->coord_frame().inverse()*xcframe;
-        double imv[16]; modelview.inverse().to_matrix_row_order(imv);
-		views_[i]->drrRenderer(idx)->setInvModelView(imv);
-
-        // Calculate the viewport surrounding the volume
-        double viewport[4];
-        this->calculate_viewport(modelview,viewport);
-
-        // Calculate the size of the image to render
-        unsigned render_width = viewport[2] * trial_.render_width / views_[i]->camera()->viewport()[2];
-        unsigned render_height = viewport[3] * trial_.render_height / views_[i]->camera()->viewport()[3];
-
-        // Set the viewports
-		views_[i]->drrRenderer(idx)->setViewport(viewport[0], viewport[1],
-                                              viewport[2],viewport[3]);
-        views_[i]->radRenderer()->set_viewport(viewport[0],viewport[1],
-                                               viewport[2],viewport[3]);
-
-        // Render the DRR and Radiograph
-		views_[i]->renderDrrSingle(idx, rendered_drr_, render_width, render_height);
-        views_[i]->renderRad(rendered_rad_,render_width,render_height);
-
-		//render masks
-		views_[i]->backgroundRenderer()->set_viewport(viewport[0], viewport[1],
-			viewport[2], viewport[3]);
-
-		views_[i]->renderBackground(background_mask_,render_width, render_height);
-		views_[i]->renderDRRMask(rendered_drr_, drr_mask_, render_width, render_height);
-
-		gpu::multiply(background_mask_, drr_mask_, drr_mask_, render_width, render_height);
-		gpu::multiply(rendered_rad_, drr_mask_, rendered_rad_, render_width, render_height);
-		gpu::multiply(rendered_drr_, drr_mask_, rendered_drr_, render_width, render_height);
-
-#if DEBUG
-		save_debug_image(rendered_drr_, render_width, render_height);
-		save_debug_image(rendered_rad_, render_width, render_height);
-		save_debug_image(drr_mask_, render_width, render_height);
-		save_debug_image(background_mask_, render_width, render_height);
-#endif
-
-        // Calculate the correlation
-		correlations[i] = 1.0 - gpu::ncc(rendered_drr_, rendered_rad_, drr_mask_,
-			render_width*render_height);
-    }
+	unsigned int idx = trial_.current_volume;
+	xcframe.to_xyzypr(xyzypr);
+	std::vector <double> correlations = trackFrame(idx, &xyzypr[0]);
 
     double correlation = correlations[0];
     for (unsigned int i = 1; i < trial_.cameras.size(); ++i) {
         correlation += correlations[i];
     }
-	delete[] correlations;
 
     return correlation;
 }

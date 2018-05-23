@@ -1,4 +1,4 @@
-// ----------------------------------
+Ôªø// ----------------------------------
 // Copyright (c) 2011, Brown University
 // All rights reserved.
 //
@@ -17,7 +17,7 @@
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
 //
-// THIS SOFTWARE IS PROVIDED BY BROWN UNIVERSITY ìAS ISî WITH NO
+// THIS SOFTWARE IS PROVIDED BY BROWN UNIVERSITY ‚ÄúAS IS‚Äù WITH NO
 // WARRANTIES OR REPRESENTATIONS OF ANY KIND WHATSOEVER EITHER EXPRESS OR
 // IMPLIED, INCLUDING WITHOUT LIMITATION ANY WARRANTY OF DESIGN OR
 // MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, EACH OF WHICH ARE
@@ -35,43 +35,40 @@
 // FOREGOING, AND ACCEPTS ALL RISKS AND LIABILITIES THAT MAY ARISE FROM
 // THEIR USE OF THE SOFTWARE.
 // ---------------------------------
+///\file Socket.h
+///\author Benjamin Knorlein
+///\date 5/14/2018
 
-/// \file Trial.hpp
-/// \author Andy Loomis
+#pragma once
 
-#ifndef XROMM_VOLUME_TRANSFORM_HPP
-#define XROMM_VOLUME_TRANSFORM_HPP
+#ifndef SOCKET_H
+#define SOCKET_H
 
-#include <vector>
+#include <QTcpServer>
+#include <QObject>
+#include "ui/AutoscoperMainWindow.h"
 
-#include "KeyCurve.hpp"
-#include "CoordFrame.hpp"
-namespace xromm
+class AutoscoperMainWindow;
+
+class Socket : public QObject
 {
-// The trial class contains all of the state information for an autoscoper run.
-// It should eventually become an in-memory representation of the xromm
-// autoscoper file format. Currently that file format does not however hold the
-// tracking information.
+	Q_OBJECT
 
-class VolumeTransform
-{
 public:
+	Socket(AutoscoperMainWindow* mainwindow, unsigned long long int listenPort);
+	~Socket();
 
-    // Loads a trial file
-    VolumeTransform();
-	~VolumeTransform();
+private:
+	QTcpServer *tcpServer;
+	std::vector<QTcpSocket *> clientConnections;
+	void handleMessage(QTcpSocket * connection, char* data, qint64 length);
+private:
+	AutoscoperMainWindow* m_mainwindow;
 
-    KeyCurve x_curve;
-    KeyCurve y_curve;
-    KeyCurve z_curve;
-    KeyCurve yaw_curve;
-    KeyCurve pitch_curve;
-    KeyCurve roll_curve;
-
-    //CoordFrame volumeTrans; //FromWorldToVolume
-	CoordFrame volumeMatrix; //FromWorldToPivot
+private slots:
+	void createNewConnection();
+	void deleteConnection();
+	void reading();
 };
 
-} // namespace xromm
-
-#endif // XROMM_VOLUME_TRANSFORM
+#endif // SOCKET_H

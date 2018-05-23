@@ -556,8 +556,7 @@ void GLTimeline::paintGL()
 		float tan_scale = 40.0f*(max_frame+1-min_frame)/viewdata.viewport_width;
 
 		TimelineDockWidget * timelineDockWidget = dynamic_cast <TimelineDockWidget *> ( this->parent()->parent());
-		//AutoscoperMainWindow * mainwindow = timelineDockWidget->getMainWindow();
-		
+	
 		for (unsigned i = 0; i < timelineDockWidget->getSelectedNodes()->size(); i++) {
 			KeyCurve& curve = *(*timelineDockWidget->getSelectedNodes())[i].first.first;
 			KeyCurve::iterator it = (*timelineDockWidget->getSelectedNodes())[i].first.second;

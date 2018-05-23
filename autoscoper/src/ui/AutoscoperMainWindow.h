@@ -96,6 +96,16 @@ class AutoscoperMainWindow : public QMainWindow{
 		void volume_changed();
 		void runBatch(QString batchfile,bool saveData = false);
 
+		//For socket
+		void openTrial(QString filename);
+		void load_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume = -1);
+		void save_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume = -1);
+		void loadFilterSettings(int camera, QString filename);
+		std::vector<double> getPose(unsigned int volume, unsigned int frame);
+		void setPose(std::vector<double> pose, unsigned int volume, unsigned int frame);
+		void setBackground(double threshold);
+		std::vector <double> getNCC(unsigned int volumeID, double* xyzpr);
+
 	private:
 		Ui::AutoscoperMainWindow *ui;
 		FilterDockWidget* filters_widget;
@@ -134,7 +144,6 @@ class AutoscoperMainWindow : public QMainWindow{
 		//Sets Up all the views;
 		void setupUI();
 		void openTrial();
-		void openTrial(QString filename);
 		void newTrial();
 
 		//Shortcuts
@@ -149,13 +158,10 @@ class AutoscoperMainWindow : public QMainWindow{
 		
 		void save_tracking_prompt();
 		void save_trial_prompt();
-		void save_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume = -1);
 		void save_tracking_results(QString filename);
 		void load_tracking_results(QString filename);
-		void load_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume = -1);
-	protected:
+		protected:
 		void closeEvent(QCloseEvent *event);
-
 	public slots:
 		
 		//File

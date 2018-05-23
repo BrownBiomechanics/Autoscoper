@@ -53,6 +53,8 @@
 
 using namespace std;
 
+#define sqr(a) ((a) * (a))
+
 namespace xromm
 {
 
@@ -108,6 +110,83 @@ CoordFrame CoordFrame::from_xyzypr(const double* xyzypr)
     xcframe.rotate(xcframe.rotation_+0, xyzypr[5]);
     xcframe.translate(xyzypr); //Only uses xyz
     return xcframe;
+}
+
+CoordFrame CoordFrame::from_xyzquat(const double* xyzijk)
+{
+	CoordFrame xcframe;
+	xcframe.rotateQuat(xyzijk[3], xyzijk[4], xyzijk[5]);
+	xcframe.translate(xyzijk); //Only uses xyz
+	return xcframe;
+}
+
+void CoordFrame::rotateQuat(double x, double y, double z){
+
+	double w = sqrt(1 - (sqr(x) + sqr(y) + sqr(z)));
+	double x_a, y_a, z_a, angle;
+	if (w != 1){
+		angle = 2 * acos(w);
+		x_a = x / sqrt(1 - sqr(w));
+		y_a = y / sqrt(1 - sqr(w));
+		z_a = z / sqrt(1 - sqr(w));
+	}
+	else  {
+		x_a = y_a = z_a, angle = 0;
+	}
+
+	double c = cos(angle);
+	double s = sin(angle);
+	double t = 1 - c;
+
+	double R[9] = {
+
+		t * sqr(x_a) + c,
+		t * x_a * y_a - z_a * s,
+		t * x_a * z_a + y_a * s,
+		t * x_a * y_a + z_a * s,
+		t * sqr(y_a) + c,
+		t * y_a * z_a - x_a * s,
+		t * x_a * z_a - y_a * s,
+		t * y_a * z_a + x_a * s,
+		t * sqr(z_a) + c
+
+	};
+
+	double* M = rotation_;
+
+	double temp[9] = { M[0] * R[0] + M[1] * R[3] + M[2] * R[6],
+		M[0] * R[1] + M[1] * R[4] + M[2] * R[7],
+		M[0] * R[2] + M[1] * R[5] + M[2] * R[8],
+		M[3] * R[0] + M[4] * R[3] + M[5] * R[6],
+		M[3] * R[1] + M[4] * R[4] + M[5] * R[7],
+		M[3] * R[2] + M[4] * R[5] + M[5] * R[8],
+		M[6] * R[0] + M[7] * R[3] + M[8] * R[6],
+		M[6] * R[1] + M[7] * R[4] + M[8] * R[7],
+		M[6] * R[2] + M[7] * R[5] + M[8] * R[8] };
+
+	rotation_[0] = temp[0];
+	rotation_[1] = temp[1];
+	rotation_[2] = temp[2];
+	rotation_[3] = temp[3];
+	rotation_[4] = temp[4];
+	rotation_[5] = temp[5];
+	rotation_[6] = temp[6];
+	rotation_[7] = temp[7];
+	rotation_[8] = temp[8];
+}
+
+CoordFrame CoordFrame::from_xyzAxis_angle(const double* xyzijk)
+{
+	CoordFrame xcframe;
+
+	double angle = sqrt(sqr(xyzijk[3]) + sqr(xyzijk[4]) + sqr(xyzijk[5]));
+
+	if (angle != 0)
+		xcframe.rotate(&xyzijk[3], angle);
+
+	xcframe.translate(xyzijk);
+
+	return xcframe;
 }
 
 void CoordFrame::to_xyzypr(double* xyzypr) const
@@ -481,6 +560,14 @@ void CoordFrame::from_string(std::string str)
 	translation_[0]= vd[12];
 	translation_[1] = vd[13];
 	translation_[2] = vd[14];
+}
+
+std::ostream& operator<<(std::ostream& os, const CoordFrame& frame)
+{
+	os << frame.rotation()[0] << " , " << frame.rotation()[1] << " , " << frame.rotation()[2] << frame.translation()[0] << std::endl;
+	os << frame.rotation()[3] << " , " << frame.rotation()[4] << " , " << frame.rotation()[5] << frame.translation()[1] << std::endl;
+	os << frame.rotation()[6] << " , " << frame.rotation()[7] << " , " << frame.rotation()[8] << frame.translation()[2] << std::endl;
+	return os;
 }
 
 } // namespace XROMM

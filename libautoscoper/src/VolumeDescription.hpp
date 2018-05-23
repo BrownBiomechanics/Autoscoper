@@ -68,6 +68,7 @@ public:
 
     const float* invScale() const { return invScale_; }
     const float* invTrans() const { return invTrans_; }
+	const double* transCenter() const { return transCenter_; }
     float minValue() const { return minValue_; }
     float maxValue() const { return maxValue_; }
 
@@ -82,6 +83,8 @@ private:
     float maxValue_;
     float invScale_[3];
     float invTrans_[3];
+	double transCenter_[3];
+
 	Image* image_;
 };
 
