@@ -82,7 +82,11 @@ static bool firstRun = true;
 // optimize.
 
 static xromm::Tracker* g_markerless = NULL;
-double FUNC(double* P) { return g_markerless->minimizationFunc(P+1); }
+
+// Bardiya: I commented this out to play with the implant cost function
+//double FUNC(double* P) { return g_markerless->minimizationFunc(P+1); }
+double FUNC(double* P) { return g_markerless->implantMinFunc(P + 1); }
+
 
 namespace xromm {
 
@@ -228,7 +232,7 @@ void Tracker::load(const Trial& trial)
     }
 }
 
-void Tracker::optimize(int frame, int dFrame, int repeats)
+void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta)
 {
     if (frame < 0 || frame >= trial_.num_frames) {
         cerr << "Tracker::optimize(): Invalid frame." << endl;
@@ -236,7 +240,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats)
     }
 
     int NDIM = 6;       // Number of dimensions to optimize over.
-    double FTOL = 0.01; // Tolerance for the optimization.
+    double FTOL = 1e-5; // Tolerance for the optimization.
     MAT P;              // Matrix of points to initialize the routine.
     double Y[MP];       // The values of the minimization function at the
                         // initial points.
@@ -317,7 +321,8 @@ void Tracker::optimize(int frame, int dFrame, int repeats)
         // Optimize the frame
         ITER = 0;
 
-        AMOEBA(P, Y, NDIM, FTOL, &ITER);
+		// Downhill Simplex Optimization
+        AMOEBA(P, Y, NDIM, FTOL, &ITER, nm_opt_alpha, nm_opt_gamma, nm_opt_beta);
 
 		double xyzypr[6] = { (*trial_.getXCurve(-1))(trial_.frame),
 			(*trial_.getYCurve(-1))(trial_.frame),
@@ -402,7 +407,7 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
 		return correlations;
 	}
 
-double Tracker::minimizationFunc(const double* values) const
+double Tracker::implantMinFunc(const double* values) const
 {
     // Construct a coordinate frame from the given values
 
@@ -428,6 +433,34 @@ double Tracker::minimizationFunc(const double* values) const
     }
 
     return correlation;
+}
+
+double Tracker::minimizationFunc(const double* values) const
+{
+	// Construct a coordinate frame from the given values
+
+	double xyzypr[6] = { (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame),
+		(*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame),
+		(*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame),
+		(*(const_cast<Trial&>(trial_)).getYawCurve(-1))(trial_.frame),
+		(*(const_cast<Trial&>(trial_)).getPitchCurve(-1))(trial_.frame),
+		(*(const_cast<Trial&>(trial_)).getRollCurve(-1))(trial_.frame) };
+	CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
+
+
+	CoordFrame manip = CoordFrame::from_xyzAxis_angle(values);
+	xcframe = xcframe * (const_cast<Trial&>(trial_)).getVolumeMatrix(-1)->inverse() * manip * *(const_cast<Trial&>(trial_)).getVolumeMatrix(-1);
+
+	unsigned int idx = trial_.current_volume;
+	xcframe.to_xyzypr(xyzypr);
+	std::vector <double> correlations = trackFrame(idx, &xyzypr[0]);
+
+	double correlation = correlations[0];
+	for (unsigned int i = 1; i < trial_.cameras.size(); ++i) {
+		correlation += correlations[i];
+	}
+
+	return correlation;
 }
 
 	void Tracker::updateBackground()

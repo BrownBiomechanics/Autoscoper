@@ -119,6 +119,11 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 	this->addDockWidget(Qt::LeftDockWidgetArea, volumes_widget);
 	this->setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
 
+	// Init for currentFrame and folder directory
+	curFrame = 0;
+	setLastFolder(QDir::currentPath());
+
+
 #ifndef WITH_CUDA
 	if (!skipGpuDevice){
 		OpenCLPlatformSelectDialog * dialog = new OpenCLPlatformSelectDialog(this);
@@ -253,7 +258,19 @@ void AutoscoperMainWindow::relayoutCameras(int rows){
 
 void AutoscoperMainWindow::timelineSetValue(int value){
 	tracker->trial()->frame = value;
+	curFrame = value;
     frame_changed();
+}
+
+int AutoscoperMainWindow::getCurrentFrame()
+{
+	curFrame = tracker->trial()->frame;
+	return curFrame;
+}
+
+QString AutoscoperMainWindow::getLastFolder()
+{
+	return lastFolderPath;
 }
 
 void AutoscoperMainWindow::frame_changed()
@@ -641,16 +658,35 @@ void AutoscoperMainWindow::save_tracking_prompt()
 QString AutoscoperMainWindow::get_filename(bool save, QString type)
 {	
 	QString FileName = "";
+	QString new_filename = getLastFolder();
+
 	if(save){
+		//FileName = QFileDialog::getSaveFileName(this,
+		//							tr("Save File as"), QDir::currentPath(),tr("CFG Files (") + type + tr(" *.cfg)"));
 		FileName = QFileDialog::getSaveFileName(this,
-									tr("Save File as"), QDir::currentPath(),tr("CFG Files (") + type + tr(" *.cfg)"));
+									tr("Save File as"), new_filename,tr("CFG Files (") + type + tr(" *.cfg)"));
+
 	}else{
+		//FileName = QFileDialog::getOpenFileName(this,
+		//							tr("Open File"), QDir::currentPath(),tr("CFG Files (") + type + tr(" *.cfg)"));
 		FileName = QFileDialog::getOpenFileName(this,
-									tr("Open File"), QDir::currentPath(),tr("CFG Files (") + type + tr(" *.cfg)"));
+									tr("Open File"), new_filename,tr("CFG Files (") + type + tr(" *.cfg)"));
 	}
+
+	// Save new last directory
+	QFileInfo fi(FileName);
+	setLastFolder(fi.absoluteFilePath());
 
 	return FileName;
 }
+
+
+void AutoscoperMainWindow::setLastFolder(QString lastFolder)
+{
+	lastFolderPath = lastFolder;
+}
+
+
 
 void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume){
 	const char* s = save_with_commas ? "," : " ";
@@ -966,6 +1002,7 @@ void AutoscoperMainWindow::openTrial(QString filename){
 		delete trial;
 
 		trial_filename = filename.toStdString();
+		std:cerr << "Filename: " << trial_filename << endl;
 		is_trial_saved = true;
 		is_tracking_saved = true;
 
@@ -1694,6 +1731,17 @@ void AutoscoperMainWindow::on_toolButtonTrack_clicked(){
 	tracking_dialog->show();
 }
 
+void AutoscoperMainWindow::on_toolButtonTrackCurrent_clicked() {
+	if (tracking_dialog == NULL)
+		tracking_dialog = new TrackingOptionsDialog(this);
+
+	tracking_dialog->setRange(timeline_widget->getPosition_graph()->min_frame, timeline_widget->getPosition_graph()->max_frame,
+		tracker->trial()->num_frames - 1);
+
+	tracking_dialog->trackCurrent();
+}
+
+
 void AutoscoperMainWindow::on_toolButtonRetrack_clicked(){
 	if(tracking_dialog == NULL)
 		tracking_dialog = new TrackingOptionsDialog(this);
@@ -1719,9 +1767,13 @@ void AutoscoperMainWindow::key_h_pressed(){
 void AutoscoperMainWindow::key_t_pressed(){
 	ui->toolButtonTrack->click();
 }	
-void AutoscoperMainWindow::key_r_pressed(){
+void AutoscoperMainWindow::key_p_pressed(){
 	ui->toolButtonRetrack->click();
 }	
+void AutoscoperMainWindow::key_c_pressed() {
+	on_actionInsert_Key_triggered(true); // Insert the current frame and then run the tracking
+	ui->toolButtonTrackCurrent->click();
+}
 void AutoscoperMainWindow::key_plus_pressed(){
 	getManipulator(-1)->set_pivotSize(getManipulator(-1)->get_pivotSize() * 1.1f);
 	redrawGL();
@@ -1743,7 +1795,8 @@ void AutoscoperMainWindow::setupShortcuts(){
 	new QShortcut(QKeySequence(Qt::Key_D), this, SLOT(key_d_pressed()));
 	new QShortcut(QKeySequence(Qt::Key_H), this, SLOT(key_h_pressed()));
 	new QShortcut(QKeySequence(Qt::Key_T), this, SLOT(key_t_pressed()));
-	new QShortcut(QKeySequence(Qt::Key_R), this, SLOT(key_r_pressed()));
+	new QShortcut(QKeySequence(Qt::Key_P), this, SLOT(key_p_pressed()));
+	new QShortcut(QKeySequence(Qt::Key_C), this, SLOT(key_c_pressed()));
 	new QShortcut(QKeySequence(Qt::Key_Plus), this, SLOT(key_plus_pressed()));
 	new QShortcut(QKeySequence(Qt::Key_Equal), this, SLOT(key_equal_pressed()));
 	new QShortcut(QKeySequence(Qt::Key_Minus), this, SLOT(key_minus_pressed()));

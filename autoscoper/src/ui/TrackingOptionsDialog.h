@@ -67,11 +67,18 @@ class TrackingOptionsDialog : public QDialog{
 		bool doExit;
 		bool frame_optimizing;
 		int num_repeats;
+
+		// Neldon Optimization Parameters
+		double nm_opt_alpha;
+		double nm_opt_beta;
+		double nm_opt_gamma;
+
+		int curFrame;
 		void frame_optimize();
 		void setRange(int from, int to, int max);
-		void track();
+		//void track();
 		void retrack();
-
+		void trackCurrent();
 		
 		bool inActive;
 

@@ -11,7 +11,7 @@ typedef   double MAT[MP][NP];
 double FUNC(double *P);
 
 // This runs the downhill simplex routine.
-void AMOEBA(MAT P, double *Y, int NDIM, double FTOL, int *ITER);
+void AMOEBA(MAT P, double *Y, int NDIM, double FTOL, int *ITER, double ALPHA, double GAMMA, double BETA);
 
 #endif
 

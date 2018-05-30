@@ -85,7 +85,7 @@ public:
 	void init();
     void load(const Trial& trial);
     Trial* trial() { return &trial_; }
-    void optimize(int frame, int dframe, int repeats = 1);
+    void optimize(int frame, int dframe, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta);
     double minimizationFunc(const double* values) const;
 	std::vector <double> trackFrame(unsigned int volumeID, double* xyzpr) const;
     std::vector<gpu::View*>& views() { return views_; }
@@ -94,6 +94,9 @@ public:
     const gpu::View* view(size_t i) const { return views_.at(i); }
 	void updateBackground();
 	void setBackgroundThreshold(float threshold);
+
+	// Bardiya Cost Function for Implants
+	double implantMinFunc(const double* values) const;
 
 private:
     void calculate_viewport(const CoordFrame& modelview, double* viewport) const;

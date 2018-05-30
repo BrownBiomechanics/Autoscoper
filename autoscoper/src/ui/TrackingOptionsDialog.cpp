@@ -57,8 +57,15 @@ TrackingOptionsDialog::TrackingOptionsDialog(QWidget *parent) :
 	frame_optimizing = false;
 	from_frame = 0;
     to_frame = 0;
+	curFrame = 0;
 	d_frame = 1;
 	num_repeats = 1;
+
+	// Neldon Optimization Parameters
+	nm_opt_alpha = 1;
+	nm_opt_beta  = 0.5;
+	nm_opt_gamma = 2;
+
 	inActive = false;
 }
 
@@ -84,7 +91,13 @@ void TrackingOptionsDialog::frame_optimize()
             return;
          }
 
-		  mainwindow->getTracker()->optimize(frame, d_frame, num_repeats);
+		
+		// Read Neldon Optimization Parameters
+		nm_opt_alpha = diag->spinBox_alpha->value();
+		nm_opt_beta  = diag->spinBox_beta->value();
+		nm_opt_gamma = diag->spinBox_gamma->value()/10;
+
+		  mainwindow->getTracker()->optimize(frame, d_frame, num_repeats, nm_opt_alpha, nm_opt_gamma, nm_opt_beta);
 
           mainwindow->update_graph_min_max(mainwindow->getPosition_graph(), mainwindow->getTracker()->trial()->frame);
 
@@ -117,6 +130,26 @@ void TrackingOptionsDialog::retrack(){
         doExit = false;
 		frame_optimize();
     }
+}
+
+void TrackingOptionsDialog::trackCurrent() {
+
+
+	AutoscoperMainWindow *mainwindow = dynamic_cast <AutoscoperMainWindow *> (parent());
+
+	on_radioButton_CurrentFrame_clicked(true);
+
+	curFrame = mainwindow->getCurrentFrame();// Read Current Frame
+
+	if (!mainwindow) return;
+
+	if (!frame_optimizing) {
+		doExit = false;
+		from_frame = curFrame;
+		to_frame = curFrame;
+		frame = from_frame;
+		frame_optimize();
+	}
 }
 
 void TrackingOptionsDialog::setRange(int from, int to, int max){

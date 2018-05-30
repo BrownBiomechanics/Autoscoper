@@ -56,7 +56,7 @@ macro(UseLIBTIFF YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
         include(ExternalProject)
        ExternalProject_Download(
             LIBTIFF
-            URL ftp://download.osgeo.org/libtiff/tiff-4.0.8.zip
+            URL https://download.osgeo.org/libtiff/tiff-4.0.8.zip
         )
 
         ExternalProject_BuildAndInstallNow(

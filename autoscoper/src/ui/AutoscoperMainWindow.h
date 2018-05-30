@@ -88,6 +88,13 @@ class AutoscoperMainWindow : public QMainWindow{
 		void update_coord_frame();
 		void update_xyzypr();
 
+		// Getting current frame
+		int getCurrentFrame();
+		// Storing last used directory
+		QString getLastFolder();
+		// Current Frame variable
+		int curFrame;
+
 		void push_state();
 		void update_xyzypr_and_coord_frame();
 		QString get_filename(bool save = true, QString type = "");
@@ -149,6 +156,10 @@ class AutoscoperMainWindow : public QMainWindow{
 		//Shortcuts
 		void setupShortcuts();
 
+		// For storing the last opened folder
+		void setLastFolder(QString lastFolder);
+		QString lastFolderPath;
+
 		//temporary maybe rename/order
 		void timelineSetValue(int value);
 
@@ -208,6 +219,7 @@ class AutoscoperMainWindow : public QMainWindow{
 		void on_toolButtonMovePivot_clicked();
 
 		void on_toolButtonTrack_clicked();
+		void on_toolButtonTrackCurrent_clicked();
 		void on_toolButtonRetrack_clicked();
 		//Shortcuts	
 		void key_w_pressed();	
@@ -215,7 +227,9 @@ class AutoscoperMainWindow : public QMainWindow{
 		void key_d_pressed();	
 		void key_h_pressed();	
 		void key_t_pressed();	
-		void key_r_pressed();	
+		//void key_r_pressed();	
+		void key_p_pressed();
+		void key_c_pressed();
 		void key_plus_pressed();
 		void key_equal_pressed();
 		void key_minus_pressed();
