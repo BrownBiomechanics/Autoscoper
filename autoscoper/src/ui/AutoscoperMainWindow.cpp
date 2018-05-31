@@ -865,6 +865,19 @@ void AutoscoperMainWindow::save_tracking_results(QString filename)
 	delete diag;
 }
 
+
+
+void AutoscoperMainWindow::backup_tracking(bool backup_on)
+{
+	int volume = -1;
+	volume = tracker->trial()->current_volume;
+	QString tracking_filename_out = "tracked_model_backup.tra";
+	//save_tracking_results(tracking_filename_out, save_as_matrix, save_as_rows, save_with_commas, convert_to_cm, convert_to_rad, interpolate, volume);
+	save_tracking_results(tracking_filename_out, 1, 1, 1, 0, 0, 0, volume);
+}
+
+
+
 void AutoscoperMainWindow::load_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume){
 	char s = save_with_commas ? ',' : ' ';
 

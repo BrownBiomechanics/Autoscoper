@@ -113,6 +113,10 @@ class AutoscoperMainWindow : public QMainWindow{
 		void setBackground(double threshold);
 		std::vector <double> getNCC(unsigned int volumeID, double* xyzpr);
 
+		// Backup Save
+		void backup_tracking(bool backup_on);
+
+
 	private:
 		Ui::AutoscoperMainWindow *ui;
 		FilterDockWidget* filters_widget;
@@ -128,6 +132,9 @@ class AutoscoperMainWindow : public QMainWindow{
 		std::string trial_filename;
 		bool is_trial_saved;
 		bool is_tracking_saved;
+
+		// Backup
+		bool backup_on;
 
 		//Tracker
 		Tracker * tracker;
@@ -170,6 +177,9 @@ class AutoscoperMainWindow : public QMainWindow{
 		void save_tracking_prompt();
 		void save_trial_prompt();
 		void save_tracking_results(QString filename);
+
+
+
 		void load_tracking_results(QString filename);
 		protected:
 		void closeEvent(QCloseEvent *event);

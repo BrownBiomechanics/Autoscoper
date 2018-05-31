@@ -54,7 +54,7 @@ class TrackingOptionsDialog : public QDialog{
 	Q_OBJECT
 
 	private:
-		
+		bool is_backup_on;
 
 	public:
 		explicit TrackingOptionsDialog(QWidget *parent = 0);

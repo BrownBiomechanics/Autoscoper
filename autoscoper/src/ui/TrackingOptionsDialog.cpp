@@ -61,10 +61,13 @@ TrackingOptionsDialog::TrackingOptionsDialog(QWidget *parent) :
 	d_frame = 1;
 	num_repeats = 1;
 
+	// Backup Save
+	is_backup_on = 1; // Always on
+
 	// Neldon Optimization Parameters
 	nm_opt_alpha = 1;
-	nm_opt_beta  = 0.5;
 	nm_opt_gamma = 2;
+	nm_opt_beta  = 0.5;
 
 	inActive = false;
 }
@@ -94,8 +97,8 @@ void TrackingOptionsDialog::frame_optimize()
 		
 		// Read Neldon Optimization Parameters
 		nm_opt_alpha = diag->spinBox_alpha->value();
-		nm_opt_beta  = diag->spinBox_beta->value();
-		nm_opt_gamma = diag->spinBox_gamma->value()/10;
+		nm_opt_gamma = diag->spinBox_gamma->value();
+		nm_opt_beta  = diag->spinBox_beta->value() / 10;
 
 		  mainwindow->getTracker()->optimize(frame, d_frame, num_repeats, nm_opt_alpha, nm_opt_gamma, nm_opt_beta);
 
@@ -116,7 +119,10 @@ void TrackingOptionsDialog::frame_optimize()
    
 	frame_optimizing = false;
 	QApplication::processEvents();
-    diag->progressBar->setValue(0);
+	diag->progressBar->setValue(0);
+
+	mainwindow->backup_tracking(is_backup_on); // save backup before finishin optimization
+
 	this->close();
 }
 
@@ -134,7 +140,6 @@ void TrackingOptionsDialog::retrack(){
 
 void TrackingOptionsDialog::trackCurrent() {
 
-
 	AutoscoperMainWindow *mainwindow = dynamic_cast <AutoscoperMainWindow *> (parent());
 
 	on_radioButton_CurrentFrame_clicked(true);
@@ -150,6 +155,7 @@ void TrackingOptionsDialog::trackCurrent() {
 		frame = from_frame;
 		frame_optimize();
 	}
+
 }
 
 void TrackingOptionsDialog::setRange(int from, int to, int max){

@@ -429,7 +429,7 @@ double Tracker::implantMinFunc(const double* values) const
 
     double correlation = correlations[0];
     for (unsigned int i = 1; i < trial_.cameras.size(); ++i) {
-        correlation += correlations[i];
+        correlation *= correlations[i];
     }
 
     return correlation;
