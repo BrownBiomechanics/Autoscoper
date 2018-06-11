@@ -55,6 +55,7 @@
 #ifdef WITH_CUDA
 #include "gpu/cuda/CudaWrap.hpp"
 #include "gpu/cuda/Ncc_kernels.h"
+#include "gpu/cuda/HDist_kernels.h"
 #include "gpu/cuda/Compositor_kernels.h"
 #include "gpu/cuda/Mult_kernels.h"
 #else
@@ -486,7 +487,7 @@ std::vector <double> Tracker::trackImplantFrame(unsigned int volumeID, double* x
 #endif
 
 		// Calculate the correlation
-		correlations.push_back(1.0 - gpu::ncc(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
+		correlations.push_back(1.0 - gpu::hdist(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
 	}
 	return correlations;
 }
