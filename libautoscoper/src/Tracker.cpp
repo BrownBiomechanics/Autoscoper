@@ -201,7 +201,8 @@ void Tracker::load(const Trial& trial)
 #endif
 
     gpu::ncc_init(npixels);
-
+	//gpu::hdist_init(npixels); NOT WORKING, DONOT KNOW WHY...
+	
     for (unsigned int i = 0; i < trial_.cameras.size(); ++i) {
 
         Camera& camera = trial_.cameras.at(i);
@@ -355,6 +356,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
          << " done in " << totalIter << " total iterations" << endl;
 }
 
+
 // Calculate Correlation for Bone Matching
 std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) const
 	{
@@ -487,8 +489,9 @@ std::vector <double> Tracker::trackImplantFrame(unsigned int volumeID, double* x
 #endif
 
 		// Calculate the correlation
-		correlations.push_back(1.0 - gpu::hdist(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
+		correlations.push_back(1.0 - gpu::ncc(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
 	}
+
 	return correlations;
 }
 
@@ -513,9 +516,13 @@ double Tracker::implantMinFunc(const double* values) const
 	std::vector <double> correlations = trackImplantFrame(idx, &xyzypr[0]);
 
     double correlation = correlations[0];
+	printf("Cam 0: %4.5f", correlation);
+
     for (unsigned int i = 1; i < trial_.cameras.size(); ++i) {
         correlation *= correlations[i];
+		printf("\tCam %d: %4.5f", i, correlations[i]);
     }
+	printf("\tFinal NCC: %4.5f\n", correlation);
 
     return correlation;
 }

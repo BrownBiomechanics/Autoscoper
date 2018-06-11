@@ -53,10 +53,10 @@ static unsigned int g_max_n = 0;
 
 static unsigned int g_maxNumThreads = 0;
 
-static float* d_sums = NULL;
-static float* d_nums = NULL;
-static float* d_den1s = NULL;
-static float* d_den2s = NULL;
+static float* d_sums_ba = NULL;
+static float* d_nums_ba = NULL;
+static float* d_den1s_ba = NULL;
+static float* d_den2s_ba = NULL;
 
 //////// Helper functions ////////
 
@@ -94,10 +94,10 @@ namespace xromm
 				unsigned int numThreads, numBlocks, sizeMem;
 				get_device_params(max_n, maxNumThreads, numThreads, numBlocks, sizeMem);
 
-				cutilSafeCall(cudaMalloc(&d_sums, numBlocks * sizeof(float)));
-				cutilSafeCall(cudaMalloc(&d_nums, max_n * sizeof(float)));
-				cutilSafeCall(cudaMalloc(&d_den1s, max_n * sizeof(float)));
-				cutilSafeCall(cudaMalloc(&d_den2s, max_n * sizeof(float)));
+				cutilSafeCall(cudaMalloc(&d_sums_ba, numBlocks * sizeof(float)));
+				cutilSafeCall(cudaMalloc(&d_nums_ba, max_n * sizeof(float)));
+				cutilSafeCall(cudaMalloc(&d_den1s_ba, max_n * sizeof(float)));
+				cutilSafeCall(cudaMalloc(&d_den2s_ba, max_n * sizeof(float)));
 
 				g_max_n = max_n;
 				g_maxNumThreads = maxNumThreads;
@@ -106,10 +106,10 @@ namespace xromm
 
 		void hdist_deinit()
 		{
-			cutilSafeCall(cudaFree(d_sums));
-			cutilSafeCall(cudaFree(d_nums));
-			cutilSafeCall(cudaFree(d_den1s));
-			cutilSafeCall(cudaFree(d_den2s));
+			cutilSafeCall(cudaFree(d_sums_ba));
+			cutilSafeCall(cudaFree(d_nums_ba));
+			cutilSafeCall(cudaFree(d_den1s_ba));
+			cutilSafeCall(cudaFree(d_den2s_ba));
 
 			g_max_n = 0;
 			g_maxNumThreads = 0;
@@ -125,16 +125,16 @@ namespace xromm
 			get_device_params(n, g_maxNumThreads, numThreads, numBlocks, sizeMem);
 
 			cuda_hdist_kernel << <numBlocks, numThreads, sizeMem >> >(f, meanF, g, meanG, mask,
-				d_nums, d_den1s,
-				d_den2s, n);
+				d_nums_ba, d_den1s_ba,
+				d_den2s_ba, n);
 
-			float den = sqrt(sum(d_den1s, n)*sum(d_den2s, n));
+			float den = sqrt(sum(d_den1s_ba, n)*sum(d_den2s_ba, n));
 
 			if (den < 1e-5) {
 				return 1e5;
 			}
 
-			return sum(d_nums, n) / den;
+			return sum(d_nums_ba, n) / den;
 		}
 
 	} // namespace gpu
@@ -163,7 +163,7 @@ float sum(float* f, unsigned int n)
 		sum_kernel << <numBlocks, numThreads, sizeMem >> >(f, d_sums, n);
 		n = numBlocks;
 		get_device_params(n, g_maxNumThreads, numThreads, numBlocks, sizeMem);
-		f = d_sums;
+		f = d_sums_ba;
 	}
 
 	float h_sum;
