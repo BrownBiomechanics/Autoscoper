@@ -95,8 +95,11 @@ public:
 	void updateBackground();
 	void setBackgroundThreshold(float threshold);
 
+
 	// Bardiya Cost Function for Implants
 	double implantMinFunc(const double* values) const;
+	std::vector<double> trackImplantFrame(unsigned int volumeID, double * xyzypr) const;
+
 
 private:
     void calculate_viewport(const CoordFrame& modelview, double* viewport) const;

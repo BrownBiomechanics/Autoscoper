@@ -354,6 +354,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
          << " done in " << totalIter << " total iterations" << endl;
 }
 
+// Calculate Correlation for Bone Matching
 std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) const
 	{
 		std::vector<double> correlations;
@@ -406,35 +407,7 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
 		}
 		return correlations;
 	}
-
-double Tracker::implantMinFunc(const double* values) const
-{
-    // Construct a coordinate frame from the given values
-
-	double xyzypr[6] = { (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame),
-		(*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame),
-		(*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame),
-		(*(const_cast<Trial&>(trial_)).getYawCurve(-1))(trial_.frame),
-		(*(const_cast<Trial&>(trial_)).getPitchCurve(-1))(trial_.frame),
-		(*(const_cast<Trial&>(trial_)).getRollCurve(-1))(trial_.frame) };
-    CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr); 
-
-
-	CoordFrame manip = CoordFrame::from_xyzAxis_angle(values);
-	xcframe = xcframe * (const_cast<Trial&>(trial_)).getVolumeMatrix(-1)->inverse() * manip * *(const_cast<Trial&>(trial_)).getVolumeMatrix(-1);
-
-	unsigned int idx = trial_.current_volume;
-	xcframe.to_xyzypr(xyzypr);
-	std::vector <double> correlations = trackFrame(idx, &xyzypr[0]);
-
-    double correlation = correlations[0];
-    for (unsigned int i = 1; i < trial_.cameras.size(); ++i) {
-        correlation *= correlations[i];
-    }
-
-    return correlation;
-}
-
+// Minimizing Function for Bone Matching
 double Tracker::minimizationFunc(const double* values) const
 {
 	// Construct a coordinate frame from the given values
@@ -463,22 +436,104 @@ double Tracker::minimizationFunc(const double* values) const
 	return correlation;
 }
 
-	void Tracker::updateBackground()
-	{
-		for (unsigned int i = 0; i < views_.size(); ++i) {
-			views_[i]->updateBackground(trial_.videos[i].background(), trial_.videos[i].width(), trial_.videos[i].height());
-		}
-	}
 
-	void Tracker::setBackgroundThreshold(float threshold)
-	{
-		for (unsigned int i = 0; i < views_.size(); ++i) {
-			views_[i]->setBackgroundThreshold(threshold);
-		}
-	}
+// Calculate Hausdorff Distance for Implant Matching
+std::vector <double> Tracker::trackImplantFrame(unsigned int volumeID, double* xyzypr) const
+{
+	std::vector<double> correlations;
+	CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
-	void
-Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) const
+	for (unsigned int i = 0; i < views_.size(); ++i) {
+		// Set the modelview matrix for DRR rendering
+		CoordFrame modelview = views_[i]->camera()->coord_frame().inverse()*xcframe;
+		double imv[16]; modelview.inverse().to_matrix_row_order(imv);
+		views_[i]->drrRenderer(volumeID)->setInvModelView(imv);
+
+		// Calculate the viewport surrounding the volume
+		double viewport[4];
+		this->calculate_viewport(modelview, viewport);
+
+		// Calculate the size of the image to render
+		unsigned render_width = viewport[2] * trial_.render_width / views_[i]->camera()->viewport()[2];
+		unsigned render_height = viewport[3] * trial_.render_height / views_[i]->camera()->viewport()[3];
+
+		// Set the viewports
+		views_[i]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1],
+			viewport[2], viewport[3]);
+		views_[i]->radRenderer()->set_viewport(viewport[0], viewport[1],
+			viewport[2], viewport[3]);
+
+		// Render the DRR and Radiograph
+		views_[i]->renderDrrSingle(volumeID, rendered_drr_, render_width, render_height);
+		views_[i]->renderRad(rendered_rad_, render_width, render_height);
+
+		//render masks
+		views_[i]->backgroundRenderer()->set_viewport(viewport[0], viewport[1],
+			viewport[2], viewport[3]);
+
+		views_[i]->renderBackground(background_mask_, render_width, render_height);
+		views_[i]->renderDRRMask(rendered_drr_, drr_mask_, render_width, render_height);
+
+		gpu::multiply(background_mask_, drr_mask_, drr_mask_, render_width, render_height);
+		gpu::multiply(rendered_rad_, drr_mask_, rendered_rad_, render_width, render_height);
+		gpu::multiply(rendered_drr_, drr_mask_, rendered_drr_, render_width, render_height);
+
+#if DEBUG
+		save_debug_image(rendered_drr_, render_width, render_height);
+		save_debug_image(rendered_rad_, render_width, render_height);
+		save_debug_image(drr_mask_, render_width, render_height);
+		save_debug_image(background_mask_, render_width, render_height);
+#endif
+
+		// Calculate the correlation
+		correlations.push_back(1.0 - gpu::ncc(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
+	}
+	return correlations;
+}
+
+double Tracker::implantMinFunc(const double* values) const
+{
+    // Construct a coordinate frame from the given values
+
+	double xyzypr[6] = { (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame),
+		(*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame),
+		(*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame),
+		(*(const_cast<Trial&>(trial_)).getYawCurve(-1))(trial_.frame),
+		(*(const_cast<Trial&>(trial_)).getPitchCurve(-1))(trial_.frame),
+		(*(const_cast<Trial&>(trial_)).getRollCurve(-1))(trial_.frame) };
+    CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr); 
+
+
+	CoordFrame manip = CoordFrame::from_xyzAxis_angle(values);
+	xcframe = xcframe * (const_cast<Trial&>(trial_)).getVolumeMatrix(-1)->inverse() * manip * *(const_cast<Trial&>(trial_)).getVolumeMatrix(-1);
+
+	unsigned int idx = trial_.current_volume;
+	xcframe.to_xyzypr(xyzypr);
+	std::vector <double> correlations = trackImplantFrame(idx, &xyzypr[0]);
+
+    double correlation = correlations[0];
+    for (unsigned int i = 1; i < trial_.cameras.size(); ++i) {
+        correlation *= correlations[i];
+    }
+
+    return correlation;
+}
+
+void Tracker::updateBackground()
+{
+	for (unsigned int i = 0; i < views_.size(); ++i) {
+		views_[i]->updateBackground(trial_.videos[i].background(), trial_.videos[i].width(), trial_.videos[i].height());
+	}
+}
+
+void Tracker::setBackgroundThreshold(float threshold)
+{
+	for (unsigned int i = 0; i < views_.size(); ++i) {
+		views_[i]->setBackgroundThreshold(threshold);
+	}
+}
+
+void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) const
 {
     // Calculate the minimum and maximum values of the bounding box
     // corners after they have been projected onto the view plane
