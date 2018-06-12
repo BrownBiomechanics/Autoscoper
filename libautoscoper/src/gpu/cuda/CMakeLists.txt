@@ -25,6 +25,7 @@ SET(cuda_KERNEL_HEADERS
 	src/gpu/cuda/ContrastFilter_kernels.h
 	src/gpu/cuda/GaussianFilter_kernels.h
 	src/gpu/cuda/Ncc_kernels.h
+	src/gpu/cuda/HDist_kernels.h	
 	src/gpu/cuda/RadRenderer_kernels.h
 	src/gpu/cuda/RayCaster_kernels.h
 	src/gpu/cuda/SharpenFilter_kernels.h
@@ -40,6 +41,7 @@ SET(cuda_KERNEL
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/ContrastFilter_kernels.cu
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/GaussianFilter_kernels.cu
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/Ncc_kernels.cu
+	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/HDist_kernels.cu	
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/RadRenderer_kernels.cu
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/RayCaster_kernels.cu
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/SharpenFilter_kernels.cu

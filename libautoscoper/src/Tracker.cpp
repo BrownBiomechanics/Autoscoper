@@ -201,7 +201,7 @@ void Tracker::load(const Trial& trial)
 #endif
 
     gpu::ncc_init(npixels);
-	//gpu::hdist_init(npixels); NOT WORKING, DONOT KNOW WHY...
+	gpu::hdist_init(npixels); //NOT WORKING, DONOT KNOW WHY...
 	
     for (unsigned int i = 0; i < trial_.cameras.size(); ++i) {
 
@@ -489,7 +489,7 @@ std::vector <double> Tracker::trackImplantFrame(unsigned int volumeID, double* x
 #endif
 
 		// Calculate the correlation
-		correlations.push_back(1.0 - gpu::ncc(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
+		correlations.push_back(1.0 - gpu::hdist(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
 	}
 
 	return correlations;
