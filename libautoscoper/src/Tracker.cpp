@@ -201,7 +201,7 @@ void Tracker::load(const Trial& trial)
 #endif
 
     gpu::ncc_init(npixels);
-	gpu::hdist_init(npixels); //NOT WORKING, DONOT KNOW WHY...
+	gpu::hdist_init(npixels); 
 	
     for (unsigned int i = 0; i < trial_.cameras.size(); ++i) {
 
@@ -446,7 +446,7 @@ std::vector <double> Tracker::trackImplantFrame(unsigned int volumeID, double* x
 	std::vector<double> correlations;
 	CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
-	for (unsigned int i = 0; i < views_.size(); ++i) {
+	for (unsigned int i = 0; i < views_.size(); ++i) { // For every camera
 		// Set the modelview matrix for DRR rendering
 		CoordFrame modelview = views_[i]->camera()->coord_frame().inverse()*xcframe;
 		double imv[16]; modelview.inverse().to_matrix_row_order(imv);

@@ -52,7 +52,7 @@ void AMOEBA(MAT P, double *Y, int NDIM, double FTOL, int *ITER, double ALPHA, do
 ! rations taken.
 !-------------------------------------------------------------------*/
 // Label:  e1
-const int NMAX=20, ITMAX=5000;//ITMAX=500;
+const int NMAX=20, ITMAX=1000;//ITMAX=500;
 //Expected maximum number of dimensions, three parameters which define
 //the expansions and contractions, and maximum allowed number of
 //iterations.

@@ -1,5 +1,5 @@
 // ----------------------------------
-// Copyright (c) 2011, Brown University
+// Copyright (c) 2018, Brown University
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ static unsigned int g_maxNumThreads_hdist = 0;
 static float* d_sums_ba = NULL;
 static float* d_nums_ba = NULL;
 static float* d_den1s_ba = NULL;
-static float* d_den2s_ba = NULL;
+//static float* d_den2s_ba = NULL;
 
 //////// Helper functions ////////
 
@@ -73,9 +73,8 @@ __global__
 void sum_hdist_kernel(float* f, float* sums, unsigned int n);
 
 __global__
-void cuda_hdist_kernel(float* f, float meanF, float* g, float meanG, float* mask,
-	float* nums, float* den1s, float* den2s,
-	unsigned int n);
+void cuda_hdist_kernel(float* f, float* g, float* mask,
+	float* nums, float* den1s, unsigned int n);
 
 
 //////// Interface Definitions ////////
@@ -97,7 +96,7 @@ namespace xromm
 				cutilSafeCall(cudaMalloc(&d_sums_ba, numBlocks * sizeof(float)));
 				cutilSafeCall(cudaMalloc(&d_nums_ba, max_n * sizeof(float)));
 				cutilSafeCall(cudaMalloc(&d_den1s_ba, max_n * sizeof(float)));
-				cutilSafeCall(cudaMalloc(&d_den2s_ba, max_n * sizeof(float)));
+				//cutilSafeCall(cudaMalloc(&d_den2s_ba, max_n * sizeof(float)));
 
 				g_max_n_hdist = max_n;
 				g_maxNumThreads_hdist = maxNumThreads;
@@ -109,7 +108,7 @@ namespace xromm
 			cutilSafeCall(cudaFree(d_sums_ba));
 			cutilSafeCall(cudaFree(d_nums_ba));
 			cutilSafeCall(cudaFree(d_den1s_ba));
-			cutilSafeCall(cudaFree(d_den2s_ba));
+//			cutilSafeCall(cudaFree(d_den2s_ba));
 
 			g_max_n_hdist = 0;
 			g_maxNumThreads_hdist = 0;
@@ -117,21 +116,24 @@ namespace xromm
 
 		float hdist(float* f, float* g, float* mask, unsigned int n)
 		{
-			float nbPixel = sum_hdist(mask, n);
+			/*float nbPixel = sum_hdist(mask, n);
 			float meanF = sum_hdist(f, n) / nbPixel;
-			float meanG = sum_hdist(g, n) / nbPixel;
+			float meanG = sum_hdist(g, n) / nbPixel;*/
 
 			unsigned int numThreads, numBlocks, sizeMem;
 			get_device_params_hdist(n, g_maxNumThreads_hdist, numThreads, numBlocks, sizeMem);
 
-			cuda_hdist_kernel << <numBlocks, numThreads, sizeMem >> >(f, meanF, g, meanG, mask,
-				d_nums_ba, d_den1s_ba,
-				d_den2s_ba, n);
+			// (rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height)
+			cuda_hdist_kernel <<<numBlocks, numThreads, sizeMem >>>(f, g, mask,
+				d_nums_ba, d_den1s_ba, n);
 
-			float den = sqrt(sum_hdist(d_den1s_ba, n)*sum_hdist(d_den2s_ba, n));
+			//float den = sqrt(sum_hdist(d_den1s_ba, n)*sum_hdist(d_den2s_ba, n));
+			float den = sum_hdist(d_den1s_ba, n);
 
 			if (den < 1e-5) {
-				return 1e5;
+				//return 1e5;
+				printf("Bad Initialization!");
+				return 1;
 			}
 
 			return sum_hdist(d_nums_ba, n) / den;
@@ -160,7 +162,7 @@ float sum_hdist(float* f, unsigned int n)
 	get_device_params_hdist(n, g_maxNumThreads_hdist, numThreads, numBlocks, sizeMem);
 
 	while (n > 1) {
-		sum_hdist_kernel << <numBlocks, numThreads, sizeMem >> >(f, d_sums_ba, n);
+		sum_hdist_kernel <<<numBlocks, numThreads, sizeMem >>>(f, d_sums_ba, n);
 		n = numBlocks;
 		get_device_params_hdist(n, g_maxNumThreads_hdist, numThreads, numBlocks, sizeMem);
 		f = d_sums_ba;
@@ -197,24 +199,29 @@ void sum_hdist_kernel(float* f, float* sums, unsigned int n)
 }
 
 __global__
-void cuda_hdist_kernel(float* f, float meanF, float* g, float meanG, float* mask,
-	float* nums, float* den1s, float* den2s,
-	unsigned int n)
+void cuda_hdist_kernel(float* f, float* g, float* mask,
+	float* nums, float* den1s, unsigned int n)
 {
 	unsigned int i = blockDim.x*blockIdx.x + threadIdx.x;
 
-	if (i < n && mask[i] > 0.5f) {
-		float fMinusMean = f[i] - meanF;
-		float gMinusMean = g[i] - meanG;
+	if (i < n && mask[i] > 0.5f && g[i] > 0.8f/*&& f[i] > 0.8f */) {
 
-		nums[i] = fMinusMean * gMinusMean;
+		//DEBUGGING: printf("\nrad_i is:%f    drr_i is:%f", f[i], g[i]);
+		/*float fMinusMean = f[i] - meanF;
+		float gMinusMean = g[i] - meanG;*/
+
+	/*	nums[i] = fMinusMean * gMinusMean;
 		den1s[i] = fMinusMean * fMinusMean;
-		den2s[i] = gMinusMean * gMinusMean;
+		den2s[i] = gMinusMean * gMinusMean;*/
+		nums[i] = f[i] * g[i];
+		den1s[i] = g[i];
+		//den2s[i] = 1;
+
 	}
 	else {
 		nums[i] = 0.0f;
 		den1s[i] = 0.0f;
-		den2s[i] = 0.0f;
+		//den2s[i] = 0.0f;
 	}
 }
 
