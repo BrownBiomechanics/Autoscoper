@@ -61,7 +61,7 @@ TrackingOptionsDialog::TrackingOptionsDialog(QWidget *parent) :
 	d_frame = 1;
 	num_repeats = 1;
 
-	// Cost functino index
+	// Cost function index: Default is NCC
 	cost_function_index = 0;
 
 	// Backup Save
@@ -103,7 +103,7 @@ void TrackingOptionsDialog::frame_optimize()
 		nm_opt_gamma = diag->spinBox_gamma->value();
 		nm_opt_beta  = diag->spinBox_beta->value() / 10;
 
-		  mainwindow->getTracker()->optimize(frame, d_frame, num_repeats, nm_opt_alpha, nm_opt_gamma, nm_opt_beta);
+		  mainwindow->getTracker()->optimize(frame, d_frame, num_repeats, nm_opt_alpha, nm_opt_gamma, nm_opt_beta, cost_function_index);
 
           mainwindow->update_graph_min_max(mainwindow->getPosition_graph(), mainwindow->getTracker()->trial()->frame);
 
@@ -180,6 +180,14 @@ void TrackingOptionsDialog::on_pushButton_OK_clicked(bool checked){
 		to_frame = diag->spinBox_FrameEnd->value();
 
  		num_repeats = diag->spinBox_NumberRefinements->value();
+		int implant_cost_on = diag->radioButton_implant_cost->isChecked();
+		if (implant_cost_on)
+		{
+			cost_function_index = 1; // runs hdist_kernel
+		}
+		else {
+			cost_function_index = 0; // runs ncc_kernel
+		}
 
 		bool reverse = diag->checkBox_Reverse->checkState() != Qt::Unchecked;
 

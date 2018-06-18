@@ -452,7 +452,7 @@ from previous two frames</string>
      <item row="1" column="0" colspan="5">
       <widget class="QGroupBox" name="groupBox_4">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="styleSheet">
         <string notr="true">QGroupBox {
