@@ -1,5 +1,5 @@
 // ----------------------------------
-// Copyright (c) 2011, Brown University
+// Copyright (c) 2018, Brown University
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,61 +36,63 @@
 // THEIR USE OF THE SOFTWARE.
 // ---------------------------------
 
-/// \file TrackingOptionsDialog.h
-/// \author Benjamin Knorlein, Andy Loomis
-
-#ifndef TRACKINGOPTIONSDIALOG_H_
-#define TRACKINGOPTIONSDIALOG_H_
-
-#include <QDialog>
+/// \file SimulatedAnnealing.cpp
+/// \author Bardiya Akhbari
 
 
-namespace Ui {
-	class TrackingOptionsDialog;
+#include "SimulatedAnnealing.hpp"
+
+#include <stdio.h>
+#include <cmath>
+#include <iostream>
+
+void SA_BA(MAT P0, double *Y, int *ITER, double MAX_TEMP, double MAX_ITER) {
+	// P0: This is a matrix of offsets. This is a manipulator on the model,
+	// so change in this will be multiply by the orientation and translation
+	// of model position. We run the optimization on this. Every change in the
+	// first three P0[1] to P0[3] are translation change (in mm)
+	// The last three P0[4] to P0[6] are rotation change (in degree)
+	// Y: This is the vector of minimized values from the Cost Function
+
+	double Pi;
+	double Pcur[6];
+	//double Pbest[];
+
+	printf("In Annealing Function\n");
+	std::cout << sizeof(P0[1]);
+
+	//std::cout << "R (default) = " << std::endl;
+	//	for (int j = 0; j < 6; j++)
+	//	{			
+	//		//		Y[i + 1] = FUNC(P0[i + 1]);
+	//		std::cout << P0[1][j] << " ";
+
+	//		
+	//	}
+	//	std::cout <<  std::endl;
+
+	Pcur[0] = P0[1][0];
+	Pcur[1] = P0[1][1];
+	Pcur[2] = P0[1][2];
+	Pcur[3] = P0[1][3];
+	Pcur[4] = P0[1][4];
+	Pcur[5] = P0[1][5];
+
+	for (int i = 0; i < sizeof(Pcur[1]); i++)
+	{
+		std::cout << Pcur[i] << " ";
+		Pi = Pcur[1] + 1;
+	}
+	//Pbest = Pcur;
+
+	for (int i = 0; i < MAX_ITER; i++)
+	{
+		Pi = Pcur[1] + 1;
+	}
+	//double YPR = FUNC(&Pi);
+
+	//for (int j = 0; j < 6; j++)
+	//{			
+	//	std::cout << Pcur[j] << " ";
+	//}
 }
-
-class TrackingOptionsDialog : public QDialog{
-
-	Q_OBJECT
-
-	private:
-		bool is_backup_on;
-		int cost_function_index = 0;
-
-	public:
-		explicit TrackingOptionsDialog(QWidget *parent = 0);
-		~TrackingOptionsDialog();
-
-		Ui::TrackingOptionsDialog *diag;
-
-		
-		int frame, from_frame, to_frame, d_frame;
-		bool doExit;
-		bool frame_optimizing;
-		int num_repeats;
-
-		// Neldon Optimization Parameters
-		double nm_opt_alpha;
-		double nm_opt_beta;
-		double nm_opt_gamma;
-
-		int curFrame;
-		void frame_optimize();
-		void setRange(int from, int to, int max);
-		//void track();
-		void retrack();
-		void trackCurrent();
-		
-		bool inActive;
-
-	public slots:
-		void on_pushButton_OK_clicked(bool checked);
-		void on_pushButton_Cancel_clicked(bool checked);
-		void on_radioButton_CurrentFrame_clicked(bool checked);
-		void on_radioButton_PreviousFrame_clicked(bool checked);
-		void on_radioButton_LinearExtrapolation_clicked(bool checked);
-		void on_radioButton_SplineInterpolation_clicked(bool checked);
-
-};
-
-#endif /* TRACKINGOPTIONSDIALOG_H_ */

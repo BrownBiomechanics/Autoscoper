@@ -66,6 +66,7 @@
 #include "Video.hpp"
 #include "View.hpp"
 #include "DownhillSimplex.hpp"
+#include "SimulatedAnnealing.hpp"
 #include "Camera.hpp"
 #include "CoordFrame.hpp"
 #include <cuda_runtime_api.h>
@@ -83,7 +84,7 @@ static bool firstRun = true;
 // optimize.
 
 static xromm::Tracker* g_markerless = NULL;
-
+ 
 // Bardiya: I commented this out to play with the implant cost function
 //double FUNC(double* P) { return g_markerless->minimizationFunc(P+1); }
 double FUNC(double* P) { return g_markerless->implantMinFunc(P + 1); }
@@ -242,7 +243,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
     }
 
     int NDIM = 6;       // Number of dimensions to optimize over.
-    double FTOL = 1e-5; // Tolerance for the optimization.
+    double FTOL = 1e-6; // Tolerance for the optimization.
     MAT P;              // Matrix of points to initialize the routine.
     double Y[MP];       // The values of the minimization function at the
                         // initial points.
@@ -302,7 +303,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
     for (int j = 0; j < repeats; j++) {
 
         // Generate the 7 vertices that form the initial simplex. Because
-        // the independant variables of the function we are optimizing over
+        // the independent variables of the function we are optimizing over
         // are relative to the initial guess, the same vertices can be used
         // to form the initial simplex for every frame.
         for (int i = 0; i < 7; ++i) {
@@ -325,6 +326,10 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 
 		// Downhill Simplex Optimization
         AMOEBA(P, Y, NDIM, FTOL, &ITER, nm_opt_alpha, nm_opt_gamma, nm_opt_beta);
+		// My Try for Simulated Annealing
+		double MAX_TEMP = 50;
+		double MAX_ITER = 1;
+		//SA_BA(P, Y, &ITER, MAX_TEMP, MAX_ITER);
 
 		double xyzypr[6] = { (*trial_.getXCurve(-1))(trial_.frame),
 			(*trial_.getYCurve(-1))(trial_.frame),
@@ -432,9 +437,12 @@ double Tracker::minimizationFunc(const double* values) const
 	std::vector <double> correlations = trackFrame(idx, &xyzypr[0]);
 
 	double correlation = correlations[0];
+	printf("Cam 0: %4.5f", correlation);
 	for (unsigned int i = 1; i < trial_.cameras.size(); ++i) {
-		correlation += correlations[i];
+		correlation *= correlations[i];
+		printf("\tCam %d: %4.5f", i, correlations[i]);
 	}
+	printf("\tFinal NCC: %4.5f\n", correlation);
 
 	return correlation;
 }
@@ -519,7 +527,7 @@ double Tracker::implantMinFunc(const double* values) const
 	printf("Cam 0: %4.5f", correlation);
 
     for (unsigned int i = 1; i < trial_.cameras.size(); ++i) {
-        correlation *= correlations[i];
+        correlation += correlations[i];
 		printf("\tCam %d: %4.5f", i, correlations[i]);
     }
 	printf("\tFinal NCC: %4.5f\n", correlation);
@@ -552,7 +560,7 @@ void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) c
 
     for (int j = 0; j < 8; j++) {
 
-        // Calculate the loaction of the corner in object space
+        // Calculate the location of the corner in object space
 		corners[3 * j + 0] = (corners[3 * j + 0] - volumeDescription_[idx]->invTrans()[0]) / volumeDescription_[idx]->invScale()[0];
 		corners[3 * j + 1] = (corners[3 * j + 1] - volumeDescription_[idx]->invTrans()[1]) / volumeDescription_[idx]->invScale()[1];
 		corners[3 * j + 2] = (corners[3 * j + 2] - volumeDescription_[idx]->invTrans()[2]) / volumeDescription_[idx]->invScale()[2];

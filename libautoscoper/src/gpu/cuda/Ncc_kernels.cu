@@ -203,7 +203,7 @@ void cuda_ncc_kernel(float* f, float meanF, float* g, float meanG, float* mask,
 {
     unsigned int i = blockDim.x*blockIdx.x+threadIdx.x;
 
-	if (i < n && mask[i] > 0.5f) {
+	if (i < n && mask[i] > 0.5f /*&& f[i] > 0.8f*/) {
         float fMinusMean = f[i]-meanF;
         float gMinusMean = g[i]-meanG;
 

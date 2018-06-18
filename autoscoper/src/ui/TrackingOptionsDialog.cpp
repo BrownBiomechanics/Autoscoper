@@ -61,6 +61,9 @@ TrackingOptionsDialog::TrackingOptionsDialog(QWidget *parent) :
 	d_frame = 1;
 	num_repeats = 1;
 
+	// Cost functino index
+	cost_function_index = 0;
+
 	// Backup Save
 	is_backup_on = 1; // Always on
 
@@ -94,7 +97,7 @@ void TrackingOptionsDialog::frame_optimize()
             return;
          }
 
-		
+
 		// Read Neldon Optimization Parameters
 		nm_opt_alpha = diag->spinBox_alpha->value();
 		nm_opt_gamma = diag->spinBox_gamma->value();

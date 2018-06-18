@@ -1,5 +1,5 @@
 // ----------------------------------
-// Copyright (c) 2011, Brown University
+// Copyright (c) 2018, Brown University
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,61 +36,25 @@
 // THEIR USE OF THE SOFTWARE.
 // ---------------------------------
 
-/// \file TrackingOptionsDialog.h
-/// \author Benjamin Knorlein, Andy Loomis
+/// \file SimulatedAnnealing.hpp
+/// \author Bardiya Akhbari
 
-#ifndef TRACKINGOPTIONSDIALOG_H_
-#define TRACKINGOPTIONSDIALOG_H_
+// This routine is from Numerical Recipes, see the .cpp file for notes.
 
-#include <QDialog>
+#ifndef SIM_ANNEALING_H
+#define SIM_ANNEALING_H
+
+#define   MP  22
+#define   NP  21    //Maximum value for NDIM=20
+typedef   double MAT[MP][NP];
+
+// We define this function.
+double FUNC(double *P);
+
+// This runs the downhill simplex routine.
+void SA_BA(MAT P, double *Y, int *ITER, double MAX_TEMP, double MAX_ITER);
+
+#endif
 
 
-namespace Ui {
-	class TrackingOptionsDialog;
-}
 
-class TrackingOptionsDialog : public QDialog{
-
-	Q_OBJECT
-
-	private:
-		bool is_backup_on;
-		int cost_function_index = 0;
-
-	public:
-		explicit TrackingOptionsDialog(QWidget *parent = 0);
-		~TrackingOptionsDialog();
-
-		Ui::TrackingOptionsDialog *diag;
-
-		
-		int frame, from_frame, to_frame, d_frame;
-		bool doExit;
-		bool frame_optimizing;
-		int num_repeats;
-
-		// Neldon Optimization Parameters
-		double nm_opt_alpha;
-		double nm_opt_beta;
-		double nm_opt_gamma;
-
-		int curFrame;
-		void frame_optimize();
-		void setRange(int from, int to, int max);
-		//void track();
-		void retrack();
-		void trackCurrent();
-		
-		bool inActive;
-
-	public slots:
-		void on_pushButton_OK_clicked(bool checked);
-		void on_pushButton_Cancel_clicked(bool checked);
-		void on_radioButton_CurrentFrame_clicked(bool checked);
-		void on_radioButton_PreviousFrame_clicked(bool checked);
-		void on_radioButton_LinearExtrapolation_clicked(bool checked);
-		void on_radioButton_SplineInterpolation_clicked(bool checked);
-
-};
-
-#endif /* TRACKINGOPTIONSDIALOG_H_ */
