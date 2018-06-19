@@ -169,17 +169,7 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 			std::vector<double> pose;
 			pose.assign(pose_data, pose_data + 6);
 
-			//std::cerr << "get NCC for volume " << *volume << " and pose ";
-			//for (auto a : pose)
-			//	std::cerr << " " << a;
-			//std::cerr << std::endl;
-			//
 			std::vector<double> ncc = m_mainwindow->getNCC(*volume, &pose_data[0]);
-			//
-			//std::cerr << "NCC :  ";
-			//for (auto a : ncc)
-			//	std::cerr << " " << a;
-			//std::cerr << std::endl;
 
 			//Return double
 			char * ptr = reinterpret_cast<char*>(&ncc[0]);
@@ -200,6 +190,31 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 			connection->write(QByteArray(1, 9));
 		}
 	break;
+	case 10:
+		{
+			qint32* volume = reinterpret_cast<qint32*>(&data[1]);
+			qint32* camera = reinterpret_cast<qint32*>(&data[5]);
+			double * pose_data = reinterpret_cast<double*>(&data[9]);
+			
+			//std::cerr << "Read images for volume " << *volume << " and camera " << *camera << std::endl;
+
+			std::vector<double> pose;
+			pose.assign(pose_data, pose_data + 6);
+			unsigned int width, height;
+			std::vector<unsigned char> img_Data = m_mainwindow->getImageData(*volume,*camera, &pose_data[0], width, height );
+
+			QByteArray array = QByteArray(1, 10);
+			char * ptr = reinterpret_cast<char*>(&width);
+			array.append(ptr, sizeof(qint32));
+		    ptr = reinterpret_cast<char*>(&height);
+			array.append(ptr, sizeof(qint32));
+			ptr = reinterpret_cast<char*>(&img_Data[0]);
+			array.append(ptr, img_Data.size());
+			connection->write(array);
+			//std::cerr << width << " " << height << " " << img_Data.size() << std::endl;
+		
+		}
+		break;
 	default:
 		std::cerr << "Cannot handle message" << std::endl;
 		connection->write(QByteArray(1,0));

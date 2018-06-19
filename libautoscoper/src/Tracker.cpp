@@ -444,6 +444,76 @@ double Tracker::minimizationFunc(const double* values) const
 		}
 	}
 
+#ifdef WITH_CUDA
+	void get_image(const Buffer* dev_image, int width, int height, std::vector<unsigned char> &data)
+#else
+	void get_image(const gpu::Buffer* dev_image, int width, int height, std::vector<unsigned char> &data)
+#endif
+	{
+		static int count = 0;
+		float* host_image = new float[width*height];
+
+#ifdef WITH_CUDA
+		cudaMemcpy(host_image, dev_image, width*height*sizeof(float), cudaMemcpyDeviceToHost);
+#else
+		dev_image->write(host_image, width*height*sizeof(float));
+#endif
+		// Copy to a char array
+		for (int i = 0; i < width*height; i++) {
+			data.push_back((unsigned char)(255 * host_image[i]));
+		}
+
+		delete[] host_image;
+	}
+
+
+std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned camera, double* xyzypr, unsigned& width, unsigned& height)
+	{
+		CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
+
+		CoordFrame modelview = views_[camera]->camera()->coord_frame().inverse()*xcframe;
+		double imv[16]; modelview.inverse().to_matrix_row_order(imv);
+		views_[camera]->drrRenderer(volumeID)->setInvModelView(imv);
+
+		// Calculate the viewport surrounding the volume
+		double viewport[4];
+		this->calculate_viewport(modelview, viewport);
+
+		// Calculate the size of the image to render
+		unsigned render_width = viewport[2] * trial_.render_width / views_[camera]->camera()->viewport()[2];
+		unsigned render_height = viewport[3] * trial_.render_height / views_[camera]->camera()->viewport()[3];
+
+		// Set the viewports
+		views_[camera]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1],
+			viewport[2], viewport[3]);
+		views_[camera]->radRenderer()->set_viewport(viewport[0], viewport[1],
+			viewport[2], viewport[3]);
+
+		// Render the DRR and Radiograph
+		views_[camera]->renderDrrSingle(volumeID, rendered_drr_, render_width, render_height);
+		views_[camera]->renderRad(rendered_rad_, render_width, render_height);
+
+		//render masks
+		views_[camera]->backgroundRenderer()->set_viewport(viewport[0], viewport[1],
+			viewport[2], viewport[3]);
+
+		views_[camera]->renderBackground(background_mask_, render_width, render_height);
+		views_[camera]->renderDRRMask(rendered_drr_, drr_mask_, render_width, render_height);
+
+		gpu::multiply(background_mask_, drr_mask_, drr_mask_, render_width, render_height);
+		gpu::multiply(rendered_rad_, drr_mask_, rendered_rad_, render_width, render_height);
+		gpu::multiply(rendered_drr_, drr_mask_, rendered_drr_, render_width, render_height);
+
+		width = render_width;
+		height = render_height;
+		std::vector<unsigned char> out_data;
+		get_image(rendered_rad_, width, height, out_data);
+		get_image(rendered_drr_, width, height, out_data);
+		get_image(drr_mask_, width, height, out_data);
+
+		return out_data;
+	}
+
 	void
 Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) const
 {
