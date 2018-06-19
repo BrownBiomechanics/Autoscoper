@@ -112,6 +112,7 @@ class AutoscoperMainWindow : public QMainWindow{
 		void setPose(std::vector<double> pose, unsigned int volume, unsigned int frame);
 		void setBackground(double threshold);
 		std::vector <double> getNCC(unsigned int volumeID, double* xyzpr);
+		std::vector <unsigned char> getImageData(unsigned int volumeID, unsigned int camera, double* xyzpr, unsigned int &width, unsigned int &height);
 
 		// Backup Save
 		void backup_tracking(bool backup_on);

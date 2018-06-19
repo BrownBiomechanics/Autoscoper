@@ -844,6 +844,11 @@ std::vector<double> AutoscoperMainWindow::getNCC(unsigned volumeID, double* xyzp
 	return tracker->trackFrame(volumeID, xyzpr);
 }
 
+std::vector<unsigned char> AutoscoperMainWindow::getImageData(unsigned volumeID, unsigned camera, double* xyzpr, unsigned& width, unsigned& height)
+{
+	return tracker->getImageData(volumeID, camera, xyzpr, width, height);
+}
+
 void AutoscoperMainWindow::save_tracking_results(QString filename)
 {
 	ImportExportTrackingOptionsDialog * diag = new ImportExportTrackingOptionsDialog(this);

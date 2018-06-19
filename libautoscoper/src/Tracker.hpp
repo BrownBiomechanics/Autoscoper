@@ -94,6 +94,7 @@ public:
     const gpu::View* view(size_t i) const { return views_.at(i); }
 	void updateBackground();
 	void setBackgroundThreshold(float threshold);
+	std::vector<unsigned char> getImageData(unsigned volumeID, unsigned camera, double* xyzpr, unsigned& width, unsigned& height);
 
 
 	// Bardiya Cost Function for Implants
