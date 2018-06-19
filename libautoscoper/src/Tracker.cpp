@@ -307,7 +307,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
     for (int j = 0; j < repeats; j++) {
 
         // Generate the 7 vertices that form the initial simplex. Because
-        // the independent variables of the function we are optimizing over
+        // the independant variables of the function we are optimizing over
         // are relative to the initial guess, the same vertices can be used
         // to form the initial simplex for every frame.
         for (int i = 0; i < 7; ++i) {
@@ -438,7 +438,7 @@ double Tracker::minimizationFunc(const double* values) const
 		(*(const_cast<Trial&>(trial_)).getYawCurve(-1))(trial_.frame),
 		(*(const_cast<Trial&>(trial_)).getPitchCurve(-1))(trial_.frame),
 		(*(const_cast<Trial&>(trial_)).getRollCurve(-1))(trial_.frame) };
-	CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
+    CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr); 
 
 
 	CoordFrame manip = CoordFrame::from_xyzAxis_angle(values);
@@ -459,22 +459,94 @@ double Tracker::minimizationFunc(const double* values) const
 	return correlation;
 }
 
-
-
-void Tracker::updateBackground()
-{
-	for (unsigned int i = 0; i < views_.size(); ++i) {
-		views_[i]->updateBackground(trial_.videos[i].background(), trial_.videos[i].width(), trial_.videos[i].height());
+	void Tracker::updateBackground()
+	{
+		for (unsigned int i = 0; i < views_.size(); ++i) {
+			views_[i]->updateBackground(trial_.videos[i].background(), trial_.videos[i].width(), trial_.videos[i].height());
+		}
 	}
-}
 
-void Tracker::setBackgroundThreshold(float threshold)
-{
-	for (unsigned int i = 0; i < views_.size(); ++i) {
-		views_[i]->setBackgroundThreshold(threshold);
+	void Tracker::setBackgroundThreshold(float threshold)
+	{
+		for (unsigned int i = 0; i < views_.size(); ++i) {
+			views_[i]->setBackgroundThreshold(threshold);
+		}
 	}
-}
 
+#ifdef WITH_CUDA
+	void get_image(const Buffer* dev_image, int width, int height, std::vector<unsigned char> &data)
+#else
+	void get_image(const gpu::Buffer* dev_image, int width, int height, std::vector<unsigned char> &data)
+#endif
+	{
+		static int count = 0;
+		float* host_image = new float[width*height];
+
+#ifdef WITH_CUDA
+		cudaMemcpy(host_image, dev_image, width*height*sizeof(float), cudaMemcpyDeviceToHost);
+#else
+		dev_image->write(host_image, width*height*sizeof(float));
+#endif
+		// Copy to a char array
+		for (int i = 0; i < width*height; i++) {
+			data.push_back((unsigned char)(255 * host_image[i]));
+		}
+
+		delete[] host_image;
+	}
+
+
+std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned camera, double* xyzypr, unsigned& width, unsigned& height)
+	{
+		CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
+
+		CoordFrame modelview = views_[camera]->camera()->coord_frame().inverse()*xcframe;
+		double imv[16]; modelview.inverse().to_matrix_row_order(imv);
+		views_[camera]->drrRenderer(volumeID)->setInvModelView(imv);
+
+		// Calculate the viewport surrounding the volume
+		double viewport[4];
+		this->calculate_viewport(modelview, viewport);
+
+		// Calculate the size of the image to render
+		unsigned render_width = viewport[2] * trial_.render_width / views_[camera]->camera()->viewport()[2];
+		unsigned render_height = viewport[3] * trial_.render_height / views_[camera]->camera()->viewport()[3];
+
+		// Set the viewports
+		views_[camera]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1],
+			viewport[2], viewport[3]);
+		views_[camera]->radRenderer()->set_viewport(viewport[0], viewport[1],
+			viewport[2], viewport[3]);
+
+		// Render the DRR and Radiograph
+		views_[camera]->renderDrrSingle(volumeID, rendered_drr_, render_width, render_height);
+		views_[camera]->renderRad(rendered_rad_, render_width, render_height);
+
+		//render masks
+		views_[camera]->backgroundRenderer()->set_viewport(viewport[0], viewport[1],
+			viewport[2], viewport[3]);
+
+		views_[camera]->renderBackground(background_mask_, render_width, render_height);
+		views_[camera]->renderDRRMask(rendered_drr_, drr_mask_, render_width, render_height);
+
+		gpu::multiply(background_mask_, drr_mask_, drr_mask_, render_width, render_height);
+		gpu::multiply(rendered_rad_, drr_mask_, rendered_rad_, render_width, render_height);
+		gpu::multiply(rendered_drr_, drr_mask_, rendered_drr_, render_width, render_height);
+
+		width = render_width;
+		height = render_height;
+		std::vector<unsigned char> out_data;
+		get_image(rendered_rad_, width, height, out_data);
+		get_image(rendered_drr_, width, height, out_data);
+		get_image(drr_mask_, width, height, out_data);
+
+		return out_data;
+	}
+
+<<<<<<< HEAD
+	void
+Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) const
+=======
 <<<<<<< HEAD
 void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) const
 =======
@@ -551,6 +623,7 @@ std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned cam
 	void
 Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) const
 >>>>>>> 26a660f0497d8a8400920d1e98eac3e09d348b78
+>>>>>>> 14ecb524c05aa4282b0374110c452e2767340383
 {
     // Calculate the minimum and maximum values of the bounding box
     // corners after they have been projected onto the view plane
@@ -561,7 +634,7 @@ Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) const
 
     for (int j = 0; j < 8; j++) {
 
-        // Calculate the location of the corner in object space
+        // Calculate the loaction of the corner in object space
 		corners[3 * j + 0] = (corners[3 * j + 0] - volumeDescription_[idx]->invTrans()[0]) / volumeDescription_[idx]->invScale()[0];
 		corners[3 * j + 1] = (corners[3 * j + 1] - volumeDescription_[idx]->invTrans()[1]) / volumeDescription_[idx]->invScale()[1];
 		corners[3 * j + 2] = (corners[3 * j + 2] - volumeDescription_[idx]->invTrans()[2]) / volumeDescription_[idx]->invScale()[2];
