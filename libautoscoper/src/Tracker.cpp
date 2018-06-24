@@ -343,45 +343,15 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 
 		// My Try for Simulated Annealing
 		double TEMP_INIT = 10;
-		double TEMP_FINAL = 0.001;
+		double TEMP_FINAL = 0.0001;
 		double N_CYCLE = 30;
 		double MAX_ITER = 20;
-
-		// THIS WORKS
-		/*double xy[2] = {2.1,1.1};
-		double xym[2] = {xy[0], xy[1]};
-		double a = 0.99;// Reduce Temp with this
-		double d = 1e-5;// (1.6*(pow(10, -23)));
-		double T = TEMP_INIT;
-		double minim = SA_func_array(xy);
-		double z;
-		double counter = 0;
-		while (T > TEMP_FINAL) {
-			int i = 1;
-			while (i <= MAX_ITER) {
-				xy[0] = xy[0] + SA_fRand(-0.5, 0.5);
-				xy[1] = xy[1] + SA_fRand(-0.5, 0.5);
-				z = SA_func_array(xy);
-				if (z < minim || (SA_accept(z, minim, T, d) > (SA_fRand(0, 1)))) {
-					minim = z;
-					xym[0] = xy[0];
-					xym[1] = xy[1];
-				}
-				i = i + 1;
-			}
-			counter = counter + 1;
-			T = T * a;
-			xy[0] = xym[0];
-			xy[1] = xym[1];
-		}
-		cout << "min: " << minim << " x: " << xy[0] << " y: " << xy[1] << endl;*/
-
-
-		//double xy[2] = { 2.1,1.1 };
+		double rot_lim = 1;
+		double trans_lim = .5;
 		double xyzypr_manip[6] = { 0 };
 		double xym[6] = { xyzypr_manip[0], xyzypr_manip[1], xyzypr_manip[2] , xyzypr_manip[3] , xyzypr_manip[4] , xyzypr_manip[5] };
-		double a = 0.9;// Reduce Temp with this
-		double d = 1e-5;// (1.6*(pow(10, -23)));
+		double a = 0.8;// Reduce Temp with this
+		double d = 1e-4;// (1.6*(pow(10, -23)));
 		double T = TEMP_INIT;
 		double minim = minimizationFunc(xyzypr_manip);
 		double z;
@@ -389,12 +359,12 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 		while (T > TEMP_FINAL) {
 			int i = 1;
 			while (i <= N_CYCLE) {
-				xyzypr_manip[0] = xyzypr_manip[0] + SA_fRand(-0.2, 0.2);
-				xyzypr_manip[1] = xyzypr_manip[1] + SA_fRand(-0.2, 0.2);
-				xyzypr_manip[2] = xyzypr_manip[2] + SA_fRand(-0.2, 0.2);
-				xyzypr_manip[3] = xyzypr_manip[3] + SA_fRand(-0.2, 0.2);
-				xyzypr_manip[4] = xyzypr_manip[4] + SA_fRand(-0.2, 0.2);
-				xyzypr_manip[5] = xyzypr_manip[5] + SA_fRand(-0.2, 0.2);
+				xyzypr_manip[0] = xyzypr_manip[0] + SA_fRand(-trans_lim, trans_lim);
+				xyzypr_manip[1] = xyzypr_manip[1] + SA_fRand(-trans_lim, trans_lim);
+				xyzypr_manip[2] = xyzypr_manip[2] + SA_fRand(-trans_lim, trans_lim);
+				xyzypr_manip[3] = xyzypr_manip[3] + SA_fRand(-rot_lim, rot_lim);
+				xyzypr_manip[4] = xyzypr_manip[4] + SA_fRand(-rot_lim, rot_lim);
+				xyzypr_manip[5] = xyzypr_manip[5] + SA_fRand(-rot_lim, rot_lim);
 
 				z = minimizationFunc(xyzypr_manip);
 				if (z < minim || (SA_accept(z, minim, T, d) > (SA_fRand(0, 1)))) {
@@ -407,8 +377,8 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 					xym[5] = xyzypr_manip[5];
 				}
 				i = i + 1;
+				counter = counter + 1;
 			}
-			counter = counter + 1;
 			T = T * a;
 			xyzypr_manip[0] = xym[0];
 			xyzypr_manip[1] = xym[1];
@@ -417,6 +387,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 			xyzypr_manip[4] = xym[4];
 			xyzypr_manip[5] = xym[5];
 		}
+		totalIter = counter;
 		cout << "Optimized Final NCC: " << minim << endl;
 
 		// SA End
@@ -536,12 +507,12 @@ double Tracker::minimizationFunc(const double* values) const
 	std::vector <double> correlations = trackFrame(idx, &xyzypr[0]);
 
 	double correlation = correlations[0];
-	printf("Cam 0: %4.5f", correlation);
+	//printf("Cam 0: %4.5f", correlation);
 	for (unsigned int i = 1; i < trial_.cameras.size(); ++i) {
 		correlation *= correlations[i];
-		printf("\tCam %d: %4.5f", i, correlations[i]);
+	//	printf("\tCam %d: %4.5f", i, correlations[i]);
 	}
-	printf("\tFinal NCC: %4.5f\n", correlation);
+	//printf("\tFinal NCC: %4.5f\n", correlation);
 
 	return correlation;
 }
@@ -688,16 +659,6 @@ double Tracker::SA_fRand(double fMin, double fMax)
 {
 	double f = (double)rand() / RAND_MAX;
 	return fMin + f * (fMax - fMin);
-}
-
-double Tracker::SA_func(double x, double y)
-{
-	return (pow(x - 2, 2) + pow(y - 1, 2));
-}
-
-double Tracker::SA_func_array(double *xy)
-{
-	return (pow(xy[0] - 2, 2) + pow(xy[1] - 1, 2));
 }
 
 } // namespace XROMM
