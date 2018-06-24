@@ -104,6 +104,9 @@ public:
 
 private:
     void calculate_viewport(const CoordFrame& modelview, double* viewport) const;
+	double SA_accept(double z, double minim, double T, double d);
+	double SA_fRand(double fMin, double fMax);
+	double SA_func(double x, double y);
 
 
 	int tracker_cost_function = 0;

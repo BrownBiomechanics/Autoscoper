@@ -87,7 +87,6 @@ static xromm::Tracker* g_markerless = NULL;
  
 // Bardiya: I commented this out to play with the implant cost function
 double FUNC(double* P) { return g_markerless->minimizationFunc(P+1); }
-//double FUNC(double* P) { return g_markerless->implantMinFunc(P + 1); }
 
 
 namespace xromm {
@@ -146,7 +145,7 @@ Tracker::Tracker()
 	  background_mask_(NULL)
 {
     g_markerless = this;
-	tracker_cost_function = 0; // initializae cost function
+	tracker_cost_function = 0; // initialize cost function
 }
 
 Tracker::~Tracker()
@@ -307,7 +306,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
     for (int j = 0; j < repeats; j++) {
 
         // Generate the 7 vertices that form the initial simplex. Because
-        // the independant variables of the function we are optimizing over
+        // the independent variables of the function we are optimizing over
         // are relative to the initial guess, the same vertices can be used
         // to form the initial simplex for every frame.
         for (int i = 0; i < 7; ++i) {
@@ -330,17 +329,59 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 
 		// Downhill Simplex Optimization
         AMOEBA(P, Y, NDIM, FTOL, &ITER, nm_opt_alpha, nm_opt_gamma, nm_opt_beta);
-		// My Try for Simulated Annealing
-		double MAX_TEMP = 50;
-		double MAX_ITER = 1;
-		//SA_BA(P, Y, &ITER, MAX_TEMP, MAX_ITER);
 
+
+		// Get Current Pose
 		double xyzypr[6] = { (*trial_.getXCurve(-1))(trial_.frame),
 			(*trial_.getYCurve(-1))(trial_.frame),
 			(*trial_.getZCurve(-1))(trial_.frame),
 			(*trial_.getYawCurve(-1))(trial_.frame),
 			(*trial_.getPitchCurve(-1))(trial_.frame),
 			(*trial_.getRollCurve(-1))(trial_.frame) };
+
+
+
+		// My Try for Simulated Annealing
+		//double MAX_TEMP = 50;
+		//double MAX_ITER = 1;
+		// Writing Simulated Annealing Code Here
+		double x = SA_fRand(-30, 30);
+		double y = SA_fRand(-30, 30);
+		double xm = x, ym = y;
+		double tI = 100000;
+		double tF = 0.000001;
+		double a = 0.99;
+		double d = 1e-5;// (1.6*(pow(10, -23)));
+		double T = tI;
+		double minim = SA_func(x,y);
+		double z;
+		double counter = 0;
+
+		while (T > tF) {
+			int i = 1;
+			while (i <= 30) {
+				x = x + SA_fRand(-0.5, 0.5);
+				y = y + SA_fRand(-0.5, 0.5);
+				z = SA_func(x, y);
+				if (z < minim || (SA_accept(z, minim, T, d) > (SA_fRand(0, 1)))) {
+					minim = z;
+					xm = x;
+					ym = y;
+				}
+				i = i + 1;
+			}
+			counter = counter + 1;
+			T = T * a;
+			x = xm;
+			y = ym;
+		}
+
+		cout << "min: " << minim << " x: " << xm << " y: " << ym << endl;
+
+		// SA End
+
+
+		// Convert Current Pose to its Coordinate System Frame
         CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
 
@@ -498,7 +539,7 @@ void Tracker::setBackgroundThreshold(float threshold)
 
 
 std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned camera, double* xyzypr, unsigned& width, unsigned& height)
-	{
+{
 		CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
 		CoordFrame modelview = views_[camera]->camera()->coord_frame().inverse()*xcframe;
@@ -542,9 +583,9 @@ std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned cam
 		get_image(drr_mask_, width, height, out_data);
 
 		return out_data;
-	}
+}
 
-	void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) const
+void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) const
 {
     // Calculate the minimum and maximum values of the bounding box
     // corners after they have been projected onto the view plane
@@ -555,7 +596,7 @@ std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned cam
 
     for (int j = 0; j < 8; j++) {
 
-        // Calculate the loaction of the corner in object space
+        // Calculate the location of the corner in object space
 		corners[3 * j + 0] = (corners[3 * j + 0] - volumeDescription_[idx]->invTrans()[0]) / volumeDescription_[idx]->invScale()[0];
 		corners[3 * j + 1] = (corners[3 * j + 1] - volumeDescription_[idx]->invTrans()[1]) / volumeDescription_[idx]->invScale()[1];
 		corners[3 * j + 2] = (corners[3 * j + 2] - volumeDescription_[idx]->invTrans()[2]) / volumeDescription_[idx]->invScale()[2];
@@ -590,4 +631,24 @@ std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned cam
     viewport[3] = min_max[3]-min_max[1];
 }
 
+
+double Tracker::SA_accept(double z, double minim, double T, double d)
+{
+	double p = -(z - minim) / (d * T);
+	return pow(exp(1), p);
+}
+
+double Tracker::SA_fRand(double fMin, double fMax)
+{
+	double f = (double)rand() / RAND_MAX;
+	return fMin + f * (fMax - fMin);
+}
+
+double Tracker::SA_func(double x, double y)
+{
+	return (pow(x - 2, 2) + pow(y - 1, 2));
+}
+
 } // namespace XROMM
+
+

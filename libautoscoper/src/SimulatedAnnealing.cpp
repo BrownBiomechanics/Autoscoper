@@ -46,7 +46,7 @@
 #include <cmath>
 #include <iostream>
 
-void SA_BA(MAT P0, double *Y, int *ITER, double MAX_TEMP, double MAX_ITER) {
+void SA_BA(double pose0, double *Y, int *ITER, double MAX_TEMP, double MAX_ITER) {
 	// P0: This is a matrix of offsets. This is a manipulator on the model,
 	// so change in this will be multiply by the orientation and translation
 	// of model position. We run the optimization on this. Every change in the
@@ -61,38 +61,12 @@ void SA_BA(MAT P0, double *Y, int *ITER, double MAX_TEMP, double MAX_ITER) {
 	printf("In Annealing Function\n");
 	std::cout << sizeof(P0[1]);
 
-	//std::cout << "R (default) = " << std::endl;
-	//	for (int j = 0; j < 6; j++)
-	//	{			
-	//		//		Y[i + 1] = FUNC(P0[i + 1]);
-	//		std::cout << P0[1][j] << " ";
-
-	//		
-	//	}
-	//	std::cout <<  std::endl;
-
-	Pcur[0] = P0[1][0];
-	Pcur[1] = P0[1][1];
-	Pcur[2] = P0[1][2];
-	Pcur[3] = P0[1][3];
-	Pcur[4] = P0[1][4];
-	Pcur[5] = P0[1][5];
-
-	for (int i = 0; i < sizeof(Pcur[1]); i++)
+	for (int i = 0; i < 6; i++)
 	{
-		std::cout << Pcur[i] << " ";
-		Pi = Pcur[1] + 1;
+		cout << xyzypr[i] << " ";
 	}
-	//Pbest = Pcur;
+	cout << endl;
 
-	for (int i = 0; i < MAX_ITER; i++)
-	{
-		Pi = Pcur[1] + 1;
-	}
-	//double YPR = FUNC(&Pi);
 
-	//for (int j = 0; j < 6; j++)
-	//{			
-	//	std::cout << Pcur[j] << " ";
-	//}
+
 }
