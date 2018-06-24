@@ -108,6 +108,8 @@ private:
 	double SA_fRand(double fMin, double fMax);
 	double SA_func(double x, double y);
 
+	double SA_func_array(double * xy);
+
 
 	int tracker_cost_function = 0;
 

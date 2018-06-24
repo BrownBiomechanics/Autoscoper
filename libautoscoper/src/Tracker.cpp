@@ -328,7 +328,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
         ITER = 0;
 
 		// Downhill Simplex Optimization
-        AMOEBA(P, Y, NDIM, FTOL, &ITER, nm_opt_alpha, nm_opt_gamma, nm_opt_beta);
+        // AMOEBA(P, Y, NDIM, FTOL, &ITER, nm_opt_alpha, nm_opt_gamma, nm_opt_beta);
 
 
 		// Get Current Pose
@@ -342,50 +342,96 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 
 
 		// My Try for Simulated Annealing
-		//double MAX_TEMP = 50;
-		//double MAX_ITER = 1;
-		// Writing Simulated Annealing Code Here
-		double x = SA_fRand(-30, 30);
-		double y = SA_fRand(-30, 30);
-		double xm = x, ym = y;
-		double tI = 100000;
-		double tF = 0.000001;
-		double a = 0.99;
+		double TEMP_INIT = 10;
+		double TEMP_FINAL = 0.001;
+		double N_CYCLE = 30;
+		double MAX_ITER = 20;
+
+		// THIS WORKS
+		/*double xy[2] = {2.1,1.1};
+		double xym[2] = {xy[0], xy[1]};
+		double a = 0.99;// Reduce Temp with this
 		double d = 1e-5;// (1.6*(pow(10, -23)));
-		double T = tI;
-		double minim = SA_func(x,y);
+		double T = TEMP_INIT;
+		double minim = SA_func_array(xy);
 		double z;
 		double counter = 0;
-
-		while (T > tF) {
+		while (T > TEMP_FINAL) {
 			int i = 1;
-			while (i <= 30) {
-				x = x + SA_fRand(-0.5, 0.5);
-				y = y + SA_fRand(-0.5, 0.5);
-				z = SA_func(x, y);
+			while (i <= MAX_ITER) {
+				xy[0] = xy[0] + SA_fRand(-0.5, 0.5);
+				xy[1] = xy[1] + SA_fRand(-0.5, 0.5);
+				z = SA_func_array(xy);
 				if (z < minim || (SA_accept(z, minim, T, d) > (SA_fRand(0, 1)))) {
 					minim = z;
-					xm = x;
-					ym = y;
+					xym[0] = xy[0];
+					xym[1] = xy[1];
 				}
 				i = i + 1;
 			}
 			counter = counter + 1;
 			T = T * a;
-			x = xm;
-			y = ym;
+			xy[0] = xym[0];
+			xy[1] = xym[1];
 		}
+		cout << "min: " << minim << " x: " << xy[0] << " y: " << xy[1] << endl;*/
 
-		cout << "min: " << minim << " x: " << xm << " y: " << ym << endl;
+
+		//double xy[2] = { 2.1,1.1 };
+		double xyzypr_manip[6] = { 0 };
+		double xym[6] = { xyzypr_manip[0], xyzypr_manip[1], xyzypr_manip[2] , xyzypr_manip[3] , xyzypr_manip[4] , xyzypr_manip[5] };
+		double a = 0.9;// Reduce Temp with this
+		double d = 1e-5;// (1.6*(pow(10, -23)));
+		double T = TEMP_INIT;
+		double minim = minimizationFunc(xyzypr_manip);
+		double z;
+		double counter = 0;
+		while (T > TEMP_FINAL) {
+			int i = 1;
+			while (i <= N_CYCLE) {
+				xyzypr_manip[0] = xyzypr_manip[0] + SA_fRand(-0.2, 0.2);
+				xyzypr_manip[1] = xyzypr_manip[1] + SA_fRand(-0.2, 0.2);
+				xyzypr_manip[2] = xyzypr_manip[2] + SA_fRand(-0.2, 0.2);
+				xyzypr_manip[3] = xyzypr_manip[3] + SA_fRand(-0.2, 0.2);
+				xyzypr_manip[4] = xyzypr_manip[4] + SA_fRand(-0.2, 0.2);
+				xyzypr_manip[5] = xyzypr_manip[5] + SA_fRand(-0.2, 0.2);
+
+				z = minimizationFunc(xyzypr_manip);
+				if (z < minim || (SA_accept(z, minim, T, d) > (SA_fRand(0, 1)))) {
+					minim = z;
+					xym[0] = xyzypr_manip[0];
+					xym[1] = xyzypr_manip[1];
+					xym[2] = xyzypr_manip[2];
+					xym[3] = xyzypr_manip[3];	
+					xym[4] = xyzypr_manip[4];
+					xym[5] = xyzypr_manip[5];
+				}
+				i = i + 1;
+			}
+			counter = counter + 1;
+			T = T * a;
+			xyzypr_manip[0] = xym[0];
+			xyzypr_manip[1] = xym[1];
+			xyzypr_manip[2] = xym[2];
+			xyzypr_manip[3] = xym[3];
+			xyzypr_manip[4] = xym[4];
+			xyzypr_manip[5] = xym[5];
+		}
+		cout << "Optimized Final NCC: " << minim << endl;
 
 		// SA End
-
 
 		// Convert Current Pose to its Coordinate System Frame
         CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
+		// For Downhill Simplex Method
+		//CoordFrame manip = CoordFrame::from_xyzAxis_angle(P[1] + 1);
+		
+		// For SA
+		CoordFrame manip = CoordFrame::from_xyzAxis_angle(xyzypr_manip);
 
-		CoordFrame manip = CoordFrame::from_xyzAxis_angle(P[1] + 1);
+
+
 		xcframe = xcframe * trial_.getVolumeMatrix(-1)->inverse() * manip * *trial_.getVolumeMatrix(-1);
         xcframe.to_xyzypr(xyzypr);
 
@@ -647,6 +693,11 @@ double Tracker::SA_fRand(double fMin, double fMax)
 double Tracker::SA_func(double x, double y)
 {
 	return (pow(x - 2, 2) + pow(y - 1, 2));
+}
+
+double Tracker::SA_func_array(double *xy)
+{
+	return (pow(xy[0] - 2, 2) + pow(xy[1] - 1, 2));
 }
 
 } // namespace XROMM
