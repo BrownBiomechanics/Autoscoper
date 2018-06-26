@@ -85,7 +85,7 @@ public:
 	void init();
     void load(const Trial& trial);
     Trial* trial() { return &trial_; }
-    void optimize(int frame, int dframe, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int cost_function_index);
+    void optimize(int frame, int dframe, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int inner_iter, double rot_limit, double trans_limit);
     double minimizationFunc(const double* values) const;
 	std::vector <double> trackFrame(unsigned int volumeID, double* xyzpr) const;
     std::vector<gpu::View*>& views() { return views_; }
@@ -104,11 +104,11 @@ public:
 
 private:
     void calculate_viewport(const CoordFrame& modelview, double* viewport) const;
-	double SA_accept(double z, double minim, double T, double d);
+	//double SA_accept(double z, double minim, double T, double d);
 	double SA_fRand(double fMin, double fMax);
 
 
-	int tracker_cost_function = 0;
+	int optimization_method = 0;
 
     Trial trial_;
 	std::vector <gpu::VolumeDescription*> volumeDescription_;

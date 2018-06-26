@@ -145,7 +145,7 @@ Tracker::Tracker()
 	  background_mask_(NULL)
 {
     g_markerless = this;
-	tracker_cost_function = 0; // initialize cost function
+	optimization_method = 0; // initialize cost function
 }
 
 Tracker::~Tracker()
@@ -235,10 +235,10 @@ void Tracker::load(const Trial& trial)
     }
 }
 
-void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int cost_function_index)
+void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int inner_iter, double rot_limit, double trans_limit)
 {
 
-	tracker_cost_function = cost_function_index;
+	optimization_method = opt_method;
 
     if (frame < 0 || frame >= trial_.num_frames) {
         cerr << "Tracker::optimize(): Invalid frame." << endl;
@@ -318,18 +318,18 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 		double init_manip[6] = { 0 };
 		CoordFrame manip = CoordFrame::from_xyzAxis_angle(init_manip);
 
-		if (tracker_cost_function == 0) // HAVE TO CHANGE THIS TO ANOTHER RADIO BUTTON. NOW, IMPLANT MEANS DOWNHILL SIMPLEX
+		if (optimization_method == 0) // HAVE TO CHANGE THIS TO ANOTHER RADIO BUTTON. NOW, IMPLANT MEANS DOWNHILL SIMPLEX
 		{
 			// My Try for Simulated Annealing
-			double TEMP_INIT = 1000;
-			double TEMP_FINAL = 0.00001;
-			double N_CYCLE = 40;
-			double MAX_ITER = 20;
-			double rot_lim = 4;
-			double trans_lim = 2;
+			double TEMP_INIT = 10;
+			double TEMP_FINAL = 0.01;
+			double N_CYCLE = inner_iter;
+			//double MAX_ITER = 20;
+			double rot_lim_opt = rot_limit;
+			double trans_lim_opt = trans_limit;
 			double xyzypr_manip[6] = { 0 };
 			double xym[6] = { xyzypr_manip[0], xyzypr_manip[1], xyzypr_manip[2] , xyzypr_manip[3] , xyzypr_manip[4] , xyzypr_manip[5] };
-			double a = 0.8;// Reduce Temp with this
+			double a = 0.9;// Reduce Temp with this
 			double d = 10;
 			double T = TEMP_INIT;
 			double best_cost = minimizationFunc(xyzypr_manip);
@@ -337,12 +337,12 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 			while (T > TEMP_FINAL) {
 				int i = 1;
 				while (i <= N_CYCLE) {
-					xyzypr_manip[0] = xyzypr_manip[0] + SA_fRand(-trans_lim, trans_lim);
-					xyzypr_manip[1] = xyzypr_manip[1] + SA_fRand(-trans_lim, trans_lim);
-					xyzypr_manip[2] = xyzypr_manip[2] + SA_fRand(-trans_lim, trans_lim);
-					xyzypr_manip[3] = xyzypr_manip[3] + SA_fRand(-rot_lim, rot_lim);
-					xyzypr_manip[4] = xyzypr_manip[4] + SA_fRand(-rot_lim, rot_lim);
-					xyzypr_manip[5] = xyzypr_manip[5] + SA_fRand(-rot_lim, rot_lim);
+					xyzypr_manip[0] = xyzypr_manip[0] + SA_fRand(-trans_lim_opt, trans_lim_opt);
+					xyzypr_manip[1] = xyzypr_manip[1] + SA_fRand(-trans_lim_opt, trans_lim_opt);
+					xyzypr_manip[2] = xyzypr_manip[2] + SA_fRand(-trans_lim_opt, trans_lim_opt);
+					xyzypr_manip[3] = xyzypr_manip[3] + SA_fRand(-rot_lim_opt, rot_lim_opt);
+					xyzypr_manip[4] = xyzypr_manip[4] + SA_fRand(-rot_lim_opt, rot_lim_opt);
+					xyzypr_manip[5] = xyzypr_manip[5] + SA_fRand(-rot_lim_opt, rot_lim_opt);
 
 					new_cost = minimizationFunc(xyzypr_manip);
 					if (new_cost < best_cost/* || (SA_accept(new_cost, best_cost, T, d) > (SA_fRand(0, 1)))*/) {
@@ -358,8 +358,9 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 					ITER += 1;
 				}
 				T = T * a;
-				rot_lim = rot_lim * a;
-				trans_lim = trans_lim * a;
+				//DEBUGGING: cout << rot_lim_opt << " " << trans_lim_opt << endl;
+				rot_lim_opt = rot_lim_opt * a;
+				trans_lim_opt = trans_lim_opt * a;
 				xyzypr_manip[0] = xym[0];
 				xyzypr_manip[1] = xym[1];
 				xyzypr_manip[2] = xym[2];
@@ -476,7 +477,7 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
 			save_debug_image(drr_mask_, render_width, render_height);
 			save_debug_image(background_mask_, render_width, render_height);
 #endif
-			if (tracker_cost_function)
+			if (optimization_method)
 			{
 				// Calculate the correlation for implant
 				// Calculate Hausdorff Distance for Implant Matching _ FUTURE

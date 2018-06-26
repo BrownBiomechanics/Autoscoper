@@ -55,7 +55,7 @@ class TrackingOptionsDialog : public QDialog{
 
 	private:
 		bool is_backup_on;
-		int cost_function_index = 0;
+		int opt_method = 0;
 
 	public:
 		explicit TrackingOptionsDialog(QWidget *parent = 0);
@@ -73,6 +73,11 @@ class TrackingOptionsDialog : public QDialog{
 		double nm_opt_alpha;
 		double nm_opt_beta;
 		double nm_opt_gamma;
+		// Read random search limits and iterations
+		unsigned int inner_iter;
+		double trans_limit;
+		double rot_limit;
+
 
 		int curFrame;
 		void frame_optimize();

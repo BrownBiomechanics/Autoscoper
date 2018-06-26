@@ -62,7 +62,7 @@ TrackingOptionsDialog::TrackingOptionsDialog(QWidget *parent) :
 	num_repeats = 1;
 
 	// Cost function index: Default is NCC
-	cost_function_index = 0;
+	opt_method = 0;
 
 	// Backup Save
 	is_backup_on = 1; // Always on
@@ -71,6 +71,12 @@ TrackingOptionsDialog::TrackingOptionsDialog(QWidget *parent) :
 	nm_opt_alpha = 1;
 	nm_opt_gamma = 2;
 	nm_opt_beta  = 0.5;
+
+	// Read random search limits and iterations
+	inner_iter = 40;
+	trans_limit = 2;
+	rot_limit = 4;
+
 
 	inActive = false;
 }
@@ -103,7 +109,13 @@ void TrackingOptionsDialog::frame_optimize()
 		nm_opt_gamma = diag->spinBox_gamma->value();
 		nm_opt_beta  = diag->spinBox_beta->value() / 10;
 
-		  mainwindow->getTracker()->optimize(frame, d_frame, num_repeats, nm_opt_alpha, nm_opt_gamma, nm_opt_beta, cost_function_index);
+		// Read random search limits and iterations
+		inner_iter = diag->spinBox_inner_iter->value();
+		rot_limit = diag->spinBox_rot_limit->value();
+		trans_limit = diag->spinBox_trans_limit->value();
+
+		// Optimization
+		  mainwindow->getTracker()->optimize(frame, d_frame, num_repeats, nm_opt_alpha, nm_opt_gamma, nm_opt_beta, opt_method, inner_iter, rot_limit, trans_limit);
 
           mainwindow->update_graph_min_max(mainwindow->getPosition_graph(), mainwindow->getTracker()->trial()->frame);
 
@@ -180,13 +192,13 @@ void TrackingOptionsDialog::on_pushButton_OK_clicked(bool checked){
 		to_frame = diag->spinBox_FrameEnd->value();
 
  		num_repeats = diag->spinBox_NumberRefinements->value();
-		int implant_cost_on = diag->radioButton_implant_cost->isChecked();
-		if (implant_cost_on)
+		int downhill_method = diag->radioButton_downhill_method->isChecked();
+		if (downhill_method)
 		{
-			cost_function_index = 1; // runs hdist_kernel
+			opt_method = 1; // runs downhill simplex
 		}
 		else {
-			cost_function_index = 0; // runs ncc_kernel
+			opt_method = 0; // runs random search method
 		}
 
 		bool reverse = diag->checkBox_Reverse->checkState() != Qt::Unchecked;
