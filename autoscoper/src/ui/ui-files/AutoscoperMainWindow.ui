@@ -447,12 +447,12 @@ Trial</string>
     <addaction name="actionImport_Tracking"/>
     <addaction name="actionExport_Tracking"/>
     <addaction name="separator"/>
-    <addaction name="actionQuit"/>
-    <addaction name="separator"/>
     <addaction name="actionSaveForBatch"/>
     <addaction name="actionLoad_xml_batch"/>
     <addaction name="separator"/>
     <addaction name="actionSave_Test_Sequence"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -488,10 +488,17 @@ Trial</string>
     <addaction name="actionLayoutCameraViews"/>
     <addaction name="actionShow_world_view"/>
    </widget>
+   <widget class="QMenu" name="menuAdvanced_Tool">
+    <property name="title">
+     <string>Extra</string>
+    </property>
+    <addaction name="actionExport_NCC_as_csv"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuTracking"/>
    <addaction name="menuView"/>
+   <addaction name="menuAdvanced_Tool"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionNew">
@@ -514,12 +521,12 @@ Trial</string>
   </action>
   <action name="actionSave">
    <property name="text">
-    <string>Save</string>
+    <string>Save Tracking</string>
    </property>
   </action>
   <action name="actionSave_as">
    <property name="text">
-    <string>Save as</string>
+    <string>Save Trial as</string>
    </property>
   </action>
   <action name="actionImport_Tracking">
@@ -641,6 +648,11 @@ Trial</string>
   <action name="actionSet_Background">
    <property name="text">
     <string>Set Background</string>
+   </property>
+  </action>
+  <action name="actionExport_NCC_as_csv">
+   <property name="text">
+    <string>Export NCC as .csv</string>
    </property>
   </action>
  </widget>

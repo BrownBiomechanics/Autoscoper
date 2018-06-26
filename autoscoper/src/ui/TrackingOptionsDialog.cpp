@@ -145,7 +145,7 @@ void TrackingOptionsDialog::trackCurrent() {
 
 	AutoscoperMainWindow *mainwindow = dynamic_cast <AutoscoperMainWindow *> (parent());
 
-	on_radioButton_CurrentFrame_clicked(true);
+	mainwindow->getTracker()->trial()->guess = 0;
 
 	curFrame = mainwindow->getCurrentFrame();// Read Current Frame
 

@@ -179,6 +179,7 @@ class AutoscoperMainWindow : public QMainWindow{
 		void save_trial_prompt();
 		void save_tracking_results(QString filename);
 
+		void save_ncc_results(QString filename);
 
 
 		void load_tracking_results(QString filename);
@@ -220,6 +221,10 @@ class AutoscoperMainWindow : public QMainWindow{
 		void on_actionLayoutCameraViews_triggered(bool checked);
 		void on_actionShow_world_view_triggered(bool checked);
 
+
+		// Extra
+		void on_actionExport_NCC_as_csv_triggered(bool checked);
+
 		//Toolbar
 		void on_toolButtonOpenTrial_clicked();
 		void on_toolButtonSaveTracking_clicked();
@@ -232,6 +237,8 @@ class AutoscoperMainWindow : public QMainWindow{
 		void on_toolButtonTrack_clicked();
 		void on_toolButtonTrackCurrent_clicked();
 		void on_toolButtonRetrack_clicked();
+
+
 		//Shortcuts	
 		void key_w_pressed();	
 		void key_e_pressed();	

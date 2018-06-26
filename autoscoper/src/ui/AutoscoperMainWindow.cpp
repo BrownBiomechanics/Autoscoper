@@ -1178,7 +1178,7 @@ void AutoscoperMainWindow::on_actionOpen_triggered(bool checked){
 }
 
 void AutoscoperMainWindow::on_actionSave_triggered(bool checked){
-	if (trial_filename.compare("") == 0) {
+	/*if (trial_filename.compare("") == 0) {
         on_actionSave_as_triggered(true);
     }
     else {
@@ -1189,7 +1189,11 @@ void AutoscoperMainWindow::on_actionSave_triggered(bool checked){
         catch (exception& e) {
             cerr << e.what() << endl;
         }
-    }
+    }*/
+	QString filename = get_filename(true, "*.tra");
+	if (filename.compare("") != 0) {
+		save_tracking_results(filename);
+	}
 }
 
 void AutoscoperMainWindow::on_actionSave_as_triggered(bool checked){
@@ -1549,7 +1553,7 @@ void AutoscoperMainWindow::on_actionPaste_triggered(bool checked){
 }
 
 void AutoscoperMainWindow::on_actionDelete_triggered(bool checked){
-	if (!timeline_widget->getSelectedNodes()->empty()) {
+	/*if (!timeline_widget->getSelectedNodes()->empty()) {
         push_state();
 
         for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
@@ -1565,7 +1569,15 @@ void AutoscoperMainWindow::on_actionDelete_triggered(bool checked){
         update_graph_min_max(timeline_widget->getPosition_graph());
 
 		redrawGL();
-    }
+    }*/
+	/*int curFrame = getCurrentFrame();
+
+	tracker->trial()->getXCurve(curFrame)->clear();
+	tracker->trial()->getYCurve(curFrame)->clear();
+	tracker->trial()->getZCurve(curFrame)->clear();
+	tracker->trial()->getYawCurve(curFrame)->clear();
+	tracker->trial()->getPitchCurve(curFrame)->clear();
+	tracker->trial()->getRollCurve(curFrame)->clear();*/
 }
 
 void AutoscoperMainWindow::on_actionSet_Background_triggered(bool checked)
@@ -1618,7 +1630,7 @@ void AutoscoperMainWindow::on_actionLock_triggered(bool checked){
         int time = (int)(*timeline_widget->getSelectedNodes())[i].first.first->time(
                    (*timeline_widget->getSelectedNodes())[i].first.second);
 
-        // Force the addition of keys for all curves in order to truely freeze
+        // Force the addition of keys for all curves in order to truly freeze
         // the frame
 
 		tracker->trial()->getXCurve(-1)->insert(time);
@@ -1685,7 +1697,7 @@ void AutoscoperMainWindow::on_actionSmooth_Tangents_triggered(bool checked){
 void AutoscoperMainWindow::on_actionLayoutCameraViews_triggered(bool triggered){
 	
 	bool ok;
-    int rows = QInputDialog::getInt(this, tr("Layput Camera Views"),
+    int rows = QInputDialog::getInt(this, tr("Layout Camera Views"),
                                           tr("Number of Rows"),1,1,10,1, &ok);
     if (ok)relayoutCameras(rows);
 }
@@ -1769,6 +1781,38 @@ void AutoscoperMainWindow::on_toolButtonRetrack_clicked(){
 	
 	tracking_dialog->retrack();
 }
+
+void AutoscoperMainWindow::on_actionExport_NCC_as_csv_triggered(bool checked) {
+	QString filename = get_filename(true, "*.ncc");
+	if (filename.compare("") != 0) {
+		save_ncc_results(filename);
+	}
+}
+
+void AutoscoperMainWindow::save_ncc_results(QString filename) {
+
+	std::ofstream file(filename.toStdString(), ios::out);
+
+	file.precision(6);
+	file.setf(ios::fixed, ios::floatfield);
+	unsigned int volume = tracker->trial()->current_volume;
+	std::vector<double>  ncc_values(2,999);
+	for (int frame = 0; frame < tracker->trial()->num_frames; ++frame) {
+		double pose[6];
+		pose[0] = (*tracker->trial()->getXCurve(volume))(frame);
+		pose[1] = (*tracker->trial()->getYCurve(volume))(frame);
+		pose[2] = (*tracker->trial()->getZCurve(volume))(frame);
+		pose[3] = (*tracker->trial()->getYawCurve(volume))(frame);
+		pose[4] = (*tracker->trial()->getPitchCurve(volume))(frame);
+		pose[5] = (*tracker->trial()->getRollCurve(volume))(frame);
+		setFrame(frame);
+		ncc_values = tracker->trackFrame(volume, pose);
+
+		file << ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0)* ncc_values.at(1) << endl;
+	}
+	file.close();
+}
+
 
 void AutoscoperMainWindow::key_w_pressed(){
 	ui->toolButtonTranslate->click();

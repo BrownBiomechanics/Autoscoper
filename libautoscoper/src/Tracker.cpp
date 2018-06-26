@@ -250,7 +250,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
     MAT P;              // Matrix of points to initialize the routine.
     double Y[MP];       // The values of the minimization function at the
                         // initial points.
-    int ITER;
+    int ITER = 0;
 
     trial_.frame = frame;
 
@@ -303,33 +303,8 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
     }
 
     int totalIter = 0;
+
     for (int j = 0; j < repeats; j++) {
-
-        // Generate the 7 vertices that form the initial simplex. Because
-        // the independent variables of the function we are optimizing over
-        // are relative to the initial guess, the same vertices can be used
-        // to form the initial simplex for every frame.
-        for (int i = 0; i < 7; ++i) {
-            P[i+1][1] = (i == 1)? trial_.offsets[0]: 0.0;
-            P[i+1][2] = (i == 2)? trial_.offsets[1]: 0.0;
-            P[i+1][3] = (i == 3)? trial_.offsets[2]: 0.0;
-            P[i+1][4] = (i == 4)? trial_.offsets[3]: 0.0;
-            P[i+1][5] = (i == 5)? trial_.offsets[4]: 0.0;
-            P[i+1][6] = (i == 6)? trial_.offsets[5]: 0.0;
-        }
-
-        // Determine the function values at the vertices of the initial
-        // simplex
-        for (int i = 0; i < 7; ++i) {
-            Y[i+1] = FUNC(P[i+1]);
-        }
-
-        // Optimize the frame
-        ITER = 0;
-
-		// Downhill Simplex Optimization
-        // AMOEBA(P, Y, NDIM, FTOL, &ITER, nm_opt_alpha, nm_opt_gamma, nm_opt_beta);
-
 
 		// Get Current Pose
 		double xyzypr[6] = { (*trial_.getXCurve(-1))(trial_.frame),
@@ -340,68 +315,98 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 			(*trial_.getRollCurve(-1))(trial_.frame) };
 
 
+		double init_manip[6] = { 0 };
+		CoordFrame manip = CoordFrame::from_xyzAxis_angle(init_manip);
 
-		// My Try for Simulated Annealing
-		double TEMP_INIT = 10;
-		double TEMP_FINAL = 0.0001;
-		double N_CYCLE = 30;
-		double MAX_ITER = 20;
-		double rot_lim = 1;
-		double trans_lim = .5;
-		double xyzypr_manip[6] = { 0 };
-		double xym[6] = { xyzypr_manip[0], xyzypr_manip[1], xyzypr_manip[2] , xyzypr_manip[3] , xyzypr_manip[4] , xyzypr_manip[5] };
-		double a = 0.8;// Reduce Temp with this
-		double d = 1e-4;// (1.6*(pow(10, -23)));
-		double T = TEMP_INIT;
-		double minim = minimizationFunc(xyzypr_manip);
-		double z;
-		double counter = 0;
-		while (T > TEMP_FINAL) {
-			int i = 1;
-			while (i <= N_CYCLE) {
-				xyzypr_manip[0] = xyzypr_manip[0] + SA_fRand(-trans_lim, trans_lim);
-				xyzypr_manip[1] = xyzypr_manip[1] + SA_fRand(-trans_lim, trans_lim);
-				xyzypr_manip[2] = xyzypr_manip[2] + SA_fRand(-trans_lim, trans_lim);
-				xyzypr_manip[3] = xyzypr_manip[3] + SA_fRand(-rot_lim, rot_lim);
-				xyzypr_manip[4] = xyzypr_manip[4] + SA_fRand(-rot_lim, rot_lim);
-				xyzypr_manip[5] = xyzypr_manip[5] + SA_fRand(-rot_lim, rot_lim);
+		if (tracker_cost_function == 0) // HAVE TO CHANGE THIS TO ANOTHER RADIO BUTTON. NOW, IMPLANT MEANS DOWNHILL SIMPLEX
+		{
+			// My Try for Simulated Annealing
+			double TEMP_INIT = 1000;
+			double TEMP_FINAL = 0.00001;
+			double N_CYCLE = 40;
+			double MAX_ITER = 20;
+			double rot_lim = 4;
+			double trans_lim = 2;
+			double xyzypr_manip[6] = { 0 };
+			double xym[6] = { xyzypr_manip[0], xyzypr_manip[1], xyzypr_manip[2] , xyzypr_manip[3] , xyzypr_manip[4] , xyzypr_manip[5] };
+			double a = 0.8;// Reduce Temp with this
+			double d = 10;
+			double T = TEMP_INIT;
+			double best_cost = minimizationFunc(xyzypr_manip);
+			double new_cost = 1;
+			while (T > TEMP_FINAL) {
+				int i = 1;
+				while (i <= N_CYCLE) {
+					xyzypr_manip[0] = xyzypr_manip[0] + SA_fRand(-trans_lim, trans_lim);
+					xyzypr_manip[1] = xyzypr_manip[1] + SA_fRand(-trans_lim, trans_lim);
+					xyzypr_manip[2] = xyzypr_manip[2] + SA_fRand(-trans_lim, trans_lim);
+					xyzypr_manip[3] = xyzypr_manip[3] + SA_fRand(-rot_lim, rot_lim);
+					xyzypr_manip[4] = xyzypr_manip[4] + SA_fRand(-rot_lim, rot_lim);
+					xyzypr_manip[5] = xyzypr_manip[5] + SA_fRand(-rot_lim, rot_lim);
 
-				z = minimizationFunc(xyzypr_manip);
-				if (z < minim || (SA_accept(z, minim, T, d) > (SA_fRand(0, 1)))) {
-					minim = z;
-					xym[0] = xyzypr_manip[0];
-					xym[1] = xyzypr_manip[1];
-					xym[2] = xyzypr_manip[2];
-					xym[3] = xyzypr_manip[3];	
-					xym[4] = xyzypr_manip[4];
-					xym[5] = xyzypr_manip[5];
+					new_cost = minimizationFunc(xyzypr_manip);
+					if (new_cost < best_cost/* || (SA_accept(new_cost, best_cost, T, d) > (SA_fRand(0, 1)))*/) {
+						best_cost = new_cost;
+						xym[0] = xyzypr_manip[0];
+						xym[1] = xyzypr_manip[1];
+						xym[2] = xyzypr_manip[2];
+						xym[3] = xyzypr_manip[3];
+						xym[4] = xyzypr_manip[4];
+						xym[5] = xyzypr_manip[5];
+					}
+					i = i + 1;
+					ITER += 1;
 				}
-				i = i + 1;
-				counter = counter + 1;
+				T = T * a;
+				rot_lim = rot_lim * a;
+				trans_lim = trans_lim * a;
+				xyzypr_manip[0] = xym[0];
+				xyzypr_manip[1] = xym[1];
+				xyzypr_manip[2] = xym[2];
+				xyzypr_manip[3] = xym[3];
+				xyzypr_manip[4] = xym[4];
+				xyzypr_manip[5] = xym[5];
 			}
-			T = T * a;
-			xyzypr_manip[0] = xym[0];
-			xyzypr_manip[1] = xym[1];
-			xyzypr_manip[2] = xym[2];
-			xyzypr_manip[3] = xym[3];
-			xyzypr_manip[4] = xym[4];
-			xyzypr_manip[5] = xym[5];
+			cout << "Optimized Final NCC: " << best_cost << endl;
+
+			manip = CoordFrame::from_xyzAxis_angle(xyzypr_manip);
+			// SA End
 		}
-		totalIter = counter;
-		cout << "Optimized Final NCC: " << minim << endl;
+		else {
 
-		// SA End
+			// DOWNHILL SIMPLEX
+			// Generate the 7 vertices that form the initial simplex. Because
+			// the independent variables of the function we are optimizing over
+			// are relative to the initial guess, the same vertices can be used
+			// to form the initial simplex for every frame.
+			for (int i = 0; i < 7; ++i) {
+				P[i + 1][1] = (i == 1) ? trial_.offsets[0] : 0.0;
+				P[i + 1][2] = (i == 2) ? trial_.offsets[1] : 0.0;
+				P[i + 1][3] = (i == 3) ? trial_.offsets[2] : 0.0;
+				P[i + 1][4] = (i == 4) ? trial_.offsets[3] : 0.0;
+				P[i + 1][5] = (i == 5) ? trial_.offsets[4] : 0.0;
+				P[i + 1][6] = (i == 6) ? trial_.offsets[5] : 0.0;
+			}
 
+			// Determine the function values at the vertices of the initial
+			// simplex
+			for (int i = 0; i < 7; ++i) {
+				Y[i + 1] = FUNC(P[i + 1]);
+			}
+
+			// Downhill Simplex Optimization
+			// Optimize the frame
+			AMOEBA(P, Y, NDIM, FTOL, &ITER, nm_opt_alpha, nm_opt_gamma, nm_opt_beta);
+
+			cout << "Optimized Final NCC: " << minimizationFunc((P[1] + 1)) << endl;
+
+			// For Downhill Simplex Method
+			manip = CoordFrame::from_xyzAxis_angle(P[1] + 1);
+		}
+
+		// Move the pose to the optimized pose
 		// Convert Current Pose to its Coordinate System Frame
         CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
-
-		// For Downhill Simplex Method
-		//CoordFrame manip = CoordFrame::from_xyzAxis_angle(P[1] + 1);
-		
-		// For SA
-		CoordFrame manip = CoordFrame::from_xyzAxis_angle(xyzypr_manip);
-
-
 
 		xcframe = xcframe * trial_.getVolumeMatrix(-1)->inverse() * manip * *trial_.getVolumeMatrix(-1);
         xcframe.to_xyzypr(xyzypr);
@@ -416,8 +421,8 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 		trial_.getPitchCurve(-1)->insert(trial_.frame, xyzypr[4]);
 		trial_.getRollCurve(-1)->insert(trial_.frame, xyzypr[5]);
 
-        totalIter += ITER;
     }
+	totalIter += ITER;
 
     cerr << "Tracker::optimize(): Frame " << trial_.frame
          << " done in " << totalIter << " total iterations" << endl;
@@ -475,7 +480,9 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
 			{
 				// Calculate the correlation for implant
 				// Calculate Hausdorff Distance for Implant Matching _ FUTURE
-				correlations.push_back(1.0 - gpu::hdist(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
+//				correlations.push_back(1.0 - gpu::hdist(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height)); FOR OPT CHaNGE BUTTON
+				correlations.push_back(1.0 - gpu::ncc(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
+
 			}
 			else {
 				// Calculate the correlation for ncc
@@ -649,11 +656,12 @@ void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) c
 }
 
 
-double Tracker::SA_accept(double z, double minim, double T, double d)
+/*double Tracker::SA_accept(double z, double minim, double T, double d)
 {
-	double p = -(z - minim) / (d * T);
-	return pow(exp(1), p);
-}
+	double p = exp((z - minim) / T);
+	cout << p << endl;
+	return p;
+}*/
 
 double Tracker::SA_fRand(double fMin, double fMax)
 {
