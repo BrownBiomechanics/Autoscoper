@@ -127,6 +127,8 @@ void TrackingOptionsDialog::frame_optimize()
 		 int progress = value *100;
 		 diag->progressBar->setValue(progress);
 
+		 mainwindow->backup_tracking(is_backup_on); // save backup before finishing optimization
+
          frame += d_frame;
 
 		 QApplication::processEvents();
@@ -135,9 +137,6 @@ void TrackingOptionsDialog::frame_optimize()
 	frame_optimizing = false;
 	QApplication::processEvents();
 	diag->progressBar->setValue(0);
-
-	mainwindow->backup_tracking(is_backup_on); // save backup before finishing optimization
-
 	this->close();
 }
 

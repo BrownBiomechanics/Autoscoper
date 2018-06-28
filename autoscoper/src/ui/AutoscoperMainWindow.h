@@ -180,7 +180,9 @@ class AutoscoperMainWindow : public QMainWindow{
 		void save_tracking_results(QString filename);
 
 		void save_ncc_results(QString filename);
+		void save_nearby_nccs(QString filename);
 
+		double rand_gen_main(double fMin, double fMax);
 
 		void load_tracking_results(QString filename);
 		protected:
@@ -224,6 +226,7 @@ class AutoscoperMainWindow : public QMainWindow{
 
 		// Extra
 		void on_actionExport_NCC_as_csv_triggered(bool checked);
+		void on_actionExport_all_NCCs_near_this_pose_triggered(bool checked);
 
 		//Toolbar
 		void on_toolButtonOpenTrial_clicked();

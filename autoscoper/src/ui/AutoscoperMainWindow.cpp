@@ -1789,6 +1789,7 @@ void AutoscoperMainWindow::on_actionExport_NCC_as_csv_triggered(bool checked) {
 	}
 }
 
+
 void AutoscoperMainWindow::save_ncc_results(QString filename) {
 
 	std::ofstream file(filename.toStdString(), ios::out);
@@ -1812,6 +1813,67 @@ void AutoscoperMainWindow::save_ncc_results(QString filename) {
 	}
 	file.close();
 }
+
+
+
+void AutoscoperMainWindow::on_actionExport_all_NCCs_near_this_pose_triggered(bool checked) {
+	QString filename = get_filename(true, "*.ncc");
+	if (filename.compare("") != 0) {
+		save_nearby_nccs(filename);
+	}
+}
+
+
+void AutoscoperMainWindow::save_nearby_nccs(QString filename) {
+	std::ofstream file(filename.toStdString(), ios::out);
+
+	file.precision(6);
+	file.setf(ios::fixed, ios::floatfield);
+	unsigned int volume = tracker->trial()->current_volume;
+	std::vector<double>  ncc_values(2, 999);
+
+
+	double pose[6];
+	pose[0] = (*tracker->trial()->getXCurve(volume))(curFrame);
+	pose[1] = (*tracker->trial()->getYCurve(volume))(curFrame);
+	pose[2] = (*tracker->trial()->getZCurve(volume))(curFrame);
+	pose[3] = (*tracker->trial()->getYawCurve(volume))(curFrame);
+	pose[4] = (*tracker->trial()->getPitchCurve(volume))(curFrame);
+	pose[5] = (*tracker->trial()->getRollCurve(volume))(curFrame);
+
+	int iter_max = 5000;
+	int t_lim = 2;
+	int r_lim = 2;
+	double next_pose[6];
+	for (int iter = 0; iter < iter_max; iter++)
+	{
+		next_pose[0] = pose[0] + rand_gen_main(-t_lim, t_lim);
+		next_pose[1] = pose[1] + rand_gen_main(-t_lim, t_lim);
+		next_pose[2] = pose[2] + rand_gen_main(-t_lim, t_lim);
+		next_pose[3] = pose[3] + rand_gen_main(-r_lim, r_lim);
+		next_pose[4] = pose[4] + rand_gen_main(-r_lim, r_lim);
+		next_pose[5] = pose[5] + rand_gen_main(-r_lim, r_lim);
+		ncc_values = tracker->trackFrame(volume, next_pose);
+
+		file << next_pose[0] << "," << next_pose[1] << "," << next_pose[2] << "," << next_pose[3] << "," << next_pose[4] << "," << next_pose[5] << ","
+		<< ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0)* ncc_values.at(1) << endl;
+	}
+
+	file.close();
+
+	cout << "All NCCs were saved nearby this pose..." << endl;
+}
+
+
+double AutoscoperMainWindow::rand_gen_main(double fMin, double fMax)
+{
+	double f = (double)rand() / RAND_MAX;
+	return fMin + f * (fMax - fMin);
+}
+
+
+
+
 
 
 void AutoscoperMainWindow::key_w_pressed(){

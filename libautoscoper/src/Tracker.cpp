@@ -360,7 +360,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 				T = T * a;
 				//DEBUGGING: cout << rot_lim_opt << " " << trans_lim_opt << endl;
 				rot_lim_opt = rot_lim_opt * a;
-				trans_lim_opt = trans_lim_opt * a;
+				trans_lim_opt = trans_lim_opt * a * 1.1; // Translation shrinks slower
 				xyzypr_manip[0] = xym[0];
 				xyzypr_manip[1] = xym[1];
 				xyzypr_manip[2] = xym[2];
@@ -521,7 +521,7 @@ double Tracker::minimizationFunc(const double* values) const
 	//	printf("\tCam %d: %4.5f", i, correlations[i]);
 	}
 	//printf("\tFinal NCC: %4.5f\n", correlation);
-
+	if (correlation < 0) { correlation = 9999; } // In case we have a really bad filters and correlation ends up negative... This should not happen...
 	return correlation;
 }
 

@@ -493,6 +493,7 @@ Trial</string>
      <string>Extra</string>
     </property>
     <addaction name="actionExport_NCC_as_csv"/>
+    <addaction name="actionExport_all_NCCs_near_this_pose"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -652,7 +653,12 @@ Trial</string>
   </action>
   <action name="actionExport_NCC_as_csv">
    <property name="text">
-    <string>Export NCC as .csv</string>
+    <string>Export NCC values</string>
+   </property>
+  </action>
+  <action name="actionExport_all_NCCs_near_this_pose">
+   <property name="text">
+    <string>Export all NCCs near this pose</string>
    </property>
   </action>
  </widget>
