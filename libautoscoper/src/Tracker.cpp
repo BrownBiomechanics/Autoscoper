@@ -146,6 +146,7 @@ Tracker::Tracker()
 {
     g_markerless = this;
 	optimization_method = 0; // initialize cost function
+	cf_model_select = 0;
 }
 
 Tracker::~Tracker()
@@ -235,10 +236,11 @@ void Tracker::load(const Trial& trial)
     }
 }
 
-void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int inner_iter, double rot_limit, double trans_limit)
+void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int inner_iter, double rot_limit, double trans_limit, int cf_model)
 {
 
 	optimization_method = opt_method;
+	cf_model_select = cf_model;
 
     if (frame < 0 || frame >= trial_.num_frames) {
         cerr << "Tracker::optimize(): Invalid frame." << endl;
@@ -477,15 +479,14 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
 			save_debug_image(drr_mask_, render_width, render_height);
 			save_debug_image(background_mask_, render_width, render_height);
 #endif
-			if (optimization_method)
+			if (cf_model_select) // If 1, we do Implant
 			{
 				// Calculate the correlation for implant
 				// Calculate Hausdorff Distance for Implant Matching _ FUTURE
-//				correlations.push_back(1.0 - gpu::hdist(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height)); FOR OPT CHaNGE BUTTON
-				correlations.push_back(1.0 - gpu::ncc(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
+				correlations.push_back(1.0 - gpu::hdist(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
 
 			}
-			else {
+			else { // If 0, we do bone model
 				// Calculate the correlation for ncc
 				correlations.push_back(1.0 - gpu::ncc(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
 			}

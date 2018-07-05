@@ -206,13 +206,14 @@ void cuda_hdist_kernel(float* f, float meanF, float* g, float meanG, float* mask
 {
 	// JointTrack_Biplane
 	unsigned int i = blockDim.x*blockIdx.x + threadIdx.x;
-	if (i < n && mask[i] > 0.5f && g[i] > 0.8f ) {
+	if (i < n && mask[i] > 0.5f && g[i] > 0.5f) {
 		//DEBUGGING: printf("\nrad_i is:%f    drr_i is:%f", f[i], g[i]);
 		// For INTENSITY MATCHING
-		//if (f[i] > 0.2) { f[i] = 255; } // CHECK THIS and UNCOMMENT
-		//if (g[i] > 0.2) { g[i] = 255; } // CHECK THIS and UNCOMMENT
-
-		nums[i] = f[i] * g[i];
+		//if (f[i] > 0.2) { f[i] = 1.0f; } // CHECK THIS and UNCOMMENT
+		//if (g[i] > 0.2) { g[i] = 1.0f; } // CHECK THIS and UNCOMMENT
+		//f[i] = 1.0f;
+		//g[i] = 1.0f;
+		nums[i] = f[i]*g[i];
 		den1s[i] = g[i];
 
 	}

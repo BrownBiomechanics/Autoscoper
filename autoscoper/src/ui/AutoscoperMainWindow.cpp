@@ -1842,8 +1842,8 @@ void AutoscoperMainWindow::save_nearby_nccs(QString filename) {
 	pose[5] = (*tracker->trial()->getRollCurve(volume))(curFrame);
 
 	int iter_max = 5000;
-	int t_lim = 2;
-	int r_lim = 2;
+	int t_lim = 3;
+	int r_lim = 3;
 	double next_pose[6];
 	for (int iter = 0; iter < iter_max; iter++)
 	{

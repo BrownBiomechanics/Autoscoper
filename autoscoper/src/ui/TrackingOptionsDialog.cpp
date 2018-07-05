@@ -61,7 +61,7 @@ TrackingOptionsDialog::TrackingOptionsDialog(QWidget *parent) :
 	d_frame = 1;
 	num_repeats = 1;
 
-	// Cost function index: Default is NCC
+	// Opt Method: Default is Random Search
 	opt_method = 0;
 
 	// Backup Save
@@ -77,6 +77,8 @@ TrackingOptionsDialog::TrackingOptionsDialog(QWidget *parent) :
 	trans_limit = 2;
 	rot_limit = 4;
 
+	// Cost Function: Default is Bone Models
+	cf_model = 0; // 0 is Bone Model ------ 1 is Implant Model
 
 	inActive = false;
 }
@@ -114,8 +116,16 @@ void TrackingOptionsDialog::frame_optimize()
 		rot_limit = diag->spinBox_rot_limit->value();
 		trans_limit = diag->spinBox_trans_limit->value();
 
+		// Set optimization parameters (SEND THEM TO TRACKER CLASS)
+		/*
+		cf_model = 
+		
+		
+		*/
+
+
 		// Optimization
-		  mainwindow->getTracker()->optimize(frame, d_frame, num_repeats, nm_opt_alpha, nm_opt_gamma, nm_opt_beta, opt_method, inner_iter, rot_limit, trans_limit);
+		  mainwindow->getTracker()->optimize(frame, d_frame, num_repeats, nm_opt_alpha, nm_opt_gamma, nm_opt_beta, opt_method, inner_iter, rot_limit, trans_limit, cf_model);
 
           mainwindow->update_graph_min_max(mainwindow->getPosition_graph(), mainwindow->getTracker()->trial()->frame);
 
@@ -191,6 +201,8 @@ void TrackingOptionsDialog::on_pushButton_OK_clicked(bool checked){
 		to_frame = diag->spinBox_FrameEnd->value();
 
  		num_repeats = diag->spinBox_NumberRefinements->value();
+
+		// Read Opt Method
 		int downhill_method = diag->radioButton_downhill_method->isChecked();
 		if (downhill_method)
 		{
@@ -199,6 +211,17 @@ void TrackingOptionsDialog::on_pushButton_OK_clicked(bool checked){
 		else {
 			opt_method = 0; // runs random search method
 		}
+
+		// Read Cost Function
+		int cf_model_int = diag->radioButton_bone_ncc_cf->isChecked();
+		if (cf_model_int)
+		{
+			cf_model = 0; // runs bone
+		}
+		else {
+			cf_model = 1; // runs implant
+		}
+
 
 		bool reverse = diag->checkBox_Reverse->checkState() != Qt::Unchecked;
 
