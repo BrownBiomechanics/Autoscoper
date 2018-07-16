@@ -59,10 +59,10 @@ TrackingOptionsDialog::TrackingOptionsDialog(QWidget *parent) :
     to_frame = 0;
 	curFrame = 0;
 	d_frame = 1;
-	num_repeats = 1;
+	num_repeats = 10;
 
-	// Opt Method: Default is Random Search
-	opt_method = 0;
+	// Opt Method: Default is Downhill Simplex
+	opt_method = 1;
 
 	// Backup Save
 	is_backup_on = 1; // Always on

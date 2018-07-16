@@ -60,6 +60,31 @@
 #endif
 #include "Trial.hpp"
 
+// FOR PSO:
+/*
+Sources:
+Kennedy, J. and Eberhart, R. C. Particle swarm optimization.
+Proc. IEEE int'l conf. on neural networks Vol. IV, pp. 1942-1948.
+IEEE service center, Piscataway, NJ, 1995.
+PSO Tutorial found at: http://www.swarmintelligence.org/tutorials.php
+*/
+#include <iostream>
+#include <iomanip>
+#include <cctype>
+#include <ctime>
+#include <cstdlib>
+#include <cmath>
+#include "cParticle.h"
+const int TARGET = 0;
+//const int MAX_INPUTS = 6;           // Number of variables to be optimized
+const int MAX_PARTICLES = 60;
+const float V_MAX = .5;           //Maximum velocity change allowed.
+const int MAX_EPOCHS = 500;
+//The particles will be initialized with data randomly chosen within the range
+//of these starting min and max values: 
+const int START_RANGE_MIN = -2;
+const int START_RANGE_MAX = 2;
+// End: ADDED FOR PSO
 
 namespace xromm
 {
@@ -104,9 +129,19 @@ public:
 
 private:
     void calculate_viewport(const CoordFrame& modelview, double* viewport) const;
-	//double SA_accept(double z, double minim, double T, double d);
+	double SA_accept(double e, double ep, double T,double d);
 	double SA_fRand(double fMin, double fMax);
 
+	// FOR PSO
+	//void psoAlgorithm();
+	void initialize();
+	void getVelocity(int gBestIndex);
+	void updateParticles(int gBestIndex);
+	double testProblem(int index);
+	float gRand();
+	double getRandomNumber(int low, int high);
+	int minimum();
+	//
 
 	int optimization_method = 0;
 	int cf_model_select = 0;

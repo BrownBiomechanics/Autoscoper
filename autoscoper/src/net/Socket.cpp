@@ -224,7 +224,7 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 
 void Socket::createNewConnection()
 {
-	std::cerr << "New client connected" << std::endl;
+	//std::cerr << "New client connected" << std::endl;
 	QTcpSocket *clientConnection = tcpServer->nextPendingConnection();
 	connect(clientConnection, &QAbstractSocket::disconnected, this, &Socket::deleteConnection);
 	connect(clientConnection, &QIODevice::readyRead, this, &Socket::reading);
@@ -234,7 +234,7 @@ void Socket::createNewConnection()
 
 void Socket::deleteConnection()
 {
-	std::cerr << "client disconnected" << std::endl;
+	//std::cerr << "client disconnected" << std::endl;
 	QTcpSocket * obj = dynamic_cast<QTcpSocket *>(sender());
 	if (obj)
 	{

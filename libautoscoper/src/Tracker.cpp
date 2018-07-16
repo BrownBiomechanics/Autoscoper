@@ -72,6 +72,9 @@
 #include <cuda_runtime_api.h>
 #include "gpu/opencl/Mult.hpp"
 
+
+
+
 using namespace std;
 
 static bool firstRun = true;
@@ -88,6 +91,9 @@ static xromm::Tracker* g_markerless = NULL;
 // Bardiya: I commented this out to play with the implant cost function
 double FUNC(double* P) { return g_markerless->minimizationFunc(P+1); }
 
+
+// For Particle Swarm Optimization
+cParticle particles[MAX_PARTICLES];
 
 namespace xromm {
 
@@ -248,10 +254,11 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
     }
 
     int NDIM = 6;       // Number of dimensions to optimize over.
-    double FTOL = 1e-6; // Tolerance for the optimization.
+    double FTOL = 1e-5; // Tolerance for the optimization.
     MAT P;              // Matrix of points to initialize the routine.
     double Y[MP];       // The values of the minimization function at the
                         // initial points.
+
     int ITER = 0;
 
     trial_.frame = frame;
@@ -316,27 +323,29 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 			(*trial_.getPitchCurve(-1))(trial_.frame),
 			(*trial_.getRollCurve(-1))(trial_.frame) };
 
-
+		// Init Manip for saving final optimum
 		double init_manip[6] = { 0 };
 		CoordFrame manip = CoordFrame::from_xyzAxis_angle(init_manip);
 
 		if (optimization_method == 0) // HAVE TO CHANGE THIS TO ANOTHER RADIO BUTTON. NOW, IMPLANT MEANS DOWNHILL SIMPLEX
 		{
+			/*
 			// My Try for Simulated Annealing
 			double TEMP_INIT = 10;
-			double TEMP_FINAL = 0.01;
+			double TEMP_FINAL = 0.0001;
 			double N_CYCLE = inner_iter;
 			//double MAX_ITER = 20;
+			double xyzypr_manip[6] = { 0 };
 			double rot_lim_opt = rot_limit;
 			double trans_lim_opt = trans_limit;
-			double xyzypr_manip[6] = { 0 };
 			double xym[6] = { xyzypr_manip[0], xyzypr_manip[1], xyzypr_manip[2] , xyzypr_manip[3] , xyzypr_manip[4] , xyzypr_manip[5] };
-			double a = 0.9;// Reduce Temp with this
-			double d = 10;
-			double T = TEMP_INIT;
+			double a = .9;// Reduce Temp with this
+			double d = 10000;
+			//double T = TEMP_INIT;
 			double best_cost = minimizationFunc(xyzypr_manip);
-			double new_cost = 1;
-			while (T > TEMP_FINAL) {
+			double new_cost = 99999;
+			//while (T > TEMP_FINAL)
+			for (double T = TEMP_INIT; T>TEMP_FINAL; T *= a) {
 				int i = 1;
 				while (i <= N_CYCLE) {
 					xyzypr_manip[0] = xyzypr_manip[0] + SA_fRand(-trans_lim_opt, trans_lim_opt);
@@ -347,7 +356,8 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 					xyzypr_manip[5] = xyzypr_manip[5] + SA_fRand(-rot_lim_opt, rot_lim_opt);
 
 					new_cost = minimizationFunc(xyzypr_manip);
-					if (new_cost < best_cost/* || (SA_accept(new_cost, best_cost, T, d) > (SA_fRand(0, 1)))*/) {
+					//|| SA_accept(best_cost, new_cost, T, d) > SA_fRand(0, 1)
+					if (new_cost <= best_cost ) {
 						best_cost = new_cost;
 						xym[0] = xyzypr_manip[0];
 						xym[1] = xyzypr_manip[1];
@@ -361,19 +371,91 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 				}
 				T = T * a;
 				//DEBUGGING: cout << rot_lim_opt << " " << trans_lim_opt << endl;
-				rot_lim_opt = rot_lim_opt * a;
-				trans_lim_opt = trans_lim_opt * a * 1.1; // Translation shrinks slower
+				rot_lim_opt = rot_lim_opt;
+				trans_lim_opt = trans_lim_opt; // Translation shrinks slower
 				xyzypr_manip[0] = xym[0];
 				xyzypr_manip[1] = xym[1];
 				xyzypr_manip[2] = xym[2];
 				xyzypr_manip[3] = xym[3];
 				xyzypr_manip[4] = xym[4];
 				xyzypr_manip[5] = xym[5];
-			}
-			cout << "Optimized Final NCC: " << best_cost << endl;
+			}*/
+			// PSO Algorithm
+			double xyzypr_manip[6] = { 0 };
+			double gBest = 999;
+			int gBestTest = 0;
+			bool done = false;
+
+			initialize();
+
+			do
+			{
+				/* Two conditions can end this loop:
+				if the maximum number of epochs allowed has been reached, or,
+				if the Target value has been found.
+				*/
+				if (ITER < MAX_EPOCHS) {
+
+					for (int i = 0; i <= MAX_PARTICLES - 1; i++)
+					{
+						if (testProblem(i) == TARGET)
+						{
+							done = true;
+						}
+					} // i
+
+					gBestTest = minimum();
+
+					//cout << testProblem(gBestTest) << endl;
+
+					//If any particle's pBest value is better than the gBest value,
+					//make it the new gBest Value.
+					if (abs(TARGET - testProblem(gBestTest)) < abs(TARGET - testProblem(gBest)))
+					{
+						gBest = gBestTest;
+					}
+
+					getVelocity(gBest);
+
+					updateParticles(gBest);
+
+					ITER += 1;
+
+				}
+				else {
+					done = true;
+				}
+
+			} while (!done);
+
+			cout << ITER << " epochs completed." << endl;
+
+			cout << "Best Case:" << endl;
+			for (int j = 0; j <= MAX_INPUTS - 1; j++)
+			{
+				if (j < MAX_INPUTS - 1) {
+					cout << particles[gBestTest].getData(j) << " , ";
+				}
+				else {
+					cout << particles[gBestTest].getData(j) << " = ";
+				}
+			} // j
+
+			cout << testProblem(gBestTest) << endl;
+
+			xyzypr_manip[0] = particles[gBestTest].getData(0);
+			xyzypr_manip[1] = particles[gBestTest].getData(1);
+			xyzypr_manip[2] = particles[gBestTest].getData(2);
+			xyzypr_manip[3] = particles[gBestTest].getData(3);
+			xyzypr_manip[4] = particles[gBestTest].getData(4);
+			xyzypr_manip[5] = particles[gBestTest].getData(5);
+			//
+
+			cout << "Optimized Final NCC: " << testProblem(gBestTest) << endl;
 
 			manip = CoordFrame::from_xyzAxis_angle(xyzypr_manip);
 			// SA End
+
 		}
 		else {
 
@@ -658,18 +740,197 @@ void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) c
 }
 
 
-/*double Tracker::SA_accept(double z, double minim, double T, double d)
+double Tracker::SA_accept(double e, double ep, double T, double d)
 {
-	double p = exp((z - minim) / T);
+	double p = exp(-(ep - e)* d/ T);
 	cout << p << endl;
 	return p;
-}*/
+}
 
 double Tracker::SA_fRand(double fMin, double fMax)
 {
 	double f = (double)rand() / RAND_MAX;
 	return fMin + f * (fMax - fMin);
 }
+
+
+
+
+// Particle Swarm Optimization
+/*void Tracker::psoAlgorithm()
+{
+
+	return;
+}*/
+
+void Tracker::initialize()
+{
+	double total;
+
+	for (int i = 0; i <= MAX_PARTICLES - 1; i++)
+	{
+		total = 0;
+
+		for (int j = 0; j <= MAX_INPUTS - 1; j++)
+		{
+			particles[i].setData(j, getRandomNumber(START_RANGE_MIN, START_RANGE_MAX));
+			if (i == 0) {
+				particles[i].setData(j, 0);
+			}
+
+		}
+
+
+
+		double manip_temp[6] = { 0 };
+		cout << "First Init Point: ";
+		for (int j = 0; j <= MAX_INPUTS - 1; j++)
+		{
+			manip_temp[j] = particles[i].getData(j);
+			
+			cout << manip_temp[j] << ", ";
+		} // i
+		cout << endl;
+		total = minimizationFunc(manip_temp);
+		cout << "Check initialize: " << total << endl;
+		particles[i].setpBest(total);
+
+	} // i
+
+	return;
+}
+
+void Tracker::getVelocity(int gBestIndex)
+{
+	/* from Kennedy & Eberhart(1995).
+	vx[][] = vx[][] + 2 * rand() * (pbestx[][] - presentx[][]) +
+	2 * rand() * (pbestx[][gbest] - presentx[][])
+	*/
+	int testResults, bestResults;
+	float vValue;
+
+	bestResults = testProblem(gBestIndex);
+
+	for (int i = 0; i <= MAX_PARTICLES - 1; i++)
+	{
+		testResults = testProblem(i);
+		vValue = particles[i].getVelocity() +
+			2 * gRand() * (particles[i].getpBest() - testResults) + 2 * gRand() *
+			(bestResults - testResults);
+
+		if (vValue > V_MAX) {
+			particles[i].setVelocity(V_MAX);
+		}
+		else if (vValue < -V_MAX) {
+			particles[i].setVelocity(-V_MAX);
+		}
+		else {
+			particles[i].setVelocity(vValue);
+		}
+	} // i
+}
+
+void Tracker::updateParticles(int gBestIndex)
+{
+	double total;
+	double tempData;
+
+	for (int i = 0; i <= MAX_PARTICLES - 1; i++)
+	{
+		for (int j = 0; j <= MAX_INPUTS - 1; j++)
+		{
+			if (particles[i].getData(j) != particles[gBestIndex].getData(j))
+			{
+				tempData = particles[i].getData(j);
+				particles[i].setData(j, tempData + static_cast<int>(particles[i].getVelocity()));
+			}
+		} // j
+
+		  //Check pBest value.
+		total = testProblem(i);
+		if (abs(TARGET - total) < particles[i].getpBest())
+		{
+			particles[i].setpBest(total);
+		}
+
+	} // i
+
+}
+
+double Tracker::testProblem(int index)
+{
+	double xyzypr_manip[6] = { 0 };
+	double total = 0;
+	for (int i = 0; i <= MAX_INPUTS - 1; i++)
+	{
+		xyzypr_manip[i] = particles[index].getData(i);
+	} // i
+	//double x1 = particles[index].getData(0);
+	//double x2 = particles[index].getData(1);
+	total = minimizationFunc(xyzypr_manip);
+	
+	//cout << "Check testProblem function: " << total << endl;
+
+	return total;
+}
+
+float Tracker::gRand()
+{
+	// Returns a pseudo-random float between 0.0 and 1.0
+	return float(rand() / (RAND_MAX + 1.0));
+}
+
+double Tracker::getRandomNumber(int low, int high)
+{
+	// Returns a pseudo-random integer between low and high.
+	double f = (double)rand() / RAND_MAX;
+	return  low + (high - low) * f;
+}
+
+int Tracker::minimum()
+{
+	//Returns an array index.
+	int winner = 0;
+	bool foundNewWinner;
+	bool done = false;
+
+	do
+	{
+		foundNewWinner = false;
+		for (int i = 0; i <= MAX_PARTICLES - 1; i++)
+		{
+			if (i != winner) {             //Avoid self-comparison.
+										   //The minimum has to be in relation to the Target.
+				if (abs(TARGET - testProblem(i)) < abs(TARGET - testProblem(winner)))
+				{
+					winner = i;
+					foundNewWinner = true;
+				}
+			}
+		} // i
+
+		if (foundNewWinner == false)
+		{
+			done = true;
+		}
+
+	} while (!done);
+
+	return winner;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 } // namespace XROMM
 
