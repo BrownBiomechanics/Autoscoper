@@ -65,7 +65,7 @@ class TrackingOptionsDialog : public QDialog{
 		Ui::TrackingOptionsDialog *diag;
 
 		
-		int frame, from_frame, to_frame, d_frame;
+		int frame, from_frame, to_frame, d_frame, skip_frame;
 		bool doExit;
 		bool frame_optimizing;
 		int num_repeats;

@@ -57,6 +57,7 @@ TrackingOptionsDialog::TrackingOptionsDialog(QWidget *parent) :
 	frame_optimizing = false;
 	from_frame = 0;
     to_frame = 0;
+	skip_frame = 1;
 	curFrame = 0;
 	d_frame = 1;
 	num_repeats = 10;
@@ -199,6 +200,7 @@ void TrackingOptionsDialog::on_pushButton_OK_clicked(bool checked){
 
 		from_frame = diag->spinBox_FrameStart->value();
 		to_frame = diag->spinBox_FrameEnd->value();
+		skip_frame = diag->spinBox_FrameSkip->value();
 
  		num_repeats = diag->spinBox_NumberRefinements->value();
 
@@ -245,11 +247,11 @@ void TrackingOptionsDialog::on_pushButton_OK_clicked(bool checked){
 				int tmp = from_frame;
 				from_frame = to_frame;
 				to_frame = tmp;
-				d_frame = from_frame > to_frame? -1: 1;
+				d_frame = from_frame > to_frame? -skip_frame : skip_frame;
 			}
 			else {
 				frame = from_frame;
-				d_frame = from_frame > to_frame? -1: 1;
+				d_frame = from_frame > to_frame? -skip_frame : skip_frame;
 			}
 			doExit = false;
 			frame_optimize();

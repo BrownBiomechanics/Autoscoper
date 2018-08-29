@@ -78,12 +78,11 @@ PSO Tutorial found at: http://www.swarmintelligence.org/tutorials.php
 const int TARGET = 0;
 //const int MAX_INPUTS = 6;           // Number of variables to be optimized
 const int MAX_PARTICLES = 60;
-const float V_MAX = .5;           //Maximum velocity change allowed.
-const int MAX_EPOCHS = 500;
+const float V_MAX = 1;           //Maximum velocity change allowed.
+//const int MAX_EPOCHS = 500;
 //The particles will be initialized with data randomly chosen within the range
 //of these starting min and max values: 
-const int START_RANGE_MIN = -2;
-const int START_RANGE_MAX = 2;
+
 // End: ADDED FOR PSO
 
 namespace xromm
@@ -134,7 +133,7 @@ private:
 
 	// FOR PSO
 	//void psoAlgorithm();
-	void initialize();
+	void initialize(int START_RANGE_MIN, int START_RANGE_MAX);
 	void getVelocity(int gBestIndex);
 	void updateParticles(int gBestIndex);
 	double testProblem(int index);

@@ -382,11 +382,14 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 			}*/
 			// PSO Algorithm
 			double xyzypr_manip[6] = { 0 };
-			double gBest = 999;
-			int gBestTest = 0;
+			int gBest = 999;
+			int gBestTest = 1000;
+			int stall_iter = 0;
 			bool done = false;
-
-			initialize();
+			int START_RANGE_MIN = rot_limit;
+			int START_RANGE_MAX = trans_limit;
+			int MAX_EPOCHS = inner_iter;
+			initialize(START_RANGE_MIN, START_RANGE_MAX);
 
 			do
 			{
@@ -407,6 +410,15 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 					gBestTest = minimum();
 
 					//cout << testProblem(gBestTest) << endl;
+
+					// Check if we are stalled
+					if (abs(testProblem(gBestTest) - testProblem(gBest)) < 1e-5) {
+						stall_iter += 1;
+					}
+					if (stall_iter == 20) {
+						done = true;
+						cout << "Maximum Stall Iteration Reached..." << endl;
+					}
 
 					//If any particle's pBest value is better than the gBest value,
 					//make it the new gBest Value.
@@ -434,27 +446,84 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 			for (int j = 0; j <= MAX_INPUTS - 1; j++)
 			{
 				if (j < MAX_INPUTS - 1) {
-					cout << particles[gBestTest].getData(j) << " , ";
+					cout << particles[gBest].getData(j) << " , ";
 				}
 				else {
-					cout << particles[gBestTest].getData(j) << " = ";
+					cout << particles[gBest].getData(j) << " = ";
 				}
 			} // j
 
-			cout << testProblem(gBestTest) << endl;
+			//cout << testProblem(gBest) << endl;
 
-			xyzypr_manip[0] = particles[gBestTest].getData(0);
-			xyzypr_manip[1] = particles[gBestTest].getData(1);
-			xyzypr_manip[2] = particles[gBestTest].getData(2);
-			xyzypr_manip[3] = particles[gBestTest].getData(3);
-			xyzypr_manip[4] = particles[gBestTest].getData(4);
-			xyzypr_manip[5] = particles[gBestTest].getData(5);
+			xyzypr_manip[0] = particles[gBest].getData(0);
+			xyzypr_manip[1] = particles[gBest].getData(1);
+			xyzypr_manip[2] = particles[gBest].getData(2);
+			xyzypr_manip[3] = particles[gBest].getData(3);
+			xyzypr_manip[4] = particles[gBest].getData(4);
+			xyzypr_manip[5] = particles[gBest].getData(5);
 			//
 
-			cout << "Optimized Final NCC: " << testProblem(gBestTest) << endl;
+			cout << "Optimized Final NCC: " << testProblem(gBest) << endl;
 
 			manip = CoordFrame::from_xyzAxis_angle(xyzypr_manip);
 			// SA End
+
+			// ADD DOWNHILL AT THE END:
+			// Move the pose to the optimized pose
+			// Convert Current Pose to its Coordinate System Frame
+			CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
+
+			xcframe = xcframe * trial_.getVolumeMatrix(-1)->inverse() * manip * *trial_.getVolumeMatrix(-1);
+			xcframe.to_xyzypr(xyzypr);
+
+			xcframe = xcframe * trial_.getVolumeMatrix(-1)->inverse() * manip * *trial_.getVolumeMatrix(-1);
+
+
+			trial_.getXCurve(-1)->insert(trial_.frame, xyzypr[0]);
+			trial_.getYCurve(-1)->insert(trial_.frame, xyzypr[1]);
+			trial_.getZCurve(-1)->insert(trial_.frame, xyzypr[2]);
+			trial_.getYawCurve(-1)->insert(trial_.frame, xyzypr[3]);
+			trial_.getPitchCurve(-1)->insert(trial_.frame, xyzypr[4]);
+			trial_.getRollCurve(-1)->insert(trial_.frame, xyzypr[5]);
+
+
+			// Get Current Pose
+			double xyzypr[6] = { (*trial_.getXCurve(-1))(trial_.frame),
+				(*trial_.getYCurve(-1))(trial_.frame),
+				(*trial_.getZCurve(-1))(trial_.frame),
+				(*trial_.getYawCurve(-1))(trial_.frame),
+				(*trial_.getPitchCurve(-1))(trial_.frame),
+				(*trial_.getRollCurve(-1))(trial_.frame) };
+
+			// DOWNHILL SIMPLEX
+			// Generate the 7 vertices that form the initial simplex. Because
+			// the independent variables of the function we are optimizing over
+			// are relative to the initial guess, the same vertices can be used
+			// to form the initial simplex for every frame.
+			for (int i = 0; i < 7; ++i) {
+				P[i + 1][1] = (i == 1) ? trial_.offsets[0] : 0.0;
+				P[i + 1][2] = (i == 2) ? trial_.offsets[1] : 0.0;
+				P[i + 1][3] = (i == 3) ? trial_.offsets[2] : 0.0;
+				P[i + 1][4] = (i == 4) ? trial_.offsets[3] : 0.0;
+				P[i + 1][5] = (i == 5) ? trial_.offsets[4] : 0.0;
+				P[i + 1][6] = (i == 6) ? trial_.offsets[5] : 0.0;
+			}
+
+			// Determine the function values at the vertices of the initial
+			// simplex
+			for (int i = 0; i < 7; ++i) {
+				Y[i + 1] = FUNC(P[i + 1]);
+			}
+
+			// Downhill Simplex Optimization
+			// Optimize the frame
+			AMOEBA(P, Y, NDIM, FTOL, &ITER, nm_opt_alpha, nm_opt_gamma, nm_opt_beta);
+
+			cout << "Optimized Final NCC: " << minimizationFunc((P[1] + 1)) << endl;
+
+			// For Downhill Simplex Method
+			manip = CoordFrame::from_xyzAxis_angle(P[1] + 1);
+
 
 		}
 		else {
@@ -565,7 +634,7 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
 			{
 				// Calculate the correlation for implant
 				// Calculate Hausdorff Distance for Implant Matching _ FUTURE
-				correlations.push_back(1.0 - gpu::hdist(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
+				correlations.push_back(gpu::hdist(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
 
 			}
 			else { // If 0, we do bone model
@@ -685,6 +754,8 @@ std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned cam
 
 		width = render_width;
 		height = render_height;
+
+
 		std::vector<unsigned char> out_data;
 		get_image(rendered_rad_, width, height, out_data);
 		get_image(rendered_drr_, width, height, out_data);
@@ -763,10 +834,12 @@ double Tracker::SA_fRand(double fMin, double fMax)
 	return;
 }*/
 
-void Tracker::initialize()
+void Tracker::initialize(int START_RANGE_MIN, int START_RANGE_MAX)
 {
+
 	double total;
 
+	cout << "Initialized PSO with: " << MAX_PARTICLES << " Particles." << endl;
 	for (int i = 0; i <= MAX_PARTICLES - 1; i++)
 	{
 		total = 0;
@@ -783,16 +856,16 @@ void Tracker::initialize()
 
 
 		double manip_temp[6] = { 0 };
-		cout << "First Init Point: ";
+	//	cout << "First Init Point: ";
 		for (int j = 0; j <= MAX_INPUTS - 1; j++)
 		{
 			manip_temp[j] = particles[i].getData(j);
 			
-			cout << manip_temp[j] << ", ";
+			//cout << manip_temp[j] << ", ";
 		} // i
-		cout << endl;
+	//	cout << endl;
 		total = minimizationFunc(manip_temp);
-		cout << "Check initialize: " << total << endl;
+	//	cout << "Check initialize: " << total << endl;
 		particles[i].setpBest(total);
 
 	} // i
@@ -818,11 +891,21 @@ void Tracker::getVelocity(int gBestIndex)
 			2 * gRand() * (particles[i].getpBest() - testResults) + 2 * gRand() *
 			(bestResults - testResults);
 
+		// BA Addition
+		vValue = 0.1;
+
+		//cout << "For Particle #" << i << ", Velocity is: " << vValue << endl;
 		if (vValue > V_MAX) {
 			particles[i].setVelocity(V_MAX);
 		}
 		else if (vValue < -V_MAX) {
 			particles[i].setVelocity(-V_MAX);
+		}
+		else if (vValue < 1e-3 & vValue > 0) {
+			particles[i].setVelocity(0.005);
+		}
+		else if (vValue > -1e-3 & vValue < 0) {
+			particles[i].setVelocity(-0.005);
 		}
 		else {
 			particles[i].setVelocity(vValue);

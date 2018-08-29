@@ -128,6 +128,7 @@ namespace xromm
 				d_nums_ba, d_den1s_ba,
 				d_den2s_ba, n);
 
+			float dist_eucl = sqrt(sum_hdist(d_nums_ba, n));
 			//float den = sqrt(sum_hdist(d_den1s_ba, n)*sum_hdist(d_den2s_ba, n));
 			float den = sum_hdist(d_den1s_ba, n);
 
@@ -137,7 +138,8 @@ namespace xromm
 				//return 1;
 			}
 
-			return sum_hdist(d_nums_ba, n) / den;
+			//return sum_hdist(d_nums_ba, n);// / den;
+			return dist_eucl;
 		}
 
 	} // namespace gpu
@@ -206,14 +208,14 @@ void cuda_hdist_kernel(float* f, float meanF, float* g, float meanG, float* mask
 {
 	// JointTrack_Biplane
 	unsigned int i = blockDim.x*blockIdx.x + threadIdx.x;
-	if (i < n && mask[i] > 0.5f && f[i] > 0.5f) {
+	if (i < n && mask[i] > 0.5f) {
 		//DEBUGGING: printf("\nrad_i is:%f    drr_i is:%f", f[i], g[i]);
 		// For INTENSITY MATCHING
-		if (f[i] > 0.5) { f[i] = 0.8f; } // CHECK THIS and UNCOMMENT
+		//if (f[i] > 0.5) { f[i] = 0.8f; } // CHECK THIS and UNCOMMENT
 		//if (g[i] > 0.2) { g[i] = 1.0f; } // CHECK THIS and UNCOMMENT
 		//f[i] = 1.0f;
 		//g[i] = 1.0f;
-		nums[i] = f[i]*g[i];
+		nums[i] = (f[i]-g[i])*(f[i] - g[i]);
 		den1s[i] = 1;
 
 	}
