@@ -717,6 +717,8 @@ void Tracker::setBackgroundThreshold(float threshold)
 
 std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned camera, double* xyzypr, unsigned& width, unsigned& height)
 {
+	trial()->current_volume = volumeID;
+
 		CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
 		CoordFrame modelview = views_[camera]->camera()->coord_frame().inverse()*xcframe;
