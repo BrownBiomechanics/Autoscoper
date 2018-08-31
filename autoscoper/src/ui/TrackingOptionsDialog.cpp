@@ -99,13 +99,32 @@ void TrackingOptionsDialog::frame_optimize()
         return;
     }
 
-    while (frame != to_frame+d_frame && !doExit) {
+	while (frame != to_frame + d_frame && !doExit) {
+
+		// Check if frame is out of bound
+		if (to_frame > from_frame) {
+			if (frame > to_frame) {
+				frame = to_frame;
+			}
+			else if (frame < from_frame) {
+				frame = from_frame;
+			}
+		}
+		else if (to_frame < from_frame) {
+			if (frame < to_frame) {
+				frame = to_frame;
+			}
+			else if (frame > from_frame) {
+				frame = from_frame;
+			}
+		}
+
+		//
 
 		if (mainwindow->getPosition_graph()->frame_locks.at(frame)) {
             frame += d_frame;
             return;
          }
-
 
 		// Read Neldon Optimization Parameters
 		nm_opt_alpha = diag->spinBox_alpha->value();
@@ -123,7 +142,6 @@ void TrackingOptionsDialog::frame_optimize()
 		
 		
 		*/
-
 
 		// Optimization
 		  mainwindow->getTracker()->optimize(frame, d_frame, num_repeats, nm_opt_alpha, nm_opt_gamma, nm_opt_beta, opt_method, inner_iter, rot_limit, trans_limit, cf_model);
@@ -254,6 +272,7 @@ void TrackingOptionsDialog::on_pushButton_OK_clicked(bool checked){
 				d_frame = from_frame > to_frame? -skip_frame : skip_frame;
 			}
 			doExit = false;
+
 			frame_optimize();
 		}
 	}else{

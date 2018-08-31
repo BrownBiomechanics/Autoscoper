@@ -1830,7 +1830,7 @@ void AutoscoperMainWindow::save_nearby_nccs(QString filename) {
 	file.precision(6);
 	file.setf(ios::fixed, ios::floatfield);
 	unsigned int volume = tracker->trial()->current_volume;
-	std::vector<double>  ncc_values(2, 999);
+	std::vector<double>  ncc_values(2, 9999);
 
 
 	double pose[6];
@@ -1841,22 +1841,51 @@ void AutoscoperMainWindow::save_nearby_nccs(QString filename) {
 	pose[4] = (*tracker->trial()->getPitchCurve(volume))(curFrame);
 	pose[5] = (*tracker->trial()->getRollCurve(volume))(curFrame);
 
-	int iter_max = 5000;
-	int t_lim = 3;
-	int r_lim = 3;
-	double next_pose[6];
-	for (int iter = 0; iter < iter_max; iter++)
-	{
-		next_pose[0] = pose[0] + rand_gen_main(-t_lim, t_lim);
-		next_pose[1] = pose[1] + rand_gen_main(-t_lim, t_lim);
-		next_pose[2] = pose[2] + rand_gen_main(-t_lim, t_lim);
-		next_pose[3] = pose[3] + rand_gen_main(-r_lim, r_lim);
-		next_pose[4] = pose[4] + rand_gen_main(-r_lim, r_lim);
-		next_pose[5] = pose[5] + rand_gen_main(-r_lim, r_lim);
-		ncc_values = tracker->trackFrame(volume, next_pose);
+	//int iter_max = 5000;
+	//int t_lim = 1;
 
-		file << next_pose[0] << "," << next_pose[1] << "," << next_pose[2] << "," << next_pose[3] << "," << next_pose[4] << "," << next_pose[5] << ","
-		<< ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0)* ncc_values.at(1) << endl;
+
+	// Get Current One
+	ncc_values = tracker->trackFrame(volume, pose);
+	file << pose[0] << "," << pose[1] << "," << pose[2] << "," << pose[3] << "," << pose[4] << "," << pose[5] << ","
+		<< ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0) + ncc_values.at(1) << endl;
+
+
+	// Look the neighbors
+	double next_pose[6];
+	double t_lim = 3;
+	double t_skip = 0.1;
+	double r_lim = .3;
+	double r_skip = 0.1;
+
+	for (double d1 = -t_lim; d1 <= t_lim; d1 = d1 + t_skip)
+	{
+		for (double d2 = -t_lim; d2 <= t_lim; d2 = d2 + t_skip)
+		{
+			for (double d3 = -t_lim; d3 <= t_lim; d3 = d3 + t_skip)
+			{
+				for (double d4 = -r_lim; d4 <= r_lim; d4 = d4 + r_skip)
+				{
+					for (double d5 = -r_lim; d5 <= r_lim; d5 = d5 + r_skip)
+					{
+						for (double d6 = -r_lim; d6 <= r_lim; d6 = d6 + r_skip)
+						{
+							next_pose[0] = pose[0] + d1;
+							next_pose[1] = pose[1] + d2;
+							next_pose[2] = pose[2] + d3;
+							next_pose[3] = pose[3] + d4;
+							next_pose[4] = pose[4] + d5;
+							next_pose[5] = pose[5] + d6;
+
+							ncc_values = tracker->trackFrame(volume, next_pose);
+
+							file << next_pose[0] << "," << next_pose[1] << "," << next_pose[2] << "," << next_pose[3] << "," << next_pose[4] << "," << next_pose[5] << ","
+								<< ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0)+ncc_values.at(1) << endl;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	file.close();
