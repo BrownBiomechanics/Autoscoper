@@ -329,57 +329,6 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 
 		if (optimization_method == 0) // HAVE TO CHANGE THIS TO ANOTHER RADIO BUTTON. NOW, IMPLANT MEANS DOWNHILL SIMPLEX
 		{
-			/*
-			// My Try for Simulated Annealing
-			double TEMP_INIT = 10;
-			double TEMP_FINAL = 0.0001;
-			double N_CYCLE = inner_iter;
-			//double MAX_ITER = 20;
-			double xyzypr_manip[6] = { 0 };
-			double rot_lim_opt = rot_limit;
-			double trans_lim_opt = trans_limit;
-			double xym[6] = { xyzypr_manip[0], xyzypr_manip[1], xyzypr_manip[2] , xyzypr_manip[3] , xyzypr_manip[4] , xyzypr_manip[5] };
-			double a = .9;// Reduce Temp with this
-			double d = 10000;
-			//double T = TEMP_INIT;
-			double best_cost = minimizationFunc(xyzypr_manip);
-			double new_cost = 99999;
-			//while (T > TEMP_FINAL)
-			for (double T = TEMP_INIT; T>TEMP_FINAL; T *= a) {
-				int i = 1;
-				while (i <= N_CYCLE) {
-					xyzypr_manip[0] = xyzypr_manip[0] + SA_fRand(-trans_lim_opt, trans_lim_opt);
-					xyzypr_manip[1] = xyzypr_manip[1] + SA_fRand(-trans_lim_opt, trans_lim_opt);
-					xyzypr_manip[2] = xyzypr_manip[2] + SA_fRand(-trans_lim_opt, trans_lim_opt);
-					xyzypr_manip[3] = xyzypr_manip[3] + SA_fRand(-rot_lim_opt, rot_lim_opt);
-					xyzypr_manip[4] = xyzypr_manip[4] + SA_fRand(-rot_lim_opt, rot_lim_opt);
-					xyzypr_manip[5] = xyzypr_manip[5] + SA_fRand(-rot_lim_opt, rot_lim_opt);
-
-					new_cost = minimizationFunc(xyzypr_manip);
-					//|| SA_accept(best_cost, new_cost, T, d) > SA_fRand(0, 1)
-					if (new_cost <= best_cost ) {
-						best_cost = new_cost;
-						xym[0] = xyzypr_manip[0];
-						xym[1] = xyzypr_manip[1];
-						xym[2] = xyzypr_manip[2];
-						xym[3] = xyzypr_manip[3];
-						xym[4] = xyzypr_manip[4];
-						xym[5] = xyzypr_manip[5];
-					}
-					i = i + 1;
-					ITER += 1;
-				}
-				T = T * a;
-				//DEBUGGING: cout << rot_lim_opt << " " << trans_lim_opt << endl;
-				rot_lim_opt = rot_lim_opt;
-				trans_lim_opt = trans_lim_opt; // Translation shrinks slower
-				xyzypr_manip[0] = xym[0];
-				xyzypr_manip[1] = xym[1];
-				xyzypr_manip[2] = xym[2];
-				xyzypr_manip[3] = xym[3];
-				xyzypr_manip[4] = xym[4];
-				xyzypr_manip[5] = xym[5];
-			}*/
 			// PSO Algorithm
 			double xyzypr_manip[6] = { 0 };
 			int gBest = 999;
@@ -415,7 +364,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 					if (abs(testProblem(gBestTest) - testProblem(gBest)) < 1e-5) {
 						stall_iter += 1;
 					}
-					if (stall_iter == 20) {
+					if (stall_iter == 30) {
 						done = true;
 						cout << "Maximum Stall Iteration Reached..." << endl;
 					}
@@ -478,7 +427,6 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 
 			xcframe = xcframe * trial_.getVolumeMatrix(-1)->inverse() * manip * *trial_.getVolumeMatrix(-1);
 
-
 			trial_.getXCurve(-1)->insert(trial_.frame, xyzypr[0]);
 			trial_.getYCurve(-1)->insert(trial_.frame, xyzypr[1]);
 			trial_.getZCurve(-1)->insert(trial_.frame, xyzypr[2]);
@@ -523,8 +471,6 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 
 			// For Downhill Simplex Method
 			manip = CoordFrame::from_xyzAxis_angle(P[1] + 1);
-
-
 		}
 		else {
 
@@ -838,7 +784,6 @@ double Tracker::SA_fRand(double fMin, double fMax)
 
 void Tracker::initialize(int START_RANGE_MIN, int START_RANGE_MAX)
 {
-
 	double total;
 
 	cout << "Initialized PSO with: " << MAX_PARTICLES << " Particles." << endl;
@@ -855,19 +800,17 @@ void Tracker::initialize(int START_RANGE_MIN, int START_RANGE_MAX)
 
 		}
 
-
-
 		double manip_temp[6] = { 0 };
-	//	cout << "First Init Point: ";
+		cout << "First Init Point: ";
 		for (int j = 0; j <= MAX_INPUTS - 1; j++)
 		{
 			manip_temp[j] = particles[i].getData(j);
 			
-			//cout << manip_temp[j] << ", ";
+			cout << manip_temp[j] << ", ";
 		} // i
-	//	cout << endl;
+		cout << endl;
 		total = minimizationFunc(manip_temp);
-	//	cout << "Check initialize: " << total << endl;
+		cout << "Check initialize: " << total << endl;
 		particles[i].setpBest(total);
 
 	} // i
@@ -894,24 +837,31 @@ void Tracker::getVelocity(int gBestIndex)
 			(bestResults - testResults);
 
 		// BA Addition
-		vValue = 0.1;
+		// vValue = 0.1;
+		vValue = vValue * 100;
+		vValue = floor(vValue)/100;
 
-		//cout << "For Particle #" << i << ", Velocity is: " << vValue << endl;
+		particles[i].setVelocity(vValue);
+
+
 		if (vValue > V_MAX) {
 			particles[i].setVelocity(V_MAX);
 		}
 		else if (vValue < -V_MAX) {
 			particles[i].setVelocity(-V_MAX);
 		}
-		else if (vValue < 1e-3 & vValue > 0) {
-			particles[i].setVelocity(0.005);
+		else if (vValue <= 1e-2 & vValue > 0) {
+			particles[i].setVelocity(0.01);
 		}
-		else if (vValue > -1e-3 & vValue < 0) {
-			particles[i].setVelocity(-0.005);
+		else if (vValue >= -1e-2 & vValue < 0) {
+			particles[i].setVelocity(-0.01);
 		}
 		else {
 			particles[i].setVelocity(vValue);
 		}
+
+		//cout << "For Particle #" << i << ", Velocity is: " << vValue << endl;
+
 	} // i
 }
 
@@ -969,6 +919,8 @@ double Tracker::getRandomNumber(int low, int high)
 {
 	// Returns a pseudo-random integer between low and high.
 	double f = (double)rand() / RAND_MAX;
+	f = f * 100;
+	f = floor(f) / 100;
 	return  low + (high - low) * f;
 }
 

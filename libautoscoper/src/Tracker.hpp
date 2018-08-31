@@ -78,7 +78,7 @@ PSO Tutorial found at: http://www.swarmintelligence.org/tutorials.php
 const int TARGET = 0;
 //const int MAX_INPUTS = 6;           // Number of variables to be optimized
 const int MAX_PARTICLES = 60;
-const float V_MAX = 1;           //Maximum velocity change allowed.
+const float V_MAX = 2;           //Maximum velocity change allowed.
 //const int MAX_EPOCHS = 500;
 //The particles will be initialized with data randomly chosen within the range
 //of these starting min and max values: 

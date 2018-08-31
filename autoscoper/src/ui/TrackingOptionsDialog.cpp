@@ -110,11 +110,11 @@ void TrackingOptionsDialog::frame_optimize()
 				frame = from_frame;
 			}
 		}
-		else if (to_frame < from_frame) {
+		else if (to_frame <= from_frame) {
 			if (frame < to_frame) {
 				frame = to_frame;
 			}
-			else if (frame > from_frame) {
+			else if (frame >= from_frame) {
 				frame = from_frame;
 			}
 		}
