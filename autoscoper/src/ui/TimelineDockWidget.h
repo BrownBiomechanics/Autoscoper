@@ -69,7 +69,7 @@ namespace Ui {
 	class TimelineDockWidget;
 }
 
-class QGLContext;
+class QOpenGLContext;
 class AutoscoperMainWindow;
 
 class TimelineDockWidget : public QDockWidget{

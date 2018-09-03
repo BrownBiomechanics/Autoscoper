@@ -66,7 +66,7 @@
 #include <QInputDialog>
 #include <QList>
 #include <QFileDialog>
-#include <QGLContext>
+#include <QOpenGLContext>
 #include <QMessageBox>
 #include <QShortcut>
 #include <QXmlStreamWriter>
@@ -293,7 +293,8 @@ void AutoscoperMainWindow::frame_changed()
             tracker->trial()->videos.at(i).height(),
             tracker->trial()->videos.at(i).bps());
 
-		//((QGLContext*) shared_glcontext)->makeCurrent();
+		//((QOpenGLContext*) shared_glcontext)->makeCurrent();
+
         glBindTexture(GL_TEXTURE_2D,textures[i]);
         glTexImage2D(GL_TEXTURE_2D,
                      0,
@@ -1020,7 +1021,7 @@ void AutoscoperMainWindow::openTrial(QString filename){
 		delete trial;
 
 		trial_filename = filename.toStdString();
-		std:cerr << "Filename: " << trial_filename << endl;
+		std::cerr << "Filename: " << trial_filename << std::endl;
 		is_trial_saved = true;
 		is_tracking_saved = true;
 
@@ -1449,7 +1450,7 @@ void AutoscoperMainWindow::runBatch(QString batchfile, bool saveData){
 
 			QFileInfo info(trackdata_filename);
 			QString tracking_filename_out = info.absolutePath() + OS_SEP + info.completeBaseName() + "_tracked.tra";
-			fprintf(stderr, "Save Data to %s\n", tracking_filename_out.toStdString());
+			fprintf(stderr, "Save Data to %s\n", tracking_filename_out.toStdString().c_str());
 			save_tracking_results(tracking_filename_out, save_as_matrix, save_as_rows, save_with_commas, convert_to_cm, convert_to_rad, interpolate);
 		}
 
@@ -1465,7 +1466,7 @@ void AutoscoperMainWindow::on_actionLoad_xml_batch_triggered(bool checked){
 									tr("Open XML File"), QDir::currentPath(),tr("XML Files (") + tr(" *.xml)"));
 	if ( inputfile.isNull() == false )
     {
-		fprintf(stderr,"%s\n",inputfile.toStdString());
+		fprintf(stderr,"%s\n",inputfile.toStdString().c_str());
 		runBatch(inputfile);
     }
 }
@@ -1553,7 +1554,7 @@ void AutoscoperMainWindow::on_actionPaste_triggered(bool checked){
 }
 
 void AutoscoperMainWindow::on_actionDelete_triggered(bool checked){
-	/*if (!timeline_widget->getSelectedNodes()->empty()) {
+	if (!timeline_widget->getSelectedNodes()->empty()) {
         push_state();
 
         for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
@@ -1569,15 +1570,20 @@ void AutoscoperMainWindow::on_actionDelete_triggered(bool checked){
         update_graph_min_max(timeline_widget->getPosition_graph());
 
 		redrawGL();
-    }*/
-	/*int curFrame = getCurrentFrame();
+    }
+	//int curFrame = getCurrentFrame();
+	//timeline_widget->getSelectedNodes()->clear();
+	/*getTracker()->trial()->getXCurve(-1)->erase(curFrame);
+	getTracker()->trial()->getYCurve(-1)->erase(curFrame);
+	getTracker()->trial()->getZCurve(-1)->erase(curFrame);
+	getTracker()->trial()->getYawCurve(-1)->erase(curFrame);
+	getTracker()->trial()->getPitchCurve(-1)->erase(curFrame);
+	getTracker()->trial()->getRollCurve(-1)->erase(curFrame);*/
+	
+	/*update_xyzypr_and_coord_frame();
+	update_graph_min_max(timeline_widget->getPosition_graph());
 
-	tracker->trial()->getXCurve(curFrame)->clear();
-	tracker->trial()->getYCurve(curFrame)->clear();
-	tracker->trial()->getZCurve(curFrame)->clear();
-	tracker->trial()->getYawCurve(curFrame)->clear();
-	tracker->trial()->getPitchCurve(curFrame)->clear();
-	tracker->trial()->getRollCurve(curFrame)->clear();*/
+	redrawGL();*/
 }
 
 void AutoscoperMainWindow::on_actionSet_Background_triggered(bool checked)

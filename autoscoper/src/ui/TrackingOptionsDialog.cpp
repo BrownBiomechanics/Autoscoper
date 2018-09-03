@@ -74,9 +74,9 @@ TrackingOptionsDialog::TrackingOptionsDialog(QWidget *parent) :
 	nm_opt_beta  = 0.5;
 
 	// Read random search limits and iterations
-	inner_iter = 40;
+	inner_iter = 100;
 	trans_limit = 2;
-	rot_limit = 4;
+	rot_limit = -2;
 
 	// Cost Function: Default is Bone Models
 	cf_model = 0; // 0 is Bone Model ------ 1 is Implant Model

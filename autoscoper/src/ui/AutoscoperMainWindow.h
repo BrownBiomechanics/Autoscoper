@@ -64,7 +64,7 @@ class TimelineDockWidget;
 class VolumeDockWidget;
 class TrackingOptionsDialog;
 class WorldViewWindow;
-class QGLContext;
+class QOpenGLContext;
 class Manip3D;
 struct GraphData;
 

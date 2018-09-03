@@ -196,7 +196,7 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 			qint32* camera = reinterpret_cast<qint32*>(&data[5]);
 			double * pose_data = reinterpret_cast<double*>(&data[9]);
 			
-			//std::cerr << "Read images for volume " << *volume << " and camera " << *camera << std::endl;
+			std::cerr << "Read images for volume " << *volume << " and camera " << *camera << std::endl;
 
 			std::vector<double> pose;
 			pose.assign(pose_data, pose_data + 6);
@@ -211,7 +211,7 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 			ptr = reinterpret_cast<char*>(&img_Data[0]);
 			array.append(ptr, img_Data.size());
 			connection->write(array);
-			//std::cerr << width << " " << height << " " << img_Data.size() << std::endl;
+			std::cerr << width << " " << height << " " << img_Data.size() << std::endl;
 		
 		}
 		break;

@@ -397,7 +397,7 @@ QGroupBox::title {
            <number>0</number>
           </property>
           <property name="value">
-           <number>-1</number>
+           <number>-2</number>
           </property>
           <property name="displayIntegerBase">
            <number>10</number>
@@ -433,7 +433,7 @@ QGroupBox::title {
            <number>20</number>
           </property>
           <property name="value">
-           <number>1</number>
+           <number>2</number>
           </property>
          </widget>
         </item>
@@ -546,13 +546,13 @@ QGroupBox::title {
         <item row="1" column="9">
          <widget class="QSpinBox" name="spinBox_inner_iter">
           <property name="minimum">
-           <number>10</number>
+           <number>100</number>
           </property>
           <property name="maximum">
            <number>9999</number>
           </property>
           <property name="value">
-           <number>100</number>
+           <number>1000</number>
           </property>
          </widget>
         </item>

@@ -75,10 +75,10 @@ PSO Tutorial found at: http://www.swarmintelligence.org/tutorials.php
 #include <cstdlib>
 #include <cmath>
 #include "cParticle.h"
-const int TARGET = 0;
+const double TARGET = 0;
 //const int MAX_INPUTS = 6;           // Number of variables to be optimized
 const int MAX_PARTICLES = 60;
-const float V_MAX = 2;           //Maximum velocity change allowed.
+const float V_MAX = 0.5;           //Maximum velocity change allowed.
 //const int MAX_EPOCHS = 500;
 //The particles will be initialized with data randomly chosen within the range
 //of these starting min and max values: 
@@ -133,12 +133,12 @@ private:
 
 	// FOR PSO
 	//void psoAlgorithm();
-	void initialize(int START_RANGE_MIN, int START_RANGE_MAX);
+	void initialize(double START_RANGE_MIN, double START_RANGE_MAX);
 	void getVelocity(int gBestIndex);
 	void updateParticles(int gBestIndex);
 	double testProblem(int index);
 	float gRand();
-	double getRandomNumber(int low, int high);
+	double getRandomNumber(double low, double high);
 	int minimum();
 	//
 

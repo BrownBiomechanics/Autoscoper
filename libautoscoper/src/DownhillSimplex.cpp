@@ -106,7 +106,7 @@ e1:ILO=1;
   RTOL /= MPTS;
 
   if (RTOL < FTOL)  {
-	  printf("The final pose tolerance is: %.3e\n", RTOL);
+	  //printf("The final pose tolerance is: %.3e\n", RTOL);
 	  return;  //normal exit
   }
   if (*ITER == ITMAX) {

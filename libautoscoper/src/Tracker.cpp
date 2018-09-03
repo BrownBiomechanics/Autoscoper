@@ -58,10 +58,11 @@
 #include "gpu/cuda/HDist_kernels.h"
 #include "gpu/cuda/Compositor_kernels.h"
 #include "gpu/cuda/Mult_kernels.h"
+#include <cuda_runtime_api.h>
 #else
 #include "gpu/opencl/Ncc.hpp"
+#include "gpu/opencl/Mult.hpp"
 #endif
-
 #include "VolumeDescription.hpp"
 #include "Video.hpp"
 #include "View.hpp"
@@ -69,10 +70,6 @@
 #include "SimulatedAnnealing.hpp"
 #include "Camera.hpp"
 #include "CoordFrame.hpp"
-#include <cuda_runtime_api.h>
-#include "gpu/opencl/Mult.hpp"
-
-
 
 
 using namespace std;
@@ -325,18 +322,20 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 
 		// Init Manip for saving final optimum
 		double init_manip[6] = { 0 };
+		double init_ncc = minimizationFunc(init_manip);
+
 		CoordFrame manip = CoordFrame::from_xyzAxis_angle(init_manip);
 
 		if (optimization_method == 0) // HAVE TO CHANGE THIS TO ANOTHER RADIO BUTTON. NOW, IMPLANT MEANS DOWNHILL SIMPLEX
 		{
 			// PSO Algorithm
 			double xyzypr_manip[6] = { 0 };
-			int gBest = 999;
+			int gBest = 0;
 			int gBestTest = 1000;
 			int stall_iter = 0;
 			bool done = false;
-			int START_RANGE_MIN = rot_limit;
-			int START_RANGE_MAX = trans_limit;
+			double START_RANGE_MIN = rot_limit;
+			double START_RANGE_MAX = trans_limit;
 			int MAX_EPOCHS = inner_iter;
 			initialize(START_RANGE_MIN, START_RANGE_MAX);
 
@@ -358,28 +357,31 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 
 					gBestTest = minimum();
 
-					//cout << testProblem(gBestTest) << endl;
+					//cout << "gBest: " << testProblem(gBest) << endl;
+					//cout << "gBestTest: " << testProblem(gBestTest) << endl;
 
 					// Check if we are stalled
-					if (abs(testProblem(gBestTest) - testProblem(gBest)) < 1e-5) {
+					if (std::abs(testProblem(gBestTest) - testProblem(gBest)) < 1e-6) {
 						stall_iter += 1;
 					}
-					if (stall_iter == 30) {
+					if (stall_iter == 20) {
 						done = true;
-						cout << "Maximum Stall Iteration Reached..." << endl;
+						//cout << "Maximum Stall Iteration Reached in PSO..." << endl;
 					}
 
 					//If any particle's pBest value is better than the gBest value,
 					//make it the new gBest Value.
-					if (abs(TARGET - testProblem(gBestTest)) < abs(TARGET - testProblem(gBest)))
+					if (std::abs(TARGET - testProblem(gBestTest)) < std::abs(TARGET - testProblem(gBest)))
 					{
 						gBest = gBestTest;
+						stall_iter = 0; //Reset Stall
 					}
 
 					getVelocity(gBest);
 
 					updateParticles(gBest);
 
+					//cout << "Stall Iter: " << stall_iter << endl;
 					ITER += 1;
 
 				}
@@ -389,9 +391,9 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 
 			} while (!done);
 
-			cout << ITER << " epochs completed." << endl;
+			cout << ITER << " epochs completed in PSO." << endl;
 
-			cout << "Best Case:" << endl;
+			cout << "Best PSO Case:  ";
 			for (int j = 0; j <= MAX_INPUTS - 1; j++)
 			{
 				if (j < MAX_INPUTS - 1) {
@@ -412,7 +414,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 			xyzypr_manip[5] = particles[gBest].getData(5);
 			//
 
-			cout << "Optimized Final NCC: " << testProblem(gBest) << endl;
+			cout << "NCC from PSO: " << testProblem(gBest) << endl;
 
 			manip = CoordFrame::from_xyzAxis_angle(xyzypr_manip);
 			// SA End
@@ -467,10 +469,19 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 			// Optimize the frame
 			AMOEBA(P, Y, NDIM, FTOL, &ITER, nm_opt_alpha, nm_opt_gamma, nm_opt_beta);
 
-			cout << "Optimized Final NCC: " << minimizationFunc((P[1] + 1)) << endl;
+			double final_ncc = minimizationFunc((P[1] + 1));
 
-			// For Downhill Simplex Method
-			manip = CoordFrame::from_xyzAxis_angle(P[1] + 1);
+			if (final_ncc < init_ncc) {
+				cout << "Downhill Simplex Optimized Final NCC: " << minimizationFunc((P[1] + 1)) << endl;
+				// For Downhill Simplex Method (Final)
+				manip = CoordFrame::from_xyzAxis_angle(P[1] + 1);
+			}
+			else {
+				cout << "The initial position was optimized." << endl;
+				manip = CoordFrame::from_xyzAxis_angle(init_manip);
+
+			}
+
 		}
 		else {
 
@@ -782,7 +793,7 @@ double Tracker::SA_fRand(double fMin, double fMax)
 	return;
 }*/
 
-void Tracker::initialize(int START_RANGE_MIN, int START_RANGE_MAX)
+void Tracker::initialize(double START_RANGE_MIN, double START_RANGE_MAX)
 {
 	double total;
 
@@ -794,23 +805,23 @@ void Tracker::initialize(int START_RANGE_MIN, int START_RANGE_MAX)
 		for (int j = 0; j <= MAX_INPUTS - 1; j++)
 		{
 			particles[i].setData(j, getRandomNumber(START_RANGE_MIN, START_RANGE_MAX));
-			if (i == 0) {
+			/*if (i == 0) { // Initialize with the current pose?
 				particles[i].setData(j, 0);
-			}
+			}*/
 
 		}
 
 		double manip_temp[6] = { 0 };
-		cout << "First Init Point: ";
+		//cout << "First Init Point: ";
 		for (int j = 0; j <= MAX_INPUTS - 1; j++)
 		{
 			manip_temp[j] = particles[i].getData(j);
 			
-			cout << manip_temp[j] << ", ";
+			//cout << manip_temp[j] << ", ";
 		} // i
-		cout << endl;
+		//cout << endl;
 		total = minimizationFunc(manip_temp);
-		cout << "Check initialize: " << total << endl;
+		//cout << "Check initialize: " << total << endl;
 		particles[i].setpBest(total);
 
 	} // i
@@ -824,7 +835,7 @@ void Tracker::getVelocity(int gBestIndex)
 	vx[][] = vx[][] + 2 * rand() * (pbestx[][] - presentx[][]) +
 	2 * rand() * (pbestx[][gbest] - presentx[][])
 	*/
-	int testResults, bestResults;
+	double testResults, bestResults;
 	float vValue;
 
 	bestResults = testProblem(gBestIndex);
@@ -833,15 +844,7 @@ void Tracker::getVelocity(int gBestIndex)
 	{
 		testResults = testProblem(i);
 		vValue = particles[i].getVelocity() +
-			2 * gRand() * (particles[i].getpBest() - testResults) + 2 * gRand() *
-			(bestResults - testResults);
-
-		// BA Addition
-		// vValue = 0.1;
-		vValue = vValue * 100;
-		vValue = floor(vValue)/100;
-
-		particles[i].setVelocity(vValue);
+			2 * gRand() * ((float)particles[i].getpBest() - (float)testResults) + 2 * gRand() * ((float)bestResults - (float)testResults);
 
 
 		if (vValue > V_MAX) {
@@ -849,12 +852,6 @@ void Tracker::getVelocity(int gBestIndex)
 		}
 		else if (vValue < -V_MAX) {
 			particles[i].setVelocity(-V_MAX);
-		}
-		else if (vValue <= 1e-2 & vValue > 0) {
-			particles[i].setVelocity(0.01);
-		}
-		else if (vValue >= -1e-2 & vValue < 0) {
-			particles[i].setVelocity(-0.01);
 		}
 		else {
 			particles[i].setVelocity(vValue);
@@ -876,14 +873,15 @@ void Tracker::updateParticles(int gBestIndex)
 		{
 			if (particles[i].getData(j) != particles[gBestIndex].getData(j))
 			{
-				tempData = particles[i].getData(j);
-				particles[i].setData(j, tempData + static_cast<int>(particles[i].getVelocity()));
+					tempData = particles[i].getData(j);
+					//particles[i].setData(j, tempData + static_cast<int>(particles[i].getVelocity()));
+					particles[i].setData(j, tempData + static_cast<double>(particles[i].getVelocity()));
 			}
 		} // j
 
 		  //Check pBest value.
 		total = testProblem(i);
-		if (abs(TARGET - total) < particles[i].getpBest())
+		if ((std::abs(TARGET - total)) < particles[i].getpBest())
 		{
 			particles[i].setpBest(total);
 		}
@@ -915,12 +913,12 @@ float Tracker::gRand()
 	return float(rand() / (RAND_MAX + 1.0));
 }
 
-double Tracker::getRandomNumber(int low, int high)
+double Tracker::getRandomNumber(double low, double high)
 {
 	// Returns a pseudo-random integer between low and high.
-	double f = (double)rand() / RAND_MAX;
-	f = f * 100;
-	f = floor(f) / 100;
+	double f = (double)(rand() / (RAND_MAX + 1.0));
+	//f = f * 1000;
+	//f = floor(f) / 1000;
 	return  low + (high - low) * f;
 }
 
@@ -938,7 +936,7 @@ int Tracker::minimum()
 		{
 			if (i != winner) {             //Avoid self-comparison.
 										   //The minimum has to be in relation to the Target.
-				if (abs(TARGET - testProblem(i)) < abs(TARGET - testProblem(winner)))
+				if (std::fabs(TARGET - testProblem(i)) < std::fabs(TARGET - testProblem(winner)))
 				{
 					winner = i;
 					foundNewWinner = true;

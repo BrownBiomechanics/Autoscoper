@@ -46,7 +46,7 @@
 
 #include <QWidget>
 
-class QGLContext;
+class QOpenGLContext;
 
 //forward declarations
 namespace Ui {
