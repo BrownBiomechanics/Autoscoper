@@ -89,9 +89,6 @@ static xromm::Tracker* g_markerless = NULL;
 double FUNC(double* P) { return g_markerless->minimizationFunc(P+1); }
 
 
-// For Particle Swarm Optimization
-cParticle particles[MAX_PARTICLES];
-
 namespace xromm {
 
 #if DEBUG
@@ -330,94 +327,63 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 		{
 			// PSO Algorithm
 			double xyzypr_manip[6] = { 0 };
-			int gBest = 0;
+			//int gBest = 0;
 			int gBestTest = 1000;
 			int stall_iter = 0;
 			bool done = false;
-			double START_RANGE_MIN = rot_limit;
-			double START_RANGE_MAX = trans_limit;
+			float START_RANGE_MIN = (float)rot_limit;
+			float START_RANGE_MAX = (float)trans_limit;
 			int MAX_EPOCHS = inner_iter;
-			initialize(START_RANGE_MIN, START_RANGE_MAX);
+			
+			float positions[NUM_OF_PARTICLES*NUM_OF_DIMENSIONS];
+			float velocities[NUM_OF_PARTICLES*NUM_OF_DIMENSIONS];
+			float pBests[NUM_OF_PARTICLES*NUM_OF_DIMENSIONS];
+			float gBest[NUM_OF_DIMENSIONS];
 
-			do
+			srand((unsigned)time(NULL));
+
+			for (int i = 0; i < NUM_OF_PARTICLES*NUM_OF_DIMENSIONS; i++)
 			{
-				/* Two conditions can end this loop:
-				if the maximum number of epochs allowed has been reached, or,
-				if the Target value has been found.
-				*/
-				if (ITER < MAX_EPOCHS) {
+				//if (i == NUM_OF_DIMENSIONS) {
+				//	positions[i] = (float)0.0;
+				//}
+				//else {
+					positions[i] = getRandom(START_RANGE_MIN, START_RANGE_MAX);
+				//}
+				pBests[i] = positions[i];
+				velocities[i] = 0;
+			}
 
-					for (int i = 0; i <= MAX_PARTICLES - 1; i++)
-					{
-						if (testProblem(i) == TARGET)
-						{
-							done = true;
-						}
-					} // i
+			for (int i = 0; i < NUM_OF_DIMENSIONS; i++)
+			{
+				gBest[i] = pBests[i];
+			}
 
-					gBestTest = minimum();
+			clock_t cpu_begin = clock();
 
-					//cout << "gBest: " << testProblem(gBest) << endl;
-					//cout << "gBestTest: " << testProblem(gBestTest) << endl;
+			pso(positions, velocities, pBests, gBest, MAX_EPOCHS);
 
-					// Check if we are stalled
-					if (std::abs(testProblem(gBestTest) - testProblem(gBest)) < 1e-6) {
-						stall_iter += 1;
-					}
-					if (stall_iter == 20) {
-						done = true;
-						//cout << "Maximum Stall Iteration Reached in PSO..." << endl;
-					}
+			clock_t cpu_end = clock();
 
-					//If any particle's pBest value is better than the gBest value,
-					//make it the new gBest Value.
-					if (std::abs(TARGET - testProblem(gBestTest)) < std::abs(TARGET - testProblem(gBest)))
-					{
-						gBest = gBestTest;
-						stall_iter = 0; //Reset Stall
-					}
+			printf("Time elapsed:%10.3lf s\n", (double)(cpu_end - cpu_begin) / CLOCKS_PER_SEC);
 
-					getVelocity(gBest);
-
-					updateParticles(gBest);
-
-					//cout << "Stall Iter: " << stall_iter << endl;
-					ITER += 1;
-
+			for (int i = 0; i < NUM_OF_DIMENSIONS; i++)
+			{
+				if (i == NUM_OF_DIMENSIONS - 1)
+				{
+					cout << gBest[i] << endl;
 				}
 				else {
-					done = true;
+					cout << gBest[i] << ",";
 				}
+				xyzypr_manip[i] = gBest[i];
+			}
 
-			} while (!done);
+			printf("Minimum NCC = %f\n", host_fitness_function(gBest));
 
-			cout << ITER << " epochs completed in PSO." << endl;
-
-			cout << "Best PSO Case:  ";
-			for (int j = 0; j <= MAX_INPUTS - 1; j++)
-			{
-				if (j < MAX_INPUTS - 1) {
-					cout << particles[gBest].getData(j) << " , ";
-				}
-				else {
-					cout << particles[gBest].getData(j) << " = ";
-				}
-			} // j
-
-			//cout << testProblem(gBest) << endl;
-
-			xyzypr_manip[0] = particles[gBest].getData(0);
-			xyzypr_manip[1] = particles[gBest].getData(1);
-			xyzypr_manip[2] = particles[gBest].getData(2);
-			xyzypr_manip[3] = particles[gBest].getData(3);
-			xyzypr_manip[4] = particles[gBest].getData(4);
-			xyzypr_manip[5] = particles[gBest].getData(5);
-			//
-
-			cout << "NCC from PSO: " << testProblem(gBest) << endl;
 
 			manip = CoordFrame::from_xyzAxis_angle(xyzypr_manip);
-			// SA End
+			// PSO End
 
 			// ADD DOWNHILL AT THE END:
 			// Move the pose to the optimized pose
@@ -784,183 +750,99 @@ double Tracker::SA_fRand(double fMin, double fMax)
 }
 
 
-
-
-// Particle Swarm Optimization
-/*void Tracker::psoAlgorithm()
-{
-
-	return;
-}*/
-
-void Tracker::initialize(double START_RANGE_MIN, double START_RANGE_MAX)
-{
-	double total;
-
-	cout << "Initialized PSO with: " << MAX_PARTICLES << " Particles." << endl;
-	for (int i = 0; i <= MAX_PARTICLES - 1; i++)
-	{
-		total = 0;
-
-		for (int j = 0; j <= MAX_INPUTS - 1; j++)
-		{
-			particles[i].setData(j, getRandomNumber(START_RANGE_MIN, START_RANGE_MAX));
-			/*if (i == 0) { // Initialize with the current pose?
-				particles[i].setData(j, 0);
-			}*/
-
-		}
-
-		double manip_temp[6] = { 0 };
-		//cout << "First Init Point: ";
-		for (int j = 0; j <= MAX_INPUTS - 1; j++)
-		{
-			manip_temp[j] = particles[i].getData(j);
-			
-			//cout << manip_temp[j] << ", ";
-		} // i
-		//cout << endl;
-		total = minimizationFunc(manip_temp);
-		//cout << "Check initialize: " << total << endl;
-		particles[i].setpBest(total);
-
-	} // i
-
-	return;
-}
-
-void Tracker::getVelocity(int gBestIndex)
-{
-	/* from Kennedy & Eberhart(1995).
-	vx[][] = vx[][] + 2 * rand() * (pbestx[][] - presentx[][]) +
-	2 * rand() * (pbestx[][gbest] - presentx[][])
-	*/
-	double testResults, bestResults;
-	float vValue;
-
-	bestResults = testProblem(gBestIndex);
-
-	for (int i = 0; i <= MAX_PARTICLES - 1; i++)
-	{
-		testResults = testProblem(i);
-		vValue = particles[i].getVelocity() +
-			2 * gRand() * ((float)particles[i].getpBest() - (float)testResults) + 2 * gRand() * ((float)bestResults - (float)testResults);
-
-
-		if (vValue > V_MAX) {
-			particles[i].setVelocity(V_MAX);
-		}
-		else if (vValue < -V_MAX) {
-			particles[i].setVelocity(-V_MAX);
-		}
-		else {
-			particles[i].setVelocity(vValue);
-		}
-
-		//cout << "For Particle #" << i << ", Velocity is: " << vValue << endl;
-
-	} // i
-}
-
-void Tracker::updateParticles(int gBestIndex)
-{
-	double total;
-	double tempData;
-
-	for (int i = 0; i <= MAX_PARTICLES - 1; i++)
-	{
-		for (int j = 0; j <= MAX_INPUTS - 1; j++)
-		{
-			if (particles[i].getData(j) != particles[gBestIndex].getData(j))
-			{
-					tempData = particles[i].getData(j);
-					//particles[i].setData(j, tempData + static_cast<int>(particles[i].getVelocity()));
-					particles[i].setData(j, tempData + static_cast<double>(particles[i].getVelocity()));
-			}
-		} // j
-
-		  //Check pBest value.
-		total = testProblem(i);
-		if ((std::abs(TARGET - total)) < particles[i].getpBest())
-		{
-			particles[i].setpBest(total);
-		}
-
-	} // i
-
-}
-
-double Tracker::testProblem(int index)
+// New Particle Swarm Optimization
+float Tracker::host_fitness_function(float x[])
 {
 	double xyzypr_manip[6] = { 0 };
-	double total = 0;
-	for (int i = 0; i <= MAX_INPUTS - 1; i++)
+	for (int i = 0; i <= NUM_OF_DIMENSIONS - 1; i++)
 	{
-		xyzypr_manip[i] = particles[index].getData(i);
+		xyzypr_manip[i] = (double)x[i];
 	} // i
-	//double x1 = particles[index].getData(0);
-	//double x2 = particles[index].getData(1);
-	total = minimizationFunc(xyzypr_manip);
-	
-	//cout << "Check testProblem function: " << total << endl;
 
+	double total = minimizationFunc(xyzypr_manip);
+	
+	//cout << "Check total function: " << total << endl;
 	return total;
 }
 
-float Tracker::gRand()
+float Tracker::getRandom(float low, float high)
 {
-	// Returns a pseudo-random float between 0.0 and 1.0
-	return float(rand() / (RAND_MAX + 1.0));
+	return low + float(((high - low) + 1)*rand() / (RAND_MAX + 1.0));
 }
 
-double Tracker::getRandomNumber(double low, double high)
+float Tracker::getRandomClamped()
 {
-	// Returns a pseudo-random integer between low and high.
-	double f = (double)(rand() / (RAND_MAX + 1.0));
-	//f = f * 1000;
-	//f = floor(f) / 1000;
-	return  low + (high - low) * f;
+	return (float)rand() / (float)RAND_MAX;
 }
 
-int Tracker::minimum()
+void Tracker::pso(float *positions, float *velocities, float *pBests, float *gBest, int MAX_EPOCHS)
 {
-	//Returns an array index.
-	int winner = 0;
-	bool foundNewWinner;
-	bool done = false;
+	int stall_iter = 0;
+	float tempParticle1[NUM_OF_DIMENSIONS];
+	float tempParticle2[NUM_OF_DIMENSIONS];
 
-	do
+	int counter = 0;
+	for (int iter = 0; iter < MAX_EPOCHS; iter++)
 	{
-		foundNewWinner = false;
-		for (int i = 0; i <= MAX_PARTICLES - 1; i++)
+		for (int i = 0; i < NUM_OF_PARTICLES*NUM_OF_DIMENSIONS; i++)
 		{
-			if (i != winner) {             //Avoid self-comparison.
-										   //The minimum has to be in relation to the Target.
-				if (std::fabs(TARGET - testProblem(i)) < std::fabs(TARGET - testProblem(winner)))
-				{
-					winner = i;
-					foundNewWinner = true;
-				}
-			}
-		} // i
+			float rp = getRandomClamped();
+			float rg = getRandomClamped();
 
-		if (foundNewWinner == false)
-		{
-			done = true;
+			velocities[i] = OMEGA * velocities[i] + c1 * rp*(pBests[i] - positions[i]) + c2 * rg*(gBest[i%NUM_OF_DIMENSIONS] - positions[i]);
+
+			positions[i] += velocities[i];
 		}
 
-	} while (!done);
+		for (int i = 0; i < NUM_OF_PARTICLES*NUM_OF_DIMENSIONS; i += NUM_OF_DIMENSIONS)
+		{
+			for (int j = 0; j < NUM_OF_DIMENSIONS; j++)
+			{
+				tempParticle1[j] = positions[i + j];
+				tempParticle2[j] = pBests[i + j];
+			}
 
-	return winner;
+			if (host_fitness_function(tempParticle1) < host_fitness_function(tempParticle2))
+			{
+				for (int j = 0; j < NUM_OF_DIMENSIONS; j++)
+				{
+					pBests[i + j] = positions[i + j];
+				}
+
+				if (host_fitness_function(tempParticle1) < host_fitness_function(gBest))
+				{
+					//cout << "Current Best is: " ;
+					for (int j = 0; j < NUM_OF_DIMENSIONS; j++)
+					{
+						gBest[j] = pBests[i + j];
+						//if (j == NUM_OF_DIMENSIONS - 1)
+						//{
+						//	cout << gBest[j] << endl;
+						//}
+						//else {
+						//	cout << gBest[j] << ",";
+						//}
+					}
+					cout << "Best NCC is: " << host_fitness_function(tempParticle1) << endl;
+					
+					if (abs(host_fitness_function(tempParticle1) - host_fitness_function(gBest)) < 1e-5)
+					{
+						stall_iter += 1;
+					}
+					if (stall_iter == 50)
+					{
+						cout << "Maximum Stall Iteration was reached" << endl;
+						cout << "Total Iteration of: " << counter << endl;
+						return;
+					}
+				}
+			}
+		}
+		counter += 1;
+	}
+	cout << "Total #Epoch of: " << counter << endl;
 }
-
-
-
-
-
-
-
-
+// END: PSO
 
 
 

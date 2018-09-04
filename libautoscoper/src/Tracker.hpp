@@ -74,16 +74,23 @@ PSO Tutorial found at: http://www.swarmintelligence.org/tutorials.php
 #include <ctime>
 #include <cstdlib>
 #include <cmath>
-#include "cParticle.h"
-const double TARGET = 0;
-//const int MAX_INPUTS = 6;           // Number of variables to be optimized
-const int MAX_PARTICLES = 60;
-const float V_MAX = 0.5;           //Maximum velocity change allowed.
-//const int MAX_EPOCHS = 500;
-//The particles will be initialized with data randomly chosen within the range
-//of these starting min and max values: 
 
-// End: ADDED FOR PSO
+
+
+// ADD: NEW PSO
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <math.h>
+const int NUM_OF_PARTICLES = 500;
+const int NUM_OF_DIMENSIONS = 6;
+//const int MAX_ITER = 500;
+//const float START_RANGE_MIN = -5.12f;
+//const float START_RANGE_MAX = 5.12f;
+const float OMEGA = 0.5;
+const float c1 = 1.5;
+const float c2 = 1.5;
+// END: NEW PSO
 
 namespace xromm
 {
@@ -125,22 +132,17 @@ public:
 	//double implantMinFunc(const double* values) const;
 	//std::vector<double> trackImplantFrame(unsigned int volumeID, double * xyzypr) const;
 
-
 private:
     void calculate_viewport(const CoordFrame& modelview, double* viewport) const;
 	double SA_accept(double e, double ep, double T,double d);
 	double SA_fRand(double fMin, double fMax);
 
-	// FOR PSO
-	//void psoAlgorithm();
-	void initialize(double START_RANGE_MIN, double START_RANGE_MAX);
-	void getVelocity(int gBestIndex);
-	void updateParticles(int gBestIndex);
-	double testProblem(int index);
-	float gRand();
-	double getRandomNumber(double low, double high);
-	int minimum();
-	//
+	// START: For NEW PSO
+	float getRandom(float low, float high);
+	float getRandomClamped();
+	float host_fitness_function(float x[]);
+	void pso(float *positions, float *velocities, float *pBests, float *gBest, int MAX_EPOCHS);
+	// END: NEW PSO
 
 	int optimization_method = 0;
 	int cf_model_select = 0;

@@ -4,7 +4,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
 SET(libautoscoper_HEADERS 
 	src/Backtrace.hpp
 	src/Camera.hpp
-	src/cParticle.h
 	src/CoordFrame.hpp
 	src/DownhillSimplex.hpp
 	src/Filter.hpp
@@ -22,7 +21,6 @@ SET(libautoscoper_HEADERS
 SET(libautoscoper_SOURCES
     src/Backtrace.cpp
 	src/Camera.cpp
-	src/cParticle.cpp		
 	src/CoordFrame.cpp
 	src/DownhillSimplex.cpp
 	src/KeyCurve.cpp

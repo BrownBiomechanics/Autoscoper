@@ -60,10 +60,10 @@ TrackingOptionsDialog::TrackingOptionsDialog(QWidget *parent) :
 	skip_frame = 1;
 	curFrame = 0;
 	d_frame = 1;
-	num_repeats = 10;
+	num_repeats = 1;
 
-	// Opt Method: Default is Downhill Simplex
-	opt_method = 1;
+	// Opt Method: Default is PSO
+	opt_method = 0;
 
 	// Backup Save
 	is_backup_on = 1; // Always on
@@ -75,8 +75,8 @@ TrackingOptionsDialog::TrackingOptionsDialog(QWidget *parent) :
 
 	// Read random search limits and iterations
 	inner_iter = 100;
-	trans_limit = 2;
-	rot_limit = -2;
+	trans_limit = 3;
+	rot_limit = -3;
 
 	// Cost Function: Default is Bone Models
 	cf_model = 0; // 0 is Bone Model ------ 1 is Implant Model
@@ -229,7 +229,7 @@ void TrackingOptionsDialog::on_pushButton_OK_clicked(bool checked){
 			opt_method = 1; // runs downhill simplex
 		}
 		else {
-			opt_method = 0; // runs random search method
+			opt_method = 0; // runs particle swarm optimization
 		}
 
 		// Read Cost Function
