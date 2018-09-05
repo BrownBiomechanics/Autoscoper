@@ -75,9 +75,9 @@ class TrackingOptionsDialog : public QDialog{
 		double nm_opt_beta;
 		double nm_opt_gamma;
 		// Read random search limits and iterations
-		unsigned int inner_iter;
-		double trans_limit;
-		double rot_limit;
+		unsigned int max_iter;
+		double min_lim;
+		double max_lim;
 
 
 		int curFrame;

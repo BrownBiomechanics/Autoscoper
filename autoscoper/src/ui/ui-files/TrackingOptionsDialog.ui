@@ -348,39 +348,6 @@ QGroupBox::title {
         <string>Optimization Parameters</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_7">
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_8">
-          <property name="text">
-           <string>Particle Swarm Opt.</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="7">
-         <spacer name="horizontalSpacer_7">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>41</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="1">
-         <spacer name="horizontalSpacer_11">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="1" column="2">
          <widget class="QLabel" name="label_9">
           <property name="text">
@@ -388,30 +355,14 @@ QGroupBox::title {
           </property>
          </widget>
         </item>
-        <item row="1" column="3">
-         <widget class="QSpinBox" name="spinBox_rot_limit">
-          <property name="minimum">
-           <number>-20</number>
-          </property>
-          <property name="maximum">
-           <number>-1</number>
-          </property>
-          <property name="value">
-           <number>-3</number>
-          </property>
-          <property name="displayIntegerBase">
-           <number>10</number>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="5">
+        <item row="1" column="6">
          <widget class="QLabel" name="label_10">
           <property name="text">
            <string>Max Limit</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="4">
+        <item row="1" column="5">
          <spacer name="horizontalSpacer_12">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -424,20 +375,27 @@ QGroupBox::title {
           </property>
          </spacer>
         </item>
-        <item row="1" column="6">
-         <widget class="QSpinBox" name="spinBox_trans_limit">
-          <property name="minimum">
-           <number>1</number>
+        <item row="2" column="9">
+         <spacer name="horizontalSpacer_7">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
-          <property name="maximum">
-           <number>20</number>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>41</width>
+            <height>20</height>
+           </size>
           </property>
-          <property name="value">
-           <number>3</number>
+         </spacer>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string>Particle Swarm Opt.</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="7">
+        <item row="1" column="9">
          <spacer name="horizontalSpacer_13">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -466,7 +424,7 @@ QGroupBox::title {
           </property>
          </spacer>
         </item>
-        <item row="2" column="6">
+        <item row="2" column="8">
          <widget class="QSpinBox" name="spinBox_gamma">
           <property name="minimum">
            <number>1</number>
@@ -476,7 +434,7 @@ QGroupBox::title {
           </property>
          </widget>
         </item>
-        <item row="2" column="9">
+        <item row="2" column="11">
          <widget class="QSpinBox" name="spinBox_beta">
           <property name="minimum">
            <number>1</number>
@@ -489,14 +447,27 @@ QGroupBox::title {
           </property>
          </widget>
         </item>
-        <item row="2" column="8">
+        <item row="2" column="10">
          <widget class="QLabel" name="label_7">
           <property name="text">
            <string>Contraction</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="3">
+        <item row="1" column="1">
+         <spacer name="horizontalSpacer_11">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="4">
          <widget class="QSpinBox" name="spinBox_alpha">
           <property name="minimum">
            <number>1</number>
@@ -506,10 +477,10 @@ QGroupBox::title {
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_4">
+        <item row="1" column="10">
+         <widget class="QLabel" name="label_11">
           <property name="text">
-           <string>Neldon-Mead </string>
+           <string>Max Iteration</string>
           </property>
          </widget>
         </item>
@@ -520,14 +491,34 @@ QGroupBox::title {
           </property>
          </widget>
         </item>
-        <item row="2" column="5">
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Neldon-Mead </string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="11">
+         <widget class="QSpinBox" name="spinBox_max_iter">
+          <property name="minimum">
+           <number>100</number>
+          </property>
+          <property name="maximum">
+           <number>9999</number>
+          </property>
+          <property name="value">
+           <number>1000</number>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="6">
          <widget class="QLabel" name="label_6">
           <property name="text">
            <string>Expansion</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="4">
+        <item row="2" column="5">
          <spacer name="horizontalSpacer_6">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -543,23 +534,38 @@ QGroupBox::title {
           </property>
          </spacer>
         </item>
-        <item row="1" column="9">
-         <widget class="QSpinBox" name="spinBox_inner_iter">
-          <property name="minimum">
-           <number>100</number>
+        <item row="1" column="4">
+         <widget class="QDoubleSpinBox" name="spinBox_min_lim">
+          <property name="decimals">
+           <number>1</number>
           </property>
-          <property name="maximum">
-           <number>9999</number>
+          <property name="minimum">
+           <double>-100.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.200000000000000</double>
           </property>
           <property name="value">
-           <number>1000</number>
+           <double>-3.000000000000000</double>
           </property>
          </widget>
         </item>
         <item row="1" column="8">
-         <widget class="QLabel" name="label_11">
-          <property name="text">
-           <string>Max Iteration</string>
+         <widget class="QDoubleSpinBox" name="spinBox_max_lim">
+          <property name="decimals">
+           <number>1</number>
+          </property>
+          <property name="minimum">
+           <double>-100.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>100.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.200000000000000</double>
+          </property>
+          <property name="value">
+           <double>3.000000000000000</double>
           </property>
          </widget>
         </item>

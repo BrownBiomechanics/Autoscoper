@@ -122,6 +122,7 @@ class TimelineDockWidget : public QDockWidget{
 		void on_toolButton_Stop_clicked();
 		void on_toolButton_Play_clicked();
 		void on_toolButton_NextFrame_clicked();
+		void on_toolButton_NextTenFrame_clicked();
 		void on_horizontalSlider_Frame_valueChanged(int value);
 
 		void on_doubleSpinBox_X_valueChanged ( double d );

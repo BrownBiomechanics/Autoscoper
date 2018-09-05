@@ -116,7 +116,7 @@ public:
 	void init();
     void load(const Trial& trial);
     Trial* trial() { return &trial_; }
-    void optimize(int frame, int dframe, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int inner_iter, double rot_limit, double trans_limit, int cf_model);
+    void optimize(int frame, int dframe, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model);
     double minimizationFunc(const double* values) const;
 	std::vector <double> trackFrame(unsigned int volumeID, double* xyzpr) const;
     std::vector<gpu::View*>& views() { return views_; }
@@ -141,7 +141,7 @@ private:
 	float getRandom(float low, float high);
 	float getRandomClamped();
 	float host_fitness_function(float x[]);
-	void pso(float *positions, float *velocities, float *pBests, float *gBest, int MAX_EPOCHS);
+	void pso(float *positions, float *velocities, float *pBests, float *gBest, unsigned int MAX_EPOCHS);
 	// END: NEW PSO
 
 	int optimization_method = 0;

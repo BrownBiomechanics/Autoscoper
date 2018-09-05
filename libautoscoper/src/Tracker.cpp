@@ -236,7 +236,7 @@ void Tracker::load(const Trial& trial)
     }
 }
 
-void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int inner_iter, double rot_limit, double trans_limit, int cf_model)
+void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model)
 {
 
 	optimization_method = opt_method;
@@ -328,12 +328,12 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 			// PSO Algorithm
 			double xyzypr_manip[6] = { 0 };
 			//int gBest = 0;
-			int gBestTest = 1000;
+			//int gBestTest = 1000;
 			int stall_iter = 0;
 			bool done = false;
-			float START_RANGE_MIN = (float)rot_limit;
-			float START_RANGE_MAX = (float)trans_limit;
-			int MAX_EPOCHS = inner_iter;
+			float START_RANGE_MIN = (float)min_limit;
+			float START_RANGE_MAX = (float)max_limit;
+			unsigned int MAX_EPOCHS = max_iter;
 			
 			float positions[NUM_OF_PARTICLES*NUM_OF_DIMENSIONS];
 			float velocities[NUM_OF_PARTICLES*NUM_OF_DIMENSIONS];
@@ -344,12 +344,14 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 
 			for (int i = 0; i < NUM_OF_PARTICLES*NUM_OF_DIMENSIONS; i++)
 			{
-				//if (i == NUM_OF_DIMENSIONS) {
-				//	positions[i] = (float)0.0;
-				//}
-				//else {
+				if (i >= NUM_OF_DIMENSIONS) {
 					positions[i] = getRandom(START_RANGE_MIN, START_RANGE_MAX);
-				//}
+				}
+				// First point will be the initial position
+				else {
+					positions[i] = (float)0.0;
+
+				}
 				pBests[i] = positions[i];
 				velocities[i] = 0;
 			}
@@ -367,6 +369,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 
 			printf("Time elapsed:%10.3lf s\n", (double)(cpu_end - cpu_begin) / CLOCKS_PER_SEC);
 
+			cout << "Pose change from initial position: ";
 			for (int i = 0; i < NUM_OF_DIMENSIONS; i++)
 			{
 				if (i == NUM_OF_DIMENSIONS - 1)
@@ -592,7 +595,7 @@ double Tracker::minimizationFunc(const double* values) const
 	double correlation = correlations[0];
 	//printf("Cam 0: %4.5f", correlation);
 	for (unsigned int i = 1; i < trial_.cameras.size(); ++i) {
-		correlation *= correlations[i];
+		correlation += correlations[i];
 	//	printf("\tCam %d: %4.5f", i, correlations[i]);
 	}
 	//printf("\tFinal NCC: %4.5f\n", correlation);
@@ -762,7 +765,7 @@ float Tracker::host_fitness_function(float x[])
 	double total = minimizationFunc(xyzypr_manip);
 	
 	//cout << "Check total function: " << total << endl;
-	return total;
+	return (float)total;
 }
 
 float Tracker::getRandom(float low, float high)
@@ -775,15 +778,25 @@ float Tracker::getRandomClamped()
 	return (float)rand() / (float)RAND_MAX;
 }
 
-void Tracker::pso(float *positions, float *velocities, float *pBests, float *gBest, int MAX_EPOCHS)
+void Tracker::pso(float *positions, float *velocities, float *pBests, float *gBest, unsigned int MAX_EPOCHS)
 {
 	int stall_iter = 0;
 	float tempParticle1[NUM_OF_DIMENSIONS];
 	float tempParticle2[NUM_OF_DIMENSIONS];
 
-	int counter = 0;
-	for (int iter = 0; iter < MAX_EPOCHS; iter++)
+	bool do_this = true;
+	unsigned int counter = 0;
+	//for (int iter = 0; iter < (signed int)MAX_EPOCHS; iter++)
+
+	while (do_this)
 	{
+		if (counter >= MAX_EPOCHS)
+		{
+			do_this = false;
+		}
+
+		float currentBest = host_fitness_function(gBest);
+
 		for (int i = 0; i < NUM_OF_PARTICLES*NUM_OF_DIMENSIONS; i++)
 		{
 			float rp = getRandomClamped();
@@ -823,21 +836,24 @@ void Tracker::pso(float *positions, float *velocities, float *pBests, float *gBe
 						//	cout << gBest[j] << ",";
 						//}
 					}
-					cout << "Best NCC is: " << host_fitness_function(tempParticle1) << endl;
-					
-					if (abs(host_fitness_function(tempParticle1) - host_fitness_function(gBest)) < 1e-5)
-					{
-						stall_iter += 1;
-					}
-					if (stall_iter == 50)
-					{
-						cout << "Maximum Stall Iteration was reached" << endl;
-						cout << "Total Iteration of: " << counter << endl;
-						return;
-					}
 				}
 			}
 		}
+
+		float epochBest = host_fitness_function(gBest);
+
+		cout << "Best NCC in this epoch is: " << epochBest << endl;
+
+		if (abs(epochBest - currentBest) < (float)1e-5)
+		{
+			stall_iter += 1;
+		}
+		if (stall_iter == 15)
+		{
+			cout << "Maximum Stall Iteration was reached" << endl;
+			do_this = false;
+		}
+
 		counter += 1;
 	}
 	cout << "Total #Epoch of: " << counter << endl;

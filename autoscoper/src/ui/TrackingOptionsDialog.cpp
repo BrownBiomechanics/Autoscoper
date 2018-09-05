@@ -74,9 +74,9 @@ TrackingOptionsDialog::TrackingOptionsDialog(QWidget *parent) :
 	nm_opt_beta  = 0.5;
 
 	// Read random search limits and iterations
-	inner_iter = 100;
-	trans_limit = 3;
-	rot_limit = -3;
+	max_iter = 100;
+	min_lim = -3.0;
+	max_lim = 3.0;
 
 	// Cost Function: Default is Bone Models
 	cf_model = 0; // 0 is Bone Model ------ 1 is Implant Model
@@ -132,9 +132,9 @@ void TrackingOptionsDialog::frame_optimize()
 		nm_opt_beta  = diag->spinBox_beta->value() / 10;
 
 		// Read random search limits and iterations
-		inner_iter = diag->spinBox_inner_iter->value();
-		rot_limit = diag->spinBox_rot_limit->value();
-		trans_limit = diag->spinBox_trans_limit->value();
+		max_iter = diag->spinBox_max_iter->value();
+		min_lim = diag->spinBox_min_lim->value();
+		max_lim = diag->spinBox_max_lim->value();
 
 		// Set optimization parameters (SEND THEM TO TRACKER CLASS)
 		/*
@@ -144,7 +144,7 @@ void TrackingOptionsDialog::frame_optimize()
 		*/
 
 		// Optimization
-		  mainwindow->getTracker()->optimize(frame, d_frame, num_repeats, nm_opt_alpha, nm_opt_gamma, nm_opt_beta, opt_method, inner_iter, rot_limit, trans_limit, cf_model);
+		  mainwindow->getTracker()->optimize(frame, d_frame, num_repeats, nm_opt_alpha, nm_opt_gamma, nm_opt_beta, opt_method, max_iter, min_lim, max_lim, cf_model);
 
           mainwindow->update_graph_min_max(mainwindow->getPosition_graph(), mainwindow->getTracker()->trial()->frame);
 

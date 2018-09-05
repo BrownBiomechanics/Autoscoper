@@ -137,6 +137,13 @@ void TimelineDockWidget::on_toolButton_NextFrame_clicked(){
 	dock->horizontalSlider_Frame->setValue(dock->labelFrame->text().toInt() + 1);
 	if(play_tag && dock->horizontalSlider_Frame->value() == dock->horizontalSlider_Frame->maximum())on_toolButton_Stop_clicked();
 }
+
+void TimelineDockWidget::on_toolButton_NextTenFrame_clicked() {
+	dock->horizontalSlider_Frame->setValue(dock->labelFrame->text().toInt() + 10);
+	if (play_tag && dock->horizontalSlider_Frame->value() == dock->horizontalSlider_Frame->maximum())on_toolButton_Stop_clicked();
+}
+
+
 void TimelineDockWidget::setFrame(int frame){
 	dock->horizontalSlider_Frame->setValue(frame);
 }

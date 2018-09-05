@@ -1615,6 +1615,7 @@ void AutoscoperMainWindow::on_actionInsert_Key_triggered(bool checked){
 	timeline_widget->getSelectedNodes()->clear();
 
     double xyzypr[6];
+	double manip_0[6] = { 0 };
 	(CoordFrame::from_matrix(trans(getManipulator()->transform()))* *tracker->trial()->getVolumeMatrix(-1)).to_xyzypr(xyzypr);
 	getTracker()->trial()->getXCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[0]);
 	getTracker()->trial()->getYCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[1]);
@@ -1626,6 +1627,9 @@ void AutoscoperMainWindow::on_actionInsert_Key_triggered(bool checked){
 	timeline_widget->update_graph_min_max();
 
 	redrawGL();
+
+	double NCC = getTracker()->minimizationFunc(manip_0);
+	cout << "Current NCC is: " << NCC << endl;
 }
 
 void AutoscoperMainWindow::on_actionLock_triggered(bool checked){

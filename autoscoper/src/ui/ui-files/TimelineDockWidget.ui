@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>933</width>
+    <width>946</width>
     <height>447</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>933</width>
+    <width>946</width>
     <height>200</height>
    </size>
   </property>
@@ -30,7 +30,16 @@
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout_3">
-    <property name="margin">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
      <number>0</number>
     </property>
     <property name="spacing">
@@ -66,13 +75,6 @@
        <property name="bottomMargin">
         <number>3</number>
        </property>
-       <item row="0" column="6">
-        <widget class="QSlider" name="horizontalSlider_Frame">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="3">
         <widget class="QToolButton" name="toolButton_NextFrame">
          <property name="text">
@@ -87,25 +89,12 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="7">
-        <widget class="QSpinBox" name="spinBox_LastFrame"/>
-       </item>
-       <item row="0" column="0">
-        <widget class="QToolButton" name="toolButton_PreviousFrame">
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="../autoscoper_resource.qrc">
-           <normaloff>:/images/resource-files/icons/prev_blue.png</normaloff>:/images/resource-files/icons/prev_blue.png</iconset>
-         </property>
-         <property name="autoRaise">
-          <bool>true</bool>
+       <item row="0" column="5">
+        <widget class="QSpinBox" name="spinBox_FirstFrame">
+         <property name="maximum">
+          <number>9999</number>
          </property>
         </widget>
-       </item>
-       <item row="0" column="4">
-        <widget class="QSpinBox" name="spinBox_FirstFrame"/>
        </item>
        <item row="0" column="2">
         <widget class="QToolButton" name="toolButton_Play">
@@ -124,6 +113,46 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="7">
+        <widget class="QSlider" name="horizontalSlider_Frame">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="8">
+        <widget class="QSpinBox" name="spinBox_LastFrame"/>
+       </item>
+       <item row="0" column="0">
+        <widget class="QToolButton" name="toolButton_PreviousFrame">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../autoscoper_resource.qrc">
+           <normaloff>:/images/resource-files/icons/prev_blue.png</normaloff>:/images/resource-files/icons/prev_blue.png</iconset>
+         </property>
+         <property name="autoRaise">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="6">
+        <widget class="QLabel" name="labelFrame">
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="1">
         <widget class="QToolButton" name="toolButton_Stop">
          <property name="text">
@@ -138,19 +167,17 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="5">
-        <widget class="QLabel" name="labelFrame">
-         <property name="minimumSize">
-          <size>
-           <width>30</width>
-           <height>0</height>
-          </size>
-         </property>
+       <item row="0" column="4">
+        <widget class="QToolButton" name="toolButton_NextTenFrame">
          <property name="text">
-          <string>0</string>
+          <string/>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <property name="icon">
+          <iconset resource="../autoscoper_resource.qrc">
+           <normaloff>:/images/resource-files/icons/forward_blue.png</normaloff>:/images/resource-files/icons/forward_blue.png</iconset>
+         </property>
+         <property name="autoRaise">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
