@@ -59,6 +59,10 @@
 #include "gpu/cuda/Compositor_kernels.h"
 #include "gpu/cuda/Mult_kernels.h"
 #include <cuda_runtime_api.h>
+
+#include "gpu/cuda/PSO_kernel.h"
+
+
 #else
 #include "gpu/opencl/Ncc.hpp"
 #include "gpu/opencl/Mult.hpp"
@@ -87,6 +91,7 @@ static xromm::Tracker* g_markerless = NULL;
  
 // Bardiya: I commented this out to play with the implant cost function
 double FUNC(double* P) { return g_markerless->minimizationFunc(P+1); }
+double PSO_FUNC(double* P) { return g_markerless->minimizationFunc(P); }
 
 
 namespace xromm {
@@ -137,6 +142,8 @@ namespace xromm {
 	delete[] host_image;
 }
 #endif
+
+
 
 Tracker::Tracker()
     : rendered_drr_(NULL),
@@ -364,7 +371,8 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 			clock_t cpu_begin = clock();
 
 			pso(positions, velocities, pBests, gBest, MAX_EPOCHS);
-
+			//cuda_pso(positions, velocities, pBests, gBest, MAX_EPOCHS);
+			
 			clock_t cpu_end = clock();
 
 			printf("Time elapsed:%10.3lf s\n", (double)(cpu_end - cpu_begin) / CLOCKS_PER_SEC);
@@ -739,132 +747,5 @@ void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) c
 }
 
 
-double Tracker::SA_accept(double e, double ep, double T, double d)
-{
-	double p = exp(-(ep - e)* d/ T);
-	cout << p << endl;
-	return p;
-}
-
-double Tracker::SA_fRand(double fMin, double fMax)
-{
-	double f = (double)rand() / RAND_MAX;
-	return fMin + f * (fMax - fMin);
-}
-
-
-// New Particle Swarm Optimization
-float Tracker::host_fitness_function(float x[])
-{
-	double xyzypr_manip[6] = { 0 };
-	for (int i = 0; i <= NUM_OF_DIMENSIONS - 1; i++)
-	{
-		xyzypr_manip[i] = (double)x[i];
-	} // i
-
-	double total = minimizationFunc(xyzypr_manip);
-	
-	//cout << "Check total function: " << total << endl;
-	return (float)total;
-}
-
-float Tracker::getRandom(float low, float high)
-{
-	return low + float(((high - low) + 1)*rand() / (RAND_MAX + 1.0));
-}
-
-float Tracker::getRandomClamped()
-{
-	return (float)rand() / (float)RAND_MAX;
-}
-
-void Tracker::pso(float *positions, float *velocities, float *pBests, float *gBest, unsigned int MAX_EPOCHS)
-{
-	int stall_iter = 0;
-	float tempParticle1[NUM_OF_DIMENSIONS];
-	float tempParticle2[NUM_OF_DIMENSIONS];
-
-	bool do_this = true;
-	unsigned int counter = 0;
-	//for (int iter = 0; iter < (signed int)MAX_EPOCHS; iter++)
-
-	while (do_this)
-	{
-		if (counter >= MAX_EPOCHS)
-		{
-			do_this = false;
-		}
-
-		float currentBest = host_fitness_function(gBest);
-
-		for (int i = 0; i < NUM_OF_PARTICLES*NUM_OF_DIMENSIONS; i++)
-		{
-			float rp = getRandomClamped();
-			float rg = getRandomClamped();
-
-			velocities[i] = OMEGA * velocities[i] + c1 * rp*(pBests[i] - positions[i]) + c2 * rg*(gBest[i%NUM_OF_DIMENSIONS] - positions[i]);
-
-			positions[i] += velocities[i];
-		}
-
-		for (int i = 0; i < NUM_OF_PARTICLES*NUM_OF_DIMENSIONS; i += NUM_OF_DIMENSIONS)
-		{
-			for (int j = 0; j < NUM_OF_DIMENSIONS; j++)
-			{
-				tempParticle1[j] = positions[i + j];
-				tempParticle2[j] = pBests[i + j];
-			}
-
-			if (host_fitness_function(tempParticle1) < host_fitness_function(tempParticle2))
-			{
-				for (int j = 0; j < NUM_OF_DIMENSIONS; j++)
-				{
-					pBests[i + j] = positions[i + j];
-				}
-
-				if (host_fitness_function(tempParticle1) < host_fitness_function(gBest))
-				{
-					//cout << "Current Best is: " ;
-					for (int j = 0; j < NUM_OF_DIMENSIONS; j++)
-					{
-						gBest[j] = pBests[i + j];
-						//if (j == NUM_OF_DIMENSIONS - 1)
-						//{
-						//	cout << gBest[j] << endl;
-						//}
-						//else {
-						//	cout << gBest[j] << ",";
-						//}
-					}
-				}
-			}
-		}
-
-		float epochBest = host_fitness_function(gBest);
-
-		cout << "Best NCC in this epoch is: " << epochBest << endl;
-
-		if (abs(epochBest - currentBest) < (float)1e-5)
-		{
-			stall_iter += 1;
-		}
-		if (stall_iter == 15)
-		{
-			cout << "Maximum Stall Iteration was reached" << endl;
-			do_this = false;
-		}
-
-		counter += 1;
-	}
-	cout << "Total #Epoch of: " << counter << endl;
-}
-// END: PSO
-
-
-
-
-
 
 } // namespace XROMM
-
-

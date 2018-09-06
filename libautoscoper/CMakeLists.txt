@@ -23,6 +23,7 @@ SET(libautoscoper_SOURCES
 	src/Camera.cpp
 	src/CoordFrame.cpp
 	src/DownhillSimplex.cpp
+	src/PSO_kernel.cpp	
 	src/KeyCurve.cpp
 	src/TiffImage.cpp
 	src/Tracker.cpp

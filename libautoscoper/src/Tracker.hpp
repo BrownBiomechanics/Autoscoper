@@ -60,107 +60,68 @@
 #endif
 #include "Trial.hpp"
 
-// FOR PSO:
-/*
-Sources:
-Kennedy, J. and Eberhart, R. C. Particle swarm optimization.
-Proc. IEEE int'l conf. on neural networks Vol. IV, pp. 1942-1948.
-IEEE service center, Piscataway, NJ, 1995.
-PSO Tutorial found at: http://www.swarmintelligence.org/tutorials.php
-*/
-#include <iostream>
-#include <iomanip>
-#include <cctype>
-#include <ctime>
-#include <cstdlib>
-#include <cmath>
-
-
-
-// ADD: NEW PSO
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <math.h>
-const int NUM_OF_PARTICLES = 500;
-const int NUM_OF_DIMENSIONS = 6;
-//const int MAX_ITER = 500;
-//const float START_RANGE_MIN = -5.12f;
-//const float START_RANGE_MAX = 5.12f;
-const float OMEGA = 0.5;
-const float c1 = 1.5;
-const float c2 = 1.5;
-// END: NEW PSO
 
 namespace xromm
 {
+	class Camera;
+	class CoordFrame;
 
-class Camera;
-class CoordFrame;
+	namespace gpu
+	{
 
-namespace gpu
-{
+		class Filter;
+		class View;
+		class VolumeDescription;
 
-class Filter;
-class View;
-class VolumeDescription;
-
-} // namespace gpu
-
-class Tracker
-{
-public:
-
-    Tracker();
-    ~Tracker();
-	void init();
-    void load(const Trial& trial);
-    Trial* trial() { return &trial_; }
-    void optimize(int frame, int dframe, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model);
-    double minimizationFunc(const double* values) const;
-	std::vector <double> trackFrame(unsigned int volumeID, double* xyzpr) const;
-    std::vector<gpu::View*>& views() { return views_; }
-    const std::vector<gpu::View*>& views() const { return views_; }
-    gpu::View* view(size_t i) { return views_.at(i); }
-    const gpu::View* view(size_t i) const { return views_.at(i); }
-	void updateBackground();
-	void setBackgroundThreshold(float threshold);
-	std::vector<unsigned char> getImageData(unsigned volumeID, unsigned camera, double* xyzpr, unsigned& width, unsigned& height);
+	} // namespace gpu
 
 
-	// Bardiya Cost Function for Implants
-	//double implantMinFunc(const double* values) const;
-	//std::vector<double> trackImplantFrame(unsigned int volumeID, double * xyzypr) const;
+	class Tracker
+	{
+	public:
 
-private:
-    void calculate_viewport(const CoordFrame& modelview, double* viewport) const;
-	double SA_accept(double e, double ep, double T,double d);
-	double SA_fRand(double fMin, double fMax);
+		Tracker();
+		~Tracker();
+		void init();
+		void load(const Trial& trial);
+		Trial* trial() { return &trial_; }
+		void optimize(int frame, int dframe, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model);
+		double minimizationFunc(const double* values) const;
+		std::vector <double> trackFrame(unsigned int volumeID, double* xyzpr) const;
+		std::vector<gpu::View*>& views() { return views_; }
+		const std::vector<gpu::View*>& views() const { return views_; }
+		gpu::View* view(size_t i) { return views_.at(i); }
+		const gpu::View* view(size_t i) const { return views_.at(i); }
+		void updateBackground();
+		void setBackgroundThreshold(float threshold);
+		std::vector<unsigned char> getImageData(unsigned volumeID, unsigned camera, double* xyzpr, unsigned& width, unsigned& height);
 
-	// START: For NEW PSO
-	float getRandom(float low, float high);
-	float getRandomClamped();
-	float host_fitness_function(float x[]);
-	void pso(float *positions, float *velocities, float *pBests, float *gBest, unsigned int MAX_EPOCHS);
-	// END: NEW PSO
 
-	int optimization_method = 0;
-	int cf_model_select = 0;
-    Trial trial_;
-	std::vector <gpu::VolumeDescription*> volumeDescription_;
-    std::vector<gpu::View*> views_;
+		// Bardiya Cost Function for Implants
+		//double implantMinFunc(const double* values) const;
+		//std::vector<double> trackImplantFrame(unsigned int volumeID, double * xyzypr) const;
+
+	private:
+		void calculate_viewport(const CoordFrame& modelview, double* viewport) const;
+
+
+		int optimization_method = 0;
+		int cf_model_select = 0;
+		Trial trial_;
+		std::vector <gpu::VolumeDescription*> volumeDescription_;
+		std::vector<gpu::View*> views_;
 #ifdef WITH_CUDA
-	Buffer* rendered_drr_;
-	Buffer* rendered_rad_;
-	Buffer* background_mask_;
-	Buffer* drr_mask_;
+		Buffer* rendered_drr_;
+		Buffer* rendered_rad_;
+		Buffer* background_mask_;
+		Buffer* drr_mask_;
 #else
-	gpu::Buffer* rendered_drr_;
-	gpu::Buffer* rendered_rad_;
-	gpu::Buffer* background_mask_;
-	gpu::Buffer* drr_mask_;
+		gpu::Buffer* rendered_drr_;
+		gpu::Buffer* rendered_rad_;
+		gpu::Buffer* background_mask_;
+		gpu::Buffer* drr_mask_;
 #endif
-};
+	};
 
 } // namespace XROMM
 
