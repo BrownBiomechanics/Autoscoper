@@ -191,6 +191,7 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 		}
 	break;
 	case 10:
+		//get the image - cropped
 		{
 			qint32* volume = reinterpret_cast<qint32*>(&data[1]);
 			qint32* camera = reinterpret_cast<qint32*>(&data[5]);
@@ -215,6 +216,33 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 		
 		}
 		break;
+	case 11:
+		//optimize from matlab
+		{
+			qint32* frame = reinterpret_cast<qint32*>(&data[1]);
+			qint32* repeats = reinterpret_cast<qint32*>(&data[5]);
+			qint32* max_iter = reinterpret_cast<qint32*>(&data[9]);
+			double* min_limit = reinterpret_cast<double*>(&data[13]);
+			double* max_limit = reinterpret_cast<double*>(&data[21]);
+			qint32 dframe = 1;// reinterpret_cast<qint32*>(&data[5]);
+			double nm_opt_alpha = (double)1.0;//reinterpret_cast<double*>(&data[13]);
+			double nm_opt_gamma = (double)1.0;//reinterpret_cast<double*>(&data[17]);
+			double nm_opt_beta = (double)1.0;//reinterpret_cast<double*>(&data[21]);
+			qint32 opt_method = 0;//reinterpret_cast<qint32*>(&data[25]);
+			qint32 cf_model = 0;//reinterpret_cast<qint32*>(&data[41]);
+
+			std::cerr << "Running optimization from autoscoper for frame #" << *frame << std::endl;
+
+			m_mainwindow->optimizeFrame(*frame, dframe, *repeats,
+				nm_opt_alpha, nm_opt_gamma, nm_opt_beta,
+				opt_method,
+				*max_iter, *min_limit, *max_limit,
+				cf_model);
+
+			connection->write(QByteArray(1, 11));
+		}
+		break;
+
 	default:
 		std::cerr << "Cannot handle message" << std::endl;
 		connection->write(QByteArray(1,0));

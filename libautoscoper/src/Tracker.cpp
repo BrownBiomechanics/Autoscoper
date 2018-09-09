@@ -357,7 +357,6 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 				// First point will be the initial position
 				else {
 					positions[i] = (float)0.0;
-
 				}
 				pBests[i] = positions[i];
 				velocities[i] = 0;
@@ -390,8 +389,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 				xyzypr_manip[i] = gBest[i];
 			}
 
-			printf("Minimum NCC = %f\n", host_fitness_function(gBest));
-
+			printf("Minimum NCC from PSO = %f\n", host_fitness_function(gBest));
 
 			manip = CoordFrame::from_xyzAxis_angle(xyzypr_manip);
 			// PSO End

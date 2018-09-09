@@ -125,7 +125,7 @@ target_link_libraries(autoscoper PUBLIC libautoscoper
 	${Qt5Widgets_LIBRARIES}
 	${Qt5OpenGL_LIBRARIES}
 	${Qt5Network_LIBRARIES}
-	${Qt5GUI_LIBRARIES})
+	${Qt5Gui_LIBRARIES})
 	
 target_include_directories(autoscoper PUBLIC  ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
 target_include_directories(autoscoper PUBLIC  
@@ -135,7 +135,7 @@ target_include_directories(autoscoper PUBLIC
 	${Qt5Widgets_INCLUDE_DIRS}
 	${Qt5OpenGL_INCLUDE_DIRS}
 	${Qt5Network_INCLUDE_DIRS}
-	${Qt5GUI_INCLUDE_DIRS}) 
+	${Qt5Gui_INCLUDE_DIRS}) 
 
 include(UseGLEW)
 UseGLEW(autoscoper PUBLIC)

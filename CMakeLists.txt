@@ -6,7 +6,7 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "default install path" FORCE )
 endif()
 
-option(BUILD_WITH_CUDA "Build With CUDA instead of OpenCL" OFF)
+option(BUILD_WITH_CUDA "Build With CUDA instead of OpenCL" ON)
 
 #SET BUILD-TYPE TO RELEASE IF NOT DEFINED
 if(NOT CMAKE_BUILD_TYPE)

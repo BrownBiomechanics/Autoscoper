@@ -91,13 +91,13 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
 
 		float epochBest = host_fitness_function(gBest);
 
-		std::cout << "Best NCC in this epoch is: " << epochBest << std::endl;
+		std::cout << "Current Best NCC: " << epochBest << std::endl;
 
 		if (abs(epochBest - currentBest) < (float)1e-5)
 		{
 			stall_iter += 1;
 		}
-		if (stall_iter == 20)
+		if (stall_iter == 15)
 		{
 			std::cout << "Maximum Stall Iteration was reached" << std::endl;
 			do_this = false;

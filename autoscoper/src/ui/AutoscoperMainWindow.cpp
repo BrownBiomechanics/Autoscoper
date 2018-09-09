@@ -614,6 +614,18 @@ void AutoscoperMainWindow::setFrame(int frame){
     frame_changed();
 }
 
+
+void AutoscoperMainWindow::optimizeFrame(int frame, int dframe, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model) {
+
+	tracker->optimize(frame, dframe, repeats,
+		nm_opt_alpha, nm_opt_gamma, nm_opt_beta,
+		opt_method,
+		max_iter, min_limit, max_limit,
+		cf_model);
+}
+
+
+
 void AutoscoperMainWindow::update_coord_frame()
 {
     double xyzypr[6];
@@ -817,7 +829,7 @@ std::vector<double> AutoscoperMainWindow::getPose(unsigned int volume, unsigned 
 	return pose;
 }
 
-void AutoscoperMainWindow::setPose(std::vector<double> pose, unsigned volume, unsigned frame)
+void AutoscoperMainWindow::setPose(std::vector<double> pose, unsigned int volume, unsigned frame)
 {
 	tracker->trial()->getXCurve(volume)->insert(frame, pose[0]);
 	tracker->trial()->getYCurve(volume)->insert(frame, pose[1]);
@@ -839,6 +851,7 @@ void AutoscoperMainWindow::setBackground(double threshold)
 	background_threshold_ = threshold;
 	tracker->setBackgroundThreshold(background_threshold_);
 }
+
 
 std::vector<double> AutoscoperMainWindow::getNCC(unsigned volumeID, double* xyzpr)
 {
