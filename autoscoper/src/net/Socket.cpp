@@ -219,11 +219,12 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 	case 11:
 		//optimize from matlab
 		{
-			qint32* frame = reinterpret_cast<qint32*>(&data[1]);
-			qint32* repeats = reinterpret_cast<qint32*>(&data[5]);
-			qint32* max_iter = reinterpret_cast<qint32*>(&data[9]);
-			double* min_limit = reinterpret_cast<double*>(&data[13]);
-			double* max_limit = reinterpret_cast<double*>(&data[21]);
+			qint32* volumeID = reinterpret_cast<qint32*>(&data[1]);
+			qint32* frame = reinterpret_cast<qint32*>(&data[5]);
+			qint32* repeats = reinterpret_cast<qint32*>(&data[9]);
+			qint32* max_iter = reinterpret_cast<qint32*>(&data[13]);
+			double* min_limit = reinterpret_cast<double*>(&data[17]);
+			double* max_limit = reinterpret_cast<double*>(&data[25]);
 			qint32 dframe = 1;// reinterpret_cast<qint32*>(&data[5]);
 			double nm_opt_alpha = (double)1.0;//reinterpret_cast<double*>(&data[13]);
 			double nm_opt_gamma = (double)1.0;//reinterpret_cast<double*>(&data[17]);
@@ -233,7 +234,7 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 
 			std::cerr << "Running optimization from autoscoper for frame #" << *frame << std::endl;
 
-			m_mainwindow->optimizeFrame(*frame, dframe, *repeats,
+			m_mainwindow->optimizeFrame(*volumeID, *frame, dframe, *repeats,
 				nm_opt_alpha, nm_opt_gamma, nm_opt_beta,
 				opt_method,
 				*max_iter, *min_limit, *max_limit,
