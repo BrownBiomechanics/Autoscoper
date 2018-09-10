@@ -356,7 +356,14 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 				}
 				// First point will be the initial position
 				else {
-					positions[i] = (float)0.0;
+					if (j > 1)
+					{
+						positions[i] = (float)0.0;
+					}
+					else
+					{
+						positions[i] = (float)0.2; // Noise for refinements
+					}
 				}
 				pBests[i] = positions[i];
 				velocities[i] = 0;

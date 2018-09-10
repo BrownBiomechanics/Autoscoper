@@ -13,7 +13,6 @@ float host_fitness_function(float x[])
 
 	double total = PSO_FUNC(xyzypr_manip);
 
-	// std::cout << "Check total function: " << total << std::endl;
 	return (float)total;
 }
 
@@ -77,13 +76,6 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
 					for (int j = 0; j < NUM_OF_DIMENSIONS; j++)
 					{
 						gBest[j] = pBests[i + j];
-						//if (j == NUM_OF_DIMENSIONS - 1)
-						//{
-						//	cout << gBest[j] << endl;
-						//}
-						//else {
-						//	cout << gBest[j] << ",";
-						//}
 					}
 				}
 			}
@@ -93,11 +85,11 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
 
 		std::cout << "Current Best NCC: " << epochBest << std::endl;
 
-		if (abs(epochBest - currentBest) < (float)1e-5)
+		if (abs(epochBest - currentBest) < (float)1e-6)
 		{
 			stall_iter += 1;
 		}
-		if (stall_iter == 15)
+		if (stall_iter == 25)
 		{
 			std::cout << "Maximum Stall Iteration was reached" << std::endl;
 			do_this = false;
