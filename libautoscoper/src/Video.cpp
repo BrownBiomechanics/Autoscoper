@@ -49,6 +49,10 @@
 #include <sys/types.h>
 #include <sys/dir.h>
 #endif
+#ifdef __linux__
+#include <sys/types.h>
+#include <sys/dir.h>
+#endif
 
 #include <stdexcept>
 

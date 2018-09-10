@@ -42,7 +42,7 @@
 #ifndef QTCATEGORYBUTTON_H
 #define QTCATEGORYBUTTON_H
 
-#include <QPushButton.h>
+#include <QPushButton>
 
 class QTreeWidget;
 class QTreeWidgetItem;
