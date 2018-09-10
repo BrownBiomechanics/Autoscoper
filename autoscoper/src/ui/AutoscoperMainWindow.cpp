@@ -708,7 +708,7 @@ void AutoscoperMainWindow::setLastFolder(QString lastFolder)
 void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume){
 	const char* s = save_with_commas ? "," : " ";
 
-	std::ofstream file(filename.toStdString(), ios::out);
+	std::ofstream file(filename.toStdString().c_str(), ios::out);
 
 	int start, stop;
 	if (volume == -1)
@@ -1033,11 +1033,11 @@ void AutoscoperMainWindow::openTrial(){
 
 void AutoscoperMainWindow::openTrial(QString filename){
     try {
-		Trial * trial = new Trial(filename.toStdString());
+		Trial * trial = new Trial(filename.toStdString().c_str());
 		tracker->load(*trial);
 		delete trial;
 
-		trial_filename = filename.toStdString();
+		trial_filename = filename.toStdString().c_str();
 		std::cerr << "Filename: " << trial_filename << std::endl;
 		is_trial_saved = true;
 		is_tracking_saved = true;
@@ -1218,7 +1218,7 @@ void AutoscoperMainWindow::on_actionSave_as_triggered(bool checked){
 	QString filename = get_filename(true);
     if (filename.compare("") != 0) {
         try {
-			trial_filename = filename.toStdString();
+			trial_filename = filename.toStdString().c_str();
 			tracker->trial()->save(trial_filename);
             is_tracking_saved = true;
         }
@@ -1289,7 +1289,7 @@ void AutoscoperMainWindow::on_actionSaveForBatch_triggered(bool checked){
 #endif
 				//save Trial
 				QString trial_filename = inputPath + OS_SEP + "trial.cfg";
-				tracker->trial()->save(trial_filename.toStdString());
+				tracker->trial()->save(trial_filename.toStdString().c_str());
 				xmlWriter.writeStartElement("Trial");
 				xmlWriter.writeCharacters(trial_filename);
 				xmlWriter.writeEndElement();
@@ -1410,7 +1410,7 @@ void AutoscoperMainWindow::runBatch(QString batchfile, bool saveData){
 							int id = attr.value("id").toString().toInt();
 							fprintf(stderr, "Load Pivot %d Setting\n", id);
 							QString pivot_data = xmlReader.readElementText();
-							tracker->trial()->getVolumeMatrix(id)->from_string(pivot_data.toStdString());
+							tracker->trial()->getVolumeMatrix(id)->from_string(pivot_data.toStdString().c_str());
 						}
 						else if (name == "TrackingData")
 						{
@@ -1819,7 +1819,7 @@ void AutoscoperMainWindow::on_actionExport_NCC_as_csv_triggered(bool checked) {
 
 void AutoscoperMainWindow::save_ncc_results(QString filename) {
 
-	std::ofstream file(filename.toStdString(), ios::out);
+	std::ofstream file(filename.toStdString().c_str(), ios::out);
 
 	file.precision(6);
 	file.setf(ios::fixed, ios::floatfield);
@@ -1852,7 +1852,7 @@ void AutoscoperMainWindow::on_actionExport_all_NCCs_near_this_pose_triggered(boo
 
 
 void AutoscoperMainWindow::save_nearby_nccs(QString filename) {
-	std::ofstream file(filename.toStdString(), ios::out);
+	std::ofstream file(filename.toStdString().c_str(), ios::out);
 
 	file.precision(6);
 	file.setf(ios::fixed, ios::floatfield);

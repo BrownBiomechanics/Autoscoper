@@ -160,8 +160,8 @@ NewTrialDialog::run()
         trial = xromm::Trial();
 		int maxFrames = 0;
 		for(int i = 0; i < nbCams; i++){
-			trial.cameras.push_back(xromm::Camera(cameras_mayaCam[i].toStdString()));
-			trial.videos.push_back(xromm::Video(cameras_videoPath[i].toStdString()));
+			trial.cameras.push_back(xromm::Camera(cameras_mayaCam[i].toStdString().c_str()));
+			trial.videos.push_back(xromm::Video(cameras_videoPath[i].toStdString().c_str()));
         
 			maxFrames = (maxFrames > trial.videos.at(i).num_frames()) ? maxFrames : trial.videos.at(i).num_frames() ;
 		}
@@ -209,7 +209,7 @@ NewTrialDialog::run()
 			bool volume_flip_y = volumes[i]->widget->toolButton_FlipY->isChecked();
 			bool volume_flip_z = volumes[i]->widget->toolButton_FlipZ->isChecked();
 
-			xromm::Volume volume(volume_filename.toStdString());
+			xromm::Volume volume(volume_filename.toStdString().c_str());
 
 			volume.scaleX(volume_scale_x);
 			volume.scaleY(volume_scale_y);
