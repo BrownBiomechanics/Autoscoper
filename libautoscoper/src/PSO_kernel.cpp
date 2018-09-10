@@ -26,7 +26,7 @@ float getRandomClamped()
 	return (float)rand() / (float)RAND_MAX;
 }
 
-void pso(float *positions, float *velocities, float *pBests, float *gBest, unsigned int MAX_EPOCHS)
+void pso(float *positions, float *velocities, float *pBests, float *gBest, unsigned int MAX_EPOCHS, unsigned int MAX_STALL)
 {
 	int stall_iter = 0;
 	float tempParticle1[NUM_OF_DIMENSIONS];
@@ -85,11 +85,11 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
 
 		std::cout << "Current Best NCC: " << epochBest << std::endl;
 
-		if (abs(epochBest - currentBest) < (float)1e-6)
+		if (std::abs(epochBest - currentBest) < (float)1e-5)
 		{
 			stall_iter += 1;
 		}
-		if (stall_iter == 25)
+		if (stall_iter == MAX_STALL)
 		{
 			std::cout << "Maximum Stall Iteration was reached" << std::endl;
 			do_this = false;

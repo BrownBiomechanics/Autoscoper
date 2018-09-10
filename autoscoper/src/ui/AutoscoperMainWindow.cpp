@@ -615,7 +615,7 @@ void AutoscoperMainWindow::setFrame(int frame){
 }
 
 
-void AutoscoperMainWindow::optimizeFrame(int volumeID, int frame, int dframe, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model) {
+void AutoscoperMainWindow::optimizeFrame(int volumeID, int frame, int dframe, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int stall_iter) {
 
 	tracker->trial()->current_volume = volumeID;
 
@@ -625,7 +625,7 @@ void AutoscoperMainWindow::optimizeFrame(int volumeID, int frame, int dframe, in
 		nm_opt_alpha, nm_opt_gamma, nm_opt_beta,
 		opt_method,
 		max_iter, min_limit, max_limit,
-		cf_model);
+		cf_model, stall_iter);
 }
 
 

@@ -85,7 +85,7 @@ namespace xromm
 		void init();
 		void load(const Trial& trial);
 		Trial* trial() { return &trial_; }
-		void optimize(int frame, int dframe, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model);
+		void optimize(int frame, int dframe, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int max_stall_iter);
 		double minimizationFunc(const double* values) const;
 		std::vector <double> trackFrame(unsigned int volumeID, double* xyzpr) const;
 		std::vector<gpu::View*>& views() { return views_; }

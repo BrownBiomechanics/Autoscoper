@@ -348,20 +348,6 @@ QGroupBox::title {
         <string>Optimization Parameters</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_7">
-        <item row="1" column="2">
-         <widget class="QLabel" name="label_9">
-          <property name="text">
-           <string>Min Limit</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="6">
-         <widget class="QLabel" name="label_10">
-          <property name="text">
-           <string>Max Limit</string>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="5">
          <spacer name="horizontalSpacer_12">
           <property name="orientation">
@@ -375,38 +361,12 @@ QGroupBox::title {
           </property>
          </spacer>
         </item>
-        <item row="2" column="9">
-         <spacer name="horizontalSpacer_7">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>41</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_8">
+        <item row="1" column="10">
+         <widget class="QLabel" name="label_11">
           <property name="text">
-           <string>Particle Swarm Opt.</string>
+           <string>Max Epochs</string>
           </property>
          </widget>
-        </item>
-        <item row="1" column="9">
-         <spacer name="horizontalSpacer_13">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
         </item>
         <item row="2" column="1">
          <spacer name="horizontalSpacer_5">
@@ -424,33 +384,37 @@ QGroupBox::title {
           </property>
          </spacer>
         </item>
-        <item row="2" column="8">
-         <widget class="QSpinBox" name="spinBox_gamma">
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="value">
-           <number>2</number>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="11">
-         <widget class="QSpinBox" name="spinBox_beta">
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="maximum">
-           <number>10</number>
-          </property>
-          <property name="value">
-           <number>5</number>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="10">
-         <widget class="QLabel" name="label_7">
+        <item row="1" column="2">
+         <widget class="QLabel" name="label_9">
           <property name="text">
-           <string>Contraction</string>
+           <string>Min Limit</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="6">
+         <widget class="QLabel" name="label_10">
+          <property name="text">
+           <string>Max Limit</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="9">
+         <spacer name="horizontalSpacer_13">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string>Particle Swarm Opt.</string>
           </property>
          </widget>
         </item>
@@ -467,37 +431,6 @@ QGroupBox::title {
           </property>
          </spacer>
         </item>
-        <item row="2" column="4">
-         <widget class="QSpinBox" name="spinBox_alpha">
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="value">
-           <number>1</number>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="10">
-         <widget class="QLabel" name="label_11">
-          <property name="text">
-           <string>Max Iteration</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="2">
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>Reflection</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>Neldon-Mead </string>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="11">
          <widget class="QSpinBox" name="spinBox_max_iter">
           <property name="minimum">
@@ -511,28 +444,12 @@ QGroupBox::title {
           </property>
          </widget>
         </item>
-        <item row="2" column="6">
-         <widget class="QLabel" name="label_6">
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_4">
           <property name="text">
-           <string>Expansion</string>
+           <string>Neldon-Mead </string>
           </property>
          </widget>
-        </item>
-        <item row="2" column="5">
-         <spacer name="horizontalSpacer_6">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Expanding</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
         </item>
         <item row="1" column="4">
          <widget class="QDoubleSpinBox" name="spinBox_min_lim">
@@ -566,6 +483,119 @@ QGroupBox::title {
           </property>
           <property name="value">
            <double>3.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="13">
+         <widget class="QLabel" name="label_13">
+          <property name="text">
+           <string>Max Stall</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="4">
+         <widget class="QSpinBox" name="spinBox_alpha">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="value">
+           <number>1</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="14">
+         <widget class="QSpinBox" name="spinBox_stall_max">
+          <property name="minimum">
+           <number>5</number>
+          </property>
+          <property name="value">
+           <number>25</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="12">
+         <spacer name="horizontalSpacer_8">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="10">
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string>Contraction</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="6">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>Expansion</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="8">
+         <widget class="QSpinBox" name="spinBox_gamma">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="value">
+           <number>2</number>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Reflection</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="9">
+         <spacer name="horizontalSpacer_7">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>41</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="5">
+         <spacer name="horizontalSpacer_6">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="11">
+         <widget class="QSpinBox" name="spinBox_beta">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>10</number>
+          </property>
+          <property name="value">
+           <number>5</number>
           </property>
          </widget>
         </item>

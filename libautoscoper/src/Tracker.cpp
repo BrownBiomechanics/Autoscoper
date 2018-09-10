@@ -243,7 +243,7 @@ void Tracker::load(const Trial& trial)
     }
 }
 
-void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model)
+void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int max_stall_iter)
 {
 
 	optimization_method = opt_method;
@@ -376,7 +376,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 
 			clock_t cpu_begin = clock();
 
-			pso(positions, velocities, pBests, gBest, MAX_EPOCHS);
+			pso(positions, velocities, pBests, gBest, MAX_EPOCHS, max_stall_iter);
 			//cuda_pso(positions, velocities, pBests, gBest, MAX_EPOCHS);
 			
 			clock_t cpu_end = clock();
