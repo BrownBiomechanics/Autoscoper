@@ -85,9 +85,12 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
 
 		std::cout << "Current Best NCC: " << epochBest << std::endl;
 
-		if (fabs(epochBest - currentBest) < (float)1e-5)
+		if (abs(epochBest - currentBest) < 1e-5)
 		{
-			stall_iter += 1;
+			stall_iter++;
+		} else if (abs(epochBest - currentBest) > 0.01)
+		{
+			stall_iter = 0;
 		}
 		if (stall_iter == MAX_STALL)
 		{
@@ -95,7 +98,7 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
 			do_this = false;
 		}
 
-		counter += 1;
+		counter++;
 	}
 	std::cout << "Total #Epoch of: " << counter << std::endl;
 }

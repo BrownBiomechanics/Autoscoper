@@ -207,7 +207,7 @@ void cuda_volume_render_kernel(float* buffer, size_t width, size_t height,
     float density = 0.0f;
     while (t > _near) {
         float3 point = ray.origin+t*ray.direction;
-        float sample = tex3D(tex,point.x,1.0f-point.y,-point.z);
+        float sample = tex3D(tex, point.x, 1.0f-point.y, -point.z);
         density += sample > cutoff? step*sample: 0.0f;
         t -= 1.0f;
     }

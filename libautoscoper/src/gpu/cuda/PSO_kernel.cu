@@ -12,7 +12,7 @@ __device__ float fitness_function(float x[])
 		xyzypr_manip[i] = (double)x[i];
 	} // i
 
-	double total =  PSO_FUNC(xyzypr_manip);
+	double total = PSO_FUNC(xyzypr_manip);
 
 	//cout << "Check total function: " << total << endl;
 	return (float)total;

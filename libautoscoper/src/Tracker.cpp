@@ -341,7 +341,8 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
 			float START_RANGE_MIN = (float)min_limit;
 			float START_RANGE_MAX = (float)max_limit;
 			unsigned int MAX_EPOCHS = max_iter;
-			
+			unsigned int MAX_STALL = max_stall_iter;
+
 			float positions[NUM_OF_PARTICLES*NUM_OF_DIMENSIONS];
 			float velocities[NUM_OF_PARTICLES*NUM_OF_DIMENSIONS];
 			float pBests[NUM_OF_PARTICLES*NUM_OF_DIMENSIONS];
@@ -356,14 +357,14 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
 				}
 				// First point will be the initial position
 				else {
-					if (j > 1)
-					{
+					//if (j > 1)
+					//{
 						positions[i] = (float)0.0;
-					}
-					else
-					{
-						positions[i] = (float)0.2; // Noise for refinements
-					}
+					//}
+					//else
+					//{
+					//	positions[i] = (float)0.2; // Noise for refinements
+					//}
 				}
 				pBests[i] = positions[i];
 				velocities[i] = 0;
@@ -376,7 +377,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
 
 			clock_t cpu_begin = clock();
 
-			pso(positions, velocities, pBests, gBest, MAX_EPOCHS, max_stall_iter);
+			pso(positions, velocities, pBests, gBest, MAX_EPOCHS, MAX_STALL);
 			//cuda_pso(positions, velocities, pBests, gBest, MAX_EPOCHS);
 			
 			clock_t cpu_end = clock();
