@@ -85,7 +85,7 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
 
 		std::cout << "Current Best NCC: " << epochBest << std::endl;
 
-		if (std::abs(epochBest - currentBest) < (float)1e-5)
+		if (fabs(epochBest - currentBest) < (float)1e-5)
 		{
 			stall_iter += 1;
 		}
