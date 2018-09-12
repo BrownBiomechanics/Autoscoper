@@ -68,11 +68,6 @@ TrackingOptionsDialog::TrackingOptionsDialog(QWidget *parent) :
 	// Backup Save
 	is_backup_on = 1; // Always on
 
-	// Neldon Optimization Parameters
-	nm_opt_alpha = 1;
-	nm_opt_gamma = 2;
-	nm_opt_beta  = 0.5;
-
 	// Read random search limits and iterations
 	max_iter = 1000;
 	min_lim = -3.0;
@@ -127,10 +122,6 @@ void TrackingOptionsDialog::frame_optimize()
             return;
          }
 
-		// Read Neldon Optimization Parameters
-		nm_opt_alpha = diag->spinBox_alpha->value();
-		nm_opt_gamma = diag->spinBox_gamma->value();
-		nm_opt_beta  = diag->spinBox_beta->value() / 10;
 
 		// Read random search limits and iterations
 		max_iter = diag->spinBox_max_iter->value();
@@ -146,7 +137,7 @@ void TrackingOptionsDialog::frame_optimize()
 		*/
 
 		// Optimization
-		  mainwindow->getTracker()->optimize(frame, d_frame, num_repeats, nm_opt_alpha, nm_opt_gamma, nm_opt_beta, opt_method, max_iter, min_lim, max_lim, cf_model, max_stall_iter);
+		  mainwindow->getTracker()->optimize(frame, d_frame, num_repeats, opt_method, max_iter, min_lim, max_lim, cf_model, max_stall_iter);
 
           mainwindow->update_graph_min_max(mainwindow->getPosition_graph(), mainwindow->getTracker()->trial()->frame);
 

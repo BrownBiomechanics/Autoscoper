@@ -36,7 +36,7 @@
 #include <cmath>
 #include <iostream>
 
-void AMOEBA(MAT P, double *Y, int NDIM, double FTOL, int *ITER, double ALPHA, double GAMMA, double BETA) {
+void AMOEBA(MAT P, double *Y, int NDIM, double FTOL, int *ITER) {
 /*-------------------------------------------------------------------
 ! Multidimensional minimization of the function FUNC(X) where X is
 ! an NDIM-dimensional vector, by the downhill simplex method of
@@ -57,7 +57,8 @@ const int NMAX=20, ITMAX=1000;//ITMAX=500;
 //the expansions and contractions, and maximum allowed number of
 //iterations.
   double PR[MP], PRR[MP], PBAR[MP];
-  //double ALPHA=1.0, BETA=0.5, GAMMA=2.0;
+  double ALPHA=1.0, BETA=0.5, GAMMA=2.0;
+
   int I,IHI,ILO,INHI,J,MPTS;
   double RTOL,YPR,YPRR;
   MPTS=NDIM+1;

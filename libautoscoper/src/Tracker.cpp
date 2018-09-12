@@ -243,7 +243,7 @@ void Tracker::load(const Trial& trial)
     }
 }
 
-void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int max_stall_iter)
+void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int max_stall_iter)
 {
 
 	optimization_method = opt_method;
@@ -449,7 +449,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 
 			// Downhill Simplex Optimization
 			// Optimize the frame
-			AMOEBA(P, Y, NDIM, FTOL, &ITER, nm_opt_alpha, nm_opt_gamma, nm_opt_beta);
+			AMOEBA(P, Y, NDIM, FTOL, &ITER);
 
 			double final_ncc = minimizationFunc((P[1] + 1));
 
@@ -489,7 +489,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, double nm_opt_alpha, 
 
 			// Downhill Simplex Optimization
 			// Optimize the frame
-			AMOEBA(P, Y, NDIM, FTOL, &ITER, nm_opt_alpha, nm_opt_gamma, nm_opt_beta);
+			AMOEBA(P, Y, NDIM, FTOL, &ITER);
 
 			cout << "Optimized Final NCC: " << minimizationFunc((P[1] + 1)) << endl;
 

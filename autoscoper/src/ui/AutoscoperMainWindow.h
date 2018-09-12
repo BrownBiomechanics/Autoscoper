@@ -113,7 +113,7 @@ class AutoscoperMainWindow : public QMainWindow{
 		void setBackground(double threshold);
 		std::vector <double> getNCC(unsigned int volumeID, double* xyzpr);
 		std::vector <unsigned char> getImageData(unsigned int volumeID, unsigned int camera, double* xyzpr, unsigned int &width, unsigned int &height);
-		void optimizeFrame(int volumeID, int frame, int dframe, int repeats, double nm_opt_alpha, double nm_opt_gamma, double nm_opt_beta, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int stall_iter);
+		void optimizeFrame(int volumeID, int frame, int dframe, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int stall_iter);
 
 
 		// Backup Save

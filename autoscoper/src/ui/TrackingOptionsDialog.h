@@ -70,10 +70,7 @@ class TrackingOptionsDialog : public QDialog{
 		bool frame_optimizing;
 		int num_repeats;
 
-		// Neldon Optimization Parameters
-		double nm_opt_alpha;
-		double nm_opt_beta;
-		double nm_opt_gamma;
+
 		// Read random search limits and iterations
 		unsigned int max_iter;
 		unsigned int max_stall_iter;
