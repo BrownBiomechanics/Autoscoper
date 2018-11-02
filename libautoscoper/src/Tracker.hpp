@@ -105,8 +105,8 @@ namespace xromm
 		void calculate_viewport(const CoordFrame& modelview, double* viewport) const;
 
 
-		int optimization_method = 0;
-		int cf_model_select = 0;
+		int optimization_method = (int)0;
+		int cf_model_select = (int)0;
 		Trial trial_;
 		std::vector <gpu::VolumeDescription*> volumeDescription_;
 		std::vector<gpu::View*> views_;

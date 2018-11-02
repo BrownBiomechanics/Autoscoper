@@ -3,7 +3,7 @@
 #include <math_functions.h>
 
 #include "PSO_kernel.h"
-
+/*
 __device__ float fitness_function(float x[])
 {
 	double xyzypr_manip[6] = { 0 };
@@ -141,3 +141,4 @@ extern "C" void cuda_pso(float *positions, float *velocities, float *pBests, flo
 	cudaFree(devPBest);
 	cudaFree(devGBest);
 }
+*/

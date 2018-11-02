@@ -542,19 +542,29 @@ void AutoscoperMainWindow::update_graph_min_max(GraphData* graph, int frame)
 
 void AutoscoperMainWindow::setupUI()
 {
-    //Remove previous cameras
+
     for (unsigned int i = 0; i < cameraViews.size(); i++) {
 		cameraViews[i]->setParent(NULL);
 		delete cameraViews[i];
     }
-	cameraViews.clear();
-	filters_widget->clearTree();
-	volumes_widget->clear();
 
+	cameraViews.erase(cameraViews.begin(), cameraViews.end());
+	// cout << "Camera Size: " << cameraViews.size() << endl;
+	cameraViews.clear();
+	//puts("553");
+	filters_widget->clearTree();
+	//puts("555");
+	volumes_widget->clear();
+	//puts("558");
+
+	//cout << "Volume Size: " << tracker->trial()->volumes.size() << endl;
 	//Add Volumes
 	for (unsigned int i = 0; i < tracker->trial()->volumes.size(); i++) {
+	//	cout << " Volume Name: " << tracker->trial()->volumes[i].name() << endl;
 		volumes_widget->addVolume(tracker->trial()->volumes[i].name());
+	//	puts("Volume Added");
 	}
+	//puts("565");
 
     //Add the new cameras
     for (unsigned int i = 0; i < tracker->trial()->cameras.size(); i++) {
@@ -562,6 +572,8 @@ void AutoscoperMainWindow::setupUI()
 		//cameraViews[i]->setSharedGLContext(shared_glcontext);	
 		filters_widget->addCamera(tracker->view(i));
     }
+	//puts("573");
+
 	relayoutCameras(1);
     textures.resize(tracker->trial()->cameras.size());
 	//QOpenGLContext::globalShareContext()->makeCurrent();
@@ -1049,8 +1061,9 @@ void AutoscoperMainWindow::openTrial(QString filename){
 			manipulator.push_back(new Manip3D());
 			getManipulator(i)->set_transform(Mat4d());
 		}
-
 		setupUI();
+		puts("after setup UI");
+
 		timelineSetValue(0);
 
 		timeline_widget->setTrial(tracker->trial());
@@ -1526,8 +1539,7 @@ void AutoscoperMainWindow::on_actionCopy_triggered(bool checked){
             if ((*timeline_widget->getSelectedNodes())[i].second == NODE) {
                 timeline_widget->getCopiedNodes()->push_back((*timeline_widget->getSelectedNodes())[i].first);
             }
-        }
-    }
+        }    }
 
 	redrawGL();
 }
@@ -1569,37 +1581,62 @@ void AutoscoperMainWindow::on_actionPaste_triggered(bool checked){
 	redrawGL();
 }
 
-void AutoscoperMainWindow::on_actionDelete_triggered(bool checked){
-	if (!timeline_widget->getSelectedNodes()->empty()) {
-        push_state();
+void AutoscoperMainWindow::on_actionDelete_triggered(bool checked) {
 
-        for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
-            if ((*timeline_widget->getSelectedNodes())[i].second == NODE) {
+
+	// Old Method
+	/*if (!timeline_widget->getSelectedNodes()->empty()) {
+		push_state();
+
+		cout << "Size\n: " << timeline_widget->getSelectedNodes()->size();
+		for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
+			if ((*timeline_widget->getSelectedNodes())[i].second == NODE) {
 				if (!timeline_widget->getPosition_graph()->frame_locks.at((int)(*timeline_widget->getSelectedNodes())[i].first.first->time((*timeline_widget->getSelectedNodes())[i].first.second))) {
-                    (*timeline_widget->getSelectedNodes())[i].first.first->erase((*timeline_widget->getSelectedNodes())[i].first.second);
-                }
-            }
-        }
-        timeline_widget->getSelectedNodes()->clear();
+					(*timeline_widget->getSelectedNodes())[i].first.first->erase((*timeline_widget->getSelectedNodes())[i].first.second);
+				}
+			}
+		}
+		timeline_widget->getSelectedNodes()->clear();
 
-        update_xyzypr_and_coord_frame();
-        update_graph_min_max(timeline_widget->getPosition_graph());
+		update_xyzypr_and_coord_frame();
+		update_graph_min_max(timeline_widget->getPosition_graph());
 
 		redrawGL();
-    }
-	//int curFrame = getCurrentFrame();
-	//timeline_widget->getSelectedNodes()->clear();
-	/*getTracker()->trial()->getXCurve(-1)->erase(curFrame);
-	getTracker()->trial()->getYCurve(-1)->erase(curFrame);
-	getTracker()->trial()->getZCurve(-1)->erase(curFrame);
-	getTracker()->trial()->getYawCurve(-1)->erase(curFrame);
-	getTracker()->trial()->getPitchCurve(-1)->erase(curFrame);
-	getTracker()->trial()->getRollCurve(-1)->erase(curFrame);*/
-	
-	/*update_xyzypr_and_coord_frame();
-	update_graph_min_max(timeline_widget->getPosition_graph());
 
-	redrawGL();*/
+	}*/
+
+	// Bardiya's Circumvention for Deleting
+	// Insert Key First
+	push_state();
+	timeline_widget->getSelectedNodes()->clear();
+
+	double xyzypr[6];
+	double manip_0[6] = { 0 };
+	(CoordFrame::from_matrix(trans(getManipulator()->transform()))* *tracker->trial()->getVolumeMatrix(-1)).to_xyzypr(xyzypr);
+	getTracker()->trial()->getXCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[0]);
+	getTracker()->trial()->getYCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[1]);
+	getTracker()->trial()->getZCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[2]);
+	getTracker()->trial()->getYawCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[3]);
+	getTracker()->trial()->getPitchCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[4]);
+	getTracker()->trial()->getRollCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[5]);
+
+	// Now Remove the Key
+	int curFrame = getCurrentFrame();
+	auto it_frame = tracker->trial()->getXCurve(-1)->end();
+	it_frame = tracker->trial()->getXCurve(-1)->find(curFrame);
+
+	tracker->trial()->getXCurve(-1)->erase(tracker->trial()->getXCurve(-1)->find(curFrame));
+	tracker->trial()->getYCurve(-1)->erase(tracker->trial()->getYCurve(-1)->find(curFrame));
+	tracker->trial()->getZCurve(-1)->erase(tracker->trial()->getZCurve(-1)->find(curFrame));
+	tracker->trial()->getYawCurve(-1)->erase(tracker->trial()->getYawCurve(-1)->find(curFrame));
+	tracker->trial()->getPitchCurve(-1)->erase(tracker->trial()->getPitchCurve(-1)->find(curFrame));
+	tracker->trial()->getRollCurve(-1)->erase(tracker->trial()->getRollCurve(-1)->find(curFrame));
+
+
+	update_xyzypr_and_coord_frame();
+	update_graph_min_max(timeline_widget->getPosition_graph());
+	redrawGL();
+
 }
 
 void AutoscoperMainWindow::on_actionSet_Background_triggered(bool checked)

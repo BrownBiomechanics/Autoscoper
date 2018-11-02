@@ -475,7 +475,7 @@ QGroupBox::title {
            <number>5</number>
           </property>
           <property name="value">
-           <number>25</number>
+           <number>15</number>
           </property>
          </widget>
         </item>

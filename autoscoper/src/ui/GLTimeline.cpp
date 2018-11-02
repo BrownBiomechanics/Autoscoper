@@ -358,7 +358,7 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent *e){
                 }
             }
 
-			fprintf(stderr,"Selected Nodes %d %d\n", new_nodes.size(), timelineDockWidget->getSelectedNodes()->size() );
+			fprintf(stderr,"Selected Nodes %zd %zd\n", new_nodes.size(), timelineDockWidget->getSelectedNodes()->size() );
 
 			timelineDockWidget->setSelectedNodes(new_nodes);
 

@@ -60,9 +60,9 @@ FilterDockWidget::~FilterDockWidget(){
 }
 
 void FilterDockWidget::clearTree(){
-
 	dock->treeWidget->clear();
 }
+
 void FilterDockWidget::toggle_drrs(){
 	dock->treeWidget->toggle_drrs();
 }

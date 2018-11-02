@@ -62,7 +62,7 @@ CameraViewWidget::CameraViewWidget(int id, View * view, QString name,QWidget *pa
 }
 
 CameraViewWidget::~CameraViewWidget(){
-
+	delete widget;
 }
 
 void CameraViewWidget::setSharedGLContext(QOpenGLContext * sharedContext){

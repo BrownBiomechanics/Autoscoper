@@ -379,7 +379,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
 
 			pso(positions, velocities, pBests, gBest, MAX_EPOCHS, MAX_STALL);
 			//cuda_pso(positions, velocities, pBests, gBest, MAX_EPOCHS);
-			
+
 			clock_t cpu_end = clock();
 
 			printf("Time elapsed:%10.3lf s\n", (double)(cpu_end - cpu_begin) / CLOCKS_PER_SEC);

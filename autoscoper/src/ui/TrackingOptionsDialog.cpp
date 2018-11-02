@@ -72,7 +72,7 @@ TrackingOptionsDialog::TrackingOptionsDialog(QWidget *parent) :
 	max_iter = 1000;
 	min_lim = -3.0;
 	max_lim = 3.0;
-	max_stall_iter = 25;
+	max_stall_iter = 15;
 
 	// Cost Function: Default is Bone Models
 	cf_model = 0; // 0 is Bone Model ------ 1 is Implant Model

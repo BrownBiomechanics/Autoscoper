@@ -211,7 +211,7 @@ void cuda_hdist_kernel(float* f, float meanF, float* g, float meanG, float* mask
 	if (i < n && mask[i] > 0.5f) {
 		//DEBUGGING: printf("\nrad_i is:%f    drr_i is:%f", f[i], g[i]);
 		// For INTENSITY MATCHING
-		if (f[i] > 0.05f) { f[i] = 1.0f; } // CHECK THIS and UNCOMMENT
+		if (f[i] > 0.0f) { f[i] = 1.0f; } // CHECK THIS and UNCOMMENT
 		//if (g[i] > 0.2) { g[i] = 1.0f; } // CHECK THIS and UNCOMMENT
 		//f[i] = 1.0f;
 		//g[i] = 1.0f;
