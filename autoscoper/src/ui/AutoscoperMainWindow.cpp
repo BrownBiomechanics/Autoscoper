@@ -737,9 +737,10 @@ void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_
 	file.setf(ios::fixed, ios::floatfield);
 	bool invalid;
 	for (int i = 0; i < tracker->trial()->num_frames; ++i) {
-		for (int j = start; j < stop; j++){
-			if (!interpolate) {
-				if (tracker->trial()->getXCurve(-1)->find(i) ==
+		for (int j = start; j < stop; j++) {
+			if (!interpolate)
+			{
+				/*if (tracker->trial()->getXCurve(-1)->find(i) ==
 					tracker->trial()->getXCurve(-1)->end() &&
 					tracker->trial()->getYCurve(-1)->find(i) ==
 					tracker->trial()->getYCurve(-1)->end() &&
@@ -750,25 +751,36 @@ void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_
 					tracker->trial()->getPitchCurve(-1)->find(i) ==
 					tracker->trial()->getPitchCurve(-1)->end() &&
 					tracker->trial()->getRollCurve(-1)->find(i) ==
-					tracker->trial()->getRollCurve(-1)->end()) {
+					tracker->trial()->getRollCurve(-1)->end())*/
+				if (tracker->trial()->getXCurve(j)->find(i) ==
+					tracker->trial()->getXCurve(j)->end() &&
+					tracker->trial()->getYCurve(j)->find(i) ==
+					tracker->trial()->getYCurve(j)->end() &&
+					tracker->trial()->getZCurve(j)->find(i) ==
+					tracker->trial()->getZCurve(j)->end() &&
+					tracker->trial()->getYawCurve(j)->find(i) ==
+					tracker->trial()->getYawCurve(j)->end() &&
+					tracker->trial()->getPitchCurve(j)->find(i) ==
+					tracker->trial()->getPitchCurve(j)->end() &&
+					tracker->trial()->getRollCurve(j)->find(i) ==
+					tracker->trial()->getRollCurve(j)->end())
+				{
 					invalid = true;
-				}
-				else{
+				} else {
 					invalid = false;
 				}
-			}
-			else{
+			} else {
 				invalid = false;
 			}
 
-			if (invalid){
+			if (invalid) {
 				if (save_as_matrix) {
 					file << "NaN";
-					for (int j = 0; j < 15; j++) { file << s << "NaN"; }
+					for (int k = 0; k < 15; k++) { file << s << "NaN"; }
 				}
 				else {
 					file << "NaN";
-					for (int j = 0; j < 5; j++) { file << s << "NaN"; }
+					for (int k = 0; k < 5; k++) { file << s << "NaN"; }
 				}
 			}
 			else{
@@ -1062,7 +1074,7 @@ void AutoscoperMainWindow::openTrial(QString filename){
 			getManipulator(i)->set_transform(Mat4d());
 		}
 		setupUI();
-		puts("after setup UI");
+		// puts("after setup UI");
 
 		timelineSetValue(0);
 
@@ -1129,7 +1141,6 @@ void AutoscoperMainWindow::push_state()
 void AutoscoperMainWindow::undo_state()
 {
     if (history->can_undo()) {
-
         if (first_undo) {
             push_state();
             history->undo();
@@ -1192,8 +1203,72 @@ void AutoscoperMainWindow::reset_graph()
 	timeline_widget->getCopiedNodes()->clear();
 }
 
-//File menu
 
+
+
+
+void AutoscoperMainWindow::MovingAverageFilter()
+{
+	unsigned int current_volume = tracker->trial()->current_volume;
+
+	std::vector<double> cur_pose(6, 0);
+	std::vector<double> sma(6, 0);
+	std::vector<double> temp_sma(6, 0);
+	std::vector<double> filt_pose(6, 0);
+	int nFrames = tracker->trial()->num_frames;
+
+	// Hyperparameters
+	int nWin = 5;
+	int skip_frame = 1;
+
+	int q = (nWin - 1) / 2;
+	double q_step = 1;
+	for (unsigned int iFrame = 0 + q; iFrame < nFrames - q; iFrame++)
+	{
+		sma.assign(6, 0);
+		temp_sma.assign(6, 0);
+		filt_pose.assign(6, 0);
+		for (int jFrame = -q; jFrame <= q; jFrame++)
+		{
+			cur_pose = getPose(current_volume, iFrame + jFrame);
+
+			if (jFrame == -q || jFrame == +q)
+			{
+				q_step = 1 / (4 * (double)q);
+			}
+			else {
+				q_step = 1 / (2 * (double)q);
+			}
+			std::transform(cur_pose.begin(), cur_pose.end(), temp_sma.begin(), std::bind1st(std::multiplies<double>(), q_step));
+
+			std::transform(temp_sma.begin(), temp_sma.end(), filt_pose.begin(), filt_pose.begin(), std::plus<double>());
+		}
+
+
+		if (fmod(iFrame, skip_frame) == 0) {
+			setPose(filt_pose, current_volume, iFrame);
+		}
+		else {
+			deletePose(iFrame);
+		}
+	}
+
+}
+
+
+
+void AutoscoperMainWindow::deletePose(int curFrame) {
+
+	tracker->trial()->getXCurve(-1)->erase(tracker->trial()->getXCurve(-1)->find(curFrame));
+	tracker->trial()->getYCurve(-1)->erase(tracker->trial()->getYCurve(-1)->find(curFrame));
+	tracker->trial()->getZCurve(-1)->erase(tracker->trial()->getZCurve(-1)->find(curFrame));
+	tracker->trial()->getYawCurve(-1)->erase(tracker->trial()->getYawCurve(-1)->find(curFrame));
+	tracker->trial()->getPitchCurve(-1)->erase(tracker->trial()->getPitchCurve(-1)->find(curFrame));
+	tracker->trial()->getRollCurve(-1)->erase(tracker->trial()->getRollCurve(-1)->find(curFrame));
+}
+
+
+//File menu
 void AutoscoperMainWindow::on_actionNew_triggered(bool checked){
 	save_trial_prompt();
     save_tracking_prompt();
@@ -1622,8 +1697,8 @@ void AutoscoperMainWindow::on_actionDelete_triggered(bool checked) {
 
 	// Now Remove the Key
 	int curFrame = getCurrentFrame();
-	auto it_frame = tracker->trial()->getXCurve(-1)->end();
-	it_frame = tracker->trial()->getXCurve(-1)->find(curFrame);
+	//auto it_frame = tracker->trial()->getXCurve(-1)->end();
+	//it_frame = tracker->trial()->getXCurve(-1)->find(curFrame);
 
 	tracker->trial()->getXCurve(-1)->erase(tracker->trial()->getXCurve(-1)->find(curFrame));
 	tracker->trial()->getYCurve(-1)->erase(tracker->trial()->getYCurve(-1)->find(curFrame));
@@ -1738,7 +1813,7 @@ void AutoscoperMainWindow::on_actionBreak_Tangents_triggered(bool checked){
 void AutoscoperMainWindow::on_actionSmooth_Tangents_triggered(bool checked){
 	push_state();
 
-    for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
+    /*for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
         KeyCurve& curve = *(*timeline_widget->getSelectedNodes())[i].first.first;
         KeyCurve::iterator it = (*timeline_widget->getSelectedNodes())[i].first.second;
 
@@ -1747,7 +1822,10 @@ void AutoscoperMainWindow::on_actionSmooth_Tangents_triggered(bool checked){
             curve.set_in_tangent_type(it,KeyCurve::SMOOTH);
             curve.set_out_tangent_type(it,KeyCurve::SMOOTH);
         }
-    }
+    }*/
+
+	// BARDIYA ADDED MOVING AVERAGE FILTER
+	MovingAverageFilter();
 
     update_xyzypr_and_coord_frame();
     update_graph_min_max(timeline_widget->getPosition_graph());
@@ -1872,7 +1950,7 @@ void AutoscoperMainWindow::save_ncc_results(QString filename) {
 		setFrame(frame);
 		ncc_values = tracker->trackFrame(volume, pose);
 
-		file << ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0)* ncc_values.at(1) << endl;
+		file << ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0)+ ncc_values.at(1) << endl;
 	}
 	file.close();
 }

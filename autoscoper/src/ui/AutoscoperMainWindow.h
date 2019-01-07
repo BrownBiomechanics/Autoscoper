@@ -176,6 +176,10 @@ class AutoscoperMainWindow : public QMainWindow{
 		void set_manip_matrix(int idx, const CoordFrame& frame);
 		std::vector<unsigned int> textures;
 		void reset_graph();
+
+		void MovingAverageFilter();
+
+		void deletePose(int curFrame);
 		
 		void save_tracking_prompt();
 		void save_trial_prompt();

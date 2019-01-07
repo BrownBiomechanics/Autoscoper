@@ -584,7 +584,7 @@ Trial</string>
   </action>
   <action name="actionPaste">
    <property name="text">
-    <string>Past</string>
+    <string>Paste</string>
    </property>
   </action>
   <action name="actionDelete">
