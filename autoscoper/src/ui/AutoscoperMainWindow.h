@@ -63,6 +63,7 @@ class CameraViewWidget;
 class TimelineDockWidget;
 class VolumeDockWidget;
 class TrackingOptionsDialog;
+class AdvancedOptionsDialog;
 class WorldViewWindow;
 class QOpenGLContext;
 class Manip3D;
@@ -92,6 +93,15 @@ class AutoscoperMainWindow : public QMainWindow{
 		int getCurrentFrame();
 		// Storing last used directory
 		QString getLastFolder();
+
+		// Storing Root Path
+		QString default_root_path;
+		QString default_filter_folder;
+		QString default_filter_name;
+		QString default_tracking_folder;
+		QString default_task_name;
+		int default_saving_format = 1; // This is Row
+
 		// Current Frame variable
 		int curFrame;
 
@@ -126,6 +136,7 @@ class AutoscoperMainWindow : public QMainWindow{
 		TimelineDockWidget* timeline_widget;
 		VolumeDockWidget* volumes_widget;
 		TrackingOptionsDialog* tracking_dialog;
+		AdvancedOptionsDialog* advanced_dialog;
 
 		std::vector <CameraViewWidget * > cameraViews;
 		void relayoutCameras(int rows);
@@ -177,9 +188,8 @@ class AutoscoperMainWindow : public QMainWindow{
 		std::vector<unsigned int> textures;
 		void reset_graph();
 
-		void MovingAverageFilter();
 
-		void deletePose(int curFrame);
+
 		
 		void save_tracking_prompt();
 		void save_trial_prompt();
@@ -224,6 +234,7 @@ class AutoscoperMainWindow : public QMainWindow{
 		void on_actionUnlock_triggered(bool checked);
 		void on_actionBreak_Tangents_triggered(bool checked);
 		void on_actionSmooth_Tangents_triggered(bool checked);
+		void on_actionAdvanced_Settings_triggered(bool checked);
 
 		//View
 		void on_actionLayoutCameraViews_triggered(bool checked);
@@ -233,6 +244,8 @@ class AutoscoperMainWindow : public QMainWindow{
 		// Extra
 		void on_actionExport_NCC_as_csv_triggered(bool checked);
 		void on_actionExport_all_NCCs_near_this_pose_triggered(bool checked);
+		void MovingAverageFilter(int nWin);
+		void deletePose(int curFrame);
 
 		//Toolbar
 		void on_toolButtonOpenTrial_clicked();

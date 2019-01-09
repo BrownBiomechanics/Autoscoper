@@ -33,9 +33,22 @@ void VolumeDockWidget::addVolume(const std::string& filename){
 	volumeItem->setText(0,fi.completeBaseName());
 	dock->treeWidget->addTopLevelItem(volumeItem);
 	dock->treeWidget->setCurrentItem(volumeItem);
+
+	// Store Model Name
+	model_names_list.push_back(fi.completeBaseName().toStdString().c_str());
+
 }
 
 void VolumeDockWidget::on_treeWidget_currentItemChanged ( QTreeWidgetItem * current, QTreeWidgetItem * previous) {
 	mainwindow->getTracker()->trial()->current_volume = dock->treeWidget->indexOfTopLevelItem(current);
 	mainwindow->volume_changed();
+}
+
+
+QString VolumeDockWidget::getVolumeName(int volume_index) {
+	std::string full_model_name = model_names_list[volume_index];
+	size_t pos = full_model_name.find("_dcm_cropped");
+	std::string model_name = full_model_name.substr(0, pos);
+	QString selected_volume_name = QString::fromStdString(model_name);
+	return selected_volume_name;
 }

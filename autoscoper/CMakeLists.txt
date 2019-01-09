@@ -25,6 +25,7 @@ SET(autoscoper_FORMS_HEADERS
 		src/ui/TimelineDockWidget.h
 		src/ui/ImportExportTrackingOptionsDialog.h
 		src/ui/TrackingOptionsDialog.h
+		src/ui/AdvancedOptionsDialog.h		
 		src/ui/FilterTreeWidgetParameter.h
 		src/ui/GLWidget.h
 		src/ui/GLTimeline.h
@@ -52,6 +53,7 @@ SET(autoscoper_FORMS_SOURCES
 		src/ui/TimelineDockWidget.cpp
 		src/ui/ImportExportTrackingOptionsDialog.cpp
 		src/ui/TrackingOptionsDialog.cpp
+		src/ui/AdvancedOptionsDialog.cpp		
 		src/ui/FilterTreeWidgetParameter.cpp
 		src/ui/GLWidget.cpp
 		src/ui/GLTimeline.cpp
@@ -74,6 +76,7 @@ SET(autoscoper_FORMS
 		src/ui/ui-files/TimelineDockWidget.ui
 		src/ui/ui-files/ImportExportTrackingOptionsDialog.ui
 		src/ui/ui-files/TrackingOptionsDialog.ui
+		src/ui/ui-files/AdvancedOptionsDialog.ui		
 		src/ui/ui-files/OpenCLPlatformSelectDialog.ui
 		src/ui/ui-files/CameraBox.ui
 		src/ui/ui-files/NewTrialDialog.ui

@@ -24,10 +24,14 @@ class VolumeDockWidget : public QDockWidget{
 		void clear();
 		void addVolume(const std::string& filename);
 
+		QString getVolumeName(int volume_index);
+
 	private:
 		Ui::VolumeDockWidget *dock;
 
 		AutoscoperMainWindow * mainwindow;
+
+		std::vector<std::string> model_names_list;
 
 	protected:
 

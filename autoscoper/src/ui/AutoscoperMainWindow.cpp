@@ -46,6 +46,7 @@
 #include "ui/CameraViewWidget.h"
 #include "ui/TimelineDockWidget.h"
 #include "ui/TrackingOptionsDialog.h"
+#include "ui/AdvancedOptionsDialog.h"
 #include "ui/GLTracker.h"
 #include "ui/ImportExportTrackingOptionsDialog.h"
 #include "ui_ImportExportTrackingOptionsDialog.h"
@@ -230,7 +231,7 @@ void AutoscoperMainWindow::relayoutCameras(int rows){
 		splitter->addWidget(splitterHorizontal);
 	}
 
-	int freeSpaces = cameraViewArrangement.height() * cameraViewArrangement.width() - cameraViews.size();
+	size_t freeSpaces = cameraViewArrangement.height() * cameraViewArrangement.width() - cameraViews.size();
 	
 	int count = 0;
 	for (int i = 0 ; i < cameraViews.size();i++, count++){
@@ -1055,21 +1056,22 @@ void AutoscoperMainWindow::openTrial(){
 }
 
 void AutoscoperMainWindow::openTrial(QString filename){
-    try {
+	try {
 		Trial * trial = new Trial(filename.toStdString().c_str());
 		tracker->load(*trial);
 		delete trial;
 
 		trial_filename = filename.toStdString().c_str();
-		std::cerr << "Filename: " << trial_filename << std::endl;
+
+		cout << "Filename: " << trial_filename << std::endl;
 		is_trial_saved = true;
 		is_tracking_saved = true;
 
-		for (int i = 0; i < manipulator.size(); i++){
+		for (int i = 0; i < manipulator.size(); i++) {
 			delete manipulator[i];
 		}
 		manipulator.clear();
-		for (int i = 0; i < tracker->trial()->num_volumes; i++){
+		for (int i = 0; i < tracker->trial()->num_volumes; i++) {
 			manipulator.push_back(new Manip3D());
 			getManipulator(i)->set_transform(Mat4d());
 		}
@@ -1080,6 +1082,63 @@ void AutoscoperMainWindow::openTrial(QString filename){
 
 		timeline_widget->setTrial(tracker->trial());
 
+
+
+
+		// Store filename as a default for filter and saving
+		// This has to change based on operating system
+		size_t pos = trial_filename.find_last_of("/");
+		std::string def_root_path_temp = trial_filename.substr(0, pos);
+		default_root_path = QString::fromStdString(def_root_path_temp);
+		std::string test = default_root_path.toStdString().c_str();
+
+		cout << "Root Path is: " << test << endl;
+
+		// Store Default Values:
+		default_filter_folder = "xParameters";
+		default_filter_name = "control_settings";
+		default_tracking_folder = "Tracking";
+
+		/////// FILTER PATH:
+		QString filter_path = default_root_path;
+		filter_path += "/";
+		filter_path += default_filter_folder;
+		filter_path += "/";
+		filter_path += default_filter_name;
+		filter_path += ".vie";
+
+		std::cerr << "Filter Path is: " << filter_path.toStdString().c_str() << std::endl;
+
+		for (int j = 0; j < cameraViews.size(); j++) {
+			loadFilterSettings(j, filter_path);
+		}
+
+		/////// TRACKED PATH:
+		size_t pos_trck = trial_filename.find(".cfg");
+		std::string task_name_tmp = trial_filename.substr(pos + 1, pos_trck - pos - 1);
+		cout << "Task Name: " << task_name_tmp << endl;
+
+		default_task_name = QString::fromStdString(task_name_tmp);
+
+		QString tracking_path_root = default_root_path;
+		QString tracking_path;
+
+		for (int iVol = 0; iVol < tracker->trial()->num_volumes; iVol++) {
+			tracking_path = tracking_path_root;
+			tracking_path += "/";
+			tracking_path += default_tracking_folder;
+			tracking_path += "/";
+			tracking_path += QString::fromStdString(task_name_tmp);
+			tracking_path += "_";
+			tracking_path += volumes_widget->getVolumeName(iVol);
+			tracking_path += ".tra";
+
+			load_tracking_results(tracking_path, 1, default_saving_format, 1, 0, 0, 0, iVol);
+
+			cout << "Tracking Path is: " << tracking_path.toStdString().c_str() << endl;
+		}
+
+		//
 	}
 	catch (std::exception& e) {
 		std::cerr << e.what() << std::endl;
@@ -1207,7 +1266,7 @@ void AutoscoperMainWindow::reset_graph()
 
 
 
-void AutoscoperMainWindow::MovingAverageFilter()
+void AutoscoperMainWindow::MovingAverageFilter(int nWin)
 {
 	unsigned int current_volume = tracker->trial()->current_volume;
 
@@ -1218,12 +1277,11 @@ void AutoscoperMainWindow::MovingAverageFilter()
 	int nFrames = tracker->trial()->num_frames;
 
 	// Hyperparameters
-	int nWin = 5;
 	int skip_frame = 1;
 
 	int q = (nWin - 1) / 2;
 	double q_step = 1;
-	for (unsigned int iFrame = 0 + q; iFrame < nFrames - q; iFrame++)
+	for (int iFrame = 0 + q; iFrame < nFrames - q; iFrame++)
 	{
 		sma.assign(6, 0);
 		temp_sma.assign(6, 0);
@@ -1258,6 +1316,10 @@ void AutoscoperMainWindow::MovingAverageFilter()
 
 
 void AutoscoperMainWindow::deletePose(int curFrame) {
+
+	std::vector<double> temp_pose(6, 0);
+	int current_volume = tracker->trial()->current_volume;
+	setPose(temp_pose, current_volume, curFrame);
 
 	tracker->trial()->getXCurve(-1)->erase(tracker->trial()->getXCurve(-1)->find(curFrame));
 	tracker->trial()->getYCurve(-1)->erase(tracker->trial()->getYCurve(-1)->find(curFrame));
@@ -1825,7 +1887,9 @@ void AutoscoperMainWindow::on_actionSmooth_Tangents_triggered(bool checked){
     }*/
 
 	// BARDIYA ADDED MOVING AVERAGE FILTER
-	MovingAverageFilter();
+	int nWin = 5; // Default
+	puts("change nWin in actionSmooth function");
+	MovingAverageFilter(nWin);
 
     update_xyzypr_and_coord_frame();
     update_graph_min_max(timeline_widget->getPosition_graph());
@@ -1833,8 +1897,21 @@ void AutoscoperMainWindow::on_actionSmooth_Tangents_triggered(bool checked){
     redrawGL();
 }
 
-//View
 
+// Advanced Settings
+void AutoscoperMainWindow::on_actionAdvanced_Settings_triggered(bool checked) {
+	//if (advanced_dialog == NULL)
+		advanced_dialog = new AdvancedOptionsDialog(this);
+
+	advanced_dialog->setRangeAdvanced(timeline_widget->getPosition_graph()->min_frame, timeline_widget->getPosition_graph()->max_frame, tracker->trial()->num_frames - 1);
+
+	advanced_dialog->setDefPaths(default_root_path, default_filter_folder, default_filter_name, default_tracking_folder, default_task_name);
+
+	advanced_dialog->show();
+}
+
+
+//View
 void AutoscoperMainWindow::on_actionLayoutCameraViews_triggered(bool triggered){
 	
 	bool ok;

@@ -489,6 +489,8 @@ Trial</string>
     <addaction name="actionUnlock"/>
     <addaction name="actionBreak_Tangents"/>
     <addaction name="actionSmooth_Tangents"/>
+    <addaction name="separator"/>
+    <addaction name="actionAdvanced_Settings"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -668,6 +670,11 @@ Trial</string>
   <action name="actionExport_all_NCCs_near_this_pose">
    <property name="text">
     <string>Export all NCCs near this pose</string>
+   </property>
+  </action>
+  <action name="actionAdvanced_Settings">
+   <property name="text">
+    <string>Advanced Settings</string>
    </property>
   </action>
  </widget>
