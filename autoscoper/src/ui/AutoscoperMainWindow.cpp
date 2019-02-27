@@ -842,6 +842,7 @@ void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_
 
 void AutoscoperMainWindow::loadFilterSettings(int camera, QString filename)
 {
+	cout << "Test Load Filter: " << filename.toStdString() << endl;
 	filters_widget->loadFilterSettings(camera, filename);
 }
 
@@ -1082,9 +1083,6 @@ void AutoscoperMainWindow::openTrial(QString filename){
 
 		timeline_widget->setTrial(tracker->trial());
 
-
-
-
 		// Store filename as a default for filter and saving
 		// This has to change based on operating system
 		size_t pos = trial_filename.find_last_of("/");
@@ -1266,7 +1264,7 @@ void AutoscoperMainWindow::reset_graph()
 
 
 
-void AutoscoperMainWindow::MovingAverageFilter(int nWin)
+void AutoscoperMainWindow::MovingAverageFilter(int nWin, int firstFrame, int lastFrame)
 {
 	unsigned int current_volume = tracker->trial()->current_volume;
 
@@ -1274,14 +1272,14 @@ void AutoscoperMainWindow::MovingAverageFilter(int nWin)
 	std::vector<double> sma(6, 0);
 	std::vector<double> temp_sma(6, 0);
 	std::vector<double> filt_pose(6, 0);
-	int nFrames = tracker->trial()->num_frames;
+	int nFrames = lastFrame; //tracker->trial()->num_frames;
 
 	// Hyperparameters
 	int skip_frame = 1;
 
 	int q = (nWin - 1) / 2;
 	double q_step = 1;
-	for (int iFrame = 0 + q; iFrame < nFrames - q; iFrame++)
+	for (int iFrame = firstFrame + q; iFrame <= nFrames - q; iFrame++)
 	{
 		sma.assign(6, 0);
 		temp_sma.assign(6, 0);
@@ -1889,7 +1887,7 @@ void AutoscoperMainWindow::on_actionSmooth_Tangents_triggered(bool checked){
 	// BARDIYA ADDED MOVING AVERAGE FILTER
 	int nWin = 5; // Default
 	puts("change nWin in actionSmooth function");
-	MovingAverageFilter(nWin);
+	MovingAverageFilter(nWin, 0, tracker->trial()->num_frames);
 
     update_xyzypr_and_coord_frame();
     update_graph_min_max(timeline_widget->getPosition_graph());
@@ -2178,7 +2176,7 @@ void AutoscoperMainWindow::setupShortcuts(){
 	ui->actionDelete->setShortcut(QKeySequence(Qt::Key_Delete));
 	ui->actionUndo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
 	ui->actionRedo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Y));
-
+	ui->actionSmooth_Tangents->setShortcut(QKeySequence(Qt::CTRL + Qt:Key_L));
 	ui->actionNew->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
 	ui->actionOpen->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
 	ui->actionSave->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));

@@ -91,7 +91,7 @@ void AdvancedOptionsDialog::on_pushButton_Delete_clicked(bool checked) {
 		to_frame = adv_diag->spinBox_FrameEnd_adv->value();
 		skip_frame = adv_diag->spinBox_FrameSkip_adv->value();
 
-		for (int iF = from_frame; iF < to_frame; iF++)
+		for (int iF = from_frame; iF <= to_frame; iF++)
 		{
 			mainwindow->deletePose(iF);
 		}
@@ -118,7 +118,7 @@ void AdvancedOptionsDialog::on_pushButton_Smooth_clicked(bool checked) {
 		skip_frame = adv_diag->spinBox_FrameSkip_adv->value();
 		winSizeSmoothing = adv_diag->spinBox_winSize->value();
 
-		mainwindow->MovingAverageFilter(winSizeSmoothing);
+		mainwindow->MovingAverageFilter(winSizeSmoothing, from_frame, to_frame);
 
 		puts("Poses were smoothed using moving average filter.");
 
