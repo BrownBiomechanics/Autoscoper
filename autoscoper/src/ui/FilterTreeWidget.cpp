@@ -269,6 +269,8 @@ void FilterTreeWidget::loadFilterSettings(int camera, QString filename)
 {
 	unsigned int start = (camera == -1) ? 0 : camera;
 	unsigned int stop = (camera == -1) ? this->topLevelItemCount() : camera + 1;
+	
+	//std::cout << "Test Load Filter: " << filename.toStdString() << std::endl;
 
 	for (int i = start; i < stop; ++i){
 		CameraTreeWidgetItem * camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));

@@ -842,7 +842,7 @@ void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_
 
 void AutoscoperMainWindow::loadFilterSettings(int camera, QString filename)
 {
-	cout << "Test Load Filter: " << filename.toStdString() << endl;
+	// cout << "Test Load Filter: " << filename.toStdString() << endl;
 	filters_widget->loadFilterSettings(camera, filename);
 }
 
@@ -2176,7 +2176,7 @@ void AutoscoperMainWindow::setupShortcuts(){
 	ui->actionDelete->setShortcut(QKeySequence(Qt::Key_Delete));
 	ui->actionUndo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
 	ui->actionRedo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Y));
-	ui->actionSmooth_Tangents->setShortcut(QKeySequence(Qt::CTRL + Qt:Key_L));
+	ui->actionSmooth_Tangents->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_L));
 	ui->actionNew->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
 	ui->actionOpen->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
 	ui->actionSave->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
