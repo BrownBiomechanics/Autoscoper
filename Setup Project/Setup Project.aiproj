@@ -1,0 +1,69 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">All</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>61daa836-dbed-436a-ba62-138ce7f2be67</ProjectGuid>
+    <OutputType>msi</OutputType>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>Setup Project.aip</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <IsWindowsApplication>True</IsWindowsApplication>
+    <AssemblyName>Setup Project</AssemblyName>
+    <Name>Setup Project</Name>
+    <RootNamespace>Setup Project</RootNamespace>
+    <LoadFromTemplate>
+    </LoadFromTemplate>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'DefaultBuild' " />
+  <ItemGroup>
+    <Compile Include="Setup Project.aip">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\build\ALL_BUILD.vcxproj">
+      <Name>ALL_BUILD</Name>
+      <Project>{815df615-6204-3a89-b7a2-8193b7f83936}</Project>
+      <Private>True</Private>
+      <OutputsToImport>LocalizedResourcesOutput;References;ContentOutput;DocumentationOutput;SymbolsOutput;ComTypeLibraryOutput</OutputsToImport>
+    </ProjectReference>
+    <ProjectReference Include="..\build\autoscoper\autoscoper.vcxproj">
+      <Name>autoscoper</Name>
+      <Project>{c7d948e8-802b-3587-b45e-3c493bb40131}</Project>
+      <Private>True</Private>
+      <OutputsToImport>PrimaryOutput;References;LocalizedResourcesOutput;ContentOutput;DocumentationOutput;SymbolsOutput;ComTypeLibraryOutput</OutputsToImport>
+    </ProjectReference>
+    <ProjectReference Include="..\build\INSTALL.vcxproj">
+      <Name>INSTALL</Name>
+      <Project>{b638d2e7-c679-3ee0-924e-27dcf8a994aa}</Project>
+      <Private>True</Private>
+      <OutputsToImport>LocalizedResourcesOutput;References;ContentOutput;DocumentationOutput;SymbolsOutput;ComTypeLibraryOutput</OutputsToImport>
+    </ProjectReference>
+    <ProjectReference Include="..\build\libautoscoper\libautoscoper.vcxproj">
+      <Name>libautoscoper</Name>
+      <Project>{8178804b-db3b-3694-9dcb-0b8e3c5da84d}</Project>
+      <Private>True</Private>
+      <OutputsToImport>PrimaryOutput;References;ContentOutput;DocumentationOutput;LocalizedResourcesOutput;SymbolsOutput;ComTypeLibraryOutput</OutputsToImport>
+    </ProjectReference>
+    <ProjectReference Include="..\build\ZERO_CHECK.vcxproj">
+      <Name>ZERO_CHECK</Name>
+      <Project>{87d10c79-9fc5-3013-87fa-1444367db741}</Project>
+      <Private>True</Private>
+      <OutputsToImport>LocalizedResourcesOutput;ContentOutput;DocumentationOutput;ComTypeLibraryOutput;References;SymbolsOutput</OutputsToImport>
+    </ProjectReference>
+  </ItemGroup>
+  <Target Name="Build">
+    <Error Text="This project requires Advanced Installer tool. Please download it from https://www.advancedinstaller.com/download.html" />
+  </Target>
+  <Target Name="Rebuild">
+    <Error Text="This project requires Advanced Installer tool. Please download it from https://www.advancedinstaller.com/download.html" />
+  </Target>
+  <Target Name="Clean">
+  </Target>
+  <Target Name="ResolveAssemblyReferences">
+  </Target>
+  <Import Condition="'$(AdvancedInstallerMSBuildTargets)' != ''" Project="$(AdvancedInstallerMSBuildTargets)\AdvInstExtTasks.Targets" />
+  <Import Condition="('$(AdvancedInstallerMSBuildTargets)' == '') And (Exists('$(MSBuildExtensionsPath32)\Caphyon\Advanced Installer\AdvInstExtTasks.Targets'))" Project="$(MSBuildExtensionsPath32)\Caphyon\Advanced Installer\AdvInstExtTasks.Targets" />
+</Project>
