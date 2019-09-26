@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1594</width>
-    <height>1091</height>
+    <width>1200</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -63,7 +63,7 @@
       <property name="maximumSize">
        <size>
         <width>16777215</width>
-        <height>65</height>
+        <height>60</height>
        </size>
       </property>
       <property name="frameShape">
@@ -419,8 +419,8 @@ Trial</string>
      <widget class="QFrame" name="frameWindows">
       <property name="minimumSize">
        <size>
-        <width>800</width>
-        <height>600</height>
+        <width>0</width>
+        <height>0</height>
        </size>
       </property>
       <property name="frameShape">
@@ -439,7 +439,7 @@ Trial</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1594</width>
+     <width>1200</width>
      <height>26</height>
     </rect>
    </property>
@@ -501,16 +501,25 @@ Trial</string>
    </widget>
    <widget class="QMenu" name="menuAdvanced_Tool">
     <property name="title">
-     <string>Advanced</string>
+     <string>Extra</string>
     </property>
     <addaction name="actionExport_NCC_as_csv"/>
     <addaction name="actionExport_all_NCCs_near_this_pose"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionCheck_for_updates"/>
+    <addaction name="actionAboutAutoscoper"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuTracking"/>
-   <addaction name="menuView"/>
    <addaction name="menuAdvanced_Tool"/>
+   <addaction name="menuView"/>
+   <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionNew">
@@ -636,12 +645,12 @@ Trial</string>
   </action>
   <action name="actionSaveForBatch">
    <property name="text">
-    <string>save xml for batch</string>
+    <string>Save xml for batch</string>
    </property>
   </action>
   <action name="actionLoad_xml_batch">
    <property name="text">
-    <string>load xml batch</string>
+    <string>Load xml batch</string>
    </property>
   </action>
   <action name="actionSave_Test_Sequence">
@@ -675,6 +684,16 @@ Trial</string>
   <action name="actionAdvanced_Settings">
    <property name="text">
     <string>Advanced Settings</string>
+   </property>
+  </action>
+  <action name="actionCheck_for_updates">
+   <property name="text">
+    <string>Check for updates</string>
+   </property>
+  </action>
+  <action name="actionAboutAutoscoper">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

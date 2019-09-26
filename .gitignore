@@ -2,3 +2,6 @@ build*/*
 external/*
 /.project
 .DS_Store
+_for_installing/*
+my_setup_project/*
+setup_project/*

@@ -47,10 +47,12 @@
 #include "ui/TimelineDockWidget.h"
 #include "ui/TrackingOptionsDialog.h"
 #include "ui/AdvancedOptionsDialog.h"
+
 #include "ui/GLTracker.h"
 #include "ui/ImportExportTrackingOptionsDialog.h"
 #include "ui_ImportExportTrackingOptionsDialog.h"
 #include "ui_TrackingOptionsDialog.h"
+#include "ui/AboutAutoscoper.h"
 #include "ui/OpenCLPlatformSelectDialog.h"
 #include "Manip3D.hpp"
 #include "ui/WorldViewWindow.h"
@@ -96,6 +98,9 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 	
 	//Setup UI
 	ui->setupUi(this);
+
+	// VERSION NUMBER
+	puts("Autoscoper v2.7.0\n");
 
 	//Init Tracker and get SharedGLContext
 	tracker = new Tracker();
@@ -1898,7 +1903,7 @@ void AutoscoperMainWindow::on_actionSmooth_Tangents_triggered(bool checked){
 
 // Advanced Settings
 void AutoscoperMainWindow::on_actionAdvanced_Settings_triggered(bool checked) {
-	//if (advanced_dialog == NULL)
+	if (advanced_dialog == NULL)
 		advanced_dialog = new AdvancedOptionsDialog(this);
 
 	advanced_dialog->setRangeAdvanced(timeline_widget->getPosition_graph()->min_frame, timeline_widget->getPosition_graph()->max_frame, tracker->trial()->num_frames - 1);
@@ -2037,6 +2042,18 @@ void AutoscoperMainWindow::on_actionExport_all_NCCs_near_this_pose_triggered(boo
 	if (filename.compare("") != 0) {
 		save_nearby_nccs(filename);
 	}
+}
+
+void AutoscoperMainWindow::on_actionAboutAutoscoper_triggered(bool checked) {
+	/*puts("Copyright (c) 2011-2019, Brown University\n\
+All rights reserved.\n\
+This is autoscoper 2 by Dr.Ben Knorlein, and modified by Bardiya Akhbari.\n\
+Autoscoper 1 was developed by Andy Loomis(original CUDA version) and Mark Howison(OpenCL reimplementation).");*/
+
+	if (about_autoscoper == NULL)
+		about_autoscoper = new AboutAutoscoper(this);
+
+	about_autoscoper->show();
 }
 
 

@@ -62,6 +62,7 @@ class FilterDockWidget;
 class CameraViewWidget;
 class TimelineDockWidget;
 class VolumeDockWidget;
+class AboutAutoscoper;
 class TrackingOptionsDialog;
 class AdvancedOptionsDialog;
 class WorldViewWindow;
@@ -137,6 +138,7 @@ class AutoscoperMainWindow : public QMainWindow{
 		VolumeDockWidget* volumes_widget;
 		TrackingOptionsDialog* tracking_dialog;
 		AdvancedOptionsDialog* advanced_dialog;
+		AboutAutoscoper* about_autoscoper;
 
 		std::vector <CameraViewWidget * > cameraViews;
 		void relayoutCameras(int rows);
@@ -244,6 +246,10 @@ class AutoscoperMainWindow : public QMainWindow{
 		// Extra
 		void on_actionExport_NCC_as_csv_triggered(bool checked);
 		void on_actionExport_all_NCCs_near_this_pose_triggered(bool checked);
+
+		// About Us Window
+		void on_actionAboutAutoscoper_triggered(bool checked);
+
 		//void MovingAverageFilter(int nWin);
 		void MovingAverageFilter(int nWin, int firstFrame, int LastFrame);
 		void deletePose(int curFrame);

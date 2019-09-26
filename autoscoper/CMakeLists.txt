@@ -39,6 +39,7 @@ SET(autoscoper_FORMS_HEADERS
 		src/ui/WorldViewWindow.h
 		src/ui/VolumeBox.h
 		src/net/Socket.h
+		src/ui/AboutAutoscoper.h
 )
 SET(autoscoper_FORMS_SOURCES
      	src/ui/AutoscoperMainWindow.cpp
@@ -54,6 +55,7 @@ SET(autoscoper_FORMS_SOURCES
 		src/ui/ImportExportTrackingOptionsDialog.cpp
 		src/ui/TrackingOptionsDialog.cpp
 		src/ui/AdvancedOptionsDialog.cpp		
+		src/ui/AboutAutoscoper.cpp		
 		src/ui/FilterTreeWidgetParameter.cpp
 		src/ui/GLWidget.cpp
 		src/ui/GLTimeline.cpp
@@ -70,6 +72,7 @@ SET(autoscoper_FORMS_SOURCES
 
 #QT DESIGNER UI FILES
 SET(autoscoper_FORMS 
+		src/ui/ui-files/AboutAutoscoper.ui
 		src/ui/ui-files/AutoscoperMainWindow.ui
 		src/ui/ui-files/FilterDockWidget.ui
 		src/ui/ui-files/CameraViewWidget.ui
