@@ -116,6 +116,11 @@ add_executable (autoscoper  ${GUI_TYPE} ${autoscoper_SOURCES} ${autoscoper_HEADE
 		src/ui/autoscoper_resource.qrc) 
 		
 IF(BUILD_WITH_CUDA)
+	find_package( CUDA REQUIRED )
+	target_include_directories(autoscoper PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/cutil)	
+	SET(GPU_LIBRARIES
+		${CUDA_LIBRARIES}
+	)
 ELSE (NOT BUILD_WITH_CUDA)	
 	find_package( OpenCL REQUIRED )
 	target_include_directories(autoscoper PUBLIC ${OPENCL_INCLUDE_DIRS} )

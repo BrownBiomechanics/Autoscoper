@@ -1891,7 +1891,7 @@ void AutoscoperMainWindow::on_actionSmooth_Tangents_triggered(bool checked){
 
 	// BARDIYA ADDED MOVING AVERAGE FILTER
 	int nWin = 5; // Default
-	puts("change nWin in actionSmooth function");
+	//puts("change nWin in actionSmooth function");
 	MovingAverageFilter(nWin, 0, tracker->trial()->num_frames);
 
     update_xyzypr_and_coord_frame();
@@ -2051,7 +2051,9 @@ This is autoscoper 2 by Dr.Ben Knorlein, and modified by Bardiya Akhbari.\n\
 Autoscoper 1 was developed by Andy Loomis(original CUDA version) and Mark Howison(OpenCL reimplementation).");*/
 
 	if (about_autoscoper == NULL)
+	{
 		about_autoscoper = new AboutAutoscoper(this);
+	}
 
 	about_autoscoper->show();
 }

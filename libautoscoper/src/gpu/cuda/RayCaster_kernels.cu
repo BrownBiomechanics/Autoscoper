@@ -83,13 +83,13 @@ void volume_bind_array(const cudaArray* array)
     tex.addressMode[1] = cudaAddressModeClamp;
     
     // Bind array to 3D texture.
-    cutilSafeCall(cudaBindTextureToArray(tex, array));
+    // cutilSafeCall(cudaBindTextureToArray(tex, array));
 }
 
 void volume_viewport(float x, float y, float width, float height)
 {
     float4 viewport = make_float4(x, y, width, height);
-    cutilSafeCall(cudaMemcpyToSymbol(d_viewport, &viewport, sizeof(float4)));
+    // cutilSafeCall(cudaMemcpyToSymbol(d_viewport, &viewport, sizeof(float4)));
 }
 
 void volume_render(float* buffer, size_t width, size_t height,
@@ -97,9 +97,9 @@ void volume_render(float* buffer, size_t width, size_t height,
                    float cutoff)
 {
     // Copy the matrix to the device.
-    cutilSafeCall(cudaMemcpyToSymbol(d_invModelView,
-                                     invModelView,
-                                     sizeof(float3x4)));
+    // cutilSafeCall(cudaMemcpyToSymbol(d_invModelView,
+                                    // invModelView,
+                                    // sizeof(float3x4)));
     
     // Calculate the block and grid sizes.
     dim3 blockDim(16, 16);

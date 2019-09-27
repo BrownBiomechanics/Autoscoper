@@ -52,4 +52,20 @@ SET(cuda_KERNEL
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/BackgroundRenderer_kernels.cu
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda//DRRBackground_kernels.cu
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda//Mult_kernels.cu
+	
+	
+	# src/gpu/cuda/Compositor_kernels.cu
+	# src/gpu/cuda/ContrastFilter_kernels.cu
+	# src/gpu/cuda/GaussianFilter_kernels.cu
+	# src/gpu/cuda/Ncc_kernels.cu
+	# src/gpu/cuda/HDist_kernels.cu	
+ 	# #src/gpu/cuda/PSO_kernel.cu		
+	# src/gpu/cuda/RadRenderer_kernels.cu
+	# src/gpu/cuda/RayCaster_kernels.cu
+	# src/gpu/cuda/SharpenFilter_kernels.cu
+	# src/gpu/cuda/SobelFilter_kernels.cu
+	# src/gpu/cuda/Merger_kernels.cu
+	# src/gpu/cuda/BackgroundRenderer_kernels.cu
+	# src/gpu/cuda//DRRBackground_kernels.cu
+	# src/gpu/cuda//Mult_kernels.cu
 )

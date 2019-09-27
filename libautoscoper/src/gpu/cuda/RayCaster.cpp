@@ -222,7 +222,8 @@ RayCaster::load(const Volume<T>& volume)
     invTrans_[2] = min[2]/(float)dim[2];
 
     // Free any previously allocated memory.
-    cutilSafeCall(cudaFreeArray(array_));
+    
+	(cudaFreeArray(array_));
     
     // Create a 3D array.
     cudaChannelFormatDesc desc = cudaCreateChannelDesc<T>();

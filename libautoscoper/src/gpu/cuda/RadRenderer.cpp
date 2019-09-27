@@ -75,13 +75,13 @@ RadRenderer::RadRenderer() : array_(0)
 
 RadRenderer::~RadRenderer()
 {
-    cutilSafeCall(cudaFreeArray(array_));
+    // cutilSafeCall(cudaFreeArray(array_));
 }
 
 void
 RadRenderer::set_rad(const void* data, size_t width, size_t height, size_t bps)
 {
-    cutilSafeCall(cudaFreeArray(array_));
+    // cutilSafeCall(cudaFreeArray(array_));
 
     // Create a 2D array.
     cudaChannelFormatDesc desc;
@@ -94,15 +94,15 @@ RadRenderer::set_rad(const void* data, size_t width, size_t height, size_t bps)
                  << bps << endl;
             return;
     }
-    cutilSafeCall(cudaMallocArray(&array_, &desc, width, height));
+    // cutilSafeCall(cudaMallocArray(&array_, &desc, width, height));
 
     // Copy data to 2D array.
-    cutilSafeCall(cudaMemcpyToArray(array_,
-                                    0,
-                                    0,
-                                    data,
-                                    width*height*(bps/8),
-                                    cudaMemcpyHostToDevice));
+    //cutilSafeCall(cudaMemcpyToArray(array_,
+                          //          0,
+                           //         0,
+                            //        data,
+                            //        width*height*(bps/8),
+                             //       cudaMemcpyHostToDevice));
 }
 
 void
