@@ -115,14 +115,14 @@ View::~View()
         delete *iter;
     }
 #ifdef WITH_CUDA
-	cutilSafeCall(cudaFree(filterBuffer_));
-	for(int i = 0; i < drrBuffer_.size(); i++){
-		cutilSafeCall(cudaFree(drrBuffer_[i]));
-	}
-	cutilSafeCall(cudaFree(drrBufferMerged_));
-    cutilSafeCall(cudaFree(drrFilterBuffer_));
-    cutilSafeCall(cudaFree(radBuffer_));
-    cutilSafeCall(cudaFree(radFilterBuffer_));
+	// cutilSafeCall(cudaFree(filterBuffer_));
+	// for(int i = 0; i < drrBuffer_.size(); i++){
+		// cutilSafeCall(cudaFree(drrBuffer_[i]));
+	// }
+	// cutilSafeCall(cudaFree(drrBufferMerged_));
+    // cutilSafeCall(cudaFree(drrFilterBuffer_));
+    // cutilSafeCall(cudaFree(radBuffer_));
+    // cutilSafeCall(cudaFree(radFilterBuffer_));
 #else
     delete filterBuffer_;
 	for (int i = 0; i < drrBuffer_.size(); i++){
@@ -264,15 +264,15 @@ View::renderDrr(unsigned int pbo, unsigned width, unsigned height)
 {
 #ifdef WITH_CUDA
 	struct cudaGraphicsResource* pboCudaResource;
-    cutilSafeCall(cudaGraphicsGLRegisterBuffer(&pboCudaResource, pbo,
-        cudaGraphicsMapFlagsWriteDiscard));
+    // cutilSafeCall(cudaGraphicsGLRegisterBuffer(&pboCudaResource, pbo,
+     //   cudaGraphicsMapFlagsWriteDiscard));
 
     float* buffer = NULL;
     size_t numOfBytes;
-    cutilSafeCall(cudaGraphicsMapResources(1, &pboCudaResource, 0));
-    cutilSafeCall(cudaGraphicsResourceGetMappedPointer((void**)&buffer,
-                                                       &numOfBytes,
-                                                       pboCudaResource));
+    // cutilSafeCall(cudaGraphicsMapResources(1, &pboCudaResource, 0));
+    // cutilSafeCall(cudaGraphicsResourceGetMappedPointer((void**)&buffer,
+                                                      // &numOfBytes,
+                                                      // pboCudaResource));
 
     renderDrr(drrFilterBuffer_, width, height);
 
@@ -287,8 +287,8 @@ View::renderDrr(unsigned int pbo, unsigned width, unsigned height)
                     width,
                     height);
 
-    cutilSafeCall(cudaGraphicsUnmapResources(1, &pboCudaResource, 0));
-    cutilSafeCall(cudaGraphicsUnregisterResource(pboCudaResource));
+    // cutilSafeCall(cudaGraphicsUnmapResources(1, &pboCudaResource, 0));
+    // cutilSafeCall(cudaGraphicsUnregisterResource(pboCudaResource));
 #else
 	GLBuffer* buffer = new GLBuffer(pbo, CL_MEM_WRITE_ONLY);
 
@@ -423,20 +423,20 @@ View::render(unsigned int pbo, unsigned width, unsigned height)
 {
 #ifdef WITH_CUDA
 	struct cudaGraphicsResource* pboCudaResource;
-	cutilSafeCall(cudaGraphicsGLRegisterBuffer(&pboCudaResource, pbo,
-        cudaGraphicsMapFlagsWriteDiscard));
+	// cutilSafeCall(cudaGraphicsGLRegisterBuffer(&pboCudaResource, pbo,
+      //  cudaGraphicsMapFlagsWriteDiscard));
 
     float* buffer = NULL;
     size_t numOfBytes;
-    cutilSafeCall(cudaGraphicsMapResources(1, &pboCudaResource, 0));
-    cutilSafeCall(cudaGraphicsResourceGetMappedPointer((void**)&buffer,
-                                                       &numOfBytes,
-						                               pboCudaResource));
+    // cutilSafeCall(cudaGraphicsMapResources(1, &pboCudaResource, 0));
+    // cutilSafeCall(cudaGraphicsResourceGetMappedPointer((void**)&buffer,
+                                                     //  &numOfBytes,
+						                             //  pboCudaResource));
 
     render(buffer, width, height);
 
-    cutilSafeCall(cudaGraphicsUnmapResources(1, &pboCudaResource, 0));
-	cutilSafeCall(cudaGraphicsUnregisterResource(pboCudaResource));
+    // cutilSafeCall(cudaGraphicsUnmapResources(1, &pboCudaResource, 0));
+	// cutilSafeCall(cudaGraphicsUnregisterResource(pboCudaResource));
 
 #else
 	GLBuffer* buffer = new GLBuffer(pbo, CL_MEM_WRITE_ONLY);
@@ -460,15 +460,15 @@ void
 View::init()
 {
     if (!filterBuffer_) {
-        cutilSafeCall(cudaMalloc((void**)&filterBuffer_, maxWidth_*maxHeight_*sizeof(float)));
+        // cutilSafeCall(cudaMalloc((void**)&filterBuffer_, maxWidth_*maxHeight_*sizeof(float)));
 		for(int i = 0 ; i < drrBuffer_.size(); i ++)
-			cutilSafeCall(cudaMalloc((void**)&drrBuffer_[i], maxWidth_*maxHeight_*sizeof(float)));
-		cutilSafeCall(cudaMalloc((void**)&drrBufferMerged_, maxWidth_*maxHeight_*sizeof(float)));
-        cutilSafeCall(cudaMalloc((void**)&drrFilterBuffer_, maxWidth_*maxHeight_*sizeof(float)));
-        cutilSafeCall(cudaMalloc((void**)&radBuffer_, maxWidth_*maxHeight_*sizeof(float)));
-        cutilSafeCall(cudaMalloc((void**)&radFilterBuffer_, maxWidth_*maxHeight_*sizeof(float)));
-		cutilSafeCall(cudaMalloc((void**)&backgroundmask_, maxWidth_*maxHeight_*sizeof(float)));
-		cutilSafeCall(cudaMalloc((void**)&drr_mask_, maxWidth_*maxHeight_*sizeof(float)));
+			// cutilSafeCall(cudaMalloc((void**)&drrBuffer_[i], maxWidth_*maxHeight_*sizeof(float)));
+		// cutilSafeCall(cudaMalloc((void**)&drrBufferMerged_, maxWidth_*maxHeight_*sizeof(float)));
+        // cutilSafeCall(cudaMalloc((void**)&drrFilterBuffer_, maxWidth_*maxHeight_*sizeof(float)));
+        // cutilSafeCall(cudaMalloc((void**)&radBuffer_, maxWidth_*maxHeight_*sizeof(float)));
+        // cutilSafeCall(cudaMalloc((void**)&radFilterBuffer_, maxWidth_*maxHeight_*sizeof(float)));
+		// cutilSafeCall(cudaMalloc((void**)&backgroundmask_, maxWidth_*maxHeight_*sizeof(float)));
+		// cutilSafeCall(cudaMalloc((void**)&drr_mask_, maxWidth_*maxHeight_*sizeof(float)));
 		// fill the array
 		gpu::fill(backgroundmask_, maxWidth_*maxHeight_, 1.0f);
 		gpu::fill(drr_mask_, maxWidth_*maxHeight_, 1.0f);
