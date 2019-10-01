@@ -69,7 +69,7 @@ void background_bind_array(const cudaArray* array)
     tex.addressMode[1] = cudaAddressModeClamp;
     
     // Bind array to 3D texture.
-    // cutilSafeCall(cudaBindTextureToArray(tex, array));
+    cutilSafeCall(cudaBindTextureToArray(tex, array));
 }
 
 

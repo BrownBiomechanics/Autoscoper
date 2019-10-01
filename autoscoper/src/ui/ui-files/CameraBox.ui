@@ -7,14 +7,23 @@
     <x>0</x>
     <y>0</y>
     <width>241</width>
-    <height>79</height>
+    <height>91</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <property name="margin">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
     <number>0</number>
    </property>
    <property name="spacing">
@@ -29,7 +38,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="label_1">
         <property name="text">
-         <string>MayaCam</string>
+         <string>Calibration File</string>
         </property>
        </widget>
       </item>
@@ -62,7 +71,7 @@
       <item row="1" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>Video path</string>
+         <string>Video Path</string>
         </property>
        </widget>
       </item>

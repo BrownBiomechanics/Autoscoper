@@ -9,7 +9,7 @@ namespace Ui {
 }
 
 class AutoscoperMainWindow;
-class QTreeWidgetItem;
+class QListWidgetItem;
 
 class VolumeDockWidget : public QDockWidget{
 
@@ -21,8 +21,9 @@ class VolumeDockWidget : public QDockWidget{
 
 		AutoscoperMainWindow * getMainWindow(){return mainwindow;};
 		
-		void clear();
+		void clearVol();
 		void addVolume(const std::string& filename);
+
 
 		QString getVolumeName(int volume_index);
 
@@ -36,7 +37,8 @@ class VolumeDockWidget : public QDockWidget{
 	protected:
 
 	public slots:
-		void on_treeWidget_currentItemChanged ( QTreeWidgetItem * current, QTreeWidgetItem * previous);
+		void on_listWidget_currentItemChanged( QListWidgetItem * current, QListWidgetItem* previous);
+
 };
 
 #endif  // UAUTOSCOPERMAINWINDOW_H

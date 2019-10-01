@@ -281,7 +281,7 @@ VolumeDescription::VolumeDescription(const Volume& volume)
 	
 #ifdef WITH_CUDA
 	// Free any previously allocated memory.
-    // cutilSafeCall(cudaFreeArray(image_));
+    cutilSafeCall(cudaFreeArray(image_));
 
     // Create a 3D array.
     cudaChannelFormatDesc desc;
@@ -294,7 +294,7 @@ VolumeDescription::VolumeDescription(const Volume& volume)
                  exit(0);
     }
     cudaExtent extent = make_cudaExtent(dim[0], dim[1], dim[2]);
-    // cutilSafeCall(cudaMalloc3DArray(&image_, &desc, extent));
+    cutilSafeCall(cudaMalloc3DArray(&image_, &desc, extent));
 
     // Copy volume to 3D array.
     cudaMemcpy3DParms copyParams = {0};
@@ -304,7 +304,7 @@ VolumeDescription::VolumeDescription(const Volume& volume)
     copyParams.dstArray = image_;
     copyParams.extent = extent;
     copyParams.kind = cudaMemcpyHostToDevice;
-    // cutilSafeCall(cudaMemcpy3D(&copyParams));
+    cutilSafeCall(cudaMemcpy3D(&copyParams));
 #else
 	if (image_) delete image_;
 
@@ -329,7 +329,7 @@ VolumeDescription::VolumeDescription(const Volume& volume)
 VolumeDescription::~VolumeDescription()
 {
 #ifdef WITH_CUDA
-	// cutilSafeCall(cudaFreeArray(image_));
+	cutilSafeCall(cudaFreeArray(image_));
 #else
 	if (image_) delete image_;
 #endif

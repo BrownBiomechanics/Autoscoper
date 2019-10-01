@@ -93,10 +93,10 @@ namespace xromm
 				unsigned int numThreads, numBlocks, sizeMem;
 				get_device_params_hdist(max_n, maxNumThreads, numThreads, numBlocks, sizeMem);
 
-				// cutilSafeCall(cudaMalloc(&d_sums_ba, numBlocks * sizeof(float)));
-				// cutilSafeCall(cudaMalloc(&d_nums_ba, max_n * sizeof(float)));
-				// cutilSafeCall(cudaMalloc(&d_den1s_ba, max_n * sizeof(float)));
-				// cutilSafeCall(cudaMalloc(&d_den2s_ba, max_n * sizeof(float)));
+				cutilSafeCall(cudaMalloc(&d_sums_ba, numBlocks * sizeof(float)));
+				cutilSafeCall(cudaMalloc(&d_nums_ba, max_n * sizeof(float)));
+				cutilSafeCall(cudaMalloc(&d_den1s_ba, max_n * sizeof(float)));
+				cutilSafeCall(cudaMalloc(&d_den2s_ba, max_n * sizeof(float)));
 
 				g_max_n_hdist = max_n;
 				g_maxNumThreads_hdist = maxNumThreads;
@@ -105,10 +105,10 @@ namespace xromm
 
 		void hdist_deinit()
 		{
-			// cutilSafeCall(cudaFree(d_sums_ba));
-			// cutilSafeCall(cudaFree(d_nums_ba));
-			// cutilSafeCall(cudaFree(d_den1s_ba));
-			// cutilSafeCall(cudaFree(d_den2s_ba));
+			cutilSafeCall(cudaFree(d_sums_ba));
+			cutilSafeCall(cudaFree(d_nums_ba));
+			cutilSafeCall(cudaFree(d_den1s_ba));
+			cutilSafeCall(cudaFree(d_den2s_ba));
 
 			g_max_n_hdist = 0;
 			g_maxNumThreads_hdist = 0;
@@ -172,10 +172,10 @@ float sum_hdist(float* f, unsigned int n)
 	}
 
 	float h_sum_ba;
-	// cutilSafeCall(cudaMemcpy(&h_sum_ba,
-		//d_sums_ba,
-		//sizeof(float),
-		//cudaMemcpyDeviceToHost));
+	cutilSafeCall(cudaMemcpy(&h_sum_ba,
+		d_sums_ba,
+		sizeof(float),
+		cudaMemcpyDeviceToHost));
 	return h_sum_ba;
 }
 

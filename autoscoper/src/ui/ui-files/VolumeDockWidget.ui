@@ -13,28 +13,43 @@
   <property name="minimumSize">
    <size>
     <width>239</width>
-    <height>111</height>
+    <height>137</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Volumes</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
+   <property name="font">
+    <font>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QTreeWidget" name="treeWidget">
+     <widget class="QListWidget" name="listWidget">
+      <property name="contextMenuPolicy">
+       <enum>Qt::NoContextMenu</enum>
+      </property>
       <property name="styleSheet">
        <string notr="true">QTreeView::item:selected{background-color: #be0000;} //light blue
 </string>
       </property>
-      <attribute name="headerVisible">
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="showDropIndicator" stdset="0">
        <bool>false</bool>
-      </attribute>
-      <column>
-       <property name="text">
-        <string>1</string>
-       </property>
-      </column>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
+      <property name="layoutMode">
+       <enum>QListView::Batched</enum>
+      </property>
+      <property name="currentRow">
+       <number>-1</number>
+      </property>
      </widget>
     </item>
    </layout>

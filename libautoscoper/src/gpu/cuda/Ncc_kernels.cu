@@ -94,10 +94,10 @@ void ncc_init(unsigned int max_n, unsigned int maxNumThreads)
         unsigned int numThreads, numBlocks, sizeMem;
         get_device_params(max_n, maxNumThreads, numThreads, numBlocks, sizeMem);
 
-        // cutilSafeCall(cudaMalloc(&d_sums, numBlocks*sizeof(float)));
-        // cutilSafeCall(cudaMalloc(&d_nums, max_n*sizeof(float)));
-        // cutilSafeCall(cudaMalloc(&d_den1s, max_n*sizeof(float)));
-        // cutilSafeCall(cudaMalloc(&d_den2s, max_n*sizeof(float)));
+        cutilSafeCall(cudaMalloc(&d_sums, numBlocks*sizeof(float)));
+        cutilSafeCall(cudaMalloc(&d_nums, max_n*sizeof(float)));
+        cutilSafeCall(cudaMalloc(&d_den1s, max_n*sizeof(float)));
+        cutilSafeCall(cudaMalloc(&d_den2s, max_n*sizeof(float)));
 
         g_max_n = max_n;
         g_maxNumThreads = maxNumThreads;
@@ -106,10 +106,10 @@ void ncc_init(unsigned int max_n, unsigned int maxNumThreads)
 
 void ncc_deinit()
 {
-    // cutilSafeCall(cudaFree(d_sums));
-    // cutilSafeCall(cudaFree(d_nums));
-    // cutilSafeCall(cudaFree(d_den1s));
-    // cutilSafeCall(cudaFree(d_den2s));
+    cutilSafeCall(cudaFree(d_sums));
+    cutilSafeCall(cudaFree(d_nums));
+    cutilSafeCall(cudaFree(d_den1s));
+    cutilSafeCall(cudaFree(d_den2s));
 
     g_max_n = 0;
     g_maxNumThreads = 0;
@@ -167,10 +167,10 @@ float sum(float* f, unsigned int n)
     }
 
     float h_sum;
-    // cutilSafeCall(cudaMemcpy(&h_sum,
-                           //  d_sums,
-                           //  sizeof(float),
-                           //  cudaMemcpyDeviceToHost));
+    cutilSafeCall(cudaMemcpy(&h_sum,
+                             d_sums,
+                             sizeof(float),
+                             cudaMemcpyDeviceToHost));
     return h_sum;
 }
 

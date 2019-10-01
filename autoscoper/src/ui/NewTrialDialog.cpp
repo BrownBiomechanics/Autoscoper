@@ -231,8 +231,8 @@ NewTrialDialog::run()
         trial.offsets[4] = 0.1;
         trial.offsets[5] = 0.1;
 
-        trial.render_width = 512;
-        trial.render_height = 512;
+        trial.render_width = 880;
+        trial.render_height = 880;
 
         return true;
     }

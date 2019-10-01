@@ -47,6 +47,9 @@
 #include "ui/FilterDockWidget.h"
 #include "ui/AutoscoperMainWindow.h"
 
+#include <iostream>
+
+
 FilterDockWidget::FilterDockWidget(QWidget *parent) :
 										QDockWidget(parent),
 										dock(new Ui::FilterDockWidget){
@@ -60,7 +63,12 @@ FilterDockWidget::~FilterDockWidget(){
 }
 
 void FilterDockWidget::clearTree(){
-	dock->treeWidget->clear();
+	int n = dock->treeWidget->topLevelItemCount();
+	while (n != 0)
+	{
+		n = dock->treeWidget->topLevelItemCount();
+		dock->treeWidget->takeTopLevelItem(0);
+	}
 }
 
 void FilterDockWidget::toggle_drrs(){

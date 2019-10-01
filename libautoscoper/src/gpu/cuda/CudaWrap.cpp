@@ -53,12 +53,12 @@ namespace xromm { namespace gpu {
 
 void cudaInitWrap()
 {
-    // cutilSafeCall(cudaGLSetGLDevice(cutGetMaxGflopsDeviceId()));
+    cutilSafeCall(cudaGLSetGLDevice(cutGetMaxGflopsDeviceId()));
 }
 
 void cudaMallocWrap(float*& ptr, size_t size)
 {
-    // cutilSafeCall(cudaMalloc((void**)&ptr, size));
+    cutilSafeCall(cudaMalloc((void**)&ptr, size));
 }
 
 } } // namespace xromm::cuda

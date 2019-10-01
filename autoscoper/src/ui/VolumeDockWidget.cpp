@@ -10,6 +10,9 @@
 #include "Trial.hpp"
 
 #include <QFileInfo>
+
+#include <iostream>
+
 VolumeDockWidget::VolumeDockWidget(QWidget *parent) :
 										QDockWidget(parent),
 										dock(new Ui::VolumeDockWidget){
@@ -22,26 +25,46 @@ VolumeDockWidget::~VolumeDockWidget(){
 	delete dock;
 }
 
-void VolumeDockWidget::clear(){
-	dock->treeWidget->clear();
+void VolumeDockWidget::clearVol(){
+	model_names_list.clear();
+	dock->listWidget->clear();
+
+	/*int n = dock->listWidget->count();
+
+	
+	int counter = 0;
+	while (n != 0)
+	{
+		n = dock->listWidget->count();
+		delete(dock->listWidget->takeItem(0));
+		counter++;
+	}
+	n = dock->listWidget->count();*/
 }
 
 void VolumeDockWidget::addVolume(const std::string& filename){
-	QTreeWidgetItem* volumeItem = new QTreeWidgetItem();
+	QListWidgetItem* volumeItem = new QListWidgetItem();
 	QFileInfo fi (QString::fromStdString(filename));
 
-	volumeItem->setText(0,fi.completeBaseName());
-	dock->treeWidget->addTopLevelItem(volumeItem);
-	dock->treeWidget->setCurrentItem(volumeItem);
+	volumeItem->setText(fi.completeBaseName());
+
+	dock->listWidget->addItem(volumeItem);
+	dock->listWidget->setCurrentItem(volumeItem);
 
 	// Store Model Name
 	model_names_list.push_back(fi.completeBaseName().toStdString().c_str());
 
 }
 
-void VolumeDockWidget::on_treeWidget_currentItemChanged ( QTreeWidgetItem * current, QTreeWidgetItem * previous) {
-	mainwindow->getTracker()->trial()->current_volume = dock->treeWidget->indexOfTopLevelItem(current);
-	mainwindow->volume_changed();
+void VolumeDockWidget::on_listWidget_currentItemChanged (QListWidgetItem* current, QListWidgetItem* previous) {
+	if (current != NULL)
+	{
+		mainwindow->getTracker()->trial()->current_volume = dock->listWidget->row(current);
+		mainwindow->volume_changed();
+	}
+	else {
+		mainwindow->getTracker()->trial()->current_volume = -1;
+	}
 }
 
 

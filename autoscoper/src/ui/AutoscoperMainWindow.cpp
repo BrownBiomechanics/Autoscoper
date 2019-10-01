@@ -321,7 +321,6 @@ void AutoscoperMainWindow::frame_changed()
 
 void AutoscoperMainWindow::volume_changed()
 {
-	
 	// Lock or unlock the position
 	if (timeline_widget->getPosition_graph()->frame_locks.at(tracker->trial()->frame)) {
 		timeline_widget->setValuesEnabled(false);
@@ -336,10 +335,10 @@ void AutoscoperMainWindow::volume_changed()
 	//update_xyzypr_and_coord_frame();
 	timeline_widget->getSelectedNodes()->clear();
 	update_graph_min_max(timeline_widget->getPosition_graph());
-
 	redrawGL();
-	QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+	//QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 }
+
 
 void AutoscoperMainWindow::update_xyzypr()
 {
@@ -548,37 +547,34 @@ void AutoscoperMainWindow::update_graph_min_max(GraphData* graph, int frame)
 
 void AutoscoperMainWindow::setupUI()
 {
+	cameraViews.erase(cameraViews.begin(), cameraViews.end());
 
-    for (unsigned int i = 0; i < cameraViews.size(); i++) {
+	for (unsigned int i = 0; i < cameraViews.size(); i++) {
 		cameraViews[i]->setParent(NULL);
 		delete cameraViews[i];
-    }
+	}
 
-	cameraViews.erase(cameraViews.begin(), cameraViews.end());
-	// cout << "Camera Size: " << cameraViews.size() << endl;
 	cameraViews.clear();
-	//puts("553");
 	filters_widget->clearTree();
-	//puts("555");
-	volumes_widget->clear();
-	//puts("558");
+	volumes_widget->clearVol();
 
-	//cout << "Volume Size: " << tracker->trial()->volumes.size() << endl;
+
+	for (int i = 0; i < tracker->trial()->num_volumes; i++) {
+		manipulator.push_back(new Manip3D());
+		getManipulator(i)->set_transform(Mat4d());
+	}
+
 	//Add Volumes
 	for (unsigned int i = 0; i < tracker->trial()->volumes.size(); i++) {
-	//	cout << " Volume Name: " << tracker->trial()->volumes[i].name() << endl;
+		cout << "Volume Name: " << tracker->trial()->volumes[i].name() << endl;
 		volumes_widget->addVolume(tracker->trial()->volumes[i].name());
-	//	puts("Volume Added");
 	}
-	//puts("565");
 
     //Add the new cameras
     for (unsigned int i = 0; i < tracker->trial()->cameras.size(); i++) {
 		cameraViews.push_back(new CameraViewWidget(i, tracker->view(i),tracker->trial()->cameras[i].mayacam().c_str(), this));
-		//cameraViews[i]->setSharedGLContext(shared_glcontext);	
 		filters_widget->addCamera(tracker->view(i));
     }
-	//puts("573");
 
 	relayoutCameras(1);
     textures.resize(tracker->trial()->cameras.size());
@@ -1068,7 +1064,7 @@ void AutoscoperMainWindow::openTrial(QString filename){
 		delete trial;
 
 		trial_filename = filename.toStdString().c_str();
-
+		puts("\n\nSetting up a new trial...");
 		cout << "Filename: " << trial_filename << std::endl;
 		is_trial_saved = true;
 		is_tracking_saved = true;
@@ -1077,12 +1073,8 @@ void AutoscoperMainWindow::openTrial(QString filename){
 			delete manipulator[i];
 		}
 		manipulator.clear();
-		for (int i = 0; i < tracker->trial()->num_volumes; i++) {
-			manipulator.push_back(new Manip3D());
-			getManipulator(i)->set_transform(Mat4d());
-		}
+
 		setupUI();
-		// puts("after setup UI");
 
 		timelineSetValue(0);
 
@@ -1110,7 +1102,7 @@ void AutoscoperMainWindow::openTrial(QString filename){
 		filter_path += default_filter_name;
 		filter_path += ".vie";
 
-		std::cerr << "Filter Path is: " << filter_path.toStdString().c_str() << std::endl;
+		// std::cerr << "Filter Path is: " << filter_path.toStdString().c_str() << std::endl;
 
 		for (int j = 0; j < cameraViews.size(); j++) {
 			loadFilterSettings(j, filter_path);
@@ -1138,7 +1130,7 @@ void AutoscoperMainWindow::openTrial(QString filename){
 
 			load_tracking_results(tracking_path, 1, default_saving_format, 1, 0, 0, 0, iVol);
 
-			cout << "Tracking Path is: " << tracking_path.toStdString().c_str() << endl;
+			// cout << "Tracking Path is: " << tracking_path.toStdString().c_str() << endl;
 		}
 
 		//

@@ -69,27 +69,27 @@ BackgroundRenderer::BackgroundRenderer() : array_(0)
 
 BackgroundRenderer::~BackgroundRenderer()
 {
-    // cutilSafeCall(cudaFreeArray(array_));
+    cutilSafeCall(cudaFreeArray(array_));
 }
 
 void
 BackgroundRenderer::set_back(const void* data, size_t width, size_t height)
 {
-    // cutilSafeCall(cudaFreeArray(array_));
+    cutilSafeCall(cudaFreeArray(array_));
 
     // Create a 2D array.
     cudaChannelFormatDesc desc;
     desc = cudaCreateChannelDesc<float>(); 
         
-    // cutilSafeCall(cudaMallocArray(&array_, &desc, width, height));
+    cutilSafeCall(cudaMallocArray(&array_, &desc, width, height));
 
     // Copy data to 2D array.
-    // cutilSafeCall(cudaMemcpyToArray(array_,
-                                //    0,
-                                //    0,
-                                //    data,
-                                //    width*height*sizeof(float),
-                                 //   cudaMemcpyHostToDevice));
+    cutilSafeCall(cudaMemcpyToArray(array_,
+                                    0,
+                                    0,
+                                    data,
+                                    width*height*sizeof(float),
+                                    cudaMemcpyHostToDevice));
 }
 
 void
