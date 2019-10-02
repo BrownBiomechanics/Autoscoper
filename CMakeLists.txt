@@ -1,4 +1,4 @@
-PROJECT(Autoscoper LANGUAGES CXX CUDA)
+PROJECT(Autoscoper)
 
 cmake_policy(SET CMP0048 NEW)
 

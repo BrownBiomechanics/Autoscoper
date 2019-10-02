@@ -108,7 +108,7 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 	//shared_glcontext = gltracker->getSharedContext();
 	
 	//History
-	history = new History(10);
+	history = new History(15);
 	first_undo = true;
 
 	//Init empty trial

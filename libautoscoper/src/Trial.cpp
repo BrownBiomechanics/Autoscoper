@@ -205,9 +205,9 @@ namespace xromm
 				offsets[3] >> offsets[4] >> offsets[5];
 		}
 
-		// Read in the rendering dimensions, default to 512
-		render_width = 512;
-		render_height = 512;
+		// Read in the rendering dimensions, default to 880
+		render_width = 880;
+		render_height = 880;
 		if (!renderResolution.empty()) {
 			stringstream resolution_stream(renderResolution.back());
 			resolution_stream >> render_width >> render_height;

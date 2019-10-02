@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>239</width>
-    <height>238</height>
+    <width>322</width>
+    <height>249</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>239</width>
-    <height>137</height>
+    <width>0</width>
+    <height>0</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -28,6 +28,12 @@
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <widget class="QListWidget" name="listWidget">
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>150</height>
+       </size>
+      </property>
       <property name="contextMenuPolicy">
        <enum>Qt::NoContextMenu</enum>
       </property>
