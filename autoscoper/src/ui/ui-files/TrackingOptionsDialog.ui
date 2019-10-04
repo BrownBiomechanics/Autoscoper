@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>676</width>
-    <height>490</height>
+    <width>635</width>
+    <height>460</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -591,7 +591,7 @@ QGroupBox::title {
         <item row="0" column="1">
          <widget class="QRadioButton" name="radioButton_implant_ncc_cf">
           <property name="text">
-           <string>Implants (Using Euclidean Distance)</string>
+           <string>~Implants (Using Euclidean Distance)</string>
           </property>
          </widget>
         </item>

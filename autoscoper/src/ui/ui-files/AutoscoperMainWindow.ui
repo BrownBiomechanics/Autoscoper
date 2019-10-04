@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
+ <author>Ben Knorlein, Bardiya Akhbari</author>
  <class>AutoscoperMainWindow</class>
  <widget class="QMainWindow" name="AutoscoperMainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1200</width>
-    <height>800</height>
-   </rect>
-  </property>
   <property name="minimumSize">
    <size>
     <width>0</width>
@@ -430,6 +423,12 @@ Trial</string>
     </item>
     <item row="1" column="0" colspan="2">
      <widget class="QFrame" name="frameWindows">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="minimumSize">
        <size>
         <width>0</width>
@@ -452,8 +451,8 @@ Trial</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1200</width>
-     <height>26</height>
+     <width>799</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
