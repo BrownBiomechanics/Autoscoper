@@ -1,6 +1,6 @@
 This is Autoscoper 2 by [Dr. Ben Knorlein](https://www.ccv.brown.edu/about/staff). This branch was created by [Bardiya Akhbari](https://www.researchgate.net/profile/Bardiya_Akhbari) for additional debugging. The code has been optimized for CUDA, and particle swarm optimization method has been added to the registration options. Furthermore in order to simplify installation and compilation the build system has been changed to CMake and the UI was switched to QT5. In addition, Version 2 has improved processing, several bugfixes and new functionality, e.g. multibone, batch processing, when compared to the original versions.
 
-If you don't want to compile the code, you can download the installer for Autoscoper 2.7.0 [here](https://brownbox.brown.edu/download.php?hash=342e8dd5)
+If you don't want to compile the code, you can download [the installer for Autoscoper 2.7.0 here](https://brownbox.brown.edu/download.php?hash=342e8dd5).
 
 You need to install [CUDA toolkit](https://developer.nvidia.com/cuda-downloads?) before installing the software.
 # Compiling Instructions #
