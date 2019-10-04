@@ -149,6 +149,11 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 	resizeDocks({ timeline_widget}, { 300 }, Qt::Horizontal);
 	tracking_dialog = NULL;
 
+
+	about_autoscoper = NULL;
+	advanced_dialog = NULL;
+
+	
 	setupShortcuts();
 }
 
