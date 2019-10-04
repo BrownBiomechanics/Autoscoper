@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>946</width>
+    <width>1080</width>
     <height>447</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>946</width>
+    <width>1080</width>
     <height>200</height>
    </size>
   </property>
@@ -30,16 +30,7 @@
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout_3">
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>0</number>
     </property>
     <property name="spacing">
@@ -188,8 +179,8 @@
      <widget class="GLTimeline" name="gltimeline" native="true">
       <property name="minimumSize">
        <size>
-        <width>500</width>
-        <height>100</height>
+        <width>0</width>
+        <height>0</height>
        </size>
       </property>
      </widget>
@@ -273,15 +264,21 @@
        <item row="0" column="9">
         <widget class="QCheckBox" name="checkBox_Yaw">
          <property name="text">
-          <string>Yaw (deg)</string>
+          <string>Yaw (°)</string>
          </property>
          <property name="checked">
           <bool>true</bool>
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
+       <item row="0" column="0" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
         <widget class="QCheckBox" name="checkBox_X">
+         <property name="minimumSize">
+          <size>
+           <width>90</width>
+           <height>20</height>
+          </size>
+         </property>
          <property name="text">
           <string>X (mm)</string>
          </property>
@@ -344,8 +341,14 @@
        </item>
        <item row="0" column="15">
         <widget class="QCheckBox" name="checkBox_Roll">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
-          <string>Roll (deg)</string>
+          <string>Roll (°)</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -393,7 +396,7 @@
        <item row="0" column="12">
         <widget class="QCheckBox" name="checkBox_Pitch">
          <property name="text">
-          <string>Pitch (deg)</string>
+          <string>Pitch (°)</string>
          </property>
          <property name="checked">
           <bool>true</bool>

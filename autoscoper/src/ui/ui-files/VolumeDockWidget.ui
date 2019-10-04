@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>322</width>
+    <width>200</width>
     <height>249</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>318</width>
-    <height>190</height>
+    <width>200</width>
+    <height>193</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,7 @@
      <widget class="QListWidget" name="listWidget">
       <property name="minimumSize">
        <size>
-        <width>300</width>
+        <width>180</width>
         <height>150</height>
        </size>
       </property>

@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
-const int NUM_OF_PARTICLES = 100;
+const int NUM_OF_PARTICLES = 120;
 const int NUM_OF_DIMENSIONS = 6;
 const float OMEGA = 0.5;
 const float c1 = 1.5;

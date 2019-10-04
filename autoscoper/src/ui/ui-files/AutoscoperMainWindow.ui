@@ -3,6 +3,14 @@
  <author>Ben Knorlein, Bardiya Akhbari</author>
  <class>AutoscoperMainWindow</class>
  <widget class="QMainWindow" name="AutoscoperMainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>769</width>
+    <height>272</height>
+   </rect>
+  </property>
   <property name="minimumSize">
    <size>
     <width>0</width>
@@ -27,16 +35,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>0</number>
     </property>
     <property name="spacing">
@@ -79,16 +78,7 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <property name="spacing">
@@ -451,7 +441,7 @@ Trial</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>799</width>
+     <width>769</width>
      <height>21</height>
     </rect>
    </property>
