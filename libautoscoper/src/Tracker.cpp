@@ -53,20 +53,19 @@
 #endif
 
 #ifdef WITH_CUDA
-#include "gpu/cuda/CudaWrap.hpp"
-#include "gpu/cuda/Ncc_kernels.h"
-#include "gpu/cuda/HDist_kernels.h"
-#include "gpu/cuda/Compositor_kernels.h"
-#include "gpu/cuda/Mult_kernels.h"
-#include <cuda_runtime_api.h>
-
-#include "gpu/cuda/PSO_kernel.h"
-
-
+	#include "gpu/cuda/CudaWrap.hpp"
+	#include "gpu/cuda/Ncc_kernels.h"
+	#include "gpu/cuda/HDist_kernels.h"
+	#include "gpu/cuda/Compositor_kernels.h"
+	#include "gpu/cuda/Mult_kernels.h"
+	#include <cuda_runtime_api.h>
+	#include "gpu/cuda/PSO_kernel.h"
 #else
-#include "gpu/opencl/Ncc.hpp"
-#include "gpu/opencl/Mult.hpp"
+	#include "gpu/opencl/Ncc.hpp"
+	#include "gpu/opencl/Mult.hpp"
+	#include "gpu/cuda/PSO_kernel.h"
 #endif
+
 #include "VolumeDescription.hpp"
 #include "Video.hpp"
 #include "View.hpp"
@@ -210,7 +209,9 @@ void Tracker::load(const Trial& trial)
 #endif
 
     gpu::ncc_init(npixels);
-	gpu::hdist_init(npixels); 
+	#ifdef WITH_CUDA
+		gpu::hdist_init(npixels); 
+	#endif
 	
     for (unsigned int i = 0; i < trial_.cameras.size(); ++i) {
 
@@ -574,8 +575,9 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
 			{
 				// Calculate the correlation for implant
 				// Calculate Hausdorff Distance for Implant Matching _ FUTURE
-				correlations.push_back(gpu::hdist(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
-
+				#ifdef WITH_CUDA
+					correlations.push_back(gpu::hdist(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
+				#endif
 			}
 			else { // If 0, we do bone model
 				// Calculate the correlation for ncc

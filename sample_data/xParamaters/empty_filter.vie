@@ -1,0 +1,9 @@
+RadFilters_begin
+RadFilters_end
+DrrRenderer_begin
+SampleDistance 0.62
+RayIntensity 0.49
+Cutoff 0
+DrrRenderer_end
+DrrFilters_begin
+DrrFilters_end
