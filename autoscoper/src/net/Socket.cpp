@@ -1,4 +1,4 @@
-﻿// ----------------------------------
+// ----------------------------------
 // Copyright (c) 2011, Brown University
 // All rights reserved.
 //
@@ -38,8 +38,6 @@
 ///\file Socket.cpp
 ///\author Benjamin Knorlein
 ///\date 5/14/2018
-
-#pragma once
 
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS
@@ -279,6 +277,6 @@ void Socket::reading()
 		char *data = new char[avail];
 		obj->read(data, avail);
 		handleMessage(obj, data, avail);
-		delete data;
+		delete[] data;
 	}
 }

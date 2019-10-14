@@ -79,7 +79,7 @@ class NewTrialDialog : public QDialog{
 		void on_toolButton_CameraMinus_clicked();
 		void on_toolButton_CameraPlus_clicked();
 
-		void on_toolButtonVolumeMinus_clicked();
+		void on_toolButton_VolumeMinus_clicked();
 		void on_toolButton_VolumePlus_clicked();
 		
 		void on_pushButton_OK_clicked();

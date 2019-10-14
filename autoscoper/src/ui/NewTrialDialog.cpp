@@ -110,14 +110,16 @@ void NewTrialDialog::on_toolButton_CameraPlus_clicked(){
 	cameras.push_back(box);
 }
 
-void NewTrialDialog::on_toolButtonVolumeMinus_clicked()
+void NewTrialDialog::on_toolButton_VolumeMinus_clicked()
 {
-	if (nbCams > 1){
+	if (nbCams >= 1 && nbVolumes!=0){
+        
 		diag->gridLayout_8->removeWidget(volumes[nbVolumes - 1]);
 		delete volumes[nbVolumes - 1];
 		volumes.pop_back();
 
-		nbVolumes -= 1;
+        nbVolumes -= 1;
+        
 		diag->label_VolumeNb->setText(QString::number(nbVolumes));
 	}
 }

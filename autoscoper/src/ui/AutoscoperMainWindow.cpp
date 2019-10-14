@@ -2055,6 +2055,48 @@ Autoscoper 1 was developed by Andy Loomis(original CUDA version) and Mark Howiso
 	about_autoscoper->show();
 }
 
+void AutoscoperMainWindow::on_actionOpenSampleData_triggered(bool checked) {
+    
+    QString root_path = "/Users/bardiya/autoscoper-v2/";//qApp->applicationDirPath();
+    //"/Users/bardiya/autoscoper-v2";// QDir::currentPath(); //qApp->applicationDirPath();
+    QString default_config_path = root_path + "sample_data";
+    default_config_path += "/";
+    default_config_path += "rad_uln.cfg";
+    
+    ifstream file(default_config_path.toStdString().c_str());
+    if (file.is_open() == false) {
+        QString l_1 = "mayaCam_csv " + root_path +
+        "sample_data/Calibration/xr_pre_cube_4_cam01_MayaCam.txt";
+        QString l_2 = "mayaCam_csv " + root_path +
+        "sample_data/Calibration/xr_pre_cube_4_cam02_MayaCam.txt";
+        QString l_3 = "CameraRootDir " + root_path +
+        "sample_data/XMA_UND/xr_rad_uln_cam01UND";
+        QString l_4 = "CameraRootDir " + root_path +
+        "sample_data/XMA_UND/xr_rad_uln_cam02UND";
+        QString l_5 = "VolumeFile " + root_path +
+        "sample_data/Models/rad_dcm_cropped.tif";
+        QString l_6 = "VolumeFlip 0 0 0";
+        QString l_7 = "VoxelSize 0.39625 0.39625 0.625";
+        QString l_8 = "RenderResolution 880 880";
+        QString l_9 = "OptimizationOffsets 0.1 0.1 0.1 0.1 0.1 0.1";
+        ofstream cfg_file(default_config_path.toStdString().c_str());
+        cfg_file.precision(12);
+        cfg_file << l_1.toStdString().c_str() << endl;
+        cfg_file << l_2.toStdString().c_str() << endl;
+        cfg_file << l_3.toStdString().c_str() << endl;
+        cfg_file << l_4.toStdString().c_str() << endl;
+        cfg_file << l_5.toStdString().c_str() << endl;
+        cfg_file << l_6.toStdString().c_str() << endl;
+        cfg_file << l_7.toStdString().c_str() << endl;
+        cfg_file << l_8.toStdString().c_str() << endl;
+        cfg_file << l_9.toStdString().c_str();
+        cfg_file.close();
+    }
+    file.close();
+    
+    cout << default_config_path.toStdString().c_str() << endl;
+    openTrial(default_config_path);
+}
 
 void AutoscoperMainWindow::save_nearby_nccs(QString filename) {
 	std::ofstream file(filename.toStdString().c_str(), ios::out);

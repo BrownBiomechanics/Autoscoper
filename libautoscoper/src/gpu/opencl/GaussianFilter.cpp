@@ -119,7 +119,7 @@ void GaussianFilter::set_radius(float radius)
 	gaussian_ = new Buffer(nBytes, CL_MEM_READ_ONLY);
 	gaussian_->read((void*)gaussian);
  
-	delete gaussian;
+	delete[] gaussian;
 }
 
 void

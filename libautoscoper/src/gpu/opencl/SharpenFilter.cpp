@@ -140,7 +140,7 @@ void SharpenFilter::makeFilter()
 	sharpen_ = new Buffer(nBytes, CL_MEM_READ_ONLY);
 	sharpen_->read((void*)sharpen);
  
-	delete sharpen;
+	delete[] sharpen;
 }
 
 void

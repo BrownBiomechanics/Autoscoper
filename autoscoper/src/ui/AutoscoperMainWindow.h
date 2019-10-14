@@ -250,6 +250,9 @@ class AutoscoperMainWindow : public QMainWindow{
 		// About Us Window
 		void on_actionAboutAutoscoper_triggered(bool checked);
 
+        // Open Sample Data
+        void on_actionOpenSampleData_triggered(bool checked);
+    
 		//void MovingAverageFilter(int nWin);
 		void MovingAverageFilter(int nWin, int firstFrame, int LastFrame);
 		void deletePose(int curFrame);

@@ -92,7 +92,7 @@ void GLTimeline::render_bitmap_string(double x,
                                  double y,
                                  const char* string)
 {
-	setFont(QFont(this->font().family(), 10));
+	setFont(QFont(this->font().family(), 12));
 	QFontMetrics fm(this->font());
 	renderText(x - fm.width(string) * 0.5, y, string);
 }
@@ -101,7 +101,7 @@ void GLTimeline::renderText(double textPosX, double textPosY, QString text)
 {
 	QPainter painter(this);
 	painter.setPen(Qt::yellow);
-	painter.setFont(QFont("Helvetica", 8));
+	painter.setFont(QFont("Helvetica", 12));
 	painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 	painter.drawText(textPosX, textPosY, text); // z = pointT4.z + distOverOp / 4
 	painter.end();
@@ -377,11 +377,11 @@ void GLTimeline::paintGL()
 		glDisable(GL_DEPTH_TEST);
 
 		glPushAttrib(GL_POINT_BIT);
-		glPointSize(3.0);
+		glPointSize(4.0);
 
 		glPushAttrib(GL_LINE_BIT);
 		glDisable(GL_LINE_SMOOTH);
-		glLineWidth(1.0);
+		glLineWidth(1.5);
 
 		// Calculate how much space needs to be left on the left and bottom of the
 		// graph in order to accomodate the labels.

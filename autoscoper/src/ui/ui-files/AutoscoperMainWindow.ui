@@ -8,7 +8,7 @@
     <x>0</x>
     <y>0</y>
     <width>769</width>
-    <height>272</height>
+    <height>246</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -35,7 +35,16 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <property name="margin">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
      <number>0</number>
     </property>
     <property name="spacing">
@@ -78,14 +87,23 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
         <number>0</number>
        </property>
        <property name="spacing">
         <number>0</number>
        </property>
-       <item row="0" column="3">
-        <widget class="QToolButton" name="toolButtonLoadTracking">
+       <item row="0" column="1">
+        <widget class="QToolButton" name="toolButtonOpenTrial">
          <property name="minimumSize">
           <size>
            <width>80</width>
@@ -99,12 +117,76 @@
           </size>
          </property>
          <property name="text">
-          <string>Load
-Tracking</string>
+          <string>Open
+Trial</string>
          </property>
          <property name="icon">
           <iconset resource="../autoscoper_resource.qrc">
-           <normaloff>:/images/resource-files/icons/disk_upload.png</normaloff>:/images/resource-files/icons/disk_upload.png</iconset>
+           <normaloff>:/images/resource-files/icons/application_osx_go.png</normaloff>:/images/resource-files/icons/application_osx_go.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
+         <property name="autoRaise">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="9">
+        <widget class="QToolButton" name="toolButtonTrack">
+         <property name="minimumSize">
+          <size>
+           <width>55</width>
+           <height>60</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>55</width>
+           <height>60</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Track</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../autoscoper_resource.qrc">
+           <normaloff>:/images/resource-files/icons/forward_green.png</normaloff>:/images/resource-files/icons/forward_green.png</iconset>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
+         <property name="autoRaise">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="11">
+        <widget class="QToolButton" name="toolButtonTrackCurrent">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>60</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>55</width>
+           <height>60</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Track Current</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../autoscoper_resource.qrc">
+           <normaloff>:/images/resource-files/icons/section_collapsed.png</normaloff>:/images/resource-files/icons/section_collapsed.png</iconset>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
@@ -144,51 +226,27 @@ Tracking</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="4">
-        <widget class="Line" name="line">
+       <item row="0" column="3">
+        <widget class="QToolButton" name="toolButtonLoadTracking">
          <property name="minimumSize">
           <size>
-           <width>10</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>10</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="lineWidth">
-          <number>1</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="6">
-        <widget class="QToolButton" name="toolButtonRotate">
-         <property name="minimumSize">
-          <size>
-           <width>60</width>
+           <width>80</width>
            <height>60</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>60</width>
+           <width>80</width>
            <height>60</height>
           </size>
          </property>
          <property name="text">
-          <string>Rotate</string>
+          <string>Load
+Tracking</string>
          </property>
          <property name="icon">
           <iconset resource="../autoscoper_resource.qrc">
-           <normaloff>:/images/resource-files/icons/reload.png</normaloff>:/images/resource-files/icons/reload.png</iconset>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
+           <normaloff>:/images/resource-files/icons/disk_upload.png</normaloff>:/images/resource-files/icons/disk_upload.png</iconset>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
@@ -198,51 +256,26 @@ Tracking</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="8">
-        <widget class="Line" name="line_2">
+       <item row="0" column="10">
+        <widget class="QToolButton" name="toolButtonRetrack">
          <property name="minimumSize">
           <size>
-           <width>10</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>10</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="5">
-        <widget class="QToolButton" name="toolButtonTranslate">
-         <property name="minimumSize">
-          <size>
-           <width>60</width>
+           <width>55</width>
            <height>60</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>60</width>
+           <width>55</width>
            <height>60</height>
           </size>
          </property>
          <property name="text">
-          <string>Translate</string>
+          <string>Retrack</string>
          </property>
          <property name="icon">
           <iconset resource="../autoscoper_resource.qrc">
-           <normaloff>:/images/resource-files/icons/arrow_nsew.png</normaloff>:/images/resource-files/icons/arrow_nsew.png</iconset>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
+           <normaloff>:/images/resource-files/icons/forward_blue.png</normaloff>:/images/resource-files/icons/forward_blue.png</iconset>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
@@ -285,26 +318,32 @@ Pivot</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="10">
-        <widget class="QToolButton" name="toolButtonRetrack">
+       <item row="0" column="5">
+        <widget class="QToolButton" name="toolButtonTranslate">
          <property name="minimumSize">
           <size>
-           <width>55</width>
+           <width>60</width>
            <height>60</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>55</width>
+           <width>60</width>
            <height>60</height>
           </size>
          </property>
          <property name="text">
-          <string>Retrack</string>
+          <string>Translate</string>
          </property>
          <property name="icon">
           <iconset resource="../autoscoper_resource.qrc">
-           <normaloff>:/images/resource-files/icons/forward_blue.png</normaloff>:/images/resource-files/icons/forward_blue.png</iconset>
+           <normaloff>:/images/resource-files/icons/arrow_nsew.png</normaloff>:/images/resource-files/icons/arrow_nsew.png</iconset>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
@@ -314,26 +353,29 @@ Pivot</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="9">
-        <widget class="QToolButton" name="toolButtonTrack">
+       <item row="0" column="6">
+        <widget class="QToolButton" name="toolButtonRotate">
          <property name="minimumSize">
           <size>
-           <width>55</width>
+           <width>60</width>
            <height>60</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>55</width>
+           <width>60</width>
            <height>60</height>
           </size>
          </property>
          <property name="text">
-          <string>Track</string>
+          <string>Rotate</string>
          </property>
          <property name="icon">
           <iconset resource="../autoscoper_resource.qrc">
-           <normaloff>:/images/resource-files/icons/forward_green.png</normaloff>:/images/resource-files/icons/forward_green.png</iconset>
+           <normaloff>:/images/resource-files/icons/reload.png</normaloff>:/images/resource-files/icons/reload.png</iconset>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
@@ -343,68 +385,17 @@ Pivot</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QToolButton" name="toolButtonOpenTrial">
-         <property name="minimumSize">
-          <size>
-           <width>80</width>
-           <height>60</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>80</width>
-           <height>60</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Open
-Trial</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../autoscoper_resource.qrc">
-           <normaloff>:/images/resource-files/icons/application_osx_go.png</normaloff>:/images/resource-files/icons/application_osx_go.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonTextUnderIcon</enum>
-         </property>
-         <property name="autoRaise">
-          <bool>true</bool>
+       <item row="0" column="4">
+        <widget class="Line" name="line_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
         </widget>
        </item>
-       <item row="0" column="11">
-        <widget class="QToolButton" name="toolButtonTrackCurrent">
-         <property name="minimumSize">
-          <size>
-           <width>100</width>
-           <height>60</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>55</width>
-           <height>60</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Track Current</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../autoscoper_resource.qrc">
-           <normaloff>:/images/resource-files/icons/section_collapsed.png</normaloff>:/images/resource-files/icons/section_collapsed.png</iconset>
-         </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonTextUnderIcon</enum>
-         </property>
-         <property name="autoRaise">
-          <bool>true</bool>
+       <item row="0" column="8">
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
         </widget>
        </item>
@@ -442,7 +433,7 @@ Trial</string>
      <x>0</x>
      <y>0</y>
      <width>769</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -503,7 +494,7 @@ Trial</string>
    </widget>
    <widget class="QMenu" name="menuAdvanced_Tool">
     <property name="title">
-     <string>Extra</string>
+     <string>Advanced Export</string>
     </property>
     <addaction name="actionExport_NCC_as_csv"/>
     <addaction name="actionExport_all_NCCs_near_this_pose"/>
@@ -513,14 +504,14 @@ Trial</string>
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionCheck_for_updates"/>
+    <addaction name="actionOpenSampleData"/>
     <addaction name="actionAboutAutoscoper"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuTracking"/>
-   <addaction name="menuAdvanced_Tool"/>
    <addaction name="menuView"/>
+   <addaction name="menuAdvanced_Tool"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -665,7 +656,7 @@ Trial</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show world view</string>
+    <string>Show World View</string>
    </property>
   </action>
   <action name="actionSet_Background">
@@ -688,9 +679,9 @@ Trial</string>
     <string>Advanced Settings</string>
    </property>
   </action>
-  <action name="actionCheck_for_updates">
+  <action name="actionOpenSampleData">
    <property name="text">
-    <string>Check for updates</string>
+    <string>Open Sample Data</string>
    </property>
   </action>
   <action name="actionAboutAutoscoper">

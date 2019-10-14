@@ -133,12 +133,12 @@ void AdvancedOptionsDialog::on_pushButton_Smooth_clicked(bool checked) {
 }
 
 void AdvancedOptionsDialog::on_radioButton_MovingAverage_clicked(bool checked){
-	AutoscoperMainWindow *mainwindow  = dynamic_cast <AutoscoperMainWindow *> ( parent());
+	// AutoscoperMainWindow *mainwindow  = dynamic_cast <AutoscoperMainWindow *> ( parent());
 
 	//mainwindow->getTracker()->trial()->guess = 0;
 }
 void AdvancedOptionsDialog::on_radioButton_AnotherMethod_clicked(bool checked){
-	AutoscoperMainWindow *mainwindow  = dynamic_cast <AutoscoperMainWindow *> ( parent());
+	// AutoscoperMainWindow *mainwindow  = dynamic_cast <AutoscoperMainWindow *> ( parent());
 
 	//mainwindow->getTracker()->trial()->guess = 1;
 }

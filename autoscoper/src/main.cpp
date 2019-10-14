@@ -37,7 +37,7 @@
 // ---------------------------------
 
 /// \file main.cpp
-/// \author Benjamin Knorlein, Andy Loomis
+/// \author Benjamin Knorlein, Andy Loomis, Bardiya Akhbari
 
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS
@@ -52,28 +52,26 @@
 
 #include "net/Socket.h"
 
-
 int main ( int argc, char **argv )
 {
 	QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 	QApplication app (argc, argv);
-	
+	    
 	if(argc <= 1){ 
 		AutoscoperMainWindow *widget = new AutoscoperMainWindow();
-		Socket* socket = new Socket(widget, 30000);
+		Socket* socket = new Socket(widget, 30007);
 		widget->show();
 		int ret = app.exec();
 		delete socket;
-		return ret;
-
-	}else{
+        return ret;
+	} else {
 		fprintf(stderr, "Start Batch %s\n", argv[1]);
 		AutoscoperMainWindow *widget = new AutoscoperMainWindow(true);
-		Socket* socket = new Socket(widget, 30000);
+		Socket* socket = new Socket(widget, 30007);
 		widget->runBatch(argv[1], true);
 		delete socket;
 	}
-	
+    
 }
 
 
