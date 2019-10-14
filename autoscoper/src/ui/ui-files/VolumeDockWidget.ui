@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>200</width>
-    <height>249</height>
+    <width>300</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>200</width>
-    <height>193</height>
+    <width>250</width>
+    <height>137</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -25,13 +25,13 @@
      <pointsize>9</pointsize>
     </font>
    </property>
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
      <widget class="QListWidget" name="listWidget">
       <property name="minimumSize">
        <size>
-        <width>180</width>
-        <height>150</height>
+        <width>0</width>
+        <height>0</height>
        </size>
       </property>
       <property name="contextMenuPolicy">

@@ -119,10 +119,10 @@ void GLTimeline::mouse_to_graph(double mouse_x,
                                 viewdata.viewport_width;
     double min_frame = timelineDockWidget->getPosition_graph()->min_frame-frame_offset;
     double max_frame = timelineDockWidget->getPosition_graph()->max_frame-1.0;
-    double value_offset = 24.0*(timelineDockWidget->getPosition_graph()->max_value-
+    double value_offset = 12*(timelineDockWidget->getPosition_graph()->max_value-
                                timelineDockWidget->getPosition_graph()->min_value)/
                                 viewdata.viewport_height;
-    double value_offset_top = 8.0*(timelineDockWidget->getPosition_graph()->max_value-
+    double value_offset_top = 4.0*(timelineDockWidget->getPosition_graph()->max_value-
                                    timelineDockWidget->getPosition_graph()->min_value)/
                                    viewdata.viewport_height;
     double min_value = timelineDockWidget->getPosition_graph()->min_value-value_offset;

@@ -100,7 +100,7 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 	ui->setupUi(this);
 
 	// VERSION NUMBER
-	puts("Autoscoper v2.7.0\n");
+	puts("Autoscoper v2.7.1\n");
 
 	//Init Tracker and get SharedGLContext
 	tracker = new Tracker();
@@ -149,7 +149,7 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 	resizeDocks({ timeline_widget}, { 300 }, Qt::Horizontal);
 	tracking_dialog = NULL;
 
-
+	
 	about_autoscoper = NULL;
 	advanced_dialog = NULL;
 
@@ -177,12 +177,21 @@ AutoscoperMainWindow::~AutoscoperMainWindow(){
 		delete cameraViews[i];
 	}
 	cameraViews.clear();
+
+	if (about_autoscoper) {
+		delete about_autoscoper;
+	}
+	if (advanced_dialog) {
+		delete advanced_dialog;
+	}
 }
 
 void AutoscoperMainWindow::closeEvent(QCloseEvent *event)
  {
 	 save_trial_prompt();
      save_tracking_prompt();
+	 delete about_autoscoper;
+	 delete advanced_dialog;
      QMainWindow::closeEvent(event);
  }
 
@@ -2057,7 +2066,7 @@ Autoscoper 1 was developed by Andy Loomis(original CUDA version) and Mark Howiso
 
 void AutoscoperMainWindow::on_actionOpenSampleData_triggered(bool checked) {
     
-    QString root_path = "/Users/bardiya/autoscoper-v2/";//qApp->applicationDirPath();
+    QString root_path = qApp->applicationDirPath() + "/";
     //"/Users/bardiya/autoscoper-v2";// QDir::currentPath(); //qApp->applicationDirPath();
     QString default_config_path = root_path + "sample_data";
     default_config_path += "/";
@@ -2065,36 +2074,57 @@ void AutoscoperMainWindow::on_actionOpenSampleData_triggered(bool checked) {
     
     ifstream file(default_config_path.toStdString().c_str());
     if (file.is_open() == false) {
-        QString l_1 = "mayaCam_csv " + root_path +
+        QString l_1 = "mayaCam_csv " + root_path + 
         "sample_data/Calibration/xr_pre_cube_4_cam01_MayaCam.txt";
-        QString l_2 = "mayaCam_csv " + root_path +
+        QString l_2 = "mayaCam_csv " + root_path + 
         "sample_data/Calibration/xr_pre_cube_4_cam02_MayaCam.txt";
-        QString l_3 = "CameraRootDir " + root_path +
+        QString l_3 = "CameraRootDir " + root_path + 
         "sample_data/XMA_UND/xr_rad_uln_cam01UND";
-        QString l_4 = "CameraRootDir " + root_path +
+        QString l_4 = "CameraRootDir " + root_path + 
         "sample_data/XMA_UND/xr_rad_uln_cam02UND";
-        QString l_5 = "VolumeFile " + root_path +
+        QString l_5 = "VolumeFile " + root_path + 
         "sample_data/Models/rad_dcm_cropped.tif";
         QString l_6 = "VolumeFlip 0 0 0";
         QString l_7 = "VoxelSize 0.39625 0.39625 0.625";
         QString l_8 = "RenderResolution 880 880";
         QString l_9 = "OptimizationOffsets 0.1 0.1 0.1 0.1 0.1 0.1";
+
+		QString l_10 = "VolumeFile " + root_path +
+			"sample_data/Models/mc2_mc3_dcm_cropped.tif";
+		QString l_11 = "VolumeFile " + root_path +
+			"sample_data/Models/mc3_dcm_cropped.tif";
+		QString l_12 = "VolumeFile " + root_path +
+			"sample_data/Models/uln_dcm_cropped.tif";
+
         ofstream cfg_file(default_config_path.toStdString().c_str());
         cfg_file.precision(12);
         cfg_file << l_1.toStdString().c_str() << endl;
         cfg_file << l_2.toStdString().c_str() << endl;
         cfg_file << l_3.toStdString().c_str() << endl;
         cfg_file << l_4.toStdString().c_str() << endl;
+		// Radius
         cfg_file << l_5.toStdString().c_str() << endl;
         cfg_file << l_6.toStdString().c_str() << endl;
         cfg_file << l_7.toStdString().c_str() << endl;
-        cfg_file << l_8.toStdString().c_str() << endl;
-        cfg_file << l_9.toStdString().c_str();
+		// MC2-MC3
+		cfg_file << l_10.toStdString().c_str() << endl;
+		cfg_file << l_6.toStdString().c_str() << endl;
+		cfg_file << l_7.toStdString().c_str() << endl;
+		// MC3
+		cfg_file << l_11.toStdString().c_str() << endl;
+		cfg_file << l_6.toStdString().c_str() << endl;
+		cfg_file << l_7.toStdString().c_str() << endl;
+		// ULN
+		cfg_file << l_12.toStdString().c_str() << endl;
+		cfg_file << l_6.toStdString().c_str() << endl;
+		cfg_file << l_7.toStdString().c_str() << endl;
+		cfg_file << l_8.toStdString().c_str() << endl;
+		cfg_file << l_9.toStdString().c_str();
         cfg_file.close();
     }
     file.close();
     
-    cout << default_config_path.toStdString().c_str() << endl;
+    //cout << default_config_path.toStdString().c_str() << endl;
     openTrial(default_config_path);
 }
 
