@@ -182,10 +182,10 @@ AutoscoperMainWindow::~AutoscoperMainWindow(){
 		delete advanced_dialog;
 	}
 
+    cameraViews.clear();
 	for (int i = 0 ; i < cameraViews.size();i++){
 		delete cameraViews[i];
 	}
-	cameraViews.clear();
 
 }
 
