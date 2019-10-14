@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Tracking Options</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
      <property name="leftMargin">
@@ -82,7 +82,7 @@ QGroupBox::title {
 }</string>
        </property>
        <property name="title">
-        <string>Range</string>
+        <string>Tracking Range</string>
        </property>
        <property name="flat">
         <bool>false</bool>
@@ -275,7 +275,7 @@ QGroupBox::title {
         <item row="1" column="8">
          <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>Number of refinements</string>
+           <string># of Refinements</string>
           </property>
          </widget>
         </item>
@@ -292,7 +292,7 @@ QGroupBox::title {
         <item row="1" column="0">
          <widget class="QRadioButton" name="radioButton_random_search_method">
           <property name="text">
-           <string>Particle Swarm Optimization</string>
+           <string>Particle Swarm Optimization (PSO)</string>
           </property>
           <property name="checked">
            <bool>true</bool>
@@ -351,53 +351,23 @@ QGroupBox::title {
 }</string>
        </property>
        <property name="title">
-        <string>Optimization Parameters</string>
+        <string>PSO Algorithm Parameters</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_7">
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_8">
-          <property name="text">
-           <string>Particle Swarm Opt.</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="12">
-         <spacer name="horizontalSpacer_8">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="4">
-         <widget class="QDoubleSpinBox" name="spinBox_min_lim">
-          <property name="decimals">
-           <number>1</number>
-          </property>
+        <item row="1" column="9">
+         <widget class="QSpinBox" name="spinBox_max_iter">
           <property name="minimum">
-           <double>-100.000000000000000</double>
+           <number>100</number>
           </property>
-          <property name="singleStep">
-           <double>0.200000000000000</double>
+          <property name="maximum">
+           <number>9999</number>
           </property>
           <property name="value">
-           <double>-3.000000000000000</double>
+           <number>1000</number>
           </property>
          </widget>
         </item>
-        <item row="1" column="13">
-         <widget class="QLabel" name="label_13">
-          <property name="text">
-           <string>Max Stall</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="5">
+        <item row="1" column="3">
          <spacer name="horizontalSpacer_12">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -410,27 +380,7 @@ QGroupBox::title {
           </property>
          </spacer>
         </item>
-        <item row="1" column="6">
-         <widget class="QLabel" name="label_10">
-          <property name="text">
-           <string>Max Limit</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <spacer name="horizontalSpacer_11">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="2">
+        <item row="1" column="0">
          <widget class="QLabel" name="label_9">
           <property name="text">
            <string>Min Limit</string>
@@ -438,6 +388,20 @@ QGroupBox::title {
          </widget>
         </item>
         <item row="1" column="8">
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>Max Epochs</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="11">
+         <widget class="QLabel" name="label_13">
+          <property name="text">
+           <string>Max Stall</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="6">
          <widget class="QDoubleSpinBox" name="spinBox_max_lim">
           <property name="decimals">
            <number>1</number>
@@ -456,30 +420,7 @@ QGroupBox::title {
           </property>
          </widget>
         </item>
-        <item row="1" column="11">
-         <widget class="QSpinBox" name="spinBox_max_iter">
-          <property name="minimum">
-           <number>100</number>
-          </property>
-          <property name="maximum">
-           <number>9999</number>
-          </property>
-          <property name="value">
-           <number>1000</number>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="14">
-         <widget class="QSpinBox" name="spinBox_stall_max">
-          <property name="minimum">
-           <number>5</number>
-          </property>
-          <property name="value">
-           <number>15</number>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="9">
+        <item row="1" column="7">
          <spacer name="horizontalSpacer_13">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -493,9 +434,48 @@ QGroupBox::title {
          </spacer>
         </item>
         <item row="1" column="10">
-         <widget class="QLabel" name="label_11">
+         <spacer name="horizontalSpacer_8">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="2">
+         <widget class="QDoubleSpinBox" name="spinBox_min_lim">
+          <property name="decimals">
+           <number>1</number>
+          </property>
+          <property name="minimum">
+           <double>-100.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.200000000000000</double>
+          </property>
+          <property name="value">
+           <double>-3.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="4">
+         <widget class="QLabel" name="label_10">
           <property name="text">
-           <string>Max Epochs</string>
+           <string>Max Limit</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="12">
+         <widget class="QSpinBox" name="spinBox_stall_max">
+          <property name="minimum">
+           <number>5</number>
+          </property>
+          <property name="value">
+           <number>25</number>
           </property>
          </widget>
         </item>
@@ -518,7 +498,7 @@ QGroupBox::title {
 }</string>
        </property>
        <property name="title">
-        <string>Initial Guess</string>
+        <string>Initial Guess Using...</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="0">
@@ -590,8 +570,11 @@ QGroupBox::title {
         </item>
         <item row="0" column="1">
          <widget class="QRadioButton" name="radioButton_implant_ncc_cf">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
-           <string>~Implants (Using Euclidean Distance)</string>
+           <string>Using Euclidean Distance [Not Functional]</string>
           </property>
          </widget>
         </item>
