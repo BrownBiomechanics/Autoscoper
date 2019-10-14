@@ -75,4 +75,7 @@ IF(WIN32)
 
 	install(FILES ${external_dlls} DESTINATION bin/Release CONFIGURATIONS Release)
 	install(FILES ${external_dllsd} DESTINATION bin/Debug CONFIGURATIONS Debug)
+	
+	file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/Release)
+
 ENDIF(WIN32)
