@@ -162,7 +162,6 @@ AutoscoperMainWindow::~AutoscoperMainWindow(){
 	delete filters_widget;
 	delete volumes_widget;
 	delete worldview;
-	delete gltracker;
 	delete tracker;
 	for (int i = 0; i < manipulator.size(); i++){
 		delete manipulator[i];
@@ -2068,7 +2067,12 @@ Autoscoper 1 was developed by Andy Loomis(original CUDA version) and Mark Howiso
 
 void AutoscoperMainWindow::on_actionOpenSampleData_triggered(bool checked) {
     
+    #ifdef __APPLE__
+    QString root_path = "/Users/bardiya/autoscoper-v2/";
+    #else
     QString root_path = qApp->applicationDirPath() + "/";
+    #endif
+        
     //"/Users/bardiya/autoscoper-v2";// QDir::currentPath(); //qApp->applicationDirPath();
     QString default_config_path = root_path + "sample_data";
     default_config_path += "/";
