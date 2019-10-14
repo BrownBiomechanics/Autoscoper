@@ -204,9 +204,9 @@ void FilterTreeWidgetItem::init(){
 FilterTreeWidgetItem::~FilterTreeWidgetItem()
 {
 	delete m_filter;
-	delete settingsButton;
-	delete pFrameSettings;
-	delete visibleCheckBox;
+	//delete settingsButton;
+	//delete pFrameSettings;
+	//delete visibleCheckBox;
 	for(int i = 0; i < parameters.size(); i++){
 		delete parameters[i];
 	}

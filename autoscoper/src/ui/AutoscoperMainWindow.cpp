@@ -149,18 +149,20 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 	resizeDocks({ timeline_widget}, { 300 }, Qt::Horizontal);
 	tracking_dialog = NULL;
 
-	
+
 	about_autoscoper = NULL;
 	advanced_dialog = NULL;
-
 	
 	setupShortcuts();
 }
 
 AutoscoperMainWindow::~AutoscoperMainWindow(){
 	delete ui;
-	delete filters_widget;
 
+	delete filters_widget;
+	delete volumes_widget;
+	delete worldview;
+	delete gltracker;
 	delete tracker;
 	for (int i = 0; i < manipulator.size(); i++){
 		delete manipulator[i];
@@ -172,26 +174,26 @@ AutoscoperMainWindow::~AutoscoperMainWindow(){
 		tracking_dialog->hide();
 		delete tracking_dialog;
 	}
+	if (about_autoscoper) {
+		about_autoscoper->hide();
+		delete about_autoscoper;
+	}
+	if (advanced_dialog) {
+		advanced_dialog->hide();
+		delete advanced_dialog;
+	}
 
 	for (int i = 0 ; i < cameraViews.size();i++){
 		delete cameraViews[i];
 	}
 	cameraViews.clear();
 
-	if (about_autoscoper) {
-		delete about_autoscoper;
-	}
-	if (advanced_dialog) {
-		delete advanced_dialog;
-	}
 }
 
 void AutoscoperMainWindow::closeEvent(QCloseEvent *event)
  {
 	 save_trial_prompt();
      save_tracking_prompt();
-	 delete about_autoscoper;
-	 delete advanced_dialog;
      QMainWindow::closeEvent(event);
  }
 
@@ -873,7 +875,7 @@ std::vector<double> AutoscoperMainWindow::getPose(unsigned int volume, unsigned 
 	return pose;
 }
 
-void AutoscoperMainWindow::setPose(std::vector<double> pose, unsigned int volume, unsigned frame)
+void AutoscoperMainWindow::setPose(std::vector<double> pose, unsigned int volume, unsigned int frame)
 {
 	tracker->trial()->getXCurve(volume)->insert(frame, pose[0]);
 	tracker->trial()->getYCurve(volume)->insert(frame, pose[1]);
@@ -897,12 +899,12 @@ void AutoscoperMainWindow::setBackground(double threshold)
 }
 
 
-std::vector<double> AutoscoperMainWindow::getNCC(unsigned volumeID, double* xyzpr)
+std::vector<double> AutoscoperMainWindow::getNCC(unsigned int volumeID, double* xyzpr)
 {
 	return tracker->trackFrame(volumeID, xyzpr);
 }
 
-std::vector<unsigned char> AutoscoperMainWindow::getImageData(unsigned volumeID, unsigned camera, double* xyzpr, unsigned& width, unsigned& height)
+std::vector<unsigned char> AutoscoperMainWindow::getImageData(unsigned int volumeID, unsigned int camera, double* xyzpr, unsigned int &width, unsigned int &height)
 {
 	return tracker->getImageData(volumeID, camera, xyzpr, width, height);
 }

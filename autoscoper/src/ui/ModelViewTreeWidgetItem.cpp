@@ -197,9 +197,9 @@ void ModelViewTreeWidgetItem::toggleVisible(){
 
 ModelViewTreeWidgetItem::~ModelViewTreeWidgetItem()
 {
-	if(settingsButton)delete settingsButton;
-	if(pFrameSettings)delete pFrameSettings;
-	delete visibleCheckBox;
+	//if(settingsButton)delete settingsButton;
+	//if(pFrameSettings)delete pFrameSettings;
+	//delete visibleCheckBox;
 	for(int i = 0; i < parameters.size(); i++){
 		delete parameters[i];
 	}

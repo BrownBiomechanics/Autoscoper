@@ -63,6 +63,7 @@ int main ( int argc, char **argv )
 		widget->show();
 		int ret = app.exec();
 		delete socket;
+		delete widget;
         return ret;
 	} else {
 		fprintf(stderr, "Start Batch %s\n", argv[1]);
