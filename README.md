@@ -2,7 +2,7 @@ This branch was created by [Bardiya Akhbari](https://www.researchgate.net/profil
 
 
 # Installer for Autoscoper v2.7 #
-The installer for Autoscoper 2.7.0 can be find [on SimTk website](https://simtk.org/projects/autoscoper).
+The installer for Autoscoper 2.7.1 can be find [on SimTk website](https://simtk.org/projects/autoscoper).
 
 You need to install the [CUDA toolkit](https://developer.nvidia.com/cuda-downloads?), and update your graphics card driver to run the application.
 # Compiling Instructions #
@@ -32,12 +32,25 @@ Build
 
 NOTE: Debugging a CUDA program is not straightforward in Visual Studio, so you cannot do the debugging similar to other applications.
 
-## LINUX ##
+## LINUX / HPC SERVER##
 
 1. Clone the [bitbucket repository](https://bitbucket.org/xromm/autoscoper-v2/src/BA_Playground/).
 2. Create a build folder in the autoscoper folder and run 'ccmake ../.' from the build folder (configure and generate) 
-3. Build using 'make'
+3. Build using 'make' in the build folder.
 
+NOTE 1 for HPC SERVERs: If you've recieved a "file not found error" for some of the ui files, open the "build/autoscoper/CMakeFiles/autoscoper_autogen.dir/AutogenInfo.cmake" file, and rectify the AM_SOURCES paths written there. This occurs if the HPC server has different ways of accessing a directory.
+
+NOTE 2 for HPC SERVERs: You need to use VNC or another application that gives you a display access. Autoscoper will not run if your HPC server does not have display and GPU access.
+
+## MAC OS - CUDA Only##
+
+1. Clone the [bitbucket repository](https://bitbucket.org/xromm/autoscoper-v2/src/BA_Playground/).
+2. Create a build folder in the autoscoper folder, open CMake and use XCode as compiler.
+3. When recieve an error, modify the fields:
+	1. CMAKE_OSX_ARCHITECTURES recommended to set to x86_64
+	2. CMAKE_OSX_DEPLOYMENT_TARGET to 10.15 (or your mac_os version)
+	3. If recieved an error for Qt5_DIR, search for (Qt5Config.cmake) on your hard drive and write its location in the field.
+4. After generating the configured file, open XCode and compile the application
 
 # History of Autoscoper #
 Autoscoper 1 was developed by Andy Loomis (original CUDA version) and [Mark Howison (OpenCL reimplementation)](https://bitbucket.org/mhowison/xromm-autoscoper).
