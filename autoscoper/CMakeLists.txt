@@ -163,3 +163,9 @@ IF(WIN32)
 	install(FILES ${_qt5Core_install_prefix}/plugins/platforms/qwindows.dll DESTINATION bin/Release/platforms CONFIGURATIONS Release)
 	install(FILES ${_qt5Core_install_prefix}/plugins/platforms/qwindowsd.dll DESTINATION bin/Debug/platforms CONFIGURATIONS Debug)	
 ENDIF(WIN32)
+
+
+IF(APPLE)
+	file(COPY ../sample_data DESTINATION ../bin/Debug/autoscoper.app/Contents/MacOS)
+ENDIF(APPLE)
+

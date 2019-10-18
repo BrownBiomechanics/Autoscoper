@@ -126,6 +126,7 @@ void volume_render(float* buffer, size_t width, size_t height,
 
 // Intersect a ray with an axis aligned box.
 // http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter3.htm
+// https://education.siggraph.org/static/HyperGraph/raytrace/rtrace1.htm
 __device__
 int box_intersect(Ray ray, float3 boxMin, float3 boxMax, float *_near,
                   float *_far)

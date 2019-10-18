@@ -405,7 +405,7 @@ void GLView::paintGL()
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
 			gluPerspective(viewdata.fovy,viewdata.ratio,viewdata.near_clip,viewdata.far_clip);
-			fprintf(stderr, "%lf %lf %lf %lf \n", viewdata.fovy,viewdata.ratio,viewdata.near_clip,viewdata.far_clip);
+			//fprintf(stderr, "%lf %lf %lf %lf \n", viewdata.fovy,viewdata.ratio,viewdata.near_clip,viewdata.far_clip);
 			glMatrixMode(GL_MODELVIEW);
 			glLoadMatrixd(m);
 

@@ -251,8 +251,9 @@ class AutoscoperMainWindow : public QMainWindow{
 		void on_actionAboutAutoscoper_triggered(bool checked);
 
         // Open Sample Data
-        void on_actionOpenSampleData_triggered(bool checked);
-    
+        void on_actionOpen_Sample_Wrist_triggered(bool checked);
+		void on_actionOpen_Sample_Knee_triggered(bool checked);
+
 		//void MovingAverageFilter(int nWin);
 		void MovingAverageFilter(int nWin, int firstFrame, int LastFrame);
 		void deletePose(int curFrame);
@@ -268,7 +269,7 @@ class AutoscoperMainWindow : public QMainWindow{
 
 		void on_toolButtonTrack_clicked();
 		void on_toolButtonTrackCurrent_clicked();
-		void on_toolButtonRetrack_clicked();
+		//void on_toolButtonRetrack_clicked();
 
 
 		//Shortcuts	
@@ -278,7 +279,7 @@ class AutoscoperMainWindow : public QMainWindow{
 		void key_h_pressed();	
 		void key_t_pressed();	
 		//void key_r_pressed();	
-		void key_p_pressed();
+		// void key_p_pressed();
 		void key_c_pressed();
 		void key_plus_pressed();
 		void key_equal_pressed();

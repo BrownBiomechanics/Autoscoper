@@ -82,7 +82,7 @@ class TrackingOptionsDialog : public QDialog{
 		void frame_optimize();
 		void setRange(int from, int to, int max);
 		//void track();
-		void retrack();
+		//void retrack();
 		void trackCurrent();
 		
 		bool inActive;

@@ -88,8 +88,8 @@ View::View(Camera& camera)
 	rad_enabled = true;
 	radRenderer_ = new RadRenderer();
 	backgroundRenderer_ = new BackgroundRenderer();
-	maxWidth_ = 2048;
-	maxHeight_ = 2048;
+	maxWidth_ = 3000;
+	maxHeight_ = 3000;
 	drrFilterBuffer_ = 0;
 	radBuffer_ = 0;
 	radFilterBuffer_ = 0;

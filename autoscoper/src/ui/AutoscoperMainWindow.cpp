@@ -2000,7 +2000,7 @@ void AutoscoperMainWindow::on_toolButtonTrackCurrent_clicked() {
 }
 
 
-void AutoscoperMainWindow::on_toolButtonRetrack_clicked(){
+/*void AutoscoperMainWindow::on_toolButtonRetrack_clicked(){
 	if(tracking_dialog == NULL)
 		tracking_dialog = new TrackingOptionsDialog(this);
 
@@ -2008,7 +2008,7 @@ void AutoscoperMainWindow::on_toolButtonRetrack_clicked(){
 		tracker->trial()->num_frames-1);
 	
 	tracking_dialog->retrack();
-}
+}*/
 
 void AutoscoperMainWindow::on_actionExport_NCC_as_csv_triggered(bool checked) {
 	QString filename = get_filename(true, "*.ncc");
@@ -2065,29 +2065,25 @@ Autoscoper 1 was developed by Andy Loomis(original CUDA version) and Mark Howiso
 	about_autoscoper->show();
 }
 
-void AutoscoperMainWindow::on_actionOpenSampleData_triggered(bool checked) {
+void AutoscoperMainWindow::on_actionOpen_Sample_Wrist_triggered(bool checked) {
     
-    #ifdef __APPLE__
-    QString root_path = "/Users/bardiya/autoscoper-v2/";
-    #else
     QString root_path = qApp->applicationDirPath() + "/";
-    #endif
-        
     //"/Users/bardiya/autoscoper-v2";// QDir::currentPath(); //qApp->applicationDirPath();
+
     QString default_config_path = root_path + "sample_data";
     default_config_path += "/";
-    default_config_path += "rad_uln.cfg";
+    default_config_path += "wrist.cfg";
     
     ifstream file(default_config_path.toStdString().c_str());
     if (file.is_open() == false) {
         QString l_1 = "mayaCam_csv " + root_path + 
-        "sample_data/Calibration/xr_pre_cube_4_cam01_MayaCam.txt";
+        "sample_data/Calibration/xr_calib_wrist_cam01.txt";
         QString l_2 = "mayaCam_csv " + root_path + 
-        "sample_data/Calibration/xr_pre_cube_4_cam02_MayaCam.txt";
+        "sample_data/Calibration/xr_calib_wrist_cam02.txt";
         QString l_3 = "CameraRootDir " + root_path + 
-        "sample_data/XMA_UND/xr_rad_uln_cam01UND";
+        "sample_data/XMA_UND/xr_data_wrist_cam01";
         QString l_4 = "CameraRootDir " + root_path + 
-        "sample_data/XMA_UND/xr_rad_uln_cam02UND";
+        "sample_data/XMA_UND/xr_data_wrist_cam02";
         QString l_5 = "VolumeFile " + root_path + 
         "sample_data/Models/rad_dcm_cropped.tif";
         QString l_6 = "VolumeFlip 0 0 0";
@@ -2130,9 +2126,63 @@ void AutoscoperMainWindow::on_actionOpenSampleData_triggered(bool checked) {
     }
     file.close();
     
-    //cout << default_config_path.toStdString().c_str() << endl;
     openTrial(default_config_path);
 }
+
+
+void AutoscoperMainWindow::on_actionOpen_Sample_Knee_triggered(bool checked) {
+
+	QString root_path = qApp->applicationDirPath() + "/";
+
+	QString default_config_path = root_path + "sample_data";
+	default_config_path += "/";
+	default_config_path += "left_knee.cfg";
+
+	ifstream file(default_config_path.toStdString().c_str());
+	if (file.is_open() == false) {
+		QString l_1 = "mayaCam_csv " + root_path +
+			"sample_data/Calibration/xr_calib_left_knee_cam01.txt";
+		QString l_2 = "mayaCam_csv " + root_path +
+			"sample_data/Calibration/xr_calib_left_knee_cam02.txt";
+		QString l_3 = "CameraRootDir " + root_path +
+			"sample_data/XMA_UND/xr_data_left_knee_cam01";
+		QString l_4 = "CameraRootDir " + root_path +
+			"sample_data/XMA_UND/xr_data_left_knee_cam02";
+		QString l_5 = "VolumeFile " + root_path +
+			"sample_data/Models/left_knee_femur_cropped.tif";
+		QString l_6 = "VolumeFlip 0 0 0";
+		QString l_7 = "VoxelSize 0.421875 0.421875 0.625";
+		QString l_8 = "RenderResolution 880 880";
+		QString l_9 = "OptimizationOffsets 0.1 0.1 0.1 0.1 0.1 0.1";
+
+		QString l_10 = "VolumeFile " + root_path +
+			"sample_data/Models/left_knee_tibia_cropped.tif";
+
+		ofstream cfg_file(default_config_path.toStdString().c_str());
+		cfg_file.precision(12);
+		cfg_file << l_1.toStdString().c_str() << endl;
+		cfg_file << l_2.toStdString().c_str() << endl;
+		cfg_file << l_3.toStdString().c_str() << endl;
+		cfg_file << l_4.toStdString().c_str() << endl;
+		// Femur
+		cfg_file << l_5.toStdString().c_str() << endl;
+		cfg_file << l_6.toStdString().c_str() << endl;
+		cfg_file << l_7.toStdString().c_str() << endl;
+		// Tibia
+		cfg_file << l_10.toStdString().c_str() << endl;
+		cfg_file << l_6.toStdString().c_str() << endl;
+		cfg_file << l_7.toStdString().c_str() << endl;
+	
+		cfg_file << l_8.toStdString().c_str() << endl;
+		cfg_file << l_9.toStdString().c_str();
+		cfg_file.close();
+	}
+	file.close();
+
+	//cout << default_config_path.toStdString().c_str() << endl;
+	openTrial(default_config_path);
+}
+
 
 void AutoscoperMainWindow::save_nearby_nccs(QString filename) {
 	std::ofstream file(filename.toStdString().c_str(), ios::out);
@@ -2230,9 +2280,9 @@ void AutoscoperMainWindow::key_h_pressed(){
 void AutoscoperMainWindow::key_t_pressed(){
 	ui->toolButtonTrack->click();
 }	
-void AutoscoperMainWindow::key_p_pressed(){
+/*void AutoscoperMainWindow::key_p_pressed(){
 	ui->toolButtonRetrack->click();
-}	
+}	*/
 void AutoscoperMainWindow::key_c_pressed() {
 	on_actionInsert_Key_triggered(true); // Insert the current frame and then run the tracking
 	ui->toolButtonTrackCurrent->click();
@@ -2258,7 +2308,7 @@ void AutoscoperMainWindow::setupShortcuts(){
 	new QShortcut(QKeySequence(Qt::Key_D), this, SLOT(key_d_pressed()));
 	new QShortcut(QKeySequence(Qt::Key_H), this, SLOT(key_h_pressed()));
 	new QShortcut(QKeySequence(Qt::Key_T), this, SLOT(key_t_pressed()));
-	new QShortcut(QKeySequence(Qt::Key_P), this, SLOT(key_p_pressed()));
+	//new QShortcut(QKeySequence(Qt::Key_P), this, SLOT(key_p_pressed()));
 	new QShortcut(QKeySequence(Qt::Key_C), this, SLOT(key_c_pressed()));
 	new QShortcut(QKeySequence(Qt::Key_Plus), this, SLOT(key_plus_pressed()));
 	new QShortcut(QKeySequence(Qt::Key_Equal), this, SLOT(key_equal_pressed()));

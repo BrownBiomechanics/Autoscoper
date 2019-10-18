@@ -358,7 +358,7 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent *e){
                 }
             }
 
-			fprintf(stderr,"Selected Nodes %zd %zd\n", new_nodes.size(), timelineDockWidget->getSelectedNodes()->size() );
+			//fprintf(stderr,"Selected Nodes %zd %zd\n", new_nodes.size(), timelineDockWidget->getSelectedNodes()->size() );
 
 			timelineDockWidget->setSelectedNodes(new_nodes);
 
@@ -423,14 +423,21 @@ void GLTimeline::paintGL()
 		// value_dist distances. Those distances are calculated each time this
 		// fucntion is called and are based on the size of the window.
 		glColor3f(0.25f,0.25f,0.25f);
+		// This section visualizes the x-axis grid lines
 		glBegin(GL_LINES);
 		for (double x = m_position_graph->min_frame; x <= max_frame; x += frame_dist) {
 			glVertex2d(x,min_value);
 			glVertex2d(x,max_value);
 		}
 		glEnd();
+
+		// Draw grid labels.
+		double char_width = viewdata.viewport_width / (m_position_graph->max_frame - m_position_graph->min_frame + frame_offset);
+		double char_height = viewdata.viewport_height / (max_value - min_value);
+
+		// This section visualizes the y-axis grid lines
 		glBegin(GL_LINES);
-		for (double y = 0; y < max_value; y += value_dist) {
+		for (double y = 0; y <= max_value; y += value_dist) {
 			glVertex2d(min_frame,y);
 			glVertex2d(max_frame+1,y);
 		}
@@ -449,16 +456,14 @@ void GLTimeline::paintGL()
 		glVertex2d(0.0,max_value);
 		glEnd();
 
-		// Draw grid labels.
-		double char_width = viewdata.viewport_width / (m_position_graph->max_frame - m_position_graph->min_frame + frame_offset);
-		double char_height = viewdata.viewport_height / (max_value - min_value);
-
 		glColor3f(0.0f,0.0f,0.0f);
+		// This section visualizes the x-axis values
 		for (double x = m_position_graph->min_frame; x <= max_frame; x += frame_dist) {
 			std::stringstream ss; ss << (int)x;
-			render_bitmap_string((x + frame_offset)* char_width, viewdata.viewport_height - 8,
+			render_bitmap_string((x + frame_offset)* char_width, (double)viewdata.viewport_height - 8,
 								 ss.str().c_str());
 		}
+		// This section visualizes the y-axis values
 		for (double y = 0; y < max_value; y += value_dist) {
 			std::stringstream ss; ss << (int)(y+0.5);
 			render_bitmap_string(frame_offset* char_width * 0.5,

@@ -162,7 +162,7 @@ void TrackingOptionsDialog::frame_optimize()
 	this->close();
 }
 
-void TrackingOptionsDialog::retrack(){
+/*void TrackingOptionsDialog::retrack(){
 	if (from_frame != to_frame) {
         this->show();
     }
@@ -172,7 +172,7 @@ void TrackingOptionsDialog::retrack(){
         doExit = false;
 		frame_optimize();
     }
-}
+}*/
 
 void TrackingOptionsDialog::trackCurrent() {
 
