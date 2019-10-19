@@ -102,7 +102,7 @@ namespace xromm {
 	void save_debug_image(const gpu::Buffer* dev_image, int width, int height)
 #endif
 {
-	static int count = 0;
+	static int count = 0; // static, so we add to it whenever we run this
 	float* host_image = new float[width*height];
 	unsigned char* uchar_image = new unsigned char[width*height];
 
@@ -127,16 +127,22 @@ namespace xromm {
 		uchar_image[i] = (int)(255*(host_image[i] - minim)/(maxim - minim));
 	}
 
-	char filename[256];
-	sprintf(filename,"pgm//image_%02d.pgm",count++);
+    char filename[256];
+    #ifdef __APPLE__
+	sprintf(filename,"/Users/bardiya/autoscoper-v2/debug/image_cam%02d.pgm",count++);
+    #elif _WIN32
+    sprintf(filename,"/debug/image_cam%02d.pgm",count++);
+    #endif
+
+    cout << filename << endl;
 	ofstream file(filename,ios::out);
 	file << "P2" << endl;
 	file << width << " " << height << endl;
 	file << 255 << endl;
 	for (int i = 0; i < width*height; i++) {
-		file << (int)uchar_image[i] << " ";
+		file << 255-(int)uchar_image[i] << " "; // (255-X) because we want white to be air
 	}
-
+    file.close(); // we have to flip this vertically for the actual image
 	delete[] uchar_image;
 	delete[] host_image;
 }
@@ -567,9 +573,9 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
 
 #if DEBUG
 			save_debug_image(rendered_drr_, render_width, render_height);
-			save_debug_image(rendered_rad_, render_width, render_height);
-			save_debug_image(drr_mask_, render_width, render_height);
-			save_debug_image(background_mask_, render_width, render_height);
+			//save_debug_image(rendered_rad_, render_width, render_height);
+			//save_debug_image(drr_mask_, render_width, render_height);
+			//save_debug_image(background_mask_, render_width, render_height);
 #endif
 			if (cf_model_select) // If 1, we do Implant
 			{
@@ -669,8 +675,14 @@ std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned cam
 
 		// Calculate the viewport surrounding the volume
 		double viewport[4];
-		this->calculate_viewport(modelview, viewport);
+		//this->calculate_viewport(modelview, viewport);
 
+        // Export Full Images
+        viewport[0] = -views_[camera]->camera()->viewport()[2]/2;
+        viewport[1] = -views_[camera]->camera()->viewport()[3]/2;
+        viewport[2] = views_[camera]->camera()->viewport()[2];
+        viewport[3] = views_[camera]->camera()->viewport()[3];
+    
 		// Calculate the size of the image to render
 		unsigned render_width = viewport[2] * trial_.render_width / views_[camera]->camera()->viewport()[2];
 		unsigned render_height = viewport[3] * trial_.render_height / views_[camera]->camera()->viewport()[3];
