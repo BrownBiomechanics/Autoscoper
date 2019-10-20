@@ -83,6 +83,7 @@ private:
 	void draw_curve(const KeyCurve& curve);
 	void render_bitmap_string(double x, double y, const char* string);
 	void renderText(double textPosX, double textPosY, QString text);
+    float round_this(double my_val);
 };
 
 

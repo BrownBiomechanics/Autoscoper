@@ -94,7 +94,7 @@ void GLTimeline::render_bitmap_string(double x,
 {
 	setFont(QFont(this->font().family(), 12));
 	QFontMetrics fm(this->font());
-	renderText(x - fm.width(string) * 0.5, y, string);
+	renderText(x - fm.horizontalAdvance(string) * 0.5, y, string);
 }
 
 void GLTimeline::renderText(double textPosX, double textPosY, QString text)
@@ -381,21 +381,25 @@ void GLTimeline::paintGL()
 
 		glPushAttrib(GL_LINE_BIT);
 		glDisable(GL_LINE_SMOOTH);
-		glLineWidth(1.5);
+		glLineWidth(1);
 
-		// Calculate how much space needs to be left on the left and bottom of the
+		// Calculate how much space needs to be left on the left of the
 		// graph in order to accomodate the labels.
 		double frame_offset = 48.0*(m_position_graph->max_frame-m_position_graph->min_frame)/
-							  viewdata.viewport_width;
+							  (double)viewdata.viewport_width;
 		double min_frame = m_position_graph->min_frame-frame_offset;
 		double max_frame = m_position_graph->max_frame-1.0;
-		double value_offset = 24.0*(m_position_graph->max_value-m_position_graph->min_value)/
-							  viewdata.viewport_height;
-		double value_offset_top = 8.0*(m_position_graph->max_value-m_position_graph->min_value)/
-								  viewdata.viewport_height;
+        
+        // Calculate how much space needs to be left on the bottom and top of the
+        // graph in order to accomodate the labels.
+		double value_offset = 12.0*(m_position_graph->max_value-m_position_graph->min_value)/
+							  (double)viewdata.viewport_height;
+		double value_offset_top = 12.0*(m_position_graph->max_value-m_position_graph->min_value)/
+								  (double)viewdata.viewport_height;
 		double min_value = m_position_graph->min_value-value_offset;
 		double max_value = m_position_graph->max_value+value_offset_top;
 
+        // Read the viewport
 		glViewport(viewdata.viewport_x,
 				   viewdata.viewport_y,
 				   viewdata.viewport_width,
@@ -422,8 +426,9 @@ void GLTimeline::paintGL()
 		// Draw grid with grid lines separated by the above frame_dist and
 		// value_dist distances. Those distances are calculated each time this
 		// fucntion is called and are based on the size of the window.
-		glColor3f(0.25f,0.25f,0.25f);
-		// This section visualizes the x-axis grid lines
+		glColor3f(0.75f,0.75f,0.75f);
+        
+		// This section visualizes the x-axis grid lines (vertical grid lines)
 		glBegin(GL_LINES);
 		for (double x = m_position_graph->min_frame; x <= max_frame; x += frame_dist) {
 			glVertex2d(x,min_value);
@@ -431,24 +436,33 @@ void GLTimeline::paintGL()
 		}
 		glEnd();
 
-		// Draw grid labels.
-		double char_width = viewdata.viewport_width / (m_position_graph->max_frame - m_position_graph->min_frame + frame_offset);
-		double char_height = viewdata.viewport_height / (max_value - min_value);
 
-		// This section visualizes the y-axis grid lines
+        glColor3f(0.75f,0.75f,0.75f);
+		// This section visualizes the y-axis grid lines (horizontal)
+        //double grid_size = (max_value - min_value)/5;
+        double mid_point = floor((min_value + max_value + value_offset-value_offset_top)/2);
+        std::vector<float> y_values;
+        
+        y_values.push_back(round_this(min_value+value_offset));
+        y_values.push_back(round_this((mid_point+min_value+value_offset)/2));
+        y_values.push_back(round_this(mid_point));
+        y_values.push_back(round_this((mid_point+max_value-value_offset_top)/2));
+        y_values.push_back(round_this(max_value-value_offset_top));
+        
 		glBegin(GL_LINES);
-		for (double y = 0; y <= max_value; y += value_dist) {
+		for (int counter = 0; counter < y_values.size(); counter++) {
+			glVertex2d(min_frame,y_values.at(counter));
+			glVertex2d(max_frame+1,y_values.at(counter));
+		}
+		/*for (double y = mid_point-grid_size; y > min_value; y -= grid_size) {
 			glVertex2d(min_frame,y);
 			glVertex2d(max_frame+1,y);
-		}
-		for (double y = 0; y > min_value; y -= value_dist) {
-			glVertex2d(min_frame,y);
-			glVertex2d(max_frame+1,y);
-		}
+		}*/
 		glEnd();
 
-		// Draw the x and y axes.
-		glColor3f(0.75f,0.75f,0.75f);
+		// Draw the x and y reference coordinate system.
+        glColor3f(0.0f,0.0f,0.0f);
+
 		glBegin(GL_LINES);
 		glVertex2d(min_frame,0.0);
 		glVertex2d(max_frame+1,0.0);
@@ -456,26 +470,53 @@ void GLTimeline::paintGL()
 		glVertex2d(0.0,max_value);
 		glEnd();
 
+        
+        // Draw grid labels.
+        double char_width = (double)viewdata.viewport_width / (m_position_graph->max_frame - m_position_graph->min_frame + frame_offset);
+        double char_height = (double)viewdata.viewport_height / (max_value - min_value);
+        
+        
+        glLineWidth(1.5);
 		glColor3f(0.0f,0.0f,0.0f);
 		// This section visualizes the x-axis values
 		for (double x = m_position_graph->min_frame; x <= max_frame; x += frame_dist) {
 			std::stringstream ss; ss << (int)x;
-			render_bitmap_string((x + frame_offset)* char_width, (double)viewdata.viewport_height - 8,
+			render_bitmap_string((x + frame_offset)* char_width, (double)viewdata.viewport_height - 2,
 								 ss.str().c_str());
 		}
+        
+
+        double diff = 0;
+        //sort(y_values.begin(), y_values.end());
+        for (int counter = 0; counter < y_values.size(); counter++) {
+            std::stringstream ss; ss << y_values.at(counter);
+            if (counter == 0)
+            {
+                render_bitmap_string(frame_offset * char_width * 0.5,
+                (double)viewdata.viewport_height - 6,  ss.str().c_str());
+            } else if (counter == y_values.size() - 1) {
+                 render_bitmap_string(frame_offset * char_width * 0.5,
+                value_offset_top * char_height + 6,  ss.str().c_str());
+            } else {
+                diff = y_values.at(counter+1)-y_values.at(counter);
+                render_bitmap_string(frame_offset * char_width * 0.5,
+                (double)viewdata.viewport_height - diff * counter * char_height - 6,  ss.str().c_str());
+            }
+        }
+
 		// This section visualizes the y-axis values
-		for (double y = 0; y < max_value; y += value_dist) {
+		/*for (double y = mid_point; y < max_value; y += value_offset) {
 			std::stringstream ss; ss << (int)(y+0.5);
 			render_bitmap_string(frame_offset* char_width * 0.5,
-				y * char_height + viewdata.viewport_height*0.5,
+				y * char_height + (double)viewdata.viewport_height*0.5,
 								 ss.str().c_str());
 		}
-		for (double y = 0; y > min_value-value_offset; y -= value_dist) {
+		for (double y = mid_point; y > min_value-value_offset; y -= value_offset) {
 			std::stringstream ss; ss << (int)(y+0.5);
 			render_bitmap_string(frame_offset* char_width * 0.5,
-				y * char_height + viewdata.viewport_height*0.5,
+				y * char_height + (double)viewdata.viewport_height*0.5,
 								 ss.str().c_str());
-		}
+		}*/
 
 		// XXX ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -677,4 +718,15 @@ void GLTimeline::draw_curve(const KeyCurve& curve)
     glEnd();
 
     glPopAttrib();
+}
+
+float GLTimeline::round_this(double my_val) {
+    float out_val = 999;
+    if (my_val <=0)
+    {
+        out_val = floor(my_val*10+0.5)/10;
+    } else {
+        out_val = ceil(my_val*10+0.5)/10;
+    }
+    return out_val;
 }
