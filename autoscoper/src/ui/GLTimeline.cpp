@@ -119,10 +119,10 @@ void GLTimeline::mouse_to_graph(double mouse_x,
                                 viewdata.viewport_width;
     double min_frame = timelineDockWidget->getPosition_graph()->min_frame-frame_offset;
     double max_frame = timelineDockWidget->getPosition_graph()->max_frame-1.0;
-    double value_offset = 12*(timelineDockWidget->getPosition_graph()->max_value-
+    double value_offset = 12.0*(timelineDockWidget->getPosition_graph()->max_value-
                                timelineDockWidget->getPosition_graph()->min_value)/
                                 viewdata.viewport_height;
-    double value_offset_top = 4.0*(timelineDockWidget->getPosition_graph()->max_value-
+    double value_offset_top = 12.0*(timelineDockWidget->getPosition_graph()->max_value-
                                    timelineDockWidget->getPosition_graph()->min_value)/
                                    viewdata.viewport_height;
     double min_value = timelineDockWidget->getPosition_graph()->min_value-value_offset;
@@ -238,10 +238,10 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent *e){
                                         viewdata.viewport_width;
             double min_frame = timelineDockWidget->getPosition_graph()->min_frame-frame_offset;
             double max_frame = timelineDockWidget->getPosition_graph()->max_frame-1.0;
-            double value_offset = 24.0*(timelineDockWidget->getPosition_graph()->max_value-
+            double value_offset = 12.0*(timelineDockWidget->getPosition_graph()->max_value-
                                         timelineDockWidget->getPosition_graph()->min_value)/
                                         viewdata.viewport_height;
-            double value_offset_top = 8.0*(timelineDockWidget->getPosition_graph()->max_value-
+            double value_offset_top = 12.0*(timelineDockWidget->getPosition_graph()->max_value-
                                            timelineDockWidget->getPosition_graph()->min_value)/
                                            viewdata.viewport_height;
             double min_value = timelineDockWidget->getPosition_graph()->min_value-value_offset;
@@ -389,15 +389,15 @@ void GLTimeline::paintGL()
 							  (double)viewdata.viewport_width;
 		double min_frame = m_position_graph->min_frame-frame_offset;
 		double max_frame = m_position_graph->max_frame-1.0;
-        
+    
         // Calculate how much space needs to be left on the bottom and top of the
         // graph in order to accomodate the labels.
-		double value_offset = 12.0*(m_position_graph->max_value-m_position_graph->min_value)/
-							  (double)viewdata.viewport_height;
-		double value_offset_top = 12.0*(m_position_graph->max_value-m_position_graph->min_value)/
-								  (double)viewdata.viewport_height;
-		double min_value = m_position_graph->min_value-value_offset;
-		double max_value = m_position_graph->max_value+value_offset_top;
+		float value_offset = (float)12.0*(m_position_graph->max_value-m_position_graph->min_value)/
+							  (float)viewdata.viewport_height;
+		/*float value_offset_top = (float)12.0*(m_position_graph->max_value-m_position_graph->min_value)/
+								  (float)viewdata.viewport_height;*/
+		float min_value = (float)m_position_graph->min_value-value_offset;
+		float max_value = (float)m_position_graph->max_value+value_offset;
 
         // Read the viewport
 		glViewport(viewdata.viewport_x,
@@ -417,7 +417,7 @@ void GLTimeline::paintGL()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		double frame_dist = (int)ceil(frame_offset);
-		double value_dist = 3.0*value_offset;
+		//double value_dist = 3.0*value_offset;
 
 		if (frame_dist < 1.0) {
 			frame_dist = 1.0;
@@ -438,16 +438,20 @@ void GLTimeline::paintGL()
 
 
         glColor3f(0.75f,0.75f,0.75f);
-		// This section visualizes the y-axis grid lines (horizontal)
+		// This section visualizes the y-axis grid lines (horizontal grid lines)
         //double grid_size = (max_value - min_value)/5;
-        double mid_point = floor((min_value + max_value + value_offset-value_offset_top)/2);
+        double mid_point = round_this((min_value + max_value + value_offset - value_offset)/2);
         std::vector<float> y_values;
         
         y_values.push_back(round_this(min_value+value_offset));
         y_values.push_back(round_this((mid_point+min_value+value_offset)/2));
-        y_values.push_back(round_this(mid_point));
-        y_values.push_back(round_this((mid_point+max_value-value_offset_top)/2));
-        y_values.push_back(round_this(max_value-value_offset_top));
+        //y_values.push_back(round_this(mid_point));
+        // In order to have equal spacing:
+        y_values.push_back(round_this(y_values.at(1) + y_values.at(1) - y_values.at(0)));
+        y_values.push_back(round_this(y_values.at(2) + y_values.at(2) - y_values.at(1)));
+        y_values.push_back(round_this(y_values.at(3) + y_values.at(2) - y_values.at(1)));
+        //y_values.push_back(round_this((mid_point+max_value-value_offset_top)/2));
+        //y_values.push_back(round_this(max_value-value_offset_top));
         
 		glBegin(GL_LINES);
 		for (int counter = 0; counter < y_values.size(); counter++) {
@@ -487,23 +491,19 @@ void GLTimeline::paintGL()
         
 
         double diff = 0;
-        //sort(y_values.begin(), y_values.end());
         for (int counter = 0; counter < y_values.size(); counter++) {
             std::stringstream ss; ss << y_values.at(counter);
             if (counter == 0)
             {
                 render_bitmap_string(frame_offset * char_width * 0.5,
                 (double)viewdata.viewport_height - 6,  ss.str().c_str());
-            } else if (counter == y_values.size() - 1) {
-                 render_bitmap_string(frame_offset * char_width * 0.5,
-                value_offset_top * char_height + 6,  ss.str().c_str());
             } else {
-                diff = y_values.at(counter+1)-y_values.at(counter);
+                diff = y_values.at(counter)-y_values.at(counter-1);
                 render_bitmap_string(frame_offset * char_width * 0.5,
                 (double)viewdata.viewport_height - diff * counter * char_height - 6,  ss.str().c_str());
             }
         }
-
+        
 		// This section visualizes the y-axis values
 		/*for (double y = mid_point; y < max_value; y += value_offset) {
 			std::stringstream ss; ss << (int)(y+0.5);
@@ -721,12 +721,5 @@ void GLTimeline::draw_curve(const KeyCurve& curve)
 }
 
 float GLTimeline::round_this(double my_val) {
-    float out_val = 999;
-    if (my_val <=0)
-    {
-        out_val = floor(my_val*10+0.5)/10;
-    } else {
-        out_val = ceil(my_val*10+0.5)/10;
-    }
-    return out_val;
+    return floor(my_val*10+0.5f)/10;
 }
