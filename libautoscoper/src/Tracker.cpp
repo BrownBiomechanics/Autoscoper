@@ -182,7 +182,7 @@ namespace xromm {
 
 		char filename[256];
 #ifdef __APPLE__
-		sprintf(filename, "/Users/bardiya/autoscoper-v2/debug/image_cam%02d.pgm", count++);
+		sprintf(filename, "/Users/bardiya/autoscoper-v2/my_drr/image_cam%02d.pgm", count++);
 #elif _WIN32
 		sprintf(filename, "C:/MyDRRs/image_cam%02d.pgm", count++);
 #endif
@@ -821,7 +821,13 @@ void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) c
 // Save Full DRR Image
 void Tracker::getFullDRR(unsigned int volumeID) const
 {
-	double xyzypr[6] = { 0 };
+    double xyzypr[6] = { (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame),
+        (*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame),
+        (*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame),
+        (*(const_cast<Trial&>(trial_)).getYawCurve(-1))(trial_.frame),
+        (*(const_cast<Trial&>(trial_)).getPitchCurve(-1))(trial_.frame),
+        (*(const_cast<Trial&>(trial_)).getRollCurve(-1))(trial_.frame) };
+    
 	CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
 	for (unsigned int i = 0; i < views_.size(); ++i) {
@@ -835,11 +841,11 @@ void Tracker::getFullDRR(unsigned int volumeID) const
 		//this->calculate_viewport(modelview, viewport);
 
 		// Export Full Images
-		viewport[0] = -views_[i]->camera()->viewport()[2] / 2;
-		viewport[1] = -views_[i]->camera()->viewport()[3] / 2;
+		viewport[0] = -views_[i]->camera()->viewport()[2]/2;
+		viewport[1] = -views_[i]->camera()->viewport()[3]/2;
 		viewport[2] = views_[i]->camera()->viewport()[2];
 		viewport[3] = views_[i]->camera()->viewport()[3];
-
+         
 		// Calculate the size of the image to render
 		unsigned render_width = viewport[2] * trial_.render_width / views_[i]->camera()->viewport()[2];
 		unsigned render_height = viewport[3] * trial_.render_height / views_[i]->camera()->viewport()[3];
