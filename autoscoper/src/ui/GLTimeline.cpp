@@ -94,7 +94,7 @@ void GLTimeline::render_bitmap_string(double x,
 {
 	setFont(QFont(this->font().family(), 12));
 	QFontMetrics fm(this->font());
-	renderText(x - fm.horizontalAdvance(string) * 0.5, y, string);
+	renderText(x - fm.width(string) * 0.5, y, string);
 }
 
 void GLTimeline::renderText(double textPosX, double textPosY, QString text)

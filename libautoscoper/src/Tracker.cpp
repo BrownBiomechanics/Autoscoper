@@ -131,7 +131,7 @@ namespace xromm {
     #ifdef __APPLE__
 	sprintf(filename,"/Users/bardiya/autoscoper-v2/debug/image_cam%02d.pgm",count++);
     #elif _WIN32
-    sprintf(filename,"/debug/image_cam%02d.pgm",count++);
+    sprintf(filename,"C:/Autoscoper-v2.7/build/install/bin/Release/debug/image_cam%02d.pgm",count++);
     #endif
 
     cout << filename << endl;
@@ -148,6 +148,57 @@ namespace xromm {
 }
 #endif
 
+
+#ifdef WITH_CUDA
+	void save_full_drr(const Buffer* dev_image, int width, int height)
+#else
+	void save_full_drr(const gpu::Buffer* dev_image, int width, int height)
+#endif
+	{
+		static int count = 0; // static, so we add to it whenever we run this
+		float* host_image = new float[width * height];
+		unsigned char* uchar_image = new unsigned char[width * height];
+
+#ifdef WITH_CUDA
+		cudaMemcpy(host_image, dev_image, width * height * sizeof(float), cudaMemcpyDeviceToHost);
+#else
+		dev_image->write(host_image, width * height * sizeof(float));
+#endif
+#undef max
+#undef min
+		float minim = std::numeric_limits<float>::max();
+		float maxim = std::numeric_limits<float>::min();
+
+		// Copy to a char array
+		for (int i = 0; i < width * height; i++) {
+			if (host_image[i] > maxim) maxim = host_image[i];
+			if (host_image[i] < minim) minim = host_image[i];
+		}
+
+		// Copy to a char array
+		for (int i = 0; i < width * height; i++) {
+			uchar_image[i] = (int)(255 * (host_image[i] - minim) / (maxim - minim));
+		}
+
+		char filename[256];
+#ifdef __APPLE__
+		sprintf(filename, "/Users/bardiya/autoscoper-v2/debug/image_cam%02d.pgm", count++);
+#elif _WIN32
+		sprintf(filename, "C:/MyDRRs/image_cam%02d.pgm", count++);
+#endif
+
+		cout << filename << endl;
+		ofstream file(filename, ios::out);
+		file << "P2" << endl;
+		file << width << " " << height << endl;
+		file << 255 << endl;
+		for (int i = 0; i < width * height; i++) {
+			file << 255 - (int)uchar_image[i] << " "; // (255-X) because we want white to be air
+		}
+		file.close(); // we have to flip this vertically for the actual image
+		delete[] uchar_image;
+		delete[] host_image;
+	}
 
 
 Tracker::Tracker()
@@ -765,6 +816,60 @@ void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) c
     viewport[2] = min_max[2]-min_max[0];
     viewport[3] = min_max[3]-min_max[1];
 }
+
+
+// Save Full DRR Image
+void Tracker::getFullDRR(unsigned int volumeID) const
+{
+	double xyzypr[6] = { 0 };
+	CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
+
+	for (unsigned int i = 0; i < views_.size(); ++i) {
+		// Set the modelview matrix for DRR rendering
+		CoordFrame modelview = views_[i]->camera()->coord_frame().inverse() * xcframe;
+		double imv[16]; modelview.inverse().to_matrix_row_order(imv);
+		views_[i]->drrRenderer(volumeID)->setInvModelView(imv);
+
+		// Calculate the viewport surrounding the volume
+		double viewport[4];
+		//this->calculate_viewport(modelview, viewport);
+
+		// Export Full Images
+		viewport[0] = -views_[i]->camera()->viewport()[2] / 2;
+		viewport[1] = -views_[i]->camera()->viewport()[3] / 2;
+		viewport[2] = views_[i]->camera()->viewport()[2];
+		viewport[3] = views_[i]->camera()->viewport()[3];
+
+		// Calculate the size of the image to render
+		unsigned render_width = viewport[2] * trial_.render_width / views_[i]->camera()->viewport()[2];
+		unsigned render_height = viewport[3] * trial_.render_height / views_[i]->camera()->viewport()[3];
+
+		// Set the viewports
+		views_[i]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1],
+			viewport[2], viewport[3]);
+		views_[i]->radRenderer()->set_viewport(viewport[0], viewport[1],
+			viewport[2], viewport[3]);
+
+		// Render the DRR and Radiograph
+		views_[i]->renderDrrSingle(volumeID, rendered_drr_, render_width, render_height);
+		views_[i]->renderRad(rendered_rad_, render_width, render_height);
+
+		//render masks
+		views_[i]->backgroundRenderer()->set_viewport(viewport[0], viewport[1],
+			viewport[2], viewport[3]);
+
+		views_[i]->renderBackground(background_mask_, render_width, render_height);
+		views_[i]->renderDRRMask(rendered_drr_, drr_mask_, render_width, render_height);
+
+		gpu::multiply(background_mask_, drr_mask_, drr_mask_, render_width, render_height);
+		gpu::multiply(rendered_rad_, drr_mask_, rendered_rad_, render_width, render_height);
+		gpu::multiply(rendered_drr_, drr_mask_, rendered_drr_, render_width, render_height);
+
+		save_full_drr(rendered_drr_, render_width, render_height);
+	}
+}
+
+
 
 
 

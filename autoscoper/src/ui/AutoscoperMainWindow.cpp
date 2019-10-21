@@ -903,6 +903,11 @@ std::vector<double> AutoscoperMainWindow::getNCC(unsigned int volumeID, double* 
 	return tracker->trackFrame(volumeID, xyzpr);
 }
 
+void AutoscoperMainWindow::saveFullDRR()
+{
+	getTracker()->getFullDRR(tracker->trial()->current_volume);
+}
+
 std::vector<unsigned char> AutoscoperMainWindow::getImageData(unsigned int volumeID, unsigned int camera, double* xyzpr, unsigned int &width, unsigned int &height)
 {
 	return tracker->getImageData(volumeID, camera, xyzpr, width, height);
@@ -1808,6 +1813,11 @@ void AutoscoperMainWindow::on_actionExport_triggered(bool checked){
     if (filename.compare("") != 0) {
         save_tracking_results(filename);
     }
+}
+
+
+void AutoscoperMainWindow::on_actionExport_Full_DRR_Image_triggered(bool checked) {
+	this->saveFullDRR();
 }
 
 void AutoscoperMainWindow::on_actionInsert_Key_triggered(bool checked){

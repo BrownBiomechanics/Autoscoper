@@ -477,6 +477,7 @@ Dialog</string>
     <addaction name="actionExport_NCC_as_csv"/>
     <addaction name="actionExport_all_NCCs_near_this_pose"/>
     <addaction name="separator"/>
+    <addaction name="actionExport_Full_DRR_Image"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -676,6 +677,11 @@ Dialog</string>
   <action name="actionShortcuts">
    <property name="text">
     <string>Shortcuts</string>
+   </property>
+  </action>
+  <action name="actionExport_Full_DRR_Image">
+   <property name="text">
+    <string>Export Full DRR Image</string>
    </property>
   </action>
  </widget>

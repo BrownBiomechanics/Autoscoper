@@ -123,6 +123,7 @@ class AutoscoperMainWindow : public QMainWindow{
 		void setPose(std::vector<double> pose, unsigned int volume, unsigned int frame);
 		void setBackground(double threshold);
 		std::vector <double> getNCC(unsigned int volumeID, double* xyzpr);
+		void saveFullDRR();
 		std::vector <unsigned char> getImageData(unsigned int volumeID, unsigned int camera, double* xyzpr, unsigned int &width, unsigned int &height);
 		void optimizeFrame(int volumeID, int frame, int dframe, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int stall_iter);
 
@@ -246,6 +247,7 @@ class AutoscoperMainWindow : public QMainWindow{
 		// Extra
 		void on_actionExport_NCC_as_csv_triggered(bool checked);
 		void on_actionExport_all_NCCs_near_this_pose_triggered(bool checked);
+		void on_actionExport_Full_DRR_Image_triggered(bool checked);
 
 		// About Us Window
 		void on_actionAboutAutoscoper_triggered(bool checked);

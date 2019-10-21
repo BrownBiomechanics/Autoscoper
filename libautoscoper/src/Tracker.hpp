@@ -101,9 +101,11 @@ namespace xromm
 		//double implantMinFunc(const double* values) const;
 		//std::vector<double> trackImplantFrame(unsigned int volumeID, double * xyzypr) const;
 
+		void getFullDRR(unsigned int volumeID) const;
+
+
 	private:
 		void calculate_viewport(const CoordFrame& modelview, double* viewport) const;
-
 
 		int optimization_method = (int)0;
 		int cf_model_select = (int)0;
