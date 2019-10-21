@@ -100,7 +100,7 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 	ui->setupUi(this);
 
 	// VERSION NUMBER
-	puts("Autoscoper v2.7.1\n");
+	puts("Autoscoper v2.7.2\n");
 
 	//Init Tracker and get SharedGLContext
 	tracker = new Tracker();
@@ -905,7 +905,17 @@ std::vector<double> AutoscoperMainWindow::getNCC(unsigned int volumeID, double* 
 
 void AutoscoperMainWindow::saveFullDRR()
 {
+	/*QString filename = get_filename(true);
+	if (filename.compare("") != 0) {
+		try {
+			string drr_folderpath = filename.toStdString().c_str();
+		}
+		catch (exception& e) {
+			cerr << e.what() << endl;
+		}
+	}*/
 	getTracker()->getFullDRR(tracker->trial()->current_volume);
+
 }
 
 std::vector<unsigned char> AutoscoperMainWindow::getImageData(unsigned int volumeID, unsigned int camera, double* xyzpr, unsigned int &width, unsigned int &height)

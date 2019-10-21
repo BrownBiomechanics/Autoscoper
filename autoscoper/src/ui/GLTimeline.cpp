@@ -92,7 +92,7 @@ void GLTimeline::render_bitmap_string(double x,
                                  double y,
                                  const char* string)
 {
-	setFont(QFont(this->font().family(), 12));
+	setFont(QFont(this->font().family(), 10));
 	QFontMetrics fm(this->font());
 	renderText(x - fm.width(string) * 0.5, y, string);
 }
@@ -101,7 +101,7 @@ void GLTimeline::renderText(double textPosX, double textPosY, QString text)
 {
 	QPainter painter(this);
 	painter.setPen(Qt::yellow);
-	painter.setFont(QFont("Helvetica", 12));
+	painter.setFont(QFont("Helvetica", 10));
 	painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 	painter.drawText(textPosX, textPosY, text); // z = pointT4.z + distOverOp / 4
 	painter.end();
