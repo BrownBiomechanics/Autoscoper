@@ -1153,6 +1153,7 @@ void AutoscoperMainWindow::openTrial(QString filename){
 			// cout << "Tracking Path is: " << tracking_path.toStdString().c_str() << endl;
 		}
 
+		on_actionInsert_Key_triggered(true);
 		//
 	}
 	catch (std::exception& e) {
@@ -1186,6 +1187,7 @@ void AutoscoperMainWindow::newTrial(){
 
 			timeline_widget->setTrial(tracker->trial());
 
+			on_actionInsert_Key_triggered(true);
 		}
 		catch (std::exception& e) {
 			std::cerr << e.what() << std::endl;
