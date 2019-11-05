@@ -1121,7 +1121,7 @@ void AutoscoperMainWindow::openTrial(QString filename){
 
 		// Store Default Values:
 		default_filter_folder = "xParameters";
-		default_filter_name = "control_settings";
+		default_filter_name   = "control_settings";
 		default_tracking_folder = "Tracking";
 
 		/////// FILTER PATH:
@@ -1164,6 +1164,7 @@ void AutoscoperMainWindow::openTrial(QString filename){
 		}
 
 		on_actionInsert_Key_triggered(true);
+		on_actionDelete_triggered(true);
 		//
 	}
 	catch (std::exception& e) {
@@ -1198,6 +1199,7 @@ void AutoscoperMainWindow::newTrial(){
 			timeline_widget->setTrial(tracker->trial());
 
 			on_actionInsert_Key_triggered(true);
+			on_actionDelete_triggered(true);
 		}
 		catch (std::exception& e) {
 			std::cerr << e.what() << std::endl;

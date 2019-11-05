@@ -240,6 +240,17 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 		}
 		break;
 
+	case 12:
+		//save full drr image
+		{
+			std::cerr << "Saving the full DRR image: " << std::endl;
+
+			m_mainwindow->saveFullDRR();
+
+			connection->write(QByteArray(1, 12));
+		}
+		break;
+
 	default:
 		std::cerr << "Cannot handle message" << std::endl;
 		connection->write(QByteArray(1,0));
@@ -249,7 +260,7 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 
 void Socket::createNewConnection()
 {
-	//std::cerr << "New client connected" << std::endl;
+	std::cerr << "New Matlab Client is Connected..." << std::endl;
 	QTcpSocket *clientConnection = tcpServer->nextPendingConnection();
 	connect(clientConnection, &QAbstractSocket::disconnected, this, &Socket::deleteConnection);
 	connect(clientConnection, &QIODevice::readyRead, this, &Socket::reading);
