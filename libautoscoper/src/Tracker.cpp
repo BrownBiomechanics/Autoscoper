@@ -42,6 +42,7 @@
 #include "Tracker.hpp"
 
 #include <algorithm>
+#include <limits>
 #include <fstream>
 #include <iostream>
 #include <string>
