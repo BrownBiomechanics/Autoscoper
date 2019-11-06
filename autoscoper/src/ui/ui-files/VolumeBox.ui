@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>532</width>
-    <height>103</height>
+    <height>122</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -124,7 +124,7 @@
       <item row="1" column="4" colspan="2">
        <widget class="QComboBox" name="comboBox_Units">
         <property name="currentIndex">
-         <number>-1</number>
+         <number>1</number>
         </property>
         <property name="maxVisibleItems">
          <number>12</number>

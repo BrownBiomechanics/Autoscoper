@@ -58,7 +58,7 @@ CameraBox::~CameraBox(){
 		
 void CameraBox::on_toolButton_MayaCam_clicked(){
 	QString fileName = QFileDialog::getOpenFileName(this,
-									tr("Open MayaCam File"), QDir::currentPath(),tr("MayaCam File (*.csv *.txt)"));
+									tr("Open Calibration File"), QDir::currentPath(),tr("MayaCam File (*.csv *.txt)"));
 	if ( fileName.isNull() == false )
     {
 		widget->lineEdit_MayaCam->setText(fileName);
@@ -66,7 +66,7 @@ void CameraBox::on_toolButton_MayaCam_clicked(){
 }
 void CameraBox::on_toolButton_VideoPath_clicked(){
 	QString inputPath = QFileDialog::getExistingDirectory (this,
-									tr("Open VideoPath"), QDir::currentPath());
+									tr("Open Undistorted Video Folder"), QDir::currentPath());
 	if ( inputPath.isNull() == false )
     {
 		widget->lineEdit_VideoPath->setText(inputPath);

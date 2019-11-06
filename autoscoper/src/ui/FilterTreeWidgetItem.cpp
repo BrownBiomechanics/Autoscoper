@@ -286,7 +286,7 @@ void FilterTreeWidgetItem::settingsButtonClicked(){
 }
 
 void FilterTreeWidgetItem::updateFilter(){
-	double value;
+	//double value;
 	switch(m_type){
 		default:
 		case 0:

@@ -185,7 +185,7 @@ namespace xromm {
 #ifdef __APPLE__
 		sprintf(filename, "/Users/bardiya/autoscoper-v2/my_drr/image_cam%02d.pgm", count++);
 #elif _WIN32
-		sprintf(filename, "C:/_MyDRRs/image_cam%02d.pgm", count++);
+		sprintf_s(filename, "C:/_MyDRRs/image_cam%02d.pgm", count++);
 #endif
 
 		cout << filename << endl;
