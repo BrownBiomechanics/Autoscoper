@@ -102,7 +102,7 @@ void volume_render(float* buffer, size_t width, size_t height,
                                      sizeof(float3x4)));
     
     // Calculate the block and grid sizes.
-    dim3 blockDim(16, 16);
+    dim3 blockDim(32, 32);
     dim3 gridDim((width+blockDim.x-1)/blockDim.x,
                  (height+blockDim.y-1)/blockDim.y);
    

@@ -53,7 +53,7 @@ namespace xromm { namespace gpu {
 void sharpen_filter_apply(const float* input, float* output,
                            int width, int height, float* sharpen, int filterSize, float contrast, float threshold)
 {
-    dim3 blockDim(16, 16);
+    dim3 blockDim(32, 32);
     dim3 gridDim((width+blockDim.x-1)/blockDim.x,
                  (height+blockDim.y-1)/blockDim.y);
 

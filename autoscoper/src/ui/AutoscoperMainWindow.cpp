@@ -1164,7 +1164,7 @@ void AutoscoperMainWindow::openTrial(QString filename){
 		}
 
 		on_actionInsert_Key_triggered(true);
-		on_actionDelete_triggered(true);
+		// on_actionDelete_triggered(true);
 		//
 	}
 	catch (std::exception& e) {

@@ -78,7 +78,7 @@ void background_render(float* output, int width, int height, float u0,
                   float u3, float v3, float threshold)
 {
     // Calculate the block and grid sizes.
-    dim3 blockDim(16, 16);
+    dim3 blockDim(32, 32);
     dim3 gridDim((width+blockDim.x-1)/blockDim.x,
                  (height+blockDim.y-1)/blockDim.y);
     

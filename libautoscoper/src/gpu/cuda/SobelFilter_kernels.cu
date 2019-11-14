@@ -60,7 +60,7 @@ void sobel_filter(const float* input, float* output, int width, int height,
 void sobel_filter_blend(const float* input, float* output, int width,
                         int height, float scale, float blend)
 {
-    dim3 blockDim(16, 16);
+    dim3 blockDim(32, 32);
     dim3 gridDim((width+blockDim.x-1)/blockDim.x,
                  (height+blockDim.y-1)/blockDim.y);
     
