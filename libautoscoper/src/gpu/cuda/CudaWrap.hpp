@@ -46,7 +46,7 @@
 
 namespace xromm { namespace gpu {
 
-void cudaInitWrap();
+//void cudaInitWrap();
 
 void cudaMallocWrap(float*& ptr, size_t size);
 

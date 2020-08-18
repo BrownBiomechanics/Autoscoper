@@ -51,10 +51,10 @@
 
 namespace xromm { namespace gpu {
 
-void cudaInitWrap()
+/*void cudaInitWrap()
 {
     cutilSafeCall(cudaGLSetGLDevice(cutGetMaxGflopsDeviceId()));
-}
+}*/
 
 void cudaMallocWrap(float*& ptr, size_t size)
 {

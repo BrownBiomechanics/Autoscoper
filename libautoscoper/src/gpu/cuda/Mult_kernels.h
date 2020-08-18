@@ -39,8 +39,7 @@
 /// \file Mult_kernels.h
 /// \author Benjamin Knorlein
 
-#ifndef XROMM_GPU_MULTIPLIER_KERNELS_H
-#define XROMM_GPU_MULTIPLIER_KERNELS_H
+#pragma once
 
 namespace xromm { namespace gpu {
 
@@ -51,5 +50,3 @@ void multiply(float* src1,
                size_t height);
 
 } } // namespace xromm::cuda
-
-#endif // XROMM_GPU_MULTIPLIER_KERNELS_H

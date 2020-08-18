@@ -39,10 +39,12 @@
 /// \file ContrastFilter_kernels.cu
 /// \author Andy Loomis
 
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
 #include "ContrastFilter_kernels.h"
+#include <cutil_math.h>
 
-__global__
-void contrast_filter_kernel(const float* input, float* output,
+__global__ void contrast_filter_kernel(const float* input, float* output,
                             int width, int height,
                             float alpha, float beta, int size);
 
@@ -56,15 +58,14 @@ void contrast_filter_apply(const float* input, float* output,
     dim3 gridDim((width+blockDim.x-1)/blockDim.x,
                  (height+blockDim.y-1)/blockDim.y);
     
-    contrast_filter_kernel<<<gridDim, blockDim>>>(input, output,
+    contrast_filter_kernel <<<gridDim, blockDim>>> (input, output,
                                                   width, height,
                                                   alpha, beta, size);
 }
 
 } } // namespace xromm::cuda
 
-__device__
-float average(const float* input, int width, int height, int x, int y, int size)
+__device__ float average(const float* input, int width, int height, int x, int y, int size)
 {
     float n = 0.0f;
     float sum = 0.0f;
@@ -81,8 +82,7 @@ float average(const float* input, int width, int height, int x, int y, int size)
     return sum/n;
 }
 
-__global__
-void contrast_filter_kernel(const float* input, float* output,
+__global__ void contrast_filter_kernel(const float* input, float* output,
                             int width, int height,
                             float alpha, float beta, int size)
 {

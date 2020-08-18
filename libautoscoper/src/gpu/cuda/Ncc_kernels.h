@@ -39,8 +39,7 @@
 /// \file Ncc_kernels.h
 /// \author Andy Loomis
 
-#ifndef XROMM_GPU_NCC_KERNELS_H
-#define XROMM_GPU_NCC_KERNELS_H
+#pragma once
 
 namespace xromm {
 
@@ -55,5 +54,3 @@ float ncc(float* f, float* g,float* mask, unsigned int n);
 } // namespace gpu
 
 } // namespace xromm
-
-#endif // XROMM_GPU_NCC_KERNELS_H

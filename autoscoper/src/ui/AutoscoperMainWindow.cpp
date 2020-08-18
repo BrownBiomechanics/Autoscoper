@@ -100,7 +100,7 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 	ui->setupUi(this);
 
 	// VERSION NUMBER
-	puts("Autoscoper v2.7.2\n");
+	puts("Autoscoper v2.8\n");
 
 	//Init Tracker and get SharedGLContext
 	tracker = new Tracker();
@@ -108,7 +108,7 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 	//shared_glcontext = gltracker->getSharedContext();
 	
 	//History
-	history = new History(15);
+	history = new History(20);
 	first_undo = true;
 
 	//Init empty trial
@@ -118,14 +118,16 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 
 	setDockNestingEnabled(true);
 
+	// Create filter widget and put it on the left
 	filters_widget =  new FilterDockWidget(this);
 	this->addDockWidget(Qt::LeftDockWidgetArea, filters_widget);
 
+	// Create volume idwget and put it on the bottom-left
 	volumes_widget = new VolumeDockWidget(this);
 	this->addDockWidget(Qt::LeftDockWidgetArea, volumes_widget);
 	this->setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
 
-	// Init for currentFrame and folder directory
+	// Initialize currentFrame and set the last folder directory
 	curFrame = 0;
 	setLastFolder(QDir::currentPath());
 
@@ -138,21 +140,23 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 		delete dialog;
 }
 #endif
-
+	// Create worldview but hide it
 	worldview = new WorldViewWindow(this);
 	addDockWidget(Qt::TopDockWidgetArea, worldview);
 	worldview->setFloating(true);
 	worldview->hide();
 	
+	// Create timeline widget
 	timeline_widget = new TimelineDockWidget(this);
 	this->addDockWidget(Qt::BottomDockWidgetArea, timeline_widget, Qt::Horizontal);
-	resizeDocks({ timeline_widget}, { 300 }, Qt::Horizontal);
+	//resizeDocks({ timeline_widget}, { 300 }, Qt::Horizontal);
+
+	// Initialize other dialogs/widgets
 	tracking_dialog = NULL;
-
-
 	about_autoscoper = NULL;
 	advanced_dialog = NULL;
 	
+	// Setup Shortcuts
 	setupShortcuts();
 }
 
@@ -682,6 +686,7 @@ void AutoscoperMainWindow::save_trial_prompt()
                                 QMessageBox::Yes|QMessageBox::No);
 	if (reply == QMessageBox::Yes) {
 		//on_save_trial1_activate(NULL,NULL);
+		on_actionSave_as_triggered(true);
 	}
 }
 
@@ -1389,6 +1394,7 @@ void AutoscoperMainWindow::on_actionSave_triggered(bool checked){
 	QString filename = get_filename(true, "*.tra");
 	if (filename.compare("") != 0) {
 		save_tracking_results(filename);
+		is_tracking_saved = true;
 	}
 }
 
@@ -1398,7 +1404,7 @@ void AutoscoperMainWindow::on_actionSave_as_triggered(bool checked){
         try {
 			trial_filename = filename.toStdString().c_str();
 			tracker->trial()->save(trial_filename);
-            is_tracking_saved = true;
+            is_trial_saved = true;
         }
         catch (exception& e) {
             cerr << e.what() << endl;
@@ -2112,7 +2118,7 @@ void AutoscoperMainWindow::on_actionOpen_Sample_Wrist_triggered(bool checked) {
         "sample_data/Models/rad_dcm_cropped.tif";
         QString l_6 = "VolumeFlip 0 0 0";
         QString l_7 = "VoxelSize 0.39625 0.39625 0.625";
-        QString l_8 = "RenderResolution 880 880";
+        QString l_8 = "RenderResolution 512 512";
         QString l_9 = "OptimizationOffsets 0.1 0.1 0.1 0.1 0.1 0.1";
 
 		QString l_10 = "VolumeFile " + root_path +
@@ -2176,7 +2182,7 @@ void AutoscoperMainWindow::on_actionOpen_Sample_Knee_triggered(bool checked) {
 			"sample_data/Models/left_knee_femur_cropped.tif";
 		QString l_6 = "VolumeFlip 0 0 0";
 		QString l_7 = "VoxelSize 0.421875 0.421875 0.625";
-		QString l_8 = "RenderResolution 880 880";
+		QString l_8 = "RenderResolution 512 512";
 		QString l_9 = "OptimizationOffsets 0.1 0.1 0.1 0.1 0.1 0.1";
 
 		QString l_10 = "VolumeFile " + root_path +

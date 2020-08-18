@@ -68,7 +68,6 @@ namespace xromm
 
 	namespace gpu
 	{
-
 		class Filter;
 		class View;
 		class VolumeDescription;

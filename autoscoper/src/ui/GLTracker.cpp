@@ -60,7 +60,7 @@
 GLTracker::GLTracker(Tracker * tracker , QWidget *parent)
 	: QOpenGLWidget(parent)
 {
-	m_tracker = tracker;
+	//m_tracker = tracker;
     setAutoFillBackground(false);
 	//makeCurrent();
 	show();
@@ -73,17 +73,17 @@ GLTracker::GLTracker(Tracker * tracker , QWidget *parent)
 
 GLTracker::~GLTracker()
 { 
-	delete shared_context;
+	// delete shared_context;
 }
 
 void GLTracker::initializeGL(){
 	glewInit();
 
-	std::cout << "Graphics Card Vendor"<< glGetString(GL_VENDOR)   << std::endl;
+	std::cout << "Graphics Card Vendor: "<< glGetString(GL_VENDOR) << std::endl;
 	std::cout << glGetString(GL_RENDERER) << std::endl;
 	std::cout << glGetString(GL_VERSION)  << std::endl;
 
-	m_tracker->init();
+	//m_tracker->init();
 
 	std::cerr << "Initializing OpenGL..." << std::endl;
 
@@ -100,7 +100,7 @@ void GLTracker::initializeGL(){
 #endif
 }
 
-void GLTracker::paintGL()
-{
+//void GLTracker::paintGL()
+//{
 
-}
+// }

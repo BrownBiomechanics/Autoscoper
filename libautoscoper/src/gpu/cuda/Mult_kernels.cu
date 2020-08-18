@@ -39,53 +39,52 @@
 /// \file Mult_kernels.cu
 /// \author Benjamin Knorlein
 
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
 #include "Mult_kernels.h"
 
-// Define the cuda compositiing kernel
-__global__
-void mult_kernel(float* src1,
-                      float* src2,
-                      float* dest,
-                      size_t width,
-                      size_t height);
+// Define the cuda compositing kernel
+__global__ void mult_kernel(float* src1,
+	float* src2,
+	float* dest,
+	size_t width,
+	size_t height);
 
 namespace xromm {
 	namespace gpu {
-
 		void multiply(float* src1,
-               float* src2,
-               float* dest,
-               size_t width,
-               size_t height)
-{
-    // Calculate the block and grid sizes.
-    dim3 blockDim(32, 32);
-    dim3 gridDim((width+blockDim.x-1)/blockDim.x,
-                 (height+blockDim.y-1)/blockDim.y);
-    
-    // Call the kernel
-    mult_kernel<<<gridDim, blockDim>>>(src1,src2,dest,width,height);
-}
+			float* src2,
+			float* dest,
+			size_t width,
+			size_t height)
+		{
+			// Calculate the block and grid sizes.
+			dim3 blockDim(32, 32);
+			dim3 gridDim((width + blockDim.x - 1) / blockDim.x,
+				(height + blockDim.y - 1) / blockDim.y);
 
-} // namespace gpu
+			// Call the kernel
+			mult_kernel<<<gridDim, blockDim>>>(src1, src2, dest, width, height);
+		}
+
+	} // namespace gpu
 
 } // namespace xromm
 
-__global__
-void mult_kernel(float* src1,
-float* src2,
-float* dest,
-size_t width,
-size_t height)
+__global__ void mult_kernel(float* src1,
+	float* src2,
+	float* dest,
+	size_t width,
+	size_t height)
 {
-	int x = blockIdx.x*blockDim.x + threadIdx.x;
-	int y = blockIdx.y*blockDim.y + threadIdx.y;
+	int x = blockIdx.x * blockDim.x + threadIdx.x;
+	int y = blockIdx.y * blockDim.y + threadIdx.y;
 
 	if (x > width - 1 || y > height - 1) {
 		return;
 	}
 
-	const unsigned int xy = y*width + x;
+	const unsigned int xy = y * width + x;
 
 	// src1 maps to orange and src2 to blue
 	dest[xy] = src1[xy] * src2[xy];

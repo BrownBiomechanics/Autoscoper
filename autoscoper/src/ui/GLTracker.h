@@ -58,19 +58,19 @@ public:
     GLTracker(Tracker * tracker , QWidget *parent = NULL);
 	virtual ~GLTracker();
 	
-	QOpenGLContext * getSharedContext(){ return shared_context; }
+	// QOpenGLContext * getSharedContext(){ return shared_context; }
 
 public slots:
     //void animate();
 	
 protected:
-    void paintGL();
+    //void paintGL();
 	void initializeGL();
 
 	
 private:
-	Tracker * m_tracker;
-	QOpenGLContext * shared_context;
+	// Tracker * m_tracker;
+	// QOpenGLContext * shared_context;
 };
 
 

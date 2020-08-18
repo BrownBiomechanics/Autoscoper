@@ -39,8 +39,7 @@
 /// \file ContrastFilter_kernels.h
 /// \author Andy Loomis
 
-#ifndef XROMM_GPU_CONTRAST_FILTER_KERNELS_H
-#define XROMM_GPU_CONTRAST_FILTER_KERNELS_H
+#pragma once
 
 namespace xromm { namespace gpu {
 
@@ -53,5 +52,3 @@ void contrast_filter_apply(const float* input,
                            int size);
 
 } } // namespace xromm::cuda
-
-#endif // XROMM_GPU_CONTRAST_FILTER_KERNELS_H

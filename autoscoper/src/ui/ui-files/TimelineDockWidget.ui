@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1076</width>
-    <height>400</height>
+    <width>941</width>
+    <height>366</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>0</width>
-    <height>200</height>
+    <width>941</width>
+    <height>180</height>
    </size>
   </property>
   <property name="floating">
@@ -188,8 +188,8 @@
      <widget class="GLTimeline" name="gltimeline" native="true">
       <property name="minimumSize">
        <size>
-        <width>0</width>
-        <height>0</height>
+        <width>100</width>
+        <height>100</height>
        </size>
       </property>
      </widget>

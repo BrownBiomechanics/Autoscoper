@@ -59,8 +59,8 @@
 	#include "gpu/cuda/HDist_kernels.h"
 	#include "gpu/cuda/Compositor_kernels.h"
 	#include "gpu/cuda/Mult_kernels.h"
-	#include <cuda_runtime_api.h>
 	#include "gpu/cuda/PSO_kernel.h"
+	#include <cuda_runtime_api.h>
 #else
 	#include "gpu/opencl/Ncc.hpp"
 	#include "gpu/opencl/Mult.hpp"
@@ -86,11 +86,11 @@ static bool firstRun = true;
 // Set callback for Downhill Simplex. This is really a hack so that we can use
 // define the global function pointer FUNC, which Downhill SImplex will
 // optimize.
-
 static xromm::Tracker* g_markerless = NULL;
- 
-// Bardiya: I commented this out to play with the implant cost function
+
+// This is for Downhill Simplex
 double FUNC(double* P) { return g_markerless->minimizationFunc(P+1); }
+// This is for PSO. P is the 6-DOF manipulator handle.
 double PSO_FUNC(double* P) { return g_markerless->minimizationFunc(P); }
 
 
@@ -210,7 +210,7 @@ Tracker::Tracker()
 {
     g_markerless = this;
 	optimization_method = 0; // initialize cost function
-	cf_model_select = 0;
+	cf_model_select = 0; //cost function selector
 }
 
 Tracker::~Tracker()
@@ -221,12 +221,12 @@ Tracker::~Tracker()
 	volumeDescription_.clear();
 }
 
-void Tracker::init()
-{
-#ifdef WITH_CUDA
-    gpu::cudaInitWrap();
-#endif
-}
+//void Tracker::init()
+//{
+//#ifdef WITH_CUDA
+//    gpu::cudaInitWrap();
+//#endif
+//}
 
 void Tracker::load(const Trial& trial)
 {
@@ -267,7 +267,7 @@ void Tracker::load(const Trial& trial)
 #endif
 
     gpu::ncc_init(npixels);
-	#ifdef WITH_CUDA
+	#ifdef WITH_CUDA // trying another cost function (Housdorff)
 		gpu::hdist_init(npixels); 
 	#endif
 	
@@ -314,7 +314,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
     }
 
     int NDIM = 6;       // Number of dimensions to optimize over.
-    double FTOL = 1e-5; // Tolerance for the optimization.
+    double FTOL = 1e-3; // Tolerance for the optimization.
     MAT P;              // Matrix of points to initialize the routine.
     double Y[MP];       // The values of the minimization function at the
                         // initial points.
@@ -372,7 +372,6 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
     }
 
     int totalIter = 0;
-
     for (int j = 0; j < repeats; j++) {
 
 		// Get Current Pose
@@ -389,7 +388,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
 
 		CoordFrame manip = CoordFrame::from_xyzAxis_angle(init_manip);
 
-		if (optimization_method == 0) // HAVE TO CHANGE THIS TO ANOTHER RADIO BUTTON. NOW, IMPLANT MEANS DOWNHILL SIMPLEX
+		if (optimization_method == 0) // 0: PSO + Downhill Simplex, 1: Downhill Simplex
 		{
 			// PSO Algorithm
 			double xyzypr_manip[6] = { 0 };
@@ -461,7 +460,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
 			manip = CoordFrame::from_xyzAxis_angle(xyzypr_manip);
 			// PSO End
 
-			// ADD DOWNHILL AT THE END:
+			// Additional DOWNHILL SIMPLEX AT THE END:
 			// Move the pose to the optimized pose
 			// Convert Current Pose to its Coordinate System Frame
 			CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
@@ -511,6 +510,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
 			// Optimize the frame
 			AMOEBA(P, Y, NDIM, FTOL, &ITER);
 
+			// get the final ncc value to print out for user
 			double final_ncc = minimizationFunc((P[1] + 1));
 
 			if (final_ncc < init_ncc) {
@@ -521,13 +521,11 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
 			else {
 				cout << "The initial position was optimized." << endl;
 				manip = CoordFrame::from_xyzAxis_angle(init_manip);
-
 			}
 
 		}
 		else {
-
-			// DOWNHILL SIMPLEX
+			// DOWNHILL SIMPLEX Only
 			// Generate the 7 vertices that form the initial simplex. Because
 			// the independent variables of the function we are optimizing over
 			// are relative to the initial guess, the same vertices can be used
@@ -573,7 +571,6 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
 		trial_.getYawCurve(-1)->insert(trial_.frame, xyzypr[3]);
 		trial_.getPitchCurve(-1)->insert(trial_.frame, xyzypr[4]);
 		trial_.getRollCurve(-1)->insert(trial_.frame, xyzypr[5]);
-
     }
 	totalIter += ITER;
 
