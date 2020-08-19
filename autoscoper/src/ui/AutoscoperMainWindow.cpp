@@ -596,8 +596,10 @@ void AutoscoperMainWindow::setupUI()
     }
 
 	relayoutCameras(1);
-    textures.resize(tracker->trial()->cameras.size());
+
 	//QOpenGLContext::globalShareContext()->makeCurrent();
+	// Showing the texture for 3D Worldview
+	textures.resize(tracker->trial()->cameras.size());
     for (unsigned i = 0; i < textures.size(); i++) {
         glGenTextures(1,&textures[i]);
         glBindTexture(GL_TEXTURE_2D,textures[i]);

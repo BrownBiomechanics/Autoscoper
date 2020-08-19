@@ -5,8 +5,7 @@
  *      Author: root
  */
 
-#ifndef PSO_KERNEL_H
-#define PSO_KERNEL_H
+#pragma once
 
  // ADD: NEW PSO
 #include <stdio.h>
@@ -15,9 +14,8 @@
 #include <math.h>
 const int NUM_OF_PARTICLES = 100;
 const int NUM_OF_DIMENSIONS = 6;
-const float OMEGA = 0.5;
-const float c1 = 1.5;
-const float c2 = 1.5;
+const float c1 = 1.5f;
+const float c2 = 1.5f;
 // END: NEW PSO
 
 double PSO_FUNC(double *P);
@@ -29,8 +27,4 @@ float host_fitness_function(float x[]);
 void pso(float *positions, float *velocities, float *pBests, float *gBest, unsigned int MAX_EPOCHS, unsigned int MAX_STALL);
 
 
-extern "C" void cuda_pso(float *positions, float *velocities, float *pBests, float *gBest, unsigned int MAX_EPOCHS, unsigned int MAX_STALL);
-
-
-
-#endif /* PSO_KERNEL_H */
+// extern "C" void cuda_pso(float *positions, float *velocities, float *pBests, float *gBest, unsigned int MAX_EPOCHS, unsigned int MAX_STALL);

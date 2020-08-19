@@ -123,6 +123,8 @@ View::~View()
     cutilSafeCall(cudaFree(drrFilterBuffer_));
     cutilSafeCall(cudaFree(radBuffer_));
     cutilSafeCall(cudaFree(radFilterBuffer_));
+	cutilSafeCall(cudaFree(backgroundmask_));
+	cutilSafeCall(cudaFree(drr_mask_));	
 #else
     delete filterBuffer_;
 	for (int i = 0; i < drrBuffer_.size(); i++){

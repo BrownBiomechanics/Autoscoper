@@ -104,7 +104,7 @@ void composite_kernel(float* src1,
 	float multi = (src3[y*width + x] < 0.5f) ? 0.0f : 1.0f;
 
     // src1 maps to orange and src2 to blue
-    dest[3*(y*width+x)+0] = src1[y*width+x];
+    dest[3 * (y*width + x) + 0] = src1[y*width + x];
 	dest[3 * (y*width + x) + 1] = multi* (src1[y*width + x] / 2.0f + src2[y*width + x] / 2.0f);
 	dest[3 * (y*width + x) + 2] = src2[y*width + x];
 }

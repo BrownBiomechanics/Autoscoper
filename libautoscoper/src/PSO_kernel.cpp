@@ -18,7 +18,7 @@ float host_fitness_function(float x[])
 
 float getRandom(float low, float high)
 {
-	return low + float(((high - low) + 1)*rand() / (RAND_MAX + 1.0));
+	return low + (high - low + 1.0f)*(float)rand() / (RAND_MAX + 1.0f);
 }
 
 float getRandomClamped()
@@ -36,8 +36,11 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
 	unsigned int counter = 0;
 	//for (int iter = 0; iter < (signed int)MAX_EPOCHS; iter++)
 
+	float OMEGA = 0.8f;
+
 	while (do_this)
 	{
+		//std::cout << "OMEGA: " << OMEGA << std::endl;
 		if (counter >= MAX_EPOCHS)
 		{
 			do_this = false;
@@ -54,6 +57,8 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
 
 			positions[i] += velocities[i];
 		}
+
+		OMEGA = OMEGA * 0.9f;
 
 		for (int i = 0; i < NUM_OF_PARTICLES*NUM_OF_DIMENSIONS; i += NUM_OF_DIMENSIONS)
 		{
@@ -84,11 +89,14 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
 		float epochBest = host_fitness_function(gBest);
 
 		std::cout << "Current Best NCC: " << epochBest << std::endl;
-		if (abs(epochBest - currentBest) < 1e-5)
+		//std::cout << "Stall: " << stall_iter << std::endl;
+		if (abs(epochBest - currentBest) < 1e-4f)
 		{
+			//std::cout << "Increased Stall Iter" << std::endl;
 			stall_iter++;
-		} else if (abs(epochBest - currentBest) > 0.01)
+		} else if (abs(epochBest - currentBest) > 0.001f)
 		{
+			//std::cout << "Zeroed Stall Iter" << std::endl;
 			stall_iter = 0;
 		}
 		if (stall_iter == MAX_STALL)
