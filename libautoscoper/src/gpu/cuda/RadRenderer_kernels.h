@@ -39,8 +39,7 @@
 /// \file VideoiRenderer_kernels.h
 /// \author Andy Loomis
 
-#ifndef XROMM_GPU_RAD_RENDERER_KERNELS_H
-#define XROMM_GPU_RAD_RENDERER_KERNELS_H
+#pragma once
 
 namespace xromm
 {
@@ -60,4 +59,3 @@ void video_render(float* output, int width, int height, float u0,
 
 } // namespace xromm
 
-#endif // XROMM_GPU_RAD_RENDERER_KERNELS_H

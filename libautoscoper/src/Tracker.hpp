@@ -110,7 +110,7 @@ namespace xromm
 		int cf_model_select = (int)0;
 		Trial trial_;
 		std::vector <gpu::VolumeDescription*> volumeDescription_;
-		std::vector<gpu::View*> views_;
+		std::vector <gpu::View*> views_;
 #ifdef WITH_CUDA
 		Buffer* rendered_drr_;
 		Buffer* rendered_rad_;

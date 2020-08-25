@@ -71,6 +71,7 @@ RayCaster::RayCaster() : volumeDescription_(0),
 
 RayCaster::~RayCaster()
 {
+    num_ray_casters = 0;
 }
 
 void

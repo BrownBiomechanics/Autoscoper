@@ -42,7 +42,7 @@
 #include "HDist_kernels.h"
 
 #include <iostream>
-
+#include <cstdlib>
 using namespace std;
 
 #include <cutil_inline.h>
@@ -74,8 +74,7 @@ void sum_hdist_kernel(float* f, float* sums, unsigned int n);
 
 __global__
 void cuda_hdist_kernel(float* f, float meanF, float* g, float meanG, float* mask,
-	float* nums, float* den1s, float* den2s,
-	unsigned int n);
+	float* nums, unsigned int n);
 
 //////// Interface Definitions ////////
 
@@ -124,22 +123,21 @@ namespace xromm
 			unsigned int numThreads, numBlocks, sizeMem;
 			get_device_params_hdist(n, g_maxNumThreads_hdist, numThreads, numBlocks, sizeMem);
 
-			cuda_hdist_kernel <<<numBlocks, numThreads, sizeMem >>>(f, meanF, g, meanG, mask,
-				d_nums_ba, d_den1s_ba,
-				d_den2s_ba, n);
+			cuda_hdist_kernel<<<numBlocks, numThreads, sizeMem >>> (f, meanF, g, meanG, mask,
+																	d_nums_ba, n);
 
-			float dist_eucl = sqrt(sum_hdist(d_nums_ba, n));
+			float sad_cost = sum_hdist(d_nums_ba, n);
 			//float den = sqrt(sum_hdist(d_den1s_ba, n)*sum_hdist(d_den2s_ba, n));
-			float den = sum_hdist(d_den1s_ba, n);
-
-			if (den < 1e-8) {
-				return 1e5;
+			//float den = sum_hdist(d_den1s_ba, n);
+			
+			//if (den < 1e-8) {
+			//	return 1e5;
 				//printf("Bad Initialization!");
 				//return 1;
-			}
+			//}
 
 			//return sum_hdist(d_nums_ba, n);// / den;
-			return dist_eucl;
+			return sad_cost;
 		}
 
 	} // namespace gpu
@@ -203,41 +201,19 @@ void sum_hdist_kernel(float* f, float* sums, unsigned int n)
 
 __global__
 void cuda_hdist_kernel(float* f, float meanF, float* g, float meanG, float* mask,
-	float* nums, float* den1s, float* den2s,
-	unsigned int n)
+	float* nums, unsigned int n)
 {
 	// JointTrack_Biplane
 	unsigned int i = blockDim.x*blockIdx.x + threadIdx.x;
+
 	if (i < n && mask[i] > 0.5f) {
-		//DEBUGGING: printf("\nrad_i is:%f    drr_i is:%f", f[i], g[i]);
-		// For INTENSITY MATCHING
-		if (f[i] > 0.0f) { f[i] = 1.0f; } // CHECK THIS and UNCOMMENT
-		//if (g[i] > 0.2) { g[i] = 1.0f; } // CHECK THIS and UNCOMMENT
-		//f[i] = 1.0f;
-		//g[i] = 1.0f;
-		nums[i] = (f[i]-g[i])*(f[i] - g[i]);
-		den1s[i] = 1;
-
-	}
-	else {
-		nums[i] = 0.0f;
-		den1s[i] = 0.0f;
-	}
-
-	/*unsigned int i = blockDim.x*blockIdx.x + threadIdx.x;
-
-	if (i < n && mask[i] > 0.5f && g[i] > 0.9f) {
 		float fMinusMean = f[i] - meanF;
 		float gMinusMean = g[i] - meanG;
 
-		nums[i] = fMinusMean * gMinusMean;
-		den1s[i] = fMinusMean * fMinusMean;
-		den2s[i] = gMinusMean * gMinusMean;
+		nums[i] = fabs(fMinusMean - gMinusMean);
 	}
 	else {
 		nums[i] = 0.0f;
-		den1s[i] = 0.0f;
-		den2s[i] = 0.0f;
-	}*/
+	}
 }
 

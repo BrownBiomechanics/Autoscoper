@@ -75,6 +75,7 @@ RadRenderer::RadRenderer() : array_(0)
 
 RadRenderer::~RadRenderer()
 {
+    num_rad_renderers = 0;
     cutilSafeCall(cudaFreeArray(array_));
 }
 

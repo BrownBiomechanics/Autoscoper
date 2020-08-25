@@ -124,7 +124,7 @@ float ncc(float* f, float* g, float* mask, unsigned int n)
     unsigned int numThreads, numBlocks, sizeMem;
     get_device_params(n, g_maxNumThreads, numThreads, numBlocks, sizeMem);
 
-	cuda_ncc_kernel << <numBlocks, numThreads, sizeMem >> >(f, meanF, g, meanG, mask,
+	cuda_ncc_kernel<<<numBlocks, numThreads, sizeMem>>> (f, meanF, g, meanG, mask,
                                                         d_nums, d_den1s,
                                                         d_den2s, n);
 

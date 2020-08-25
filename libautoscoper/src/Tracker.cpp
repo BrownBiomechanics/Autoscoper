@@ -219,6 +219,11 @@ Tracker::~Tracker()
 		delete volumeDescription_[i];
 	}
 	volumeDescription_.clear();
+
+	for (int i = 0; i < views_.size(); i++) {
+		delete views_[i];
+	}
+	views_.clear();
 }
 
 //void Tracker::init()
@@ -300,6 +305,7 @@ void Tracker::load(const Trial& trial)
 
         views_.push_back(view);
     }
+
 }
 
 void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int max_stall_iter)
