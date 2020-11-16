@@ -32,7 +32,7 @@ Build
 
 NOTE: Debugging a CUDA program is not straightforward in Visual Studio, so you cannot do the debugging similar to other applications.
 
-## LINUX / HPC SERVER##
+## LINUX / HPC SERVER
 
 1. Clone the [bitbucket repository](https://bitbucket.org/xromm/autoscoper-v2/src/BA_Playground/).
 2. Create a build folder in the autoscoper folder and run 'ccmake ../.' from the build folder (configure and generate) 
@@ -42,7 +42,7 @@ NOTE 1 for HPC SERVERs: If you've received a "fatal error" for some of the autog
 
 NOTE 2 for HPC SERVERs: You need to use VNC or another application that gives you a display access. Autoscoper will not run if your HPC server does not have display and GPU access.
 
-## MAC OS - CUDA Only##
+## MAC OS - CUDA Only
 
 1. Clone the [bitbucket repository](https://bitbucket.org/xromm/autoscoper-v2/src/BA_Playground/).
 2. Create a build folder in the autoscoper folder, open CMake and use XCode as compiler.
