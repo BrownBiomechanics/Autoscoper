@@ -53,7 +53,7 @@ NOTE 2 for HPC SERVERs: You need to use VNC or another application that gives yo
 4. After generating the configured file, open XCode and compile the application
 
 # History of Autoscoper #
-Autoscoper 1 was developed by Andy Loomis (original CUDA version) and [Mark Howison (OpenCL reimplementation)](https://bitbucket.org/mhowison/xromm-autoscoper).
+Autoscoper 1 was developed by Andy Loomis (original CUDA version) and [Mark Howison (OpenCL)](https://bitbucket.org/mhowison/xromm-autoscoper).
 
 Autoscoper was revamped and upgraded to version 2 by Dr. Ben Knorlein. Multi-bone tracking feature was added and a socket was design for interaction with Matlab.
 
