@@ -255,6 +255,7 @@ class AutoscoperMainWindow : public QMainWindow{
         // Open Sample Data
         void on_actionOpen_Sample_Wrist_triggered(bool checked);
 		void on_actionOpen_Sample_Knee_triggered(bool checked);
+		void on_actionOpen_Sample_Ankle_triggered(bool checked);
 
 		//void MovingAverageFilter(int nWin);
 		void MovingAverageFilter(int nWin, int firstFrame, int LastFrame);

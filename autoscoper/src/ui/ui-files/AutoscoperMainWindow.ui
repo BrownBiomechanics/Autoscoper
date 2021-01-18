@@ -486,6 +486,7 @@ Dialog</string>
     <addaction name="actionAboutAutoscoper"/>
     <addaction name="actionOpen_Sample_Wrist"/>
     <addaction name="actionOpen_Sample_Knee"/>
+    <addaction name="actionOpen_Sample_Ankle"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -672,6 +673,11 @@ Dialog</string>
   <action name="actionOpen_Sample_Knee">
    <property name="text">
     <string>Open Sample - Knee</string>
+   </property>
+  </action>
+  <action name="actionOpen_Sample_Ankle">
+   <property name="text">
+    <string>Open Sample - Ankle</string>
    </property>
   </action>
   <action name="actionShortcuts">

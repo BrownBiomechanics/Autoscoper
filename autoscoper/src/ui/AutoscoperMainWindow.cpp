@@ -2189,7 +2189,7 @@ void AutoscoperMainWindow::on_actionOpen_Sample_Knee_triggered(bool checked) {
 
 		QString l_10 = "VolumeFile " + root_path +
 			"sample_data/Models/left_knee_tibia_cropped.tif";
-
+            
 		ofstream cfg_file(default_config_path.toStdString().c_str());
 		cfg_file.precision(12);
 		cfg_file << l_1.toStdString().c_str() << endl;
@@ -2215,6 +2215,65 @@ void AutoscoperMainWindow::on_actionOpen_Sample_Knee_triggered(bool checked) {
 	openTrial(default_config_path);
 }
 
+void AutoscoperMainWindow::on_actionOpen_Sample_Ankle_triggered(bool checked) {
+
+	QString root_path = qApp->applicationDirPath() + "/";
+
+	QString default_config_path = root_path + "sample_data";
+	default_config_path += "/";
+	default_config_path += "right_ankle.cfg";
+
+	ifstream file(default_config_path.toStdString().c_str());
+	if (file.is_open() == false) {
+		QString l_1 = "mayaCam_csv " + root_path +
+			"sample_data/Calibration/xr_calib_right_ankle_cam01.txt";
+		QString l_2 = "mayaCam_csv " + root_path +
+			"sample_data/Calibration/xr_calib_right_ankle_cam02.txt";
+		QString l_3 = "CameraRootDir " + root_path +
+			"sample_data/XMA_UND/xr_data_right_ankle_cam01";
+		QString l_4 = "CameraRootDir " + root_path +
+			"sample_data/XMA_UND/xr_data_right_ankle_cam02";
+		QString l_5 = "VolumeFile " + root_path +
+			"sample_data/Models/right_ankle_calc.tif";
+		QString l_6 = "VolumeFlip 0 0 0";
+		QString l_7 = "VoxelSize 0.4414 0.4414 0.625";
+		QString l_8 = "RenderResolution 512 512";
+		QString l_9 = "OptimizationOffsets 0.1 0.1 0.1 0.1 0.1 0.1";
+
+		QString l_10 = "VolumeFile " + root_path +
+			"sample_data/Models/right_ankle_talus.tif";
+        QString l_11 = "VolumeFile " + root_path +
+			"sample_data/Models/right_ankle_tibia.tif";
+            
+
+		ofstream cfg_file(default_config_path.toStdString().c_str());
+		cfg_file.precision(12);
+		cfg_file << l_1.toStdString().c_str() << endl;
+		cfg_file << l_2.toStdString().c_str() << endl;
+		cfg_file << l_3.toStdString().c_str() << endl;
+		cfg_file << l_4.toStdString().c_str() << endl;
+		// Calc
+		cfg_file << l_5.toStdString().c_str() << endl;
+		cfg_file << l_6.toStdString().c_str() << endl;
+		cfg_file << l_7.toStdString().c_str() << endl;
+		// Talus
+		cfg_file << l_10.toStdString().c_str() << endl;
+		cfg_file << l_6.toStdString().c_str() << endl;
+		cfg_file << l_7.toStdString().c_str() << endl;
+		// Tibia
+		cfg_file << l_11.toStdString().c_str() << endl;
+		cfg_file << l_6.toStdString().c_str() << endl;
+		cfg_file << l_7.toStdString().c_str() << endl;
+	
+		cfg_file << l_8.toStdString().c_str() << endl;
+		cfg_file << l_9.toStdString().c_str();
+		cfg_file.close();
+	}
+	file.close();
+
+	//cout << default_config_path.toStdString().c_str() << endl;
+	openTrial(default_config_path);
+}
 
 void AutoscoperMainWindow::save_nearby_nccs(QString filename) {
 	std::ofstream file(filename.toStdString().c_str(), ios::out);
