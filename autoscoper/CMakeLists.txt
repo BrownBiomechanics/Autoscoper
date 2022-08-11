@@ -115,7 +115,7 @@ add_executable(autoscoper  ${GUI_TYPE} ${autoscoper_SOURCES} ${autoscoper_HEADER
   src/ui/autoscoper_resource.qrc
 )
 
-if(BUILD_WITH_CUDA)
+if(Autoscoper_BUILD_WITH_CUDA)
   find_package(CUDA REQUIRED)
   target_include_directories(autoscoper PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/cutil)
   set(GPU_LIBRARIES
@@ -148,11 +148,12 @@ target_include_directories(autoscoper PUBLIC
   ${Qt5Network_INCLUDE_DIRS}
   ${Qt5Gui_INCLUDE_DIRS})
 
-include(UseGLEW)
-UseGLEW(autoscoper PUBLIC)
-
-include(UseLIBTIFF)
-UseLIBTIFF(autoscoper PUBLIC)
+find_package(GLEW)
+target_link_libraries(autoscoper PUBLIC GLEW::GLEW)
+target_compile_definitions(autoscoper PUBLIC -DUSE_GLEW)
+find_package(TIFF)
+target_link_libraries(autoscoper PUBLIC TIFF::TIFF)
+target_compile_definitions(autoscoper PUBLIC -DUSE_LIBTIFF)
 
 install(TARGETS autoscoper DESTINATION bin/Debug CONFIGURATIONS Debug)
 install(TARGETS autoscoper DESTINATION bin/Release CONFIGURATIONS Release)
