@@ -53,7 +53,7 @@ macro(UseGLEW YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
     include(ExternalProject)
     ExternalProject_Download(
       GLEW
-      URL https://sourceforge.net/projects/glew/files/glew/2.1.0/glew-2.1.0.zip
+      URL https://sourceforge.net/projects/glew/files/glew/2.2.0/glew-2.2.0.zip
     )
 
     ExternalProject_BuildAndInstallNow(
