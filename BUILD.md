@@ -10,9 +10,9 @@ Prerequisites
 - [QT 5.10 or later](https://www.qt.io/download)
 - Update your graphics card driver
 
-Build
+GUI-Build
 
-1. Clone the [bitbucket repository](https://bitbucket.org/xromm/autoscoper-v2/src/BA_Playground/).
+1. Clone the [GitHub repository](https://github.com/BrownBiomechanics/Autoscoper).
 2. Run CMake and choose a source and the build folder for Autoscoper and click configure.
   1. On Windows choose a 64bit build of the Visual Studio version you have installed.
   2. Dependencies to tiff and glew will be installed automatically and the other dependencies should be found automatically.
@@ -24,6 +24,16 @@ Build
 6. To install build the INSTALL project in VisualStudio. This will build Autoscoper and installs it in your build folder in the sub-folder install/bin/Debug or install/bin/Release depending on which build was performed.
 
 NOTE: Debugging a CUDA program is not straightforward in Visual Studio, so you cannot do the debugging similar to other applications.
+
+Cli-Build (Using Powershell)
+
+1. Clone the [GitHub repository](https://github.com/BrownBiomechanics/Autoscoper).
+2. Enter the repos directory
+3. Make and enter a build directory `mkdir build` and `cd build`
+4. Configure project `cmake .. `
+5. Build external dependencies `cmake --build . --config Release`
+6. Install project `cmake --build Autoscoper-build --target install --config Release`
+7. The autoscoper.exe will be in the folder build/install/bin/Debug or build/nstall/bin/Release depending on which build was performed.
 
 ## LINUX / HPC SERVER
 
