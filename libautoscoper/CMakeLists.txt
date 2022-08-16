@@ -1,5 +1,4 @@
 set(CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
 
 set(libautoscoper_HEADERS
   src/Backtrace.hpp
@@ -52,8 +51,9 @@ else()
   add_dependencies(libautoscoper ${SHADER_TO_HEADER})
 endif()
 
-include(UseLIBTIFF)
-UseLIBTIFF(libautoscoper PUBLIC)
+find_package(TIFF)
+target_link_libraries(libautoscoper PUBLIC TIFF::TIFF)
+target_compile_definitions(libautoscoper PUBLIC -DUSE_LIBTIFF)
 
 target_include_directories(libautoscoper PUBLIC ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 
