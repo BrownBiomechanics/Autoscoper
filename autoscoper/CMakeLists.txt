@@ -12,7 +12,7 @@ SET(autoscoper_SOURCES
 )
 
 #HEADER AND SOURCE FILES FOR UI
-SET(autoscoper_FORMS_HEADERS 
+SET(autoscoper_FORMS_HEADERS
 		src/ui/AutoscoperMainWindow.h
 		src/ui/FilterDockWidget.h
 		src/ui/FilterTreeWidget.h
@@ -25,7 +25,7 @@ SET(autoscoper_FORMS_HEADERS
 		src/ui/TimelineDockWidget.h
 		src/ui/ImportExportTrackingOptionsDialog.h
 		src/ui/TrackingOptionsDialog.h
-		src/ui/AdvancedOptionsDialog.h		
+		src/ui/AdvancedOptionsDialog.h
 		src/ui/FilterTreeWidgetParameter.h
 		src/ui/GLWidget.h
 		src/ui/GLTimeline.h
@@ -54,8 +54,8 @@ SET(autoscoper_FORMS_SOURCES
 		src/ui/TimelineDockWidget.cpp
 		src/ui/ImportExportTrackingOptionsDialog.cpp
 		src/ui/TrackingOptionsDialog.cpp
-		src/ui/AdvancedOptionsDialog.cpp		
-		src/ui/AboutAutoscoper.cpp		
+		src/ui/AdvancedOptionsDialog.cpp
+		src/ui/AboutAutoscoper.cpp
 		src/ui/FilterTreeWidgetParameter.cpp
 		src/ui/GLWidget.cpp
 		src/ui/GLTimeline.cpp
@@ -71,7 +71,7 @@ SET(autoscoper_FORMS_SOURCES
 )
 
 #QT DESIGNER UI FILES
-SET(autoscoper_FORMS 
+SET(autoscoper_FORMS
 		src/ui/ui-files/AboutAutoscoper.ui
 		src/ui/ui-files/AutoscoperMainWindow.ui
 		src/ui/ui-files/FilterDockWidget.ui
@@ -79,7 +79,7 @@ SET(autoscoper_FORMS
 		src/ui/ui-files/TimelineDockWidget.ui
 		src/ui/ui-files/ImportExportTrackingOptionsDialog.ui
 		src/ui/ui-files/TrackingOptionsDialog.ui
-		src/ui/ui-files/AdvancedOptionsDialog.ui		
+		src/ui/ui-files/AdvancedOptionsDialog.ui
 		src/ui/ui-files/OpenCLPlatformSelectDialog.ui
 		src/ui/ui-files/CameraBox.ui
 		src/ui/ui-files/NewTrialDialog.ui
@@ -88,7 +88,7 @@ SET(autoscoper_FORMS
 )
 
 QT5_WRAP_UI(autoscoper_FORMS_HEADERS_GEN ${autoscoper_FORMS})
-SET(autoscoper_RESOURCES 
+SET(autoscoper_RESOURCES
 		src/ui/autoscoper_resource.qrc
 )
 QT5_ADD_RESOURCES(autoscoper_RESOURCES_RCC ${autoscoper_RESOURCES})
@@ -109,19 +109,19 @@ IF (APPLE)
 ENDIF (APPLE)
 
 add_executable (autoscoper  ${GUI_TYPE} ${autoscoper_SOURCES} ${autoscoper_HEADERS}
-		${autoscoper_FORMS_SOURCES} 
+		${autoscoper_FORMS_SOURCES}
 		${autoscoper_FORMS_HEADERS}
-		${autoscoper_FORMS_HEADERS_GEN} 
-		${autoscoper_RESOURCES_RCC} 
-		src/ui/autoscoper_resource.qrc) 
-		
+		${autoscoper_FORMS_HEADERS_GEN}
+		${autoscoper_RESOURCES_RCC}
+		src/ui/autoscoper_resource.qrc)
+
 IF(BUILD_WITH_CUDA)
 	find_package( CUDA REQUIRED )
-	target_include_directories(autoscoper PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/cutil)	
+	target_include_directories(autoscoper PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/cutil)
 	SET(GPU_LIBRARIES
 		${CUDA_LIBRARIES}
 	)
-ELSE (NOT BUILD_WITH_CUDA)	
+ELSE (NOT BUILD_WITH_CUDA)
 	find_package( OpenCL REQUIRED )
 	target_include_directories(autoscoper PUBLIC ${OPENCL_INCLUDE_DIRS} )
 	SET(GPU_LIBRARIES
@@ -129,29 +129,29 @@ ELSE (NOT BUILD_WITH_CUDA)
 	)
 ENDIF()
 
-target_link_libraries(autoscoper PUBLIC libautoscoper 
-	${OPENGL_LIBRARIES} 
-	${GPU_LIBRARIES}   
+target_link_libraries(autoscoper PUBLIC libautoscoper
+	${OPENGL_LIBRARIES}
+	${GPU_LIBRARIES}
 	${Qt5Core_LIBRARIES}
 	${Qt5Widgets_LIBRARIES}
 	${Qt5OpenGL_LIBRARIES}
 	${Qt5Network_LIBRARIES}
 	${Qt5Gui_LIBRARIES})
-	
+
 target_include_directories(autoscoper PUBLIC  ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
-target_include_directories(autoscoper PUBLIC  
-	../math 
-	../libautoscoper/src  
+target_include_directories(autoscoper PUBLIC
+	../math
+	../libautoscoper/src
 	${Qt5Core_INCLUDE_DIRS}
 	${Qt5Widgets_INCLUDE_DIRS}
 	${Qt5OpenGL_INCLUDE_DIRS}
 	${Qt5Network_INCLUDE_DIRS}
-	${Qt5Gui_INCLUDE_DIRS}) 
+	${Qt5Gui_INCLUDE_DIRS})
 
 include(UseGLEW)
 UseGLEW(autoscoper PUBLIC)
 
-include(UseLIBTIFF) 
+include(UseLIBTIFF)
 UseLIBTIFF(autoscoper PUBLIC)
 
 install(TARGETS autoscoper DESTINATION bin/Debug CONFIGURATIONS Debug)
@@ -161,7 +161,7 @@ IF(WIN32)
 	install(FILES ${_qt5Core_install_prefix}/bin/Qt5OpenGL.dll ${_qt5Core_install_prefix}/bin/Qt5Widgets.dll ${_qt5Core_install_prefix}/bin/Qt5Gui.dll  ${_qt5Core_install_prefix}/bin/Qt5Core.dll ${_qt5Core_install_prefix}/bin/Qt5Network.dll DESTINATION bin/Release CONFIGURATIONS Release)
 	install(FILES ${_qt5Core_install_prefix}/bin/Qt5OpenGLd.dll ${_qt5Core_install_prefix}/bin/Qt5Widgetsd.dll ${_qt5Core_install_prefix}/bin/Qt5Guid.dll ${_qt5Core_install_prefix}/bin/Qt5Cored.dll ${_qt5Core_install_prefix}/bin/Qt5Networkd.dll DESTINATION bin/Debug CONFIGURATIONS Debug)
 	install(FILES ${_qt5Core_install_prefix}/plugins/platforms/qwindows.dll DESTINATION bin/Release/platforms CONFIGURATIONS Release)
-	install(FILES ${_qt5Core_install_prefix}/plugins/platforms/qwindowsd.dll DESTINATION bin/Debug/platforms CONFIGURATIONS Debug)	
+	install(FILES ${_qt5Core_install_prefix}/plugins/platforms/qwindowsd.dll DESTINATION bin/Debug/platforms CONFIGURATIONS Debug)
 ENDIF(WIN32)
 
 

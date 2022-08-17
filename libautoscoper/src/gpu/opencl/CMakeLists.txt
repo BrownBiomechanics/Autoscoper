@@ -1,6 +1,6 @@
 include (src/gpu/opencl/kernel/CMakeLists.txt)
 
-SET(opencl_HEADERS 
+SET(opencl_HEADERS
 	src/gpu/opencl/Compositor.hpp
 	src/gpu/opencl/ContrastFilter.hpp
 	src/gpu/opencl/GaussianFilter.hpp
@@ -12,7 +12,7 @@ SET(opencl_HEADERS
 	src/gpu/opencl/SobelFilter.hpp
 	src/gpu/opencl/Merger.hpp
 	src/gpu/opencl/BackgroundRenderer.hpp
-	src/gpu/opencl/DRRBackground.hpp	
+	src/gpu/opencl/DRRBackground.hpp
 	src/gpu/opencl/Mult.hpp
 )
 

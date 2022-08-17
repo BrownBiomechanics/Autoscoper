@@ -1,8 +1,8 @@
 # This is a "helper" cmake project -- the only thing this project does is download
-# the external project.  So, the configure, build, install, and test commands for 
-# ExternalProject_Add() are intentionally set as NOPs.  
+# the external project.  So, the configure, build, install, and test commands for
+# ExternalProject_Add() are intentionally set as NOPs.
 
-cmake_minimum_required (VERSION 3.9) 
+cmake_minimum_required (VERSION 3.9)
 
 project(@DLHELPER_PROJECT_NAME@-download)
 

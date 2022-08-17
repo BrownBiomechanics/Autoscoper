@@ -1,9 +1,9 @@
-# This file was taken from the MinVR cmake build system. https://github.com/MinVR/MinVR  
+# This file was taken from the MinVR cmake build system. https://github.com/MinVR/MinVR
 # See the main MinVR/CMakeLists.txt file for authors, copyright, and license info.
 #
 # Tries to find a pre-installed version of LIBTIFF on this system using find_package().
 # Case 1: If found, then the script uses target_link_library() to link it to your target.
-# Case 2: If not found and AUTOBUILD_DEPENDENCIES is ON, then the script immediately 
+# Case 2: If not found and AUTOBUILD_DEPENDENCIES is ON, then the script immediately
 # downloads, builds, and installs the LIBTIFF library to the location specifed by
 # CMAKE_INSTALL_PREFIX. Then, it tries find_package() again and links to the newly install
 # library.
@@ -11,21 +11,21 @@
 # fatal error.
 
 # Usage: In your CMakeLists.txt, somewhere after you define the target that depends
-# on the LIBTIFF library (typical with something like add_executable(${PROJECT_NAME} ...) 
+# on the LIBTIFF library (typical with something like add_executable(${PROJECT_NAME} ...)
 # or add_library(${PROJECT_NAME} ...)), add the following two lines:
 
 #    include(UseLIBTIFF)
 #    UseLIBTIFF(${PROJECT_NAME} PRIVATE)
 
 # The second argument can be either PUBLIC, PRIVATE, or INTERFACE, following the keyword
-# usage described here: 
+# usage described here:
 # https://cmake.org/cmake/help/latest/command/target_include_directories.html
 #
-# Original Author(s) of this File: 
+# Original Author(s) of this File:
 #   Daniel Keefe, 2017, University of Minnesota
-#  
+#
 # Author(s) of Significant Updates/Modifications to the File:
-#   ... 
+#   ...
 
 
 macro(UseLIBTIFF YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
@@ -43,8 +43,8 @@ macro(UseLIBTIFF YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
         message(STATUS "Ok: LIBTIFF Found.")
         message(STATUS "LIBTIFF headers: ${LIBTIFF_INCLUDE_DIR}")
 	message(STATUS "LIBTIFF libs: ${LIBTIFF_LIBRARIES}")
-	
-	
+
+
 
     # Case 2: Download, build and install it now for the user, then try find_package() again
     elseif (AUTOBUILD_DEPENDENCIES)
@@ -94,7 +94,7 @@ macro(UseLIBTIFF YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
         target_link_libraries(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${TIFF_LIBRARIES})
 		target_include_directories(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${TIFF_INCLUDE_DIR})
     endif()
-    
+
     target_compile_definitions(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} -DUSE_LIBTIFF)
 
 endmacro()
