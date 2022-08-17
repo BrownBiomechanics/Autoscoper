@@ -62,7 +62,7 @@ endfunction()
 function(ExternalProject_BuildAndInstallNow EXT_PROJECT_NAME RELPATH_TO_CMAKELISTS)
 
     include(MessageMacros)
-    h1("BEGIN EXTERNAL PROJECT BUILD AND INSTALL (${EXT_PROJECT_NAME}).")
+    h1("BEGIN EXTERNAL PROJECT BUILD AND install (${EXT_PROJECT_NAME}).")
 
     # any extra args to the function are interpreted as arguments for the cmake config process
     set(CMAKE_CONFIG_OPTIONS ${ARGN})
