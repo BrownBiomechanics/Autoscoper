@@ -1,0 +1,20 @@
+#
+# This file lists revisions that should be ignored when considering
+# attribution for the actual code written.  Code style changes should
+# not be considered as modifications with regards to attribution.
+#
+# To see clean and meaningful blame information.
+# $ git blame important.py --ignore-revs-file .git-blame-ignore-revs
+#
+# To configure git to automatically ignore revisions listed in a file on every call to git blame.
+# $ git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# Ignore changes introduced when doing global file format changes
+# STYLE: Remove trailing spaces from cmake files
+7765bd04df336d115e9ccb8187fd42175d3c6ccc
+# STYLE: Convert CMake-language commands to lower case
+d6ea8ed817d1c77e202344040848ab3fa6ab6467
+# STYLE: Remove CMake-language block-end command arguments
+4634aae00cd89dfb55568d3cbf322185829771a1
+# STYLE: Fix line endings to be consistent
+36e8b77c62b5e69cfddfc9cd77f5e522fe11edd0
