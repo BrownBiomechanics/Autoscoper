@@ -1,4 +1,4 @@
-SET(SHADER_TO_HEADER "shader_to_header")
+set(SHADER_TO_HEADER "shader_to_header")
 
 set(opencl_shaders
 	gpu/opencl/kernel/Compositor.cl
@@ -36,5 +36,5 @@ endforeach()
 
 add_custom_target(${SHADER_TO_HEADER} DEPENDS ${GENERATED_LIST})
 
-SET(opencl_shaders_src ${GENERATED_LIST} PARENT_SCOPE)
+set(opencl_shaders_src ${GENERATED_LIST} PARENT_SCOPE)
 

@@ -1,18 +1,18 @@
-SET(CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-FIND_PACKAGE(OpenGL)
+find_package(OpenGL)
 
 #ADD QT4 SUPPORT
-FIND_PACKAGE(Qt5 COMPONENTS Core Widgets Gui OpenGL Network REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Gui OpenGL Network REQUIRED)
 cmake_policy(SET CMP0020 OLD)
-SET(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOMOC ON)
 
-SET(autoscoper_SOURCES
+set(autoscoper_SOURCES
      	src/main.cpp
 )
 
 #HEADER AND SOURCE FILES FOR UI
-SET(autoscoper_FORMS_HEADERS
+set(autoscoper_FORMS_HEADERS
 		src/ui/AutoscoperMainWindow.h
 		src/ui/FilterDockWidget.h
 		src/ui/FilterTreeWidget.h
@@ -41,7 +41,7 @@ SET(autoscoper_FORMS_HEADERS
 		src/net/Socket.h
 		src/ui/AboutAutoscoper.h
 )
-SET(autoscoper_FORMS_SOURCES
+set(autoscoper_FORMS_SOURCES
      	src/ui/AutoscoperMainWindow.cpp
 		src/ui/FilterDockWidget.cpp
 		src/ui/FilterTreeWidget.cpp
@@ -71,7 +71,7 @@ SET(autoscoper_FORMS_SOURCES
 )
 
 #QT DESIGNER UI FILES
-SET(autoscoper_FORMS
+set(autoscoper_FORMS
 		src/ui/ui-files/AboutAutoscoper.ui
 		src/ui/ui-files/AutoscoperMainWindow.ui
 		src/ui/ui-files/FilterDockWidget.ui
@@ -88,7 +88,7 @@ SET(autoscoper_FORMS
 )
 
 QT5_WRAP_UI(autoscoper_FORMS_HEADERS_GEN ${autoscoper_FORMS})
-SET(autoscoper_RESOURCES
+set(autoscoper_RESOURCES
 		src/ui/autoscoper_resource.qrc
 )
 QT5_ADD_RESOURCES(autoscoper_RESOURCES_RCC ${autoscoper_RESOURCES})
@@ -97,8 +97,8 @@ QT5_ADD_RESOURCES(autoscoper_RESOURCES_RCC ${autoscoper_RESOURCES})
 # Set some Win32 Specific Settings
 
 # Set some Apple MacOS Specific settings
-IF (APPLE)
-	SET(GUI_TYPE MACOSX_BUNDLE)
+if (APPLE)
+	set(GUI_TYPE MACOSX_BUNDLE)
 	#set( MACOSX_BUNDLE_ICON_FILE xromm.icns )
 # Allows for bundle re-creation just by running "make". Also installs bundle icon
 #add_custom_target(osx_bundle_dirs
@@ -106,7 +106,7 @@ IF (APPLE)
 #    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/bin/Undistortion.app/Contents/MacOS
 #    COMMAND cp ${CMAKE_SOURCE_DIR}/src/ui/ui-files/images/icons/${MACOSX_BUNDLE_ICON_FILE}
 #            ${CMAKE_CURRENT_BINARY_DIR}/bin/Undistortion.app/Contents/Resources/${MACOSX_BUNDLE_ICON_FILE})
-ENDIF (APPLE)
+endif (APPLE)
 
 add_executable (autoscoper  ${GUI_TYPE} ${autoscoper_SOURCES} ${autoscoper_HEADERS}
 		${autoscoper_FORMS_SOURCES}
@@ -115,19 +115,19 @@ add_executable (autoscoper  ${GUI_TYPE} ${autoscoper_SOURCES} ${autoscoper_HEADE
 		${autoscoper_RESOURCES_RCC}
 		src/ui/autoscoper_resource.qrc)
 
-IF(BUILD_WITH_CUDA)
+if(BUILD_WITH_CUDA)
 	find_package( CUDA REQUIRED )
 	target_include_directories(autoscoper PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/cutil)
-	SET(GPU_LIBRARIES
+	set(GPU_LIBRARIES
 		${CUDA_LIBRARIES}
 	)
-ELSE (NOT BUILD_WITH_CUDA)
+else (NOT BUILD_WITH_CUDA)
 	find_package( OpenCL REQUIRED )
 	target_include_directories(autoscoper PUBLIC ${OPENCL_INCLUDE_DIRS} )
-	SET(GPU_LIBRARIES
+	set(GPU_LIBRARIES
 		${OpenCL_LIBRARIES}
 	)
-ENDIF()
+endif()
 
 target_link_libraries(autoscoper PUBLIC libautoscoper
 	${OPENGL_LIBRARIES}
@@ -157,15 +157,15 @@ UseLIBTIFF(autoscoper PUBLIC)
 install(TARGETS autoscoper DESTINATION bin/Debug CONFIGURATIONS Debug)
 install(TARGETS autoscoper DESTINATION bin/Release CONFIGURATIONS Release)
 
-IF(WIN32)
+if(WIN32)
 	install(FILES ${_qt5Core_install_prefix}/bin/Qt5OpenGL.dll ${_qt5Core_install_prefix}/bin/Qt5Widgets.dll ${_qt5Core_install_prefix}/bin/Qt5Gui.dll  ${_qt5Core_install_prefix}/bin/Qt5Core.dll ${_qt5Core_install_prefix}/bin/Qt5Network.dll DESTINATION bin/Release CONFIGURATIONS Release)
 	install(FILES ${_qt5Core_install_prefix}/bin/Qt5OpenGLd.dll ${_qt5Core_install_prefix}/bin/Qt5Widgetsd.dll ${_qt5Core_install_prefix}/bin/Qt5Guid.dll ${_qt5Core_install_prefix}/bin/Qt5Cored.dll ${_qt5Core_install_prefix}/bin/Qt5Networkd.dll DESTINATION bin/Debug CONFIGURATIONS Debug)
 	install(FILES ${_qt5Core_install_prefix}/plugins/platforms/qwindows.dll DESTINATION bin/Release/platforms CONFIGURATIONS Release)
 	install(FILES ${_qt5Core_install_prefix}/plugins/platforms/qwindowsd.dll DESTINATION bin/Debug/platforms CONFIGURATIONS Debug)
-ENDIF(WIN32)
+endif(WIN32)
 
 
-IF(APPLE)
+if(APPLE)
 	file(COPY ../sample_data DESTINATION ../bin/Debug/autoscoper.app/Contents/MacOS)
-ENDIF(APPLE)
+endif(APPLE)
 

@@ -1,4 +1,4 @@
-PROJECT(Autoscoper)
+project(Autoscoper)
 
 cmake_policy(SET CMP0048 NEW)
 
@@ -30,18 +30,18 @@ set(BUILD_SHARED_LIBS ON)
 message(STATUS "Building ${PROJECT_NAME} in ${CMAKE_BUILD_TYPE} mode")
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
-SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-SET(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
-IF(BUILD_WITH_CUDA)
-	ADD_DEFINITIONS(-DWITH_CUDA)
-ENDIF()
+if(BUILD_WITH_CUDA)
+	add_definitions(-DWITH_CUDA)
+endif()
 
 #ADD QT4 SUPPORT
-FIND_PACKAGE(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
-#SET(QT_USE_QTOPENGL TRUE)
-#INCLUDE(${QT_USE_FILE})
-#SET(CMAKE_AUTOMOC ON)
+find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
+#set(QT_USE_QTOPENGL TRUE)
+#include(${QT_USE_FILE})
+#set(CMAKE_AUTOMOC ON)
 
 
 set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
@@ -68,7 +68,7 @@ endif()
 add_subdirectory (libautoscoper)
 add_subdirectory (autoscoper)
 
-IF(WIN32)
+if(WIN32)
 	file(GLOB external_dlls "${CMAKE_INSTALL_PREFIX}/external/bin/*.dll")
 	file(GLOB external_dllsd "${CMAKE_INSTALL_PREFIX}/external/bin/*d.dll")
 	list(REMOVE_ITEM external_dlls ${external_dllsd})
@@ -78,8 +78,8 @@ IF(WIN32)
 
 	file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/Release)
 
-ENDIF(WIN32)
+endif(WIN32)
 
-IF(UNIX)
+if(UNIX)
 	file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
-ENDIF(UNIX)
+endif(UNIX)

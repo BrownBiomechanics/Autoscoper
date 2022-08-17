@@ -1,4 +1,4 @@
-SET(cuda_HEADERS
+set(cuda_HEADERS
 	src/gpu/cuda/ContrastFilter.hpp
 	src/gpu/cuda/CudaWrap.hpp
 	src/gpu/cuda/GaussianFilter.hpp
@@ -9,7 +9,7 @@ SET(cuda_HEADERS
 	src/gpu/cuda/BackgroundRenderer.hpp
 )
 
-SET(cuda_SOURCES
+set(cuda_SOURCES
 	src/gpu/cuda/ContrastFilter.cpp
 	src/gpu/cuda/CudaWrap.cpp
 	src/gpu/cuda/GaussianFilter.cpp
@@ -20,7 +20,7 @@ SET(cuda_SOURCES
 	src/gpu/cuda/BackgroundRenderer.cpp
 )
 
-SET(cuda_KERNEL_HEADERS
+set(cuda_KERNEL_HEADERS
     src/gpu/cuda/Compositor_kernels.h
 	src/gpu/cuda/ContrastFilter_kernels.h
 	src/gpu/cuda/GaussianFilter_kernels.h
@@ -37,7 +37,7 @@ SET(cuda_KERNEL_HEADERS
 	src/gpu/cuda/Mult_kernels.h
 )
 
-SET(cuda_KERNEL
+set(cuda_KERNEL
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/Compositor_kernels.cu
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/ContrastFilter_kernels.cu
 	${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/GaussianFilter_kernels.cu

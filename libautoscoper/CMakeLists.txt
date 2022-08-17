@@ -1,7 +1,7 @@
-SET(CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
 
-SET(libautoscoper_HEADERS
+set(libautoscoper_HEADERS
 	src/Backtrace.hpp
 	src/Camera.hpp
 	src/CoordFrame.hpp
@@ -18,7 +18,7 @@ SET(libautoscoper_HEADERS
 	src/VolumeTransform.hpp
 )
 
-SET(libautoscoper_SOURCES
+set(libautoscoper_SOURCES
     src/Backtrace.cpp
 	src/Camera.cpp
 	src/CoordFrame.cpp
@@ -35,23 +35,23 @@ SET(libautoscoper_SOURCES
 	src/VolumeTransform.cpp
 )
 
-IF(BUILD_WITH_CUDA)
+if(BUILD_WITH_CUDA)
 	find_package( CUDA REQUIRED )
 	set(CUDA_LIBRARIES PUBLIC ${CUDA_LIBRARIES})
 	include (${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/CMakeLists.txt)
-	#SET(CUDA_NVCC_FLAGS "-arch=sm_13" CACHE STRING "nvcc flags" FORCE)
+	#set(CUDA_NVCC_FLAGS "-arch=sm_13" CACHE STRING "nvcc flags" FORCE)
 	CUDA_ADD_LIBRARY(libautoscoper STATIC ${libautoscoper_SOURCES} ${libautoscoper_HEADERS} ${cuda_HEADERS} ${cuda_SOURCES} ${cuda_KERNEL_HEADERS} ${cuda_KERNEL})
 	target_include_directories(libautoscoper PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/cutil)
-	#ADD_DEPENDENCIES(libautoscoper ${SHADER_TO_HEADER})
+	#add_dependencies(libautoscoper ${SHADER_TO_HEADER})
 
 
-ELSE(NOT BUILD_WITH_CUDA)
+else(NOT BUILD_WITH_CUDA)
 	find_package( OpenCL REQUIRED )
 	include (${CMAKE_CURRENT_SOURCE_DIR}/gpu/opencl/CMakeLists.txt)
 	add_library (libautoscoper STATIC ${libautoscoper_SOURCES} ${libautoscoper_HEADERS} ${opencl_SOURCES} ${opencl_HEADERS})
 	target_include_directories(libautoscoper PUBLIC  ${OpenCL_INCLUDE_DIRS} )
-	ADD_DEPENDENCIES(libautoscoper ${SHADER_TO_HEADER})
-ENDIF()
+	add_dependencies(libautoscoper ${SHADER_TO_HEADER})
+endif()
 
 include(UseLIBTIFF)
 UseLIBTIFF(libautoscoper PUBLIC)

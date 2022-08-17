@@ -1,6 +1,6 @@
 include (src/gpu/opencl/kernel/CMakeLists.txt)
 
-SET(opencl_HEADERS
+set(opencl_HEADERS
 	src/gpu/opencl/Compositor.hpp
 	src/gpu/opencl/ContrastFilter.hpp
 	src/gpu/opencl/GaussianFilter.hpp
@@ -16,7 +16,7 @@ SET(opencl_HEADERS
 	src/gpu/opencl/Mult.hpp
 )
 
-SET(opencl_SOURCES
+set(opencl_SOURCES
     src/gpu/opencl/Compositor.cpp
 	src/gpu/opencl/ContrastFilter.cpp
 	src/gpu/opencl/GaussianFilter.cpp
