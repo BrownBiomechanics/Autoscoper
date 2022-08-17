@@ -106,7 +106,7 @@ if (APPLE)
 #    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/bin/Undistortion.app/Contents/MacOS
 #    COMMAND cp ${CMAKE_SOURCE_DIR}/src/ui/ui-files/images/icons/${MACOSX_BUNDLE_ICON_FILE}
 #            ${CMAKE_CURRENT_BINARY_DIR}/bin/Undistortion.app/Contents/Resources/${MACOSX_BUNDLE_ICON_FILE})
-endif (APPLE)
+endif ()
 
 add_executable (autoscoper  ${GUI_TYPE} ${autoscoper_SOURCES} ${autoscoper_HEADERS}
 		${autoscoper_FORMS_SOURCES}
@@ -121,7 +121,7 @@ if(BUILD_WITH_CUDA)
 	set(GPU_LIBRARIES
 		${CUDA_LIBRARIES}
 	)
-else (NOT BUILD_WITH_CUDA)
+else ()
 	find_package( OpenCL REQUIRED )
 	target_include_directories(autoscoper PUBLIC ${OPENCL_INCLUDE_DIRS} )
 	set(GPU_LIBRARIES
@@ -162,10 +162,10 @@ if(WIN32)
 	install(FILES ${_qt5Core_install_prefix}/bin/Qt5OpenGLd.dll ${_qt5Core_install_prefix}/bin/Qt5Widgetsd.dll ${_qt5Core_install_prefix}/bin/Qt5Guid.dll ${_qt5Core_install_prefix}/bin/Qt5Cored.dll ${_qt5Core_install_prefix}/bin/Qt5Networkd.dll DESTINATION bin/Debug CONFIGURATIONS Debug)
 	install(FILES ${_qt5Core_install_prefix}/plugins/platforms/qwindows.dll DESTINATION bin/Release/platforms CONFIGURATIONS Release)
 	install(FILES ${_qt5Core_install_prefix}/plugins/platforms/qwindowsd.dll DESTINATION bin/Debug/platforms CONFIGURATIONS Debug)
-endif(WIN32)
+endif()
 
 
 if(APPLE)
 	file(COPY ../sample_data DESTINATION ../bin/Debug/autoscoper.app/Contents/MacOS)
-endif(APPLE)
+endif()
 
