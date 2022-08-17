@@ -6,7 +6,10 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "default install path" FORCE)
 endif()
 
-option(BUILD_WITH_CUDA "Build With CUDA instead of OpenCL" ON)
+#-----------------------------------------------------------------------------
+# Build with Cuda Option - Enabled by default
+#-----------------------------------------------------------------------------
+option(Autoscoper_BUILD_WITH_CUDA "Build With CUDA instead of OpenCL" ON)
 
 #SET BUILD-TYPE TO RELEASE IF NOT DEFINED
 if(NOT CMAKE_BUILD_TYPE)
@@ -33,7 +36,7 @@ cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
-if(BUILD_WITH_CUDA)
+if(Autoscoper_BUILD_WITH_CUDA)
   add_definitions(-DWITH_CUDA)
 endif()
 

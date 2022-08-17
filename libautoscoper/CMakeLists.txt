@@ -35,7 +35,7 @@ set(libautoscoper_SOURCES
   src/VolumeTransform.cpp
 )
 
-if(BUILD_WITH_CUDA)
+if(Autoscoper_BUILD_WITH_CUDA)
   find_package(CUDA REQUIRED)
   set(CUDA_LIBRARIES PUBLIC ${CUDA_LIBRARIES})
   include(${CMAKE_CURRENT_SOURCE_DIR}/gpu/cuda/CMakeLists.txt)
