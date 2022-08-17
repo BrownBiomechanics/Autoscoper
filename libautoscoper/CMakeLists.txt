@@ -45,7 +45,7 @@ if(BUILD_WITH_CUDA)
 	#add_dependencies(libautoscoper ${SHADER_TO_HEADER})
 
 
-else(NOT BUILD_WITH_CUDA)
+else()
 	find_package( OpenCL REQUIRED )
 	include (${CMAKE_CURRENT_SOURCE_DIR}/gpu/opencl/CMakeLists.txt)
 	add_library (libautoscoper STATIC ${libautoscoper_SOURCES} ${libautoscoper_HEADERS} ${opencl_SOURCES} ${opencl_HEADERS})

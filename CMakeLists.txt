@@ -11,7 +11,7 @@ option(BUILD_WITH_CUDA "Build With CUDA instead of OpenCL" ON)
 #SET BUILD-TYPE TO RELEASE IF NOT DEFINED
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE Release)
-endif(NOT CMAKE_BUILD_TYPE)
+endif()
 
 if(NOT CMAKE_DEBUG_POSTFIX)
   set(CMAKE_DEBUG_POSTFIX d)
@@ -78,8 +78,8 @@ if(WIN32)
 
 	file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/Release)
 
-endif(WIN32)
+endif()
 
 if(UNIX)
 	file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
-endif(UNIX)
+endif()
