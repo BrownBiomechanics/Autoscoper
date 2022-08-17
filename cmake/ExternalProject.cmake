@@ -1,21 +1,21 @@
-# This file was taken from the MinVR cmake build system. https://github.com/MinVR/MinVR  
+# This file was taken from the MinVR cmake build system. https://github.com/MinVR/MinVR
 # See the main MinVR/CMakeLists.txt file for authors, copyright, and license info.
 #
-# Original Author(s) of this File: 
+# Original Author(s) of this File:
 #   Daniel Keefe, 2017, University of Minnesota
-#  
+#
 # Author(s) of Significant Updates/Modifications to the File:
-#   ... 
+#   ...
 
 
-# Usage:  
+# Usage:
 # ExternalProject_Download(
 #     # This first argument is the name of the project to download.  It is required:
 #     glm
 #
 #     # Additional arguments specify how to download the project using GIT, SVN, CVS, or URL.
 #     # These can be any of the arguments used for the downloading step of the cmake builtin
-#     # ExternalProject_Add command. 
+#     # ExternalProject_Add command.
 #     GIT_REPOSITORY "https://github.com/g-truc/glm.git"
 #     GIT_TAG master
 #     etc..
@@ -31,7 +31,7 @@ function(ExternalProject_Download DLHELPER_PROJECT_NAME)
     string (REGEX REPLACE "(^|[^\\\\]);" "\\1 " DLHELPER_DOWNLOAD_OPTIONS "${DLHELPER_DOWNLOAD_OPTIONS}")
 
     configure_file(
-        ${PROJECT_ROOT}/cmake/CMakeLists-DownloadHelper.txt.in 
+        ${PROJECT_ROOT}/cmake/CMakeLists-DownloadHelper.txt.in
         ${EXTERNAL_DIR}/${DLHELPER_PROJECT_NAME}/download-helper/CMakeLists.txt
     )
 
@@ -46,7 +46,7 @@ function(ExternalProject_Download DLHELPER_PROJECT_NAME)
 endfunction()
 
 
-# Usage:  
+# Usage:
 # ExternalProject_BuildAndInstallNow(
 #     # This first argument is the name of the external project to download.  It is required:
 #     VRPN

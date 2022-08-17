@@ -1,4 +1,4 @@
-# This file was taken from the MinVR cmake build system. https://github.com/MinVR/MinVR    
+# This file was taken from the MinVR cmake build system. https://github.com/MinVR/MinVR
 # See the main MinVR/CMakeLists.txt file for authors, copyright, and license info.
 
 

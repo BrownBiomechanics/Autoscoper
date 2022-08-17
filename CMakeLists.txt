@@ -51,7 +51,7 @@ file(MAKE_DIRECTORY ${EXTERNAL_DIR})
 
 
 # When we autobuild dependencies, we install them in CMAKE_INSTALL_PREFIX, and then look for them
-# there using find_package().  So, this makes sure the install prefix is in the path that 
+# there using find_package().  So, this makes sure the install prefix is in the path that
 # find_package() searches.
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_INSTALL_PREFIX}/external)
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX}/external)
@@ -65,7 +65,7 @@ else()
     message(STATUS "AUTOBUILD_DEPENDENCIES is OFF.")
 endif()
 
-add_subdirectory (libautoscoper) 
+add_subdirectory (libautoscoper)
 add_subdirectory (autoscoper)
 
 IF(WIN32)
@@ -75,7 +75,7 @@ IF(WIN32)
 
 	install(FILES ${external_dlls} DESTINATION bin/Release CONFIGURATIONS Release)
 	install(FILES ${external_dllsd} DESTINATION bin/Debug CONFIGURATIONS Debug)
-	
+
 	file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/Release)
 
 ENDIF(WIN32)
