@@ -75,7 +75,7 @@ namespace xromm
     if (dir == 0) {
         throw runtime_error("Unable to open directory: " + dirname_);
     }
-	
+
     struct dirent *ent;
     while ((ent = readdir(dir)) != NULL) {
 
@@ -147,11 +147,11 @@ int Video::create_background_image()
 	if (filenames_.size() < 2)
 		return -1;
 
-	
+
 	if (background_) delete[] background_;
 	background_ = new float[width()*height()];
 	memset(background_, 0, width()*height()*sizeof(float));
-	
+
 	//Read tmp_image
 	TiffImage* tmp_image = new TiffImage();
 	TIFFSetWarningHandler(0);

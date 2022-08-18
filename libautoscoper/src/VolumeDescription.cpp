@@ -172,7 +172,7 @@ VolumeDescription::VolumeDescription(const Volume& volume)
     // Crop the volume
     int min[3], max[3];
 	vector<char> data_flipped(volume.width()*volume.height()*volume.depth()*(volume.bps()/8));
-    
+
     switch(volume.bps()) {
         case 8: {
 			flipVolume((unsigned char*)volume.data(),
@@ -278,7 +278,7 @@ VolumeDescription::VolumeDescription(const Volume& volume)
     invTrans_[1] = -((volume.height()-max[1]-1)/(float)dim[1]);
     invTrans_[2] = min[2]/(float)dim[2];
     // Free any previously allocated memory.
-	
+
 #ifdef WITH_CUDA
 	// Free any previously allocated memory.
     cutilSafeCall(cudaFreeArray(image_));

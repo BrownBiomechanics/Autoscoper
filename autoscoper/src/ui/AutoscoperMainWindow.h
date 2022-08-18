@@ -144,8 +144,8 @@ class AutoscoperMainWindow : public QMainWindow{
 		std::vector <CameraViewWidget * > cameraViews;
 		void relayoutCameras(int rows);
 		QSize cameraViewArrangement;
-		
-		//Trial 
+
+		//Trial
 		std::string trial_filename;
 		bool is_trial_saved;
 		bool is_tracking_saved;
@@ -193,7 +193,7 @@ class AutoscoperMainWindow : public QMainWindow{
 
 
 
-		
+
 		void save_tracking_prompt();
 		void save_trial_prompt();
 		void save_tracking_results(QString filename);
@@ -207,7 +207,7 @@ class AutoscoperMainWindow : public QMainWindow{
 		protected:
 		void closeEvent(QCloseEvent *event);
 	public slots:
-		
+
 		//File
 		void on_actionNew_triggered(bool checked);
 		void on_actionOpen_triggered(bool checked);
@@ -275,13 +275,13 @@ class AutoscoperMainWindow : public QMainWindow{
 		//void on_toolButtonRetrack_clicked();
 
 
-		//Shortcuts	
-		void key_w_pressed();	
-		void key_e_pressed();	
-		void key_d_pressed();	
-		void key_h_pressed();	
-		void key_t_pressed();	
-		//void key_r_pressed();	
+		//Shortcuts
+		void key_w_pressed();
+		void key_e_pressed();
+		void key_d_pressed();
+		void key_h_pressed();
+		void key_t_pressed();
+		//void key_r_pressed();
 		// void key_p_pressed();
 		void key_c_pressed();
 		void key_plus_pressed();

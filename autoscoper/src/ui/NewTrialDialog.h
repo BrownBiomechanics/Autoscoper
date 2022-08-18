@@ -60,7 +60,7 @@ class NewTrialDialog : public QDialog{
 	Q_OBJECT
 
 	private:
-		std::vector <CameraBox *> cameras;	
+		std::vector <CameraBox *> cameras;
 		std::vector <VolumeBox *> volumes;
 		int nbCams;
 		int nbVolumes;
@@ -73,7 +73,7 @@ class NewTrialDialog : public QDialog{
 		Ui::NewTrialDialog *diag;
 
 		Trial trial;
-	
+
 	public slots:
 
 		void on_toolButton_CameraMinus_clicked();
@@ -81,7 +81,7 @@ class NewTrialDialog : public QDialog{
 
 		void on_toolButton_VolumeMinus_clicked();
 		void on_toolButton_VolumePlus_clicked();
-		
+
 		void on_pushButton_OK_clicked();
 		void on_pushButton_Cancel_clicked();
 

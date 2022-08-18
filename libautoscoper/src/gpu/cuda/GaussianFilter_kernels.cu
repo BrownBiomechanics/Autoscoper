@@ -1,22 +1,22 @@
 // ----------------------------------
 // Copyright (c) 2011, Brown University
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
 // met:
-// 
+//
 // (1) Redistributions of source code must retain the above copyright
 // notice, this list of conditions and the following disclaimer.
-// 
+//
 // (2) Redistributions in binary form must reproduce the above copyright
 // notice, this list of conditions and the following disclaimer in the
 // documentation and/or other materials provided with the distribution.
-// 
+//
 // (3) Neither the name of Brown University nor the names of its
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY BROWN UNIVERSITY “AS IS” WITH NO
 // WARRANTIES OR REPRESENTATIONS OF ANY KIND WHATSOEVER EITHER EXPRESS OR
 // IMPLIED, INCLUDING WITHOUT LIMITATION ANY WARRANTY OF DESIGN OR
@@ -44,7 +44,7 @@
 
 __global__
 void filter_kernel(const float* input, float* output,
-                            int width, int height, 
+                            int width, int height,
                 float* filter, int filterSize );
 
 namespace xromm { namespace gpu {
@@ -58,7 +58,7 @@ void gaussian_filter_apply(const float* input, float* output,
 
 
     filter_kernel<<<gridDim, blockDim>>>(input, output,
-                                                  width, height, 
+                                                  width, height,
                                               filter, filterSize);
 
 }
@@ -77,27 +77,27 @@ float filterConvolution(const float* input, int width, int height, int x, int y,
 
     for(int i = 0; i < filterSize; ++i){
         for(int j = 0; j < filterSize; ++j){
-            
+
             int a = x - filterRadius + i;
-            int b = y - filterRadius + j;            
-                        
+            int b = y - filterRadius + j;
+
             if(!(a < 0 || a >=width || b < 0 || b >= height))
                  centerValue = centerValue + (filter[i*filterSize + j])*(input[b*width + a]);
         }
     }
-    
+
     if(centerValue > 1)
         centerValue = 1;
     if(centerValue < 0)
         centerValue = 0;
 
    return centerValue;
-   
+
 }
 
 __global__
 void filter_kernel(const float* input, float* output,
-                            int width, int height, 
+                            int width, int height,
                     float* filter, int filterSize)
 {
     short x = blockIdx.x*blockDim.x+threadIdx.x;

@@ -55,7 +55,7 @@ CameraBox::~CameraBox(){
 	delete widget;
 }
 
-		
+
 void CameraBox::on_toolButton_MayaCam_clicked(){
 	QString fileName = QFileDialog::getOpenFileName(this,
 									tr("Open Calibration File"), QDir::currentPath(),tr("MayaCam File (*.csv *.txt)"));

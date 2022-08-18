@@ -149,7 +149,7 @@ struct Vec2
         y = v.y;
         return *this;
     }
-    
+
     //! Assigns this vector to the specified vector
 
     template <typename U>
@@ -397,7 +397,7 @@ struct Vec2
     }
 
     //! Underlying data array
-    
+
     union { struct { T x, y; }; T data[2]; };
 };
 
@@ -792,7 +792,7 @@ struct Vec3
     }
 
     //! Underlying data array
-    
+
     union { struct { T x, y, z; }; T data[3]; };
 };
 
@@ -1206,7 +1206,7 @@ struct Vec4
     }
 
     //! Underlying data array
-    
+
     union { struct { T x, y, z, w; }; T data[4]; };
 };
 

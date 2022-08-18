@@ -10,7 +10,7 @@ void multiply_kernel(__global const float* src1,
 
     if (x > width-1 || y > height-1) return;
 
-	const uint xy = y*width + x;	
+	const uint xy = y*width + x;
 
     // src1 maps to orange and src2 to blue
 	dest[xy] = src1[xy] *  src2[xy];

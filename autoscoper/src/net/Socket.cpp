@@ -53,7 +53,7 @@ Socket::Socket(AutoscoperMainWindow* mainwindow, unsigned long long int listenPo
 
 	connect(tcpServer, &QTcpServer::newConnection, this, &Socket::createNewConnection);
 	tcpServer->listen(QHostAddress::LocalHost, listenPort);
-} 
+}
 
 Socket::~Socket()
 {
@@ -68,7 +68,7 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 
 	switch (message_type)
 	{
-	case 1:		
+	case 1:
 		{
 			//load trial
 			std::string filename = std::string(&data[1],length-1);
@@ -194,7 +194,7 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 			qint32* volume = reinterpret_cast<qint32*>(&data[1]);
 			qint32* camera = reinterpret_cast<qint32*>(&data[5]);
 			double * pose_data = reinterpret_cast<double*>(&data[9]);
-			
+
 			std::cerr << "Read images for volume " << *volume << " and camera " << *camera << std::endl;
 
 			std::vector<double> pose;
@@ -211,7 +211,7 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 			array.append(ptr, img_Data.size());
 			connection->write(array);
 			std::cerr << width << " " << height << " " << img_Data.size() << std::endl;
-		
+
 		}
 		break;
 	case 11:

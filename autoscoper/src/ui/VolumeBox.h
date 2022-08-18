@@ -53,7 +53,7 @@ class VolumeBox : public QWidget{
 	Q_OBJECT
 
 	private:
-		
+
 
 	public:
 		explicit VolumeBox(QWidget *parent = 0);

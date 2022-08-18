@@ -129,7 +129,7 @@ namespace xromm
 			float sad_cost = sum_hdist(d_nums_ba, n);
 			//float den = sqrt(sum_hdist(d_den1s_ba, n)*sum_hdist(d_den2s_ba, n));
 			//float den = sum_hdist(d_den1s_ba, n);
-			
+
 			//if (den < 1e-8) {
 			//	return 1e5;
 				//printf("Bad Initialization!");

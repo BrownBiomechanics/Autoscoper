@@ -145,7 +145,7 @@ void FilterTreeWidgetItem::save(std::ofstream & file){
 void FilterTreeWidgetItem::load(std::ifstream & file){
 	std::string line, key;
 	while (std::getline(file,line) && line.compare("SobelFilter_end") != 0
-		&& line.compare("ContrastFilter_end") != 0 && line.compare("GaussianFilter_end") != 0 
+		&& line.compare("ContrastFilter_end") != 0 && line.compare("GaussianFilter_end") != 0
 		&& line.compare("SharpenFilter_end") != 0) {
         std::istringstream lineStream(line);
         lineStream >> key;
@@ -189,7 +189,7 @@ void FilterTreeWidgetItem::load(std::ifstream & file){
 				lineStream >> value;
 				parameters[1]->spinbox->setValue(value);
 			}
-			
+
         }
 	}
 }
@@ -211,10 +211,10 @@ FilterTreeWidgetItem::~FilterTreeWidgetItem()
 		delete parameters[i];
 	}
 	parameters.clear();
-} 
+}
 
 void FilterTreeWidgetItem::addToModelViewTreeWidgetItem(QTreeWidget * treewidget, ModelViewTreeWidgetItem * modelViewWidget, bool addToTree){
-	
+
 	QFrame *pFrame = new QFrame(treewidget);
 	pFrame->setMinimumHeight(32);
 	QGridLayout* pLayout = new QGridLayout(pFrame);
@@ -280,7 +280,7 @@ void FilterTreeWidgetItem::settingsButtonClicked(){
 		icon.addFile(QString::fromUtf8(":/images/resource-files/icons/settings.png"), QSize(), QIcon::Normal, QIcon::Off);
 		settingsButton->setIcon(icon);
 	}
-	
+
 	this->treeWidget()->doItemsLayout();
 	this->treeWidget()->repaint();
 }

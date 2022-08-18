@@ -531,7 +531,7 @@ string CoordFrame::to_string() const
     return ss.str();
 }
 
-void CoordFrame::from_string(std::string str) 
+void CoordFrame::from_string(std::string str)
 {
 	std::vector< double > vd;
     double d = 0.0;
@@ -539,7 +539,7 @@ void CoordFrame::from_string(std::string str)
     while (pos < str.size ())
         if ((pos = str.find_first_of (',',pos)) != std::string::npos)
             str[pos] = ' ';
-	
+
 	std::stringstream ss(str);
 
 	while (ss >> d)

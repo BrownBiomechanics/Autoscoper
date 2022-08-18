@@ -56,8 +56,8 @@ int main ( int argc, char **argv )
 {
 	QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 	QApplication app (argc, argv);
-	    
-	if(argc <= 1){ 
+
+	if(argc <= 1){
 		AutoscoperMainWindow *widget = new AutoscoperMainWindow();
 		Socket* socket = new Socket(widget, 30007);
 		widget->show();
@@ -72,7 +72,7 @@ int main ( int argc, char **argv )
 		widget->runBatch(argv[1], true);
 		delete socket;
 	}
-    
+
 }
 
 

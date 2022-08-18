@@ -8,10 +8,10 @@ ncc_values = [];
 for frame = first_frame:last_frame
     %set frame
     setFrame(autoscoper_socket,frame);
-    
+
     %get pose for the frame
     curPose = getPose(autoscoper_socket,volume,frame);
-    
+
     %get ncc values
     ncc_values = getNCC(autoscoper_socket,volume,curPose);
 end

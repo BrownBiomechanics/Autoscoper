@@ -20,7 +20,7 @@ class VolumeDockWidget : public QDockWidget{
 		~VolumeDockWidget();
 
 		AutoscoperMainWindow * getMainWindow(){return mainwindow;};
-		
+
 		void clearVol();
 		void addVolume(const std::string& filename);
 

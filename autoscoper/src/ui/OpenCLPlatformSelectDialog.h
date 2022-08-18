@@ -53,7 +53,7 @@ class OpenCLPlatformSelectDialog : public QDialog{
 	Q_OBJECT
 
 	private:
-		
+
 	public:
 		explicit OpenCLPlatformSelectDialog(QWidget *parent = 0);
 		~OpenCLPlatformSelectDialog();

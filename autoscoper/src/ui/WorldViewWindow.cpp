@@ -50,7 +50,7 @@
 WorldViewWindow::WorldViewWindow(QWidget *parent):QDockWidget(parent)
 {
     setWindowTitle(tr("World view"));
-	
+
     openGL = new GLView(this);
 	openGL->setStaticView(true);
 	setFeatures(QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable);
@@ -61,7 +61,7 @@ WorldViewWindow::WorldViewWindow(QWidget *parent):QDockWidget(parent)
     layout = new QGridLayout;
     layout->addWidget(openGL, 0, 0);
 	setWidget(openGL);
-	
+
 	mainwindow  = dynamic_cast <AutoscoperMainWindow *> ( parent);
 }
 

@@ -57,7 +57,7 @@ TimelineDockWidget::TimelineDockWidget(QWidget *parent) :
 										QDockWidget(parent),
 										dock(new Ui::TimelineDockWidget){
 	dock->setupUi(this);
-	
+
 	mainwindow  = dynamic_cast <AutoscoperMainWindow *> ( parent);
 
 	position_graph = new GraphData();
@@ -150,7 +150,7 @@ void TimelineDockWidget::setFrame(int frame){
 
 void TimelineDockWidget::on_horizontalSlider_Frame_valueChanged(int value){
 	dock->labelFrame->setText(QString::number(value));
-	
+
 	mainwindow->setFrame(dock->labelFrame->text().toInt());
 }
 

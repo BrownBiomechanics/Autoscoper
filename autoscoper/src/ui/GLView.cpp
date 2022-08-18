@@ -280,7 +280,7 @@ void GLView::mouseMoveEvent(QMouseEvent *e){
 		CameraViewWidget * cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
 		mainwindow = cameraViewWidget->getMainWindow();
 	}
-	
+
 	double dx = e->x() - prevx;
     double dy = e->y() - prevy;
 
@@ -389,7 +389,7 @@ void GLView::paintGL()
 	if(mainwindow){
 		update_scale_in_view(&viewdata);
 		update_viewport(&viewdata);
-		
+
 		glViewport(viewdata.viewport_x,
 				   viewdata.viewport_y,
 				   viewdata.viewport_width,
@@ -414,7 +414,7 @@ void GLView::paintGL()
 			float top_color[3] = {0.20f,0.35f,0.50f};
 			float bot_color[3] = {0.10f,0.17f,0.25f};
 
-			draw_gradient(top_color,bot_color);	
+			draw_gradient(top_color,bot_color);
 			for (unsigned int i = 0; i < mainwindow->getTracker()->trial()->cameras.size(); ++i) {
 				draw_textured_quad(mainwindow->getTracker()->trial()->cameras.at(i).image_plane(),
 					(*mainwindow->getTextures())[i]);
@@ -486,7 +486,7 @@ void GLView::paintGL()
 				CALL_GL(glDrawPixels(viewdata.window_width,
 							 viewdata.window_height,
 							 GL_RGB, GL_FLOAT, 0));
-				CALL_GL(glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0));    
+				CALL_GL(glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0));
 	#else
 				CALL_GL(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, viewdata.pbo));
 				CALL_GL(glDrawPixels(viewdata.window_width,
@@ -533,7 +533,7 @@ void GLView::paintGL()
 
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
-		
+
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glDisable(GL_DEPTH_TEST);
 			glRasterPos2i(0, 0);
@@ -551,7 +551,7 @@ void GLView::paintGL()
 							GL_RGB, GL_FLOAT, 0));
 			CALL_GL(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0));
 			#endif
-		
+
 			glEnable(GL_DEPTH_TEST);
 
 			glViewport(viewdata.viewport_x,
@@ -684,7 +684,7 @@ void GLView::draw_manip_from_view(const ViewData* view)
 		CameraViewWidget * cameraViewWidget = dynamic_cast <CameraViewWidget *> ( this->parent());
 		mainwindow = cameraViewWidget->getMainWindow();
 	}
-	
+
 	if (mainwindow->getManipulator()){
 		glLineWidth(1.0);
 		mainwindow->getManipulator()->set_size(view->scale*mainwindow->getManipulator()->get_pivotSize());
@@ -910,13 +910,13 @@ void GLView::draw_camera()
 void GLView::draw_textured_quad(const double* pts, unsigned int texid)
 {
     glPushAttrib(GL_ENABLE_BIT);
-	
+
     //glColor3f(1.0f,1.0f,1.0f);
 
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D,texid);
     glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
-	
+
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 0.0f);
     glVertex3d(pts[0], pts[1],  pts[2]);

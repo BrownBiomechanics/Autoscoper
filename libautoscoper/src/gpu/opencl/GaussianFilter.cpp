@@ -1,22 +1,22 @@
 // ----------------------------------
 // Copyright (c) 2011, Brown University
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
 // met:
-// 
+//
 // (1) Redistributions of source code must retain the above copyright
 // notice, this list of conditions and the following disclaimer.
-// 
+//
 // (2) Redistributions in binary form must reproduce the above copyright
 // notice, this list of conditions and the following disclaimer in the
 // documentation and/or other materials provided with the distribution.
-// 
+//
 // (3) Neither the name of Brown University nor the names of its
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY BROWN UNIVERSITY “AS IS” WITH NO
 // WARRANTIES OR REPRESENTATIONS OF ANY KIND WHATSOEVER EITHER EXPRESS OR
 // IMPLIED, INCLUDING WITHOUT LIMITATION ANY WARRANTY OF DESIGN OR
@@ -64,7 +64,7 @@ GaussianFilter::GaussianFilter()
 	stringstream name_stream;
 	name_stream << "GaussianFilter" << (++num_gaussian_filters);
 	name_ = name_stream.str();
-	
+
 	set_radius(1);
 }
 
@@ -74,17 +74,17 @@ GaussianFilter::~GaussianFilter()
 }
 
 void GaussianFilter::set_radius(float radius)
-{ 
+{
 	if (radius < 0)
 		radius = 0;
 
 	/* filter is (filterSize_*filterSize_) pixels with each radius being 3
 	 * stdevs (3*radius_) of the Gaussian */
-		
+
 	radius_ = radius;
 	int filterRadius = 3*radius_;
 	filterSize_ = 2*filterRadius+1;
-	
+
 	if(filterSize_ == 1)
 		return;
 
@@ -102,7 +102,7 @@ void GaussianFilter::set_radius(float radius)
 			sum = sum + gaussian[i*filterSize_ +j];
 		}
 	}
-	
+
 	float temp = 0.0f;
 
 	/* normalize the filter */
@@ -113,12 +113,12 @@ void GaussianFilter::set_radius(float radius)
 			gaussian[i*filterSize_ + j] = temp / sum;
 		 }
 	}
-	
+
 	/* copies gaussian filter over to GPU */
 	if (gaussian_ != NULL) delete gaussian_;
 	gaussian_ = new Buffer(nBytes, CL_MEM_READ_ONLY);
 	gaussian_->read((void*)gaussian);
- 
+
 	delete[] gaussian;
 }
 

@@ -78,7 +78,7 @@ protected:
 private:
 	View * m_view;
 	CoordFrame * volume_matrix;
-	
+
 	// Default camera
 	CoordFrame defaultViewMatrix;
 

@@ -1,22 +1,22 @@
 // ----------------------------------
 // Copyright (c) 2011, Brown University
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
 // met:
-// 
+//
 // (1) Redistributions of source code must retain the above copyright
 // notice, this list of conditions and the following disclaimer.
-// 
+//
 // (2) Redistributions in binary form must reproduce the above copyright
 // notice, this list of conditions and the following disclaimer in the
 // documentation and/or other materials provided with the distribution.
-// 
+//
 // (3) Neither the name of Brown University nor the names of its
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY BROWN UNIVERSITY “AS IS” WITH NO
 // WARRANTIES OR REPRESENTATIONS OF ANY KIND WHATSOEVER EITHER EXPRESS OR
 // IMPLIED, INCLUDING WITHOUT LIMITATION ANY WARRANTY OF DESIGN OR
@@ -57,7 +57,7 @@ struct float3x4
 
 // Forward declarations
 
-__global__ 
+__global__
 void cuda_volume_render_kernel(float* output, size_t width, size_t height,
                                float step, float intensity, float cutoff);
 
@@ -81,7 +81,7 @@ void volume_bind_array(const cudaArray* array)
     tex.filterMode = cudaFilterModeLinear;
     tex.addressMode[0] = cudaAddressModeClamp;
     tex.addressMode[1] = cudaAddressModeClamp;
-    
+
     // Bind array to 3D texture.
     cutilSafeCall(cudaBindTextureToArray(tex, array));
 }
@@ -100,17 +100,17 @@ void volume_render(float* buffer, size_t width, size_t height,
     cutilSafeCall(cudaMemcpyToSymbol(d_invModelView,
                                      invModelView,
                                      sizeof(float3x4)));
-    
+
     // Calculate the block and grid sizes.
     dim3 blockDim(32, 32);
     dim3 gridDim((width+blockDim.x-1)/blockDim.x,
                  (height+blockDim.y-1)/blockDim.y);
-   
+
     // Call the kernel
     cuda_volume_render_kernel<<<gridDim, blockDim>>>(buffer, width, height,
                                                 step, intensity, cutoff);
-                                                
-    //This crashes it under windows                                            
+
+    //This crashes it under windows
     //cutilSafeCall(cudaThreadSynchronize());
     //cutilSafeCall(cudaGetLastError());
 }
@@ -167,7 +167,7 @@ float4 mul(const float3x4 &M, const float4 &v)
 }
 
 // Render the volume using ray marching.
-__global__ 
+__global__
 void cuda_volume_render_kernel(float* buffer, size_t width, size_t height,
                                float step, float intensity, float cutoff)
 {
@@ -177,7 +177,7 @@ void cuda_volume_render_kernel(float* buffer, size_t width, size_t height,
     if (x > width-1 || y > height-1) {
         return;
     }
-        
+
     // Calculate the normalized device coordinates using the viewport
     float u = d_viewport.x+d_viewport.z*(x/(float)width);
     float v = d_viewport.y+d_viewport.w*(y/(float)height);
@@ -199,10 +199,10 @@ void cuda_volume_render_kernel(float* buffer, size_t width, size_t height,
         buffer[y*width+x] = 0.0f;
         return;
     }
-    
+
     // Clamp to near plane.
 	if (_near < 0.0f) _near = 0.0f;
-   
+
     // Preform the ray marching from back to front.
     float t = _far;
     float density = 0.0f;

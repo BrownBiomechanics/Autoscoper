@@ -72,7 +72,7 @@ GLTracker::GLTracker(Tracker * tracker , QWidget *parent)
 }
 
 GLTracker::~GLTracker()
-{ 
+{
 	// delete shared_context;
 }
 
@@ -87,7 +87,7 @@ void GLTracker::initializeGL(){
 
 	std::cerr << "Initializing OpenGL..." << std::endl;
 
-	
+
     glDisable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.5,0.5,0.5,1.0);

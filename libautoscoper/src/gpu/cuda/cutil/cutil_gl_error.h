@@ -1,23 +1,23 @@
 /*
  * Copyright 1993-2010 NVIDIA Corporation.  All rights reserved.
  *
- * NVIDIA Corporation and its licensors retain all intellectual property and 
- * proprietary rights in and to this software and related documentation. 
- * Any use, reproduction, disclosure, or distribution of this software 
+ * NVIDIA Corporation and its licensors retain all intellectual property and
+ * proprietary rights in and to this software and related documentation.
+ * Any use, reproduction, disclosure, or distribution of this software
  * and related documentation without an express license agreement from
  * NVIDIA Corporation is strictly prohibited.
- * 
+ *
  */
- 
+
  /*
 * Copyright 1993-2010 NVIDIA Corporation.  All rights reserved.
 *
-* NVIDIA Corporation and its licensors retain all intellectual property and 
-* proprietary rights in and to this software and related documentation and 
-* any modifications thereto.  Any use, reproduction, disclosure, or distribution 
-* of this software and related documentation without an express license 
+* NVIDIA Corporation and its licensors retain all intellectual property and
+* proprietary rights in and to this software and related documentation and
+* any modifications thereto.  Any use, reproduction, disclosure, or distribution
+* of this software and related documentation without an express license
 * agreement from NVIDIA Corporation is strictly prohibited.
-* 
+*
 */
 
 #ifndef CUTIL_GL_ERROR
@@ -52,13 +52,13 @@
 //! @note This function should be used via the CHECK_ERROR_GL() macro
 ////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutCheckErrorGL( const char* file, const int line) 
+cutCheckErrorGL( const char* file, const int line)
 {
 	CUTBoolean ret_val = CUTTrue;
 
 	// check for error
 	GLenum gl_error = glGetError();
-	if (gl_error != GL_NO_ERROR) 
+	if (gl_error != GL_NO_ERROR)
 	{
 #ifdef _WIN32
 		char tmpStr[512];

@@ -45,16 +45,16 @@
 #include <QOpenGLWidget>
 
 // OpenGL error checking
-#if defined GLDEBUG  
+#if defined GLDEBUG
 #define CALL_GL(exp) do{ \
     exp; \
     if (glGetError() != GL_NO_ERROR) \
         cerr << "Error in OpenGL call at " \
 	         << __FILE__ << ':' << __LINE__ << endl; \
 }while(0)
-#else  
-#define CALL_GL(exp) exp  
-#endif  
+#else
+#define CALL_GL(exp) exp
+#endif
 
 struct ViewData
 {
@@ -92,19 +92,19 @@ public:
 
 public slots:
     //void animate();
-	
+
 
 protected:
 	void initializeGL();
 	void resizeGL(int w, int h);
 
 	ViewData viewdata;
-	
+
 	void update_viewport(ViewData* view);
 
 private:
 	int w,h;
-	
+
 };
 
 

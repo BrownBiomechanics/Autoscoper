@@ -93,7 +93,7 @@ void NewTrialDialog::on_toolButton_CameraMinus_clicked(){
 		diag->gridLayout_6->removeWidget(cameras[nbCams-1]);
 		delete cameras[nbCams-1];
 		cameras.pop_back();
-		
+
 		nbCams -= 1;
 		diag->label_CameraNb->setText(QString::number(nbCams));
 	}
@@ -113,13 +113,13 @@ void NewTrialDialog::on_toolButton_CameraPlus_clicked(){
 void NewTrialDialog::on_toolButton_VolumeMinus_clicked()
 {
 	if (nbCams >= 1 && nbVolumes!=0){
-        
+
 		diag->gridLayout_8->removeWidget(volumes[nbVolumes - 1]);
 		delete volumes[nbVolumes - 1];
 		volumes.pop_back();
 
         nbVolumes -= 1;
-        
+
 		diag->label_VolumeNb->setText(QString::number(nbVolumes));
 	}
 }
@@ -150,7 +150,7 @@ NewTrialDialog::run()
 
 	for(int i = 0; i < nbCams; i++){
 		if(!cameras[i]->widget->lineEdit_MayaCam->text().isEmpty()
-			&& !cameras[i]->widget->lineEdit_VideoPath->text().isEmpty()){	
+			&& !cameras[i]->widget->lineEdit_VideoPath->text().isEmpty()){
 			cameras_mayaCam.push_back(cameras[i]->widget->lineEdit_MayaCam->text());
 			cameras_videoPath.push_back(cameras[i]->widget->lineEdit_VideoPath->text());
 		}else{
@@ -164,7 +164,7 @@ NewTrialDialog::run()
 		for(int i = 0; i < nbCams; i++){
 			trial.cameras.push_back(xromm::Camera(cameras_mayaCam[i].toStdString().c_str()));
 			trial.videos.push_back(xromm::Video(cameras_videoPath[i].toStdString().c_str()));
-        
+
 			maxFrames = (maxFrames > trial.videos.at(i).num_frames()) ? maxFrames : trial.videos.at(i).num_frames() ;
 		}
 
@@ -179,7 +179,7 @@ NewTrialDialog::run()
 
 			if (volumes[i]->widget->lineEdit_ScaleX->text().isEmpty() ||
 				volumes[i]->widget->lineEdit_ScaleY->text().isEmpty() ||
-				volumes[i]->widget->lineEdit_ScaleZ->text().isEmpty()) 
+				volumes[i]->widget->lineEdit_ScaleZ->text().isEmpty())
 					continue;
 
 			double volume_scale_x = volumes[i]->widget->lineEdit_ScaleX->text().toDouble();
