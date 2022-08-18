@@ -73,7 +73,7 @@ void CameraTreeWidgetItem::init(){
 
 	ModelViewTreeWidgetItem* rad = new ModelViewTreeWidgetItem(0, &m_view->radFilters());
 	rad->addToCameraTreeWidgetItem(this->treeWidget(),this);
-	
+
 	ModelViewTreeWidgetItem* drr = new ModelViewTreeWidgetItem(1, &m_view->drrFilters());
 	drr->addToCameraTreeWidgetItem(this->treeWidget(),this);
 }
@@ -93,7 +93,7 @@ void CameraTreeWidgetItem::addToGrid(QTreeWidget * treewidget){
 
 CameraTreeWidgetItem::~CameraTreeWidgetItem()
 {
-} 
+}
 
 void CameraTreeWidgetItem::addModelView(ModelViewTreeWidgetItem* modelViewTtem){
 	modelViewTreeWidgets.push_back(modelViewTtem);

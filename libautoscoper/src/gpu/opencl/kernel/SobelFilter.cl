@@ -9,7 +9,7 @@ void sobel_filter_kernel(
 {
 	short x1 = get_global_id(0);
 	short y1 = get_global_id(1);
- 
+
 	if (x1 > width-1 || y1 > height-1) return;
 
 	short x0 = x1-1; if (x0 < 0) x0 = 0;
@@ -27,7 +27,7 @@ void sobel_filter_kernel(
 	float pix20 = input[y2*width+x0];
 	float pix21 = input[y2*width+x1];
 	float pix22 = input[y2*width+x2];
-	
+
 	float horz = pix02+2*pix12+pix22-pix00-2*pix10-pix20;
 	float vert = pix00+2*pix01+pix02-pix20-2*pix21-pix22;
 	float grad = sqrt(horz*horz+vert*vert);
@@ -45,7 +45,7 @@ void sobel_filter_kernel(
 	else if (sum > 1.0f) {
 		sum = 1.0f;
 	}
-	
+
 	output[y1*width+x1] = sum;
 }
 

@@ -64,7 +64,7 @@ class TrackingOptionsDialog : public QDialog{
 
 		Ui::TrackingOptionsDialog *diag;
 
-		
+
 		int frame, from_frame, to_frame, d_frame, skip_frame;
 		bool doExit;
 		bool frame_optimizing;
@@ -84,7 +84,7 @@ class TrackingOptionsDialog : public QDialog{
 		//void track();
 		//void retrack();
 		void trackCurrent();
-		
+
 		bool inActive;
 
 	public slots:

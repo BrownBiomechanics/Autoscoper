@@ -31,7 +31,7 @@ float ray_plane_intersect(const Ray& ray,
 {
     float num = dot(point-ray.origin,normal);
     float den = dot(ray.direction,normal);
-   
+
     if (abs(den) < std::numeric_limits<float>::epsilon()) {
         if (q != 0) {
             *q = point;
@@ -65,7 +65,7 @@ float ray_line_intersect(const Ray& ray,
     float dotvv = dot(v,v);
     float dotvw = dot(v,w);
     float den = dotuu*dotvv-dotuv*dotuv;
-    
+
     float t[2] = { 0.0f, 0.0f };
     if (den < std::numeric_limits<float>::epsilon()) {
         t[1] = dotuv > dotvv? dotuw/dotuv: dotvw/dotvv;
@@ -74,7 +74,7 @@ float ray_line_intersect(const Ray& ray,
         t[0] = (dotuv*dotvw-dotvv*dotuw)/den;
         t[1] = (dotuu*dotvw-dotuv*dotuw)/den;
     }
- 
+
     Vec3f q0 = ray.origin+t[0]*ray.direction;
     Vec3f q1 = p0+t[1]*(p1-p0);
 
@@ -104,7 +104,7 @@ float ray_segment_intersect(const Ray& ray,
     float dotvv = dot(v,v);
     float dotvw = dot(v,w);
     float den = dotuu*dotvv-dotuv*dotuv;
-    
+
     float t[2] = { 0.0f, 0.0f };
     if (den < std::numeric_limits<float>::epsilon()) {
         t[1] = dotuv > dotvv? dotuw/dotuv: dotvw/dotvv;
@@ -122,7 +122,7 @@ float ray_segment_intersect(const Ray& ray,
     if (t[1] > 1.0f) {
         t[1] = 1.0f;
     }
- 
+
     Vec3f q0 = ray.origin+t[0]*ray.direction;
     Vec3f q1 = p0+t[1]*(p1-p0);
 
@@ -157,7 +157,7 @@ float ray_circle_intersect(const Ray& ray,
 
         Vec3f p0 = center+radius*(cos(theta0)*u+sin(theta0)*v);
         Vec3f p1 = center+radius*(cos(theta1)*u+sin(theta1)*v);
-    
+
         float dist = ray_segment_intersect(ray,p0,p1,&q0,&q1);
         if (dist < min_dist) {
             min_dist = dist;

@@ -1,22 +1,22 @@
 // ----------------------------------
 // Copyright (c) 2011, Brown University
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
 // met:
-// 
+//
 // (1) Redistributions of source code must retain the above copyright
 // notice, this list of conditions and the following disclaimer.
-// 
+//
 // (2) Redistributions in binary form must reproduce the above copyright
 // notice, this list of conditions and the following disclaimer in the
 // documentation and/or other materials provided with the distribution.
-// 
+//
 // (3) Neither the name of Brown University nor the names of its
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY BROWN UNIVERSITY “AS IS” WITH NO
 // WARRANTIES OR REPRESENTATIONS OF ANY KIND WHATSOEVER EITHER EXPRESS OR
 // IMPLIED, INCLUDING WITHOUT LIMITATION ANY WARRANTY OF DESIGN OR
@@ -64,12 +64,12 @@ RadRenderer::RadRenderer() : image_(0)
     image_plane_[1] = -1.0f;
     image_plane_[2] =  2.0f;
     image_plane_[3] =  2.0f;
-    
+
     viewport_[0] = -1.0f;
     viewport_[1] = -1.0f;
     viewport_[2] =  2.0f;
     viewport_[3] =  2.0f;
-    
+
     stringstream name_stream;
     name_stream << "RadRenderer" << (++num_rad_renderers);
     name_ = name_stream.str();
@@ -140,7 +140,7 @@ RadRenderer::render(const Buffer* buffer, unsigned width, unsigned height) const
     // Calculate the block and grid sizes.
 	kernel->block2d(BX, BY);
     kernel->grid2d((width+BX-1)/BX, (height+BY-1)/BY);
-    
+
 	kernel->launch();
 
 	delete kernel;

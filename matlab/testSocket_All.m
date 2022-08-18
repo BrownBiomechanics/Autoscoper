@@ -19,15 +19,15 @@ setBackground(autoscoper_socket,0.3);
 for frame=1:10
     %set frame
     setFrame(autoscoper_socket,frame);
-    
+
     %get pose for the frame
     pose = getPose(autoscoper_socket,volume,frame)
-    
+
     %%%%%%%%%%% Start Optimization
         %run optimizer here and repeatidly get the ncc
     ncc = getNCC(autoscoper_socket,volume,pose)
     %%%%%%%%%%%End Optimization
-             
+
     %At the end set the best pose
     setPose(autoscoper_socket,volume,frame,pose);
 end

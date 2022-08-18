@@ -149,10 +149,10 @@ void ModelViewTreeWidgetItem::loadFilters(std::ifstream & file){
 
 	//Delete all Filters
 	for(int i = childCount() - 1; i >= 0 ; i --){
-		FilterTreeWidgetItem * filterItem = dynamic_cast<FilterTreeWidgetItem*> (child(i)); 
+		FilterTreeWidgetItem * filterItem = dynamic_cast<FilterTreeWidgetItem*> (child(i));
 		if(filterItem){
 			removeFilter(filterItem);
-			delete filterItem;	
+			delete filterItem;
 		}
 	}
 
@@ -180,7 +180,7 @@ void ModelViewTreeWidgetItem::loadFilters(std::ifstream & file){
 			filter->load(file);
 		}
 	}
-	
+
 }
 
 
@@ -204,7 +204,7 @@ ModelViewTreeWidgetItem::~ModelViewTreeWidgetItem()
 		delete parameters[i];
 	}
 	parameters.clear();
-} 
+}
 
 void ModelViewTreeWidgetItem::addToCameraTreeWidgetItem(QTreeWidget * treewidget, CameraTreeWidgetItem * cameraWidget){
 	QFrame * pFrame = new QFrame(treewidget);
@@ -273,7 +273,7 @@ void ModelViewTreeWidgetItem::settingsButtonClicked(){
 		icon.addFile(QString::fromUtf8(":/images/resource-files/icons/settings.png"), QSize(), QIcon::Normal, QIcon::Off);
 		settingsButton->setIcon(icon);
 	}
-	
+
 
 	this->treeWidget()->doItemsLayout();
 	this->treeWidget()->repaint();
@@ -337,7 +337,7 @@ void ModelViewTreeWidgetItem::on_visibleCheckBox_stateChanged ( int state ){
 		}else{
 			((CameraTreeWidgetItem*) QTreeWidgetItem::parent())->getView()->drr_enabled = false;
 		}
-		
+
 	}else{
 		if(m_type == 0){
 			((CameraTreeWidgetItem*) QTreeWidgetItem::parent())->getView()->rad_enabled = true;

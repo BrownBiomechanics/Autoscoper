@@ -131,9 +131,9 @@ void TrackingOptionsDialog::frame_optimize()
 
 		// Set optimization parameters (SEND THEM TO TRACKER CLASS)
 		/*
-		cf_model = 
-		
-		
+		cf_model =
+
+
 		*/
 
 		// Optimization
@@ -142,9 +142,9 @@ void TrackingOptionsDialog::frame_optimize()
           mainwindow->update_graph_min_max(mainwindow->getPosition_graph(), mainwindow->getTracker()->trial()->frame);
 
 		  mainwindow->setFrame(mainwindow->getTracker()->trial()->frame);
-		 
+
          //update progress bar
-		  
+
          double value = abs(to_frame-from_frame) > 0 ? abs(frame-from_frame)/ abs(to_frame-from_frame) : 0;
 		 int progress = value *100;
 		 diag->progressBar->setValue(progress);
@@ -155,7 +155,7 @@ void TrackingOptionsDialog::frame_optimize()
 
 		 QApplication::processEvents();
     }
-   
+
 	frame_optimizing = false;
 	QApplication::processEvents();
 	diag->progressBar->setValue(0);

@@ -273,9 +273,9 @@ void Tracker::load(const Trial& trial)
 
     gpu::ncc_init(npixels);
 	#ifdef WITH_CUDA // trying another cost function (Housdorff)
-		gpu::hdist_init(npixels); 
+		gpu::hdist_init(npixels);
 	#endif
-	
+
     for (unsigned int i = 0; i < trial_.cameras.size(); ++i) {
 
         Camera& camera = trial_.cameras.at(i);
@@ -659,7 +659,7 @@ double Tracker::minimizationFunc(const double* values) const
 		(*(const_cast<Trial&>(trial_)).getYawCurve(-1))(trial_.frame),
 		(*(const_cast<Trial&>(trial_)).getPitchCurve(-1))(trial_.frame),
 		(*(const_cast<Trial&>(trial_)).getRollCurve(-1))(trial_.frame) };
-    CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr); 
+    CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
 
 	CoordFrame manip = CoordFrame::from_xyzAxis_angle(values);
@@ -737,7 +737,7 @@ std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned cam
         viewport[1] = -views_[camera]->camera()->viewport()[3]/2;
         viewport[2] = views_[camera]->camera()->viewport()[2];
         viewport[3] = views_[camera]->camera()->viewport()[3];
-    
+
 		// Calculate the size of the image to render
 		unsigned render_width = viewport[2] * trial_.render_width / views_[camera]->camera()->viewport()[2];
 		unsigned render_height = viewport[3] * trial_.render_height / views_[camera]->camera()->viewport()[3];
@@ -831,7 +831,7 @@ void Tracker::getFullDRR(unsigned int volumeID) const
         (*(const_cast<Trial&>(trial_)).getYawCurve(-1))(trial_.frame),
         (*(const_cast<Trial&>(trial_)).getPitchCurve(-1))(trial_.frame),
         (*(const_cast<Trial&>(trial_)).getRollCurve(-1))(trial_.frame) };
-    
+
 	CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
 	for (unsigned int i = 0; i < views_.size(); ++i) {
@@ -849,7 +849,7 @@ void Tracker::getFullDRR(unsigned int volumeID) const
 		viewport[1] = -views_[i]->camera()->viewport()[3]/2;
 		viewport[2] = views_[i]->camera()->viewport()[2];
 		viewport[3] = views_[i]->camera()->viewport()[3];
-         
+
 		// Calculate the size of the image to render
 		unsigned render_width = viewport[2] * trial_.render_width / views_[i]->camera()->viewport()[2];
 		unsigned render_height = viewport[3] * trial_.render_height / views_[i]->camera()->viewport()[3];

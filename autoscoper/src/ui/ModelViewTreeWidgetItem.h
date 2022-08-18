@@ -45,7 +45,7 @@
 #define MODELVIEWTREEWIDGETITEM_H
 
 #include <QTreeWidgetItem>
-#include "ui/FilterTreeWidget.h" 
+#include "ui/FilterTreeWidget.h"
 #include <QObject>
 
 class CameraTreeWidgetItem;
@@ -73,7 +73,7 @@ public:
 	void setName(QString _name){name = _name;}
 	int getType(){return m_type;}
 
-	std::vector<FilterTreeWidgetParameter * >* getParameters(){return &parameters;} 
+	std::vector<FilterTreeWidgetParameter * >* getParameters(){return &parameters;}
 	void addToCameraTreeWidgetItem(QTreeWidget * treewidget, CameraTreeWidgetItem * cameraWidget);
 
 	void addFilter(FilterTreeWidgetItem* filterItem, bool addToTree = true);
@@ -95,7 +95,7 @@ private:
 	QFrame *pFrameSettings;
 	QToolButton* settingsButton;
 	QCheckBox* visibleCheckBox;
-		
+
 	std::vector <FilterTreeWidgetItem *> filterTreeWidgets;
 	std::vector<Filter*>* m_filters;
 	int m_type;

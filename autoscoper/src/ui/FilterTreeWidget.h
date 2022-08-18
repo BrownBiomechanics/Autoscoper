@@ -74,12 +74,12 @@ class FilterTreeWidget : public QTreeWidget{
 		void printTree();
 		void resetFilterTree();
 
-		QTreeWidgetItem* item_contextMenu; 
-		
+		QTreeWidgetItem* item_contextMenu;
+
 		//CameraView Actions
 		QAction * action_LoadSettings;
 		QAction * action_SaveSettings;
-		
+
 		//ModelView Actions
 		QAction * action_AddSobelFilter;
 		QAction * action_AddContrastFilter;

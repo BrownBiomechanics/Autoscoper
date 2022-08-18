@@ -61,7 +61,7 @@ class FilterTreeWidgetParameter : public QObject{
 		QDoubleSpinBox * spinbox;
 
 	private:
-		
+
 	protected:
 
 	public slots:

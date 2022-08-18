@@ -1,22 +1,22 @@
 // ----------------------------------
 // Copyright (c) 2011, Brown University
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
 // met:
-// 
+//
 // (1) Redistributions of source code must retain the above copyright
 // notice, this list of conditions and the following disclaimer.
-// 
+//
 // (2) Redistributions in binary form must reproduce the above copyright
 // notice, this list of conditions and the following disclaimer in the
 // documentation and/or other materials provided with the distribution.
-// 
+//
 // (3) Neither the name of Brown University nor the names of its
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY BROWN UNIVERSITY “AS IS” WITH NO
 // WARRANTIES OR REPRESENTATIONS OF ANY KIND WHATSOEVER EITHER EXPRESS OR
 // IMPLIED, INCLUDING WITHOUT LIMITATION ANY WARRANTY OF DESIGN OR
@@ -115,9 +115,9 @@ RayCaster::setInvModelView(const double* invModelView)
                         invModelView[14]*invTrans[2];
     invModelView_[11] = invModelView[11]*invScale[2]+
                         invModelView[15]*invTrans[2];
-    invModelView_[12] = invModelView[12]; 
-    invModelView_[13] = invModelView[13]; 
-    invModelView_[14] = invModelView[14]; 
+    invModelView_[12] = invModelView[12];
+    invModelView_[13] = invModelView[13];
+    invModelView_[14] = invModelView[14];
     invModelView_[15] = invModelView[15];
 }
 
@@ -137,14 +137,14 @@ RayCaster::render(float* buffer, size_t width, size_t height)
         cerr << "RayCaster: WARNING: No volume loaded. " << endl;
         return;
     }
-  
+
     //float aspectRatio = (float)width/(float)height;
     volume_bind_array(volumeDescription_->image());
     volume_viewport(viewport_[0], viewport_[1], viewport_[2], viewport_[3]);
     volume_render(buffer,
                   width,
                   height,
-                  invModelView_, 
+                  invModelView_,
                   sampleDistance_,
                   rayIntensity_,
                   cutoff_);
@@ -157,7 +157,7 @@ RayCaster::load(const Volume<T>& volume)
 {
     // Crop the volume
     int min[3] = { volume.width(), volume.height(), volume.depth() };
-    int max[3] = { 0 }; 
+    int max[3] = { 0 };
     const T* dp1 = volume.data();
     for (int k = 0; k < volume.depth(); k++) {
         bool nonZeroCol = false;
@@ -195,7 +195,7 @@ RayCaster::load(const Volume<T>& volume)
     }
 
     // The volume is empty
-    if (min[0] > max[0] || min[1] > max[1] || min[2] > max[2]) { 
+    if (min[0] > max[0] || min[1] > max[1] || min[2] > max[2]) {
         std::cerr << "Empty Volume" << std::endl;
         return false;
     }
@@ -203,16 +203,16 @@ RayCaster::load(const Volume<T>& volume)
     // Copy to the cropped volume
     int dim[3] = { max[0]-min[0]+1, max[1]-min[1]+1, max[2]-min[2]+1 };
     T* data = new T[dim[0]*dim[1]*dim[2]];
-    T* dp2 = data; 
+    T* dp2 = data;
     for (int k = min[2]; k < max[2]+1; k++) {
         for (int i = min[1]; i < max[1]+1; i++) {
             for (int j = min[0]; j < max[0]+1; j++) {
                 *dp2++ = volume.data()[k*volume.width()*volume.height()+
-                                       i*volume.width()+j];            
+                                       i*volume.width()+j];
             }
         }
     }
-  
+
     // Calculate the offset and size of the sub-volume
     invScale_[0] = 1.0f/(float)(volume.scaleX()*dim[0]);
     invScale_[1] = 1.0f/(float)(volume.scaleY()*dim[1]);
@@ -224,7 +224,7 @@ RayCaster::load(const Volume<T>& volume)
 
     // Free any previously allocated memory.
     cutilSafeCall(cudaFreeArray(array_));
-    
+
     // Create a 3D array.
     cudaChannelFormatDesc desc = cudaCreateChannelDesc<T>();
     cudaExtent extent = make_cudaExtent(dim[0], dim[1], dim[2]);
@@ -238,7 +238,7 @@ RayCaster::load(const Volume<T>& volume)
     copyParams.dstArray = array_;
     copyParams.extent = extent;
     copyParams.kind = cudaMemcpyHostToDevice;
-    cutilSafeCall(cudaMemcpy3D(&copyParams));  
+    cutilSafeCall(cudaMemcpy3D(&copyParams));
 
     return true;
 }

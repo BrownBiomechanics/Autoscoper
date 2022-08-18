@@ -79,7 +79,7 @@ class TimelineDockWidget : public QDockWidget{
 	public:
 		explicit TimelineDockWidget(QWidget *parent = 0);
 		~TimelineDockWidget();
-		
+
 		void setFramesRange(int firstFrame, int lastFrame );
 		GraphData* getPosition_graph(){return position_graph;}
 		AutoscoperMainWindow * getMainWindow(){return mainwindow;};

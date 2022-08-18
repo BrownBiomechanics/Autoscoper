@@ -118,7 +118,7 @@ View::~View()
     cutilSafeCall(cudaFree(radBuffer_));
     cutilSafeCall(cudaFree(radFilterBuffer_));
 	cutilSafeCall(cudaFree(backgroundmask_));
-	cutilSafeCall(cudaFree(drr_mask_));	
+	cutilSafeCall(cudaFree(drr_mask_));
 #else
     delete filterBuffer_;
 	for (int i = 0; i < drrBuffer_.size(); i++){
@@ -192,10 +192,10 @@ View::renderBackground(Buffer* buffer, unsigned width, unsigned height)
 	}
 
 	backgroundRenderer_->render(buffer, width, height, backgroundThreshold_);
-	
+
 #else
 	backgroundRenderer_->render(buffer, width, height, backgroundThreshold_);
-#endif 
+#endif
 }
 
 void View::renderDRRMask(Buffer* in_buffer, Buffer* out_buffer, unsigned width, unsigned height)
@@ -280,7 +280,7 @@ View::renderDrr(unsigned int pbo, unsigned width, unsigned height)
 
 	gpu::fill(backgroundmask_, maxWidth_*maxHeight_, 1.0f);
 	gpu::fill(drr_mask_, maxWidth_*maxHeight_, 1.0f);
-	
+
     gpu::composite(drrFilterBuffer_,
                     drrFilterBuffer_,
 					backgroundmask_,

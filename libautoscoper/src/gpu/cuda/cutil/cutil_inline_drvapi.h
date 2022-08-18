@@ -1,14 +1,14 @@
 /*
  * Copyright 1993-2010 NVIDIA Corporation.  All rights reserved.
  *
- * NVIDIA Corporation and its licensors retain all intellectual property and 
- * proprietary rights in and to this software and related documentation. 
- * Any use, reproduction, disclosure, or distribution of this software 
+ * NVIDIA Corporation and its licensors retain all intellectual property and
+ * proprietary rights in and to this software and related documentation.
+ * Any use, reproduction, disclosure, or distribution of this software
  * and related documentation without an express license agreement from
  * NVIDIA Corporation is strictly prohibited.
- * 
+ *
  */
- 
+
  #ifndef _CUTIL_INLINE_FUNCTIONS_DRVAPI_H_
 #define _CUTIL_INLINE_FUNCTIONS_DRVAPI_H_
 
@@ -52,11 +52,11 @@ inline int cutilDrvGetMaxGflopsDeviceId()
     // Find the best CUDA capable GPU device
 	current_device = 0;
 	while( current_device < device_count ) {
-		CU_SAFE_CALL_NO_SYNC( cuDeviceGetAttribute( &multiProcessorCount, 
-			                                        CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT, 
+		CU_SAFE_CALL_NO_SYNC( cuDeviceGetAttribute( &multiProcessorCount,
+			                                        CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT,
 													current_device ) );
-		CU_SAFE_CALL_NO_SYNC( cuDeviceGetAttribute( &clockRate, 
-			                                        CU_DEVICE_ATTRIBUTE_CLOCK_RATE, 
+		CU_SAFE_CALL_NO_SYNC( cuDeviceGetAttribute( &clockRate,
+			                                        CU_DEVICE_ATTRIBUTE_CLOCK_RATE,
 													current_device ) );
 
 		if (major == 9999 && minor == 9999) {
@@ -72,7 +72,7 @@ inline int cutilDrvGetMaxGflopsDeviceId()
             // If we find GPU with SM major > 2, search only these
 			if ( best_SM_arch > 2 ) {
 				// If our device==dest_SM_arch, choose this, or else pass
-				if (major == best_SM_arch) {	
+				if (major == best_SM_arch) {
 					max_compute_perf  = compute_perf;
 					max_perf_device   = current_device;
 				}
@@ -123,9 +123,9 @@ inline void __cuCheckMsg( const char * msg, const char *file, const int line )
 
 
 #if __DEVICE_EMULATION__
-    inline void cutilDeviceInitDrv(int cuDevice, int ARGC, char **ARGV) { } 
+    inline void cutilDeviceInitDrv(int cuDevice, int ARGC, char **ARGV) { }
 #else
-    inline void cutilDeviceInitDrv(int cuDevice, int ARGC, char ** ARGV) 
+    inline void cutilDeviceInitDrv(int cuDevice, int ARGC, char ** ARGV)
     {
         cuDevice = 0;
         int deviceCount = 0;
@@ -149,7 +149,7 @@ inline void __cuCheckMsg( const char * msg, const char *file, const int line )
 #endif
 
 //! Check for CUDA context lost
-inline void cutilDrvCudaCheckCtxLost(const char *errorMessage, const char *file, const int line ) 
+inline void cutilDrvCudaCheckCtxLost(const char *errorMessage, const char *file, const int line )
 {
     CUresult err = cuCtxSynchronize();
     if( CUDA_ERROR_INVALID_CONTEXT != err) {
@@ -162,7 +162,7 @@ inline void cutilDrvCudaCheckCtxLost(const char *errorMessage, const char *file,
         fprintf(stderr, "Cuda error: %s in file '%s' in line %i\n",
                 errorMessage, file, line );
         exit(-1);
-    } 
+    }
 }
 
 // General check for CUDA GPU SM Capabilities for a specific device #
@@ -177,7 +177,7 @@ inline bool cutilDrvCudaDevCapabilities(int major_version, int minor_version, in
 
     cutilDrvSafeCallNoSync( cuDeviceGet(&dev, deviceNum) );
     cutilDrvSafeCallNoSync( cuDeviceComputeCapability(&major, &minor, dev));
-    cutilDrvSafeCallNoSync( cuDeviceGetName(device_name, 256, dev) ); 
+    cutilDrvSafeCallNoSync( cuDeviceGetName(device_name, 256, dev) );
 
     if((major > major_version) ||
 	   (major == major_version && minor >= minor_version))

@@ -48,7 +48,7 @@
 
 namespace xromm {
 	class Trial;
-	
+
 }
 using xromm::Trial;
 class KeyCurve;

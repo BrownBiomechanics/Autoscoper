@@ -1,14 +1,14 @@
 /*
  * Copyright 1993-2010 NVIDIA Corporation.  All rights reserved.
  *
- * NVIDIA Corporation and its licensors retain all intellectual property and 
- * proprietary rights in and to this software and related documentation. 
- * Any use, reproduction, disclosure, or distribution of this software 
+ * NVIDIA Corporation and its licensors retain all intellectual property and
+ * proprietary rights in and to this software and related documentation.
+ * Any use, reproduction, disclosure, or distribution of this software
  * and related documentation without an express license agreement from
  * NVIDIA Corporation is strictly prohibited.
- * 
+ *
  */
- 
+
  #ifndef _CUTIL_GL_INLINE_H_
 #define _CUTIL_GL_INLINE_H_
 
@@ -25,7 +25,7 @@
 
 #if __DEVICE_EMULATION__
     inline void cutilGLDeviceInit(int ARGC, char **ARGV) { }
-    inline void cutilGLDeviceInitDrv(int cuDevice, int ARGC, char **ARGV) { } 
+    inline void cutilGLDeviceInitDrv(int cuDevice, int ARGC, char **ARGV) { }
     inline void cutilChooseCudaGLDevice(int ARGC, char **ARGV) { }
 #else
     inline void cutilGLDeviceInit(int ARGC, char **ARGV)
@@ -51,7 +51,7 @@
         cutilSafeCall(cudaGLSetGLDevice(dev));
     }
 
-    inline void cutilGLDeviceInitDrv(int cuDevice, int ARGC, char ** ARGV) 
+    inline void cutilGLDeviceInitDrv(int cuDevice, int ARGC, char ** ARGV)
     {
         cuDevice = 0;
         int deviceCount = 0;

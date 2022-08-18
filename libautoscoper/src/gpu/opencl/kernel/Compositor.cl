@@ -12,7 +12,7 @@ void composite_kernel(__global const float* src1,
 
     if (x > width-1 || y > height-1) return;
 
-	const uint xy = y*width + x;	
+	const uint xy = y*width + x;
 
 	float multi = (src3[xy] < 0.5f) ? 0.0f : 1.0f;
 

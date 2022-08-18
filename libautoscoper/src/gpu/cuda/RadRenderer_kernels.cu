@@ -1,22 +1,22 @@
 // ----------------------------------
 // Copyright (c) 2011, Brown University
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
 // met:
-// 
+//
 // (1) Redistributions of source code must retain the above copyright
 // notice, this list of conditions and the following disclaimer.
-// 
+//
 // (2) Redistributions in binary form must reproduce the above copyright
 // notice, this list of conditions and the following disclaimer in the
 // documentation and/or other materials provided with the distribution.
-// 
+//
 // (3) Neither the name of Brown University nor the names of its
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY BROWN UNIVERSITY “AS IS” WITH NO
 // WARRANTIES OR REPRESENTATIONS OF ANY KIND WHATSOEVER EITHER EXPRESS OR
 // IMPLIED, INCLUDING WITHOUT LIMITATION ANY WARRANTY OF DESIGN OR
@@ -49,7 +49,7 @@ static texture<unsigned char, 2, cudaReadModeNormalizedFloat> tex;
 
 //////// Image Rendering Kernel ////////
 
-__global__ 
+__global__
 void image_render_kernel(float* output, int width, int height, float u0,
                          float v0, float u1, float v1, float u2, float v2,
                          float u3, float v3);
@@ -67,7 +67,7 @@ void video_bind_array(const cudaArray* array)
     tex.filterMode = cudaFilterModeLinear;
     tex.addressMode[0] = cudaAddressModeClamp;
     tex.addressMode[1] = cudaAddressModeClamp;
-    
+
     // Bind array to 3D texture.
     cutilSafeCall(cudaBindTextureToArray(tex, array));
 }
@@ -88,7 +88,7 @@ void video_render(float* output, int width, int height, float u0,
     dim3 blockDim(32, 32);
     dim3 gridDim((width+blockDim.x-1)/blockDim.x,
                  (height+blockDim.y-1)/blockDim.y);
-    
+
     image_render_kernel<<<gridDim, blockDim>>>(output, width, height,
                                                u0, v0, u1, v1, u2, v2,
                                                u3, v3);
@@ -98,7 +98,7 @@ void video_render(float* output, int width, int height, float u0,
 
 } // namespace xromm
 
-__global__ 
+__global__
 void image_render_kernel(float* output, int width, int height, float u0,
                          float v0, float u1, float v1, float u2, float v2,
                          float u3, float v3)

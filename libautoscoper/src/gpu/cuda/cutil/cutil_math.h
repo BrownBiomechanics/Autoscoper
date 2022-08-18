@@ -1,12 +1,12 @@
     /*
  * Copyright 1993-2010 NVIDIA Corporation.  All rights reserved.
  *
- * NVIDIA Corporation and its licensors retain all intellectual property and 
- * proprietary rights in and to this software and related documentation. 
- * Any use, reproduction, disclosure, or distribution of this software 
+ * NVIDIA Corporation and its licensors retain all intellectual property and
+ * proprietary rights in and to this software and related documentation.
+ * Any use, reproduction, disclosure, or distribution of this software
  * and related documentation without an express license agreement from
  * NVIDIA Corporation is strictly prohibited.
- * 
+ *
  */
 
 /*
@@ -232,7 +232,7 @@ inline __device__ __host__ float2 clamp(float2 v, float2 a, float2 b)
 
 // dot product
 inline __host__ __device__ float dot(float2 a, float2 b)
-{ 
+{
     return a.x * b.x + a.y * b.y;
 }
 
@@ -396,14 +396,14 @@ inline __device__ __host__ float3 clamp(float3 v, float3 a, float3 b)
 
 // dot product
 inline __host__ __device__ float dot(float3 a, float3 b)
-{ 
+{
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
 // cross product
 inline __host__ __device__ float3 cross(float3 a, float3 b)
-{ 
-    return make_float3(a.y*b.z - a.z*b.y, a.z*b.x - a.x*b.z, a.x*b.y - a.y*b.x); 
+{
+    return make_float3(a.y*b.z - a.z*b.y, a.z*b.x - a.x*b.z, a.x*b.y - a.y*b.x);
 }
 
 // length
@@ -550,7 +550,7 @@ inline __device__ __host__ float4 clamp(float4 v, float4 a, float4 b)
 
 // dot product
 inline __host__ __device__ float dot(float4 a, float4 b)
-{ 
+{
     return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
 }
 

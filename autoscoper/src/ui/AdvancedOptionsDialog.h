@@ -61,7 +61,7 @@ class AdvancedOptionsDialog : public QDialog{
 
 		Ui::AdvancedOptionsDialog *adv_diag;
 
-		
+
 		int frame, from_frame, to_frame, d_frame, skip_frame;
 		bool doExit;
 
@@ -82,7 +82,7 @@ class AdvancedOptionsDialog : public QDialog{
 
 		void setDefPaths(QString root_path, QString filter_folder, QString filter_name, QString tracking_folder, QString task_name);
 
-		//void loadFilters(bool checked, int camera, std::string filter_path);		
+		//void loadFilters(bool checked, int camera, std::string filter_path);
 
 };
 

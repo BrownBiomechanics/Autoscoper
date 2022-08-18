@@ -113,7 +113,7 @@ void GLTimeline::mouse_to_graph(double mouse_x,
                double& graph_y)
 {
 	TimelineDockWidget * timelineDockWidget = dynamic_cast <TimelineDockWidget *> ( this->parent()->parent());
-		
+
 	double frame_offset = 48.0*(timelineDockWidget->getPosition_graph()->max_frame-
                                 timelineDockWidget->getPosition_graph()->min_frame)/
                                 viewdata.viewport_width;
@@ -138,7 +138,7 @@ void GLTimeline::mouse_to_graph(double mouse_x,
 void GLTimeline::mousePressEvent(QMouseEvent *e){
 	TimelineDockWidget * timelineDockWidget = dynamic_cast <TimelineDockWidget *> ( this->parent()->parent());
 	AutoscoperMainWindow * mainwindow = timelineDockWidget->getMainWindow();
-	
+
 	// Only respond to left button click
     if (e->button() &  Qt::LeftButton)  {
 
@@ -167,7 +167,7 @@ void GLTimeline::mousePressEvent(QMouseEvent *e){
 void GLTimeline::mouseMoveEvent(QMouseEvent *e){
 	TimelineDockWidget * timelineDockWidget = dynamic_cast <TimelineDockWidget *> ( this->parent()->parent());
 	AutoscoperMainWindow * mainwindow = timelineDockWidget->getMainWindow();
-	
+
 	if (e->buttons() &  Qt::LeftButton)  {
         if (modify_nodes) {
             double x, y;
@@ -389,7 +389,7 @@ void GLTimeline::paintGL()
 							  (double)viewdata.viewport_width;
 		double min_frame = m_position_graph->min_frame-frame_offset;
 		double max_frame = m_position_graph->max_frame-1.0;
-    
+
         // Calculate how much space needs to be left on the bottom and top of the
         // graph in order to accomodate the labels.
 		float value_offset = (float)12.0*(m_position_graph->max_value-m_position_graph->min_value)/
@@ -427,7 +427,7 @@ void GLTimeline::paintGL()
 		// value_dist distances. Those distances are calculated each time this
 		// fucntion is called and are based on the size of the window.
 		glColor3f(0.75f,0.75f,0.75f);
-        
+
 		// This section visualizes the x-axis grid lines (vertical grid lines)
 		glBegin(GL_LINES);
 		for (double x = m_position_graph->min_frame; x <= max_frame; x += frame_dist) {
@@ -442,7 +442,7 @@ void GLTimeline::paintGL()
         //double grid_size = (max_value - min_value)/5;
         double mid_point = round_this((min_value + max_value + value_offset - value_offset)/2);
         std::vector<float> y_values;
-        
+
         y_values.push_back(round_this(min_value+value_offset));
         y_values.push_back(round_this((mid_point+min_value+value_offset)/2));
         //y_values.push_back(round_this(mid_point));
@@ -452,7 +452,7 @@ void GLTimeline::paintGL()
         y_values.push_back(round_this(y_values.at(3) + y_values.at(2) - y_values.at(1)));
         //y_values.push_back(round_this((mid_point+max_value-value_offset_top)/2));
         //y_values.push_back(round_this(max_value-value_offset_top));
-        
+
 		glBegin(GL_LINES);
 		for (int counter = 0; counter < y_values.size(); counter++) {
 			glVertex2d(min_frame,y_values.at(counter));
@@ -474,12 +474,12 @@ void GLTimeline::paintGL()
 		glVertex2d(0.0,max_value);
 		glEnd();
 
-        
+
         // Draw grid labels.
         double char_width = (double)viewdata.viewport_width / (m_position_graph->max_frame - m_position_graph->min_frame + frame_offset);
         double char_height = (double)viewdata.viewport_height / (max_value - min_value);
-        
-        
+
+
         glLineWidth(1.5);
 		glColor3f(0.0f,0.0f,0.0f);
 		// This section visualizes the x-axis values
@@ -488,7 +488,7 @@ void GLTimeline::paintGL()
 			render_bitmap_string((x + frame_offset)* char_width, (double)viewdata.viewport_height - 2,
 								 ss.str().c_str());
 		}
-        
+
 
         double diff = 0;
         for (int counter = 0; counter < y_values.size(); counter++) {
@@ -503,7 +503,7 @@ void GLTimeline::paintGL()
                 (double)viewdata.viewport_height - diff * counter * char_height - 6,  ss.str().c_str());
             }
         }
-        
+
 		// This section visualizes the y-axis values
 		/*for (double y = mid_point; y < max_value; y += value_offset) {
 			std::stringstream ss; ss << (int)(y+0.5);
@@ -602,7 +602,7 @@ void GLTimeline::paintGL()
 		float tan_scale = 40.0f*(max_frame+1-min_frame)/viewdata.viewport_width;
 
 		TimelineDockWidget * timelineDockWidget = dynamic_cast <TimelineDockWidget *> ( this->parent()->parent());
-	
+
 		for (unsigned i = 0; i < timelineDockWidget->getSelectedNodes()->size(); i++) {
 			KeyCurve& curve = *(*timelineDockWidget->getSelectedNodes())[i].first.first;
 			KeyCurve::iterator it = (*timelineDockWidget->getSelectedNodes())[i].first.second;

@@ -1,22 +1,22 @@
 // ----------------------------------
 // Copyright (c) 2011, Brown University
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provideId that the following conditions are
 // met:
-// 
+//
 // (1) Redistributions of source code must retain the above copyright
 // notice, this list of conditions and the following disclaimer.
-// 
+//
 // (2) Redistributions in binary form must reproduce the above copyright
 // notice, this list of conditions and the following disclaimer in the
 // documentation and/or other materials provided with the distribution.
-// 
+//
 // (3) Neither the name of Brown University nor the names of its
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY BROWN UNIVERSITY “AS IS” WITH NO
 // WARRANTIES OR REPRESENTATIONS OF ANY KIND WHATSOEVER EITHER EXPRESS OR
 // IMPLIED, INCLUDING WITHOUT LIMITATION ANY WARRANTY OF DESIGN OR
@@ -79,14 +79,14 @@ SharpenFilter::~SharpenFilter()
 }
 
 void SharpenFilter::set_radius(float radius)
-{ 
+{
     if (radius < 0)
         radius = 0;
 
     radius_ = radius;
-    
+
     makeFilter();
-   
+
 }
 
 void SharpenFilter::set_contrast(float contrast)
@@ -108,7 +108,7 @@ void SharpenFilter::makeFilter() //makes a Gaussian blur filter (filterSize*filt
 
     int filterRadius= 3*radius_;
     filterSize_ = 2*filterRadius + 1;
-    
+
     if(filterSize_ == 1)
         return;
 
@@ -122,7 +122,7 @@ void SharpenFilter::makeFilter() //makes a Gaussian blur filter (filterSize*filt
             sum = sum +  sharpen[i*filterSize_ +j];
         }
     }
-    
+
     float temp = 0.0f;
 
 //normalize the filter
@@ -139,10 +139,10 @@ void SharpenFilter::makeFilter() //makes a Gaussian blur filter (filterSize*filt
     float * sharpenGPU;
     cudaMalloc(&sharpenGPU, sizeof(float )*(filterSize_*filterSize_));
     cudaMemcpy(sharpenGPU, sharpen, (sizeof(float )*(filterSize_*filterSize_)),cudaMemcpyHostToDevice);
- 
+
     free(sharpen);
     cudaFree(sharpen_);
-    
+
     sharpen_ = sharpenGPU;
 }
 

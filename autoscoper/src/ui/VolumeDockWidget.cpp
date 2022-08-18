@@ -31,7 +31,7 @@ void VolumeDockWidget::clearVol(){
 
 	/*int n = dock->listWidget->count();
 
-	
+
 	int counter = 0;
 	while (n != 0)
 	{

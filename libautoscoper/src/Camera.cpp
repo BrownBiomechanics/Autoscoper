@@ -115,7 +115,7 @@ Camera::Camera(const string& mayacam) : mayacam_(mayacam)
 	{
 		loadMayaCam1(mayacam);
 	}
-	
+
 }
 
 
@@ -162,7 +162,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 		double* rotation = csv_vals[1];
 		double* image_plane_trans = csv_vals[2];
 
-		double u0 = csv_vals[3][0] - 1; //Note: we should adjust here for the matlab offset of the old Mayacam 
+		double u0 = csv_vals[3][0] - 1; //Note: we should adjust here for the matlab offset of the old Mayacam
 		double v0 = csv_vals[3][1] - 1;
 		double z = csv_vals[3][2];
 
@@ -191,7 +191,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 			translation[1] * translation[1] +
 			translation[2] * translation[2]);
 		double scale = -1.5*distance / z;
-		
+
 		image_plane_trans[0] = scale*(size_[0] / 2.0 - u0);
 		image_plane_trans[1] = scale*(size_[1] / 2.0 - v0);
 		image_plane_trans[2] = scale*z;
@@ -247,7 +247,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 		double rotation[3][3];
 		double translation[3];
 
- 
+
 		fstream file(mayacam.c_str(), ios::in);
 		double csv_vals[5][3];
 		string csv_line, csv_val;
@@ -278,8 +278,8 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 					break;
 
 				case 9: //R
-				case 10: 
-				case 11: 
+				case 10:
+				case 11:
 					for (int j = 0; j < 3 && getline(csv_line_stream, csv_val, ','); ++j) {
 						istringstream csv_val_stream(csv_val);
 						if (!(csv_val_stream >> rotation[j][i - 9])) {
@@ -288,12 +288,12 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 					}
 					break;
 				case 14: //t
-				case 15: 
-				case 16: 
+				case 15:
+				case 16:
 					if (!(csv_line_stream >> translation[i - 14])) {
 							throw runtime_error("Invalid MayaCam file");
 						}
-			
+
 					break;
 
 			}
@@ -315,7 +315,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 		{
 			for (int j = 0; j < i; j++)
 			{
-				
+
 				double tmp = rotation[i][j];
 				rotation[i][j] = rotation[j][i];
 				rotation[j][i] = tmp;
@@ -355,7 +355,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 			translation[1] * translation[1] +
 			translation[2] * translation[2]);
 		double scale = -1.5*distance / z;
-	
+
 		double image_plane_trans[3];
 		image_plane_trans[0] = scale*(size_[0] / 2.0 - K[2][0]);
 		image_plane_trans[1] = scale*(size_[1] / 2.0 - K[2][1]);

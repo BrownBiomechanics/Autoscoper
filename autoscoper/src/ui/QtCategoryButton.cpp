@@ -57,7 +57,7 @@ QtCategoryButton::QtCategoryButton( const QString& a_Text,
 {
     connect(this, SIGNAL(pressed()), this, SLOT(ButtonPressed()));
 }
- 
+
 void QtCategoryButton::ButtonPressed()
 {
     m_pItem->setExpanded( !m_pItem->isExpanded() );
