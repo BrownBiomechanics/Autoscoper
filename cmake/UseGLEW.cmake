@@ -27,75 +27,69 @@
 # Author(s) of Significant Updates/Modifications to the File:
 #   ...
 
-
 macro(UseGLEW YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
 
-    message(STATUS "Searching for GLEW library...")
+  message(STATUS "Searching for GLEW library...")
 
-    # Check to see if the library is already installed on the system
-    # CMake ships with FindGLEW.cmake, which defines the GLEW::GLEW imported target
-    # https://cmake.org/cmake/help/v3.9/module/FindGLEW.html
+  # Check to see if the library is already installed on the system
+  # CMake ships with FindGLEW.cmake, which defines the GLEW::GLEW imported target
+  # https://cmake.org/cmake/help/v3.9/module/FindGLEW.html
+  find_package(GLEW)
+
+  # Case 1: Already installed on the system
+  if (${GLEW_FOUND})
+
+    message(STATUS "Ok: GLEW Found.")
+    message(STATUS "GLEW headers: ${GLEW_INCLUDE_DIR}")
+    message(STATUS "GLEW libs: ${GLEW_LIBRARIES}")
+
+  # Case 2: Download, build and install it now for the user, then try find_package() again
+  elseif (AUTOBUILD_DEPENDENCIES)
+
+    set(GLEW_AUTOBUILT TRUE)
+
+    message(STATUS "Ok: AUTOBUILD_DEPENDENCIES is ON so GLEW will be downloaded into the external directory and built for you.")
+
+    include(ExternalProject)
+    ExternalProject_Download(
+      GLEW
+      URL https://sourceforge.net/projects/glew/files/glew/2.1.0/glew-2.1.0.zip
+    )
+
+    ExternalProject_BuildAndInstallNow(
+      GLEW
+      src/build/cmake
+    )
+
+    # Try find_package() again
+    message(STATUS "Searching (again, right after autobuilding) for GLEW library...")
     find_package(GLEW)
 
-    # Case 1: Already installed on the system
-    if (${GLEW_FOUND})
-
-        message(STATUS "Ok: GLEW Found.")
-        message(STATUS "GLEW headers: ${GLEW_INCLUDE_DIR}")
-  message(STATUS "GLEW libs: ${GLEW_LIBRARIES}")
-
-
-
-    # Case 2: Download, build and install it now for the user, then try find_package() again
-    elseif (AUTOBUILD_DEPENDENCIES)
-
-        set(GLEW_AUTOBUILT TRUE)
-
-        message(STATUS "Ok: AUTOBUILD_DEPENDENCIES is ON so GLEW will be downloaded into the external directory and built for you.")
-
-        include(ExternalProject)
-       ExternalProject_Download(
-            GLEW
-            URL https://sourceforge.net/projects/glew/files/glew/2.1.0/glew-2.1.0.zip
-        )
-
-        ExternalProject_BuildAndInstallNow(
-            GLEW
-            src/build/cmake
-        )
-
-        # Try find_package() again
-        message(STATUS "Searching (again, right after autobuilding) for GLEW library...")
-        find_package(GLEW)
-
-        # We just intalled it to CMAKE_INSTALL_PREFIX, and the root CMakeLists.txt puts this in the
-        # CMAKE_MODULE_PATH.  So, if we were not able to find the package now, then something is very wrong.
-        if (NOT ${GLEW_FOUND})
-            message(FATAL_ERROR "Did an autobuild of the GLEW dependency, and it should now be installed at the prefix ${CMAKE_INSATALL_PREFIX}, but cmake is still unable to find it with find_package().")
-        endif()
-
-
-    # Case 3: The user does not want us to build it, so error out when not found.
-    else()
-
-        message(FATAL_ERROR "The GLEW library was not found on the system.  You can: (1) install GLEW yourself, (2)point cmake to an already-installed version of GLEW by adding the installation prefix of GLEW to the CMAKE_PREFIX_PATH environment variable, or (3) set AUTOBUILD_DEPENDENCIES to ON to have it download, build, and install GLEW for you.")
-
+    # We just intalled it to CMAKE_INSTALL_PREFIX, and the root CMakeLists.txt puts this in the
+    # CMAKE_MODULE_PATH.  So, if we were not able to find the package now, then something is very wrong.
+    if (NOT ${GLEW_FOUND})
+      message(FATAL_ERROR "Did an autobuild of the GLEW dependency, and it should now be installed at the prefix ${CMAKE_INSATALL_PREFIX}, but cmake is still unable to find it with find_package().")
     endif()
 
+  # Case 3: The user does not want us to build it, so error out when not found.
+  else()
 
-    # If we reach this point without an error, then one of the calls to find_package() was successful
+    message(FATAL_ERROR "The GLEW library was not found on the system.  You can: (1) install GLEW yourself, (2)point cmake to an already-installed version of GLEW by adding the installation prefix of GLEW to the CMAKE_PREFIX_PATH environment variable, or (3) set AUTOBUILD_DEPENDENCIES to ON to have it download, build, and install GLEW for you.")
 
-    message(STATUS "Linking target ${YOUR_TARGET} with ${INTERFACE_PUBLIC_OR_PRIVATE} dependency GLEW::GLEW.")
+  endif()
 
-    # No need to set include dirs; this uses the modern cmake imported targets, so they are set automatically
-    if (TARGET GLEW::GLEW)
-        target_link_libraries(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} GLEW::GLEW)
-    else()
-        target_link_libraries(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${GLEW_LIBRARIES})
-    target_include_directories(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${GLEW_INCLUDE_DIR})
-    endif()
+  # If we reach this point without an error, then one of the calls to find_package() was successful
+  message(STATUS "Linking target ${YOUR_TARGET} with ${INTERFACE_PUBLIC_OR_PRIVATE} dependency GLEW::GLEW.")
 
-    target_compile_definitions(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} -DUSE_GLEW)
+  # No need to set include dirs; this uses the modern cmake imported targets, so they are set automatically
+  if (TARGET GLEW::GLEW)
+    target_link_libraries(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} GLEW::GLEW)
+  else()
+    target_link_libraries(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${GLEW_LIBRARIES})
+  target_include_directories(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${GLEW_INCLUDE_DIR})
+  endif()
+
+  target_compile_definitions(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} -DUSE_GLEW)
 
 endmacro()
 
