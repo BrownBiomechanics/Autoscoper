@@ -64,12 +64,12 @@ using namespace std;
 namespace xromm
 {
 
-	Video::Video(const string& dirname)
-		: dirname_(dirname),
-		filenames_(),
-		frame_(),
-		image_(new TiffImage()),
-		background_(NULL)
+  Video::Video(const string& dirname)
+    : dirname_(dirname),
+    filenames_(),
+    frame_(),
+    image_(new TiffImage()),
+    background_(NULL)
 {
     DIR *dir = opendir(dirname_.c_str());
     if (dir == 0) {
@@ -109,19 +109,19 @@ Video::Video(const Video& video)
     : dirname_(video.dirname_),
       filenames_(video.filenames_),
       frame_(),
-	  background_(NULL)
+    background_(NULL)
 {
     image_ = tiffImageCopy(video.image_);
-	if (video.background_){
-		background_ = new float[image_->width*image_->height];
-		memcpy(background_, video.background_, image_->width * image_->height * sizeof(float));
-	}
+  if (video.background_){
+    background_ = new float[image_->width*image_->height];
+    memcpy(background_, video.background_, image_->width * image_->height * sizeof(float));
+  }
 }
 
 Video::~Video()
 {
     if (image_) tiffImageFree(image_);
-	if (background_) delete[] background_;
+  if (background_) delete[] background_;
 }
 
 Video&
@@ -134,71 +134,71 @@ Video::operator=(const Video& video)
     if (image_) tiffImageFree(image_);
     image_ = tiffImageCopy(video.image_);
 
-	if (video.background_){
-		if (background_) delete[] background_;
-		background_ = new float[image_->width*image_->height];
-		memcpy(background_, video.background_, image_->width * image_->height * sizeof(float));
-	}
+  if (video.background_){
+    if (background_) delete[] background_;
+    background_ = new float[image_->width*image_->height];
+    memcpy(background_, video.background_, image_->width * image_->height * sizeof(float));
+  }
     return *this;
 }
 
 int Video::create_background_image()
 {
-	if (filenames_.size() < 2)
-		return -1;
+  if (filenames_.size() < 2)
+    return -1;
 
 
-	if (background_) delete[] background_;
-	background_ = new float[width()*height()];
-	memset(background_, 0, width()*height()*sizeof(float));
+  if (background_) delete[] background_;
+  background_ = new float[width()*height()];
+  memset(background_, 0, width()*height()*sizeof(float));
 
-	//Read tmp_image
-	TiffImage* tmp_image = new TiffImage();
-	TIFFSetWarningHandler(0);
-	TIFF* tif;
+  //Read tmp_image
+  TiffImage* tmp_image = new TiffImage();
+  TIFFSetWarningHandler(0);
+  TIFF* tif;
 
-	for (int i = 0; i < filenames_.size(); i++){
-		tif = TIFFOpen(filenames_.at(i).c_str(), "r");
-		if (!tif) {
-			cerr << "Video::frame(): Unable to open image. " << endl;
-			return -2;
-		}
+  for (int i = 0; i < filenames_.size(); i++){
+    tif = TIFFOpen(filenames_.at(i).c_str(), "r");
+    if (!tif) {
+      cerr << "Video::frame(): Unable to open image. " << endl;
+      return -2;
+    }
 
-		tiffImageFree(tmp_image);
-		tiffImageRead(tif, tmp_image);
-		TIFFClose(tif);
+    tiffImageFree(tmp_image);
+    tiffImageRead(tif, tmp_image);
+    TIFFClose(tif);
 
-		if (tmp_image->bitsPerSample == 8){
-			unsigned char * ptr = reinterpret_cast<unsigned char*> (tmp_image->data);
-			float* ptr_b = background_;
-			for (; ptr < reinterpret_cast<unsigned char*>(tmp_image->data) + tmp_image->dataSize; ptr++, ptr_b++)
-			{
-				float val = *ptr;
-				if (val / 255 > *ptr_b)
-					*ptr_b = val / 255;
-			}
-		}
-		else
-		{
-			unsigned short * ptr = static_cast<unsigned short*> (tmp_image->data);
-			float * ptr_b = background_;
-			for (; ptr < reinterpret_cast<unsigned short*>(tmp_image->data) + tmp_image->dataSize; ptr++, ptr_b++)
-			{
-				float val = *ptr;
-				if (val / 65535  > *ptr_b)
-					*ptr_b = val / 65535;
-			}
-		}
-	}
+    if (tmp_image->bitsPerSample == 8){
+      unsigned char * ptr = reinterpret_cast<unsigned char*> (tmp_image->data);
+      float* ptr_b = background_;
+      for (; ptr < reinterpret_cast<unsigned char*>(tmp_image->data) + tmp_image->dataSize; ptr++, ptr_b++)
+      {
+        float val = *ptr;
+        if (val / 255 > *ptr_b)
+          *ptr_b = val / 255;
+      }
+    }
+    else
+    {
+      unsigned short * ptr = static_cast<unsigned short*> (tmp_image->data);
+      float * ptr_b = background_;
+      for (; ptr < reinterpret_cast<unsigned short*>(tmp_image->data) + tmp_image->dataSize; ptr++, ptr_b++)
+      {
+        float val = *ptr;
+        if (val / 65535  > *ptr_b)
+          *ptr_b = val / 65535;
+      }
+    }
+  }
 
-	tiffImageFree(tmp_image);
+  tiffImageFree(tmp_image);
 
-	return 1;
+  return 1;
 }
 
 
 
-	void
+  void
 Video::set_frame(size_type i)
 {
     if (i >= filenames_.size()) {

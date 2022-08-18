@@ -55,20 +55,20 @@ void drr_background(const Buffer* src1,
                unsigned width,
                unsigned height)
 {
-	Kernel* kernel = DRRBackground_kernel_.compile(
-		DRRBackground_cl, "drr_background_kernel");
+  Kernel* kernel = DRRBackground_kernel_.compile(
+    DRRBackground_cl, "drr_background_kernel");
 
     kernel->block2d(BX, BY);
-	kernel->grid2d((width+BX-1)/BX, (height+BY-1)/BY);
+  kernel->grid2d((width+BX-1)/BX, (height+BY-1)/BY);
 
-	kernel->addBufferArg(src1);
-	kernel->addBufferArg(dest);
-	kernel->addArg(width);
-	kernel->addArg(height);
+  kernel->addBufferArg(src1);
+  kernel->addBufferArg(dest);
+  kernel->addArg(width);
+  kernel->addArg(height);
 
-	kernel->launch();
+  kernel->launch();
 
-	delete kernel;
+  delete kernel;
 }
 
 } // namespace gpu

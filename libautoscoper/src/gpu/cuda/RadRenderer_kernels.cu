@@ -103,7 +103,7 @@ void image_render_kernel(float* output, int width, int height, float u0,
                          float v0, float u1, float v1, float u2, float v2,
                          float u3, float v3)
 {
-	int x = blockIdx.x*blockDim.x+threadIdx.x;
+  int x = blockIdx.x*blockDim.x+threadIdx.x;
     int y = blockIdx.y*blockDim.y+threadIdx.y;
 
     if (x > width-1 || y > height-1) {

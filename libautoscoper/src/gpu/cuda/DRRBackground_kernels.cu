@@ -49,9 +49,9 @@ void drr_background_kernel(float* src1,
                       size_t height);
 
 namespace xromm {
-	namespace gpu {
+  namespace gpu {
 
-	void drr_background(float* src1,
+  void drr_background(float* src1,
                float* dest,
                size_t width,
                size_t height)
@@ -62,7 +62,7 @@ namespace xromm {
                  (height+blockDim.y-1)/blockDim.y);
 
     // Call the kernel
-	drr_background_kernel << <gridDim, blockDim >> >(src1, dest, width, height);
+  drr_background_kernel << <gridDim, blockDim >> >(src1, dest, width, height);
 }
 
 } // namespace gpu
@@ -75,16 +75,16 @@ float* dest,
 size_t width,
 size_t height)
 {
-	int x = blockIdx.x*blockDim.x + threadIdx.x;
-	int y = blockIdx.y*blockDim.y + threadIdx.y;
+  int x = blockIdx.x*blockDim.x + threadIdx.x;
+  int y = blockIdx.y*blockDim.y + threadIdx.y;
 
-	if (x > width - 1 || y > height - 1) {
-		return;
-	}
+  if (x > width - 1 || y > height - 1) {
+    return;
+  }
 
-	const unsigned int xy = y*width + x;
+  const unsigned int xy = y*width + x;
 
-	// src1 maps to orange and src2 to blue
-	dest[xy] = (src1[xy] != 0.0f) ? 1.0f : 0.0f;
+  // src1 maps to orange and src2 to blue
+  dest[xy] = (src1[xy] != 0.0f) ? 1.0f : 0.0f;
 }
 

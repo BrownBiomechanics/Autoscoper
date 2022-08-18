@@ -70,12 +70,12 @@ ContrastFilter::ContrastFilter()
 
 void
 ContrastFilter::apply(
-		const Buffer* input,
-		Buffer* output,
-		int width,
-		int height)
+    const Buffer* input,
+    Buffer* output,
+    int width,
+    int height)
 {
-	Kernel* kernel = contrast_program_.compile(ContrastFilter_cl, KERNEL_NAME);
+  Kernel* kernel = contrast_program_.compile(ContrastFilter_cl, KERNEL_NAME);
 
     kernel->block2d(KERNEL_X, KERNEL_Y);
     kernel->grid2d((width-1)/KERNEL_X+1, (height-1)/KERNEL_Y+1);
@@ -88,9 +88,9 @@ ContrastFilter::apply(
     kernel->addArg(beta_);
     kernel->addArg(size_);
 
-	kernel->launch();
+  kernel->launch();
 
-	delete kernel;
+  delete kernel;
 }
 
 } } // namespace xromm::opencl

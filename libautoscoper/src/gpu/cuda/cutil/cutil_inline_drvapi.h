@@ -33,57 +33,57 @@ inline int cutilDrvGetMaxGflopsDeviceId()
 {
     CUdevice current_device = 0, max_perf_device = 0;
     int device_count     = 0, sm_per_multiproc = 0;
-	int max_compute_perf = 0, best_SM_arch     = 0;
+  int max_compute_perf = 0, best_SM_arch     = 0;
     int major = 0, minor = 0, multiProcessorCount, clockRate;
     int arch_cores_sm[3] = { 1, 8, 32 };
 
     cuInit(0);
     CU_SAFE_CALL_NO_SYNC(cuDeviceGetCount(&device_count));
 
-	// Find the best major SM Architecture GPU device
-	while ( current_device < device_count ) {
-		CU_SAFE_CALL_NO_SYNC( cuDeviceComputeCapability(&major, &minor, current_device ) );
-		if (major > 0 && major < 9999) {
-			best_SM_arch = MAX(best_SM_arch, major);
-		}
-		current_device++;
-	}
+  // Find the best major SM Architecture GPU device
+  while ( current_device < device_count ) {
+    CU_SAFE_CALL_NO_SYNC( cuDeviceComputeCapability(&major, &minor, current_device ) );
+    if (major > 0 && major < 9999) {
+      best_SM_arch = MAX(best_SM_arch, major);
+    }
+    current_device++;
+  }
 
     // Find the best CUDA capable GPU device
-	current_device = 0;
-	while( current_device < device_count ) {
-		CU_SAFE_CALL_NO_SYNC( cuDeviceGetAttribute( &multiProcessorCount,
-			                                        CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT,
-													current_device ) );
-		CU_SAFE_CALL_NO_SYNC( cuDeviceGetAttribute( &clockRate,
-			                                        CU_DEVICE_ATTRIBUTE_CLOCK_RATE,
-													current_device ) );
+  current_device = 0;
+  while( current_device < device_count ) {
+    CU_SAFE_CALL_NO_SYNC( cuDeviceGetAttribute( &multiProcessorCount,
+                                              CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT,
+                          current_device ) );
+    CU_SAFE_CALL_NO_SYNC( cuDeviceGetAttribute( &clockRate,
+                                              CU_DEVICE_ATTRIBUTE_CLOCK_RATE,
+                          current_device ) );
 
-		if (major == 9999 && minor == 9999) {
-		    sm_per_multiproc = 1;
-		} else if (major <= 2) {
-			sm_per_multiproc = arch_cores_sm[major];
-		} else {
-			sm_per_multiproc = arch_cores_sm[2];
-		}
+    if (major == 9999 && minor == 9999) {
+        sm_per_multiproc = 1;
+    } else if (major <= 2) {
+      sm_per_multiproc = arch_cores_sm[major];
+    } else {
+      sm_per_multiproc = arch_cores_sm[2];
+    }
 
-		int compute_perf  = multiProcessorCount * sm_per_multiproc * clockRate;
-		if( compute_perf  > max_compute_perf ) {
+    int compute_perf  = multiProcessorCount * sm_per_multiproc * clockRate;
+    if( compute_perf  > max_compute_perf ) {
             // If we find GPU with SM major > 2, search only these
-			if ( best_SM_arch > 2 ) {
-				// If our device==dest_SM_arch, choose this, or else pass
-				if (major == best_SM_arch) {
-					max_compute_perf  = compute_perf;
-					max_perf_device   = current_device;
-				}
-			} else {
-				max_compute_perf  = compute_perf;
-				max_perf_device   = current_device;
-			}
-		}
-		++current_device;
-	}
-	return max_perf_device;
+      if ( best_SM_arch > 2 ) {
+        // If our device==dest_SM_arch, choose this, or else pass
+        if (major == best_SM_arch) {
+          max_compute_perf  = compute_perf;
+          max_perf_device   = current_device;
+        }
+      } else {
+        max_compute_perf  = compute_perf;
+        max_perf_device   = current_device;
+      }
+    }
+    ++current_device;
+  }
+  return max_perf_device;
 }
 
 // These are the inline versions for all of the CUTIL functions
@@ -114,7 +114,7 @@ inline void __cuCheckMsg( const char * msg, const char *file, const int line )
 {
     CUresult err = cuCtxSynchronize();
     if( CUDA_SUCCESS != err) {
-		fprintf(stderr, "cutilDrvCheckMsg -> %s", msg);
+    fprintf(stderr, "cutilDrvCheckMsg -> %s", msg);
         fprintf(stderr, "cutilDrvCheckMsg -> cuCtxSynchronize API error = %04d in file <%s>, line %i.\n",
                 err, file, line );
         exit(-1);
@@ -138,7 +138,7 @@ inline void __cuCheckMsg( const char * msg, const char *file, const int line )
         }
         int dev = 0;
         cutGetCmdLineArgumenti(ARGC, (const char **) ARGV, "device", &dev);
-	    if (dev < 0) dev = 0;
+      if (dev < 0) dev = 0;
         if (dev > deviceCount-1) dev = deviceCount - 1;
         cutilDrvSafeCallNoSync(cuDeviceGet(&cuDevice, dev));
         char name[100];
@@ -180,7 +180,7 @@ inline bool cutilDrvCudaDevCapabilities(int major_version, int minor_version, in
     cutilDrvSafeCallNoSync( cuDeviceGetName(device_name, 256, dev) );
 
     if((major > major_version) ||
-	   (major == major_version && minor >= minor_version))
+     (major == major_version && minor >= minor_version))
     {
         printf("> Compute SM %d.%d Device Detected\n", major, minor);
         printf("> Device %d: <%s>\n", dev, device_name);
@@ -197,7 +197,7 @@ inline bool cutilDrvCudaDevCapabilities(int major_version, int minor_version, in
 // General check for CUDA GPU SM Capabilities
 inline bool cutilDrvCudaCapabilities(int major_version, int minor_version)
 {
-	return cutilDrvCudaDevCapabilities(major_version, minor_version, 0);
+  return cutilDrvCudaDevCapabilities(major_version, minor_version, 0);
 }
 
 

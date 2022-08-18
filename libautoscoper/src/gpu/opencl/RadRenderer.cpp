@@ -77,14 +77,14 @@ RadRenderer::RadRenderer() : image_(0)
 
 RadRenderer::~RadRenderer()
 {
-	if (image_) delete image_;
+  if (image_) delete image_;
 }
 
 void
 RadRenderer::set_rad(const void* data, size_t width, size_t height, size_t bps)
 {
-	cl_image_format format;
-	format.image_channel_order = CL_R;
+  cl_image_format format;
+  format.image_channel_order = CL_R;
     switch (bps) {
         case 8:  format.image_channel_data_type = CL_UNORM_INT8; break;
         case 16: format.image_channel_data_type = CL_UNORM_INT16; break;
@@ -94,10 +94,10 @@ RadRenderer::set_rad(const void* data, size_t width, size_t height, size_t bps)
             return;
     }
 
-	if (image_) delete image_;
-	size_t dims[3] = { width, height, 1 };
-	image_ = new Image(dims, &format, CL_MEM_READ_ONLY);
-	image_->read(data);
+  if (image_) delete image_;
+  size_t dims[3] = { width, height, 1 };
+  image_ = new Image(dims, &format, CL_MEM_READ_ONLY);
+  image_->read(data);
 }
 
 void
@@ -121,29 +121,29 @@ RadRenderer::set_viewport(float x, float y, float width, float height)
 void
 RadRenderer::render(const Buffer* buffer, unsigned width, unsigned height) const
 {
-	Kernel* kernel = rad_renderer_program_.compile(
-										RadRenderer_cl, "rad_render_kernel");
+  Kernel* kernel = rad_renderer_program_.compile(
+                    RadRenderer_cl, "rad_render_kernel");
 
-	kernel->addBufferArg(buffer);
-	kernel->addArg(width);
-	kernel->addArg(height);
-	kernel->addArg(image_plane_[0]);
-	kernel->addArg(image_plane_[1]);
-	kernel->addArg(image_plane_[2]);
-	kernel->addArg(image_plane_[3]);
-	kernel->addArg(viewport_[0]);
-	kernel->addArg(viewport_[1]);
-	kernel->addArg(viewport_[2]);
-	kernel->addArg(viewport_[3]);
-	kernel->addImageArg(image_);
+  kernel->addBufferArg(buffer);
+  kernel->addArg(width);
+  kernel->addArg(height);
+  kernel->addArg(image_plane_[0]);
+  kernel->addArg(image_plane_[1]);
+  kernel->addArg(image_plane_[2]);
+  kernel->addArg(image_plane_[3]);
+  kernel->addArg(viewport_[0]);
+  kernel->addArg(viewport_[1]);
+  kernel->addArg(viewport_[2]);
+  kernel->addArg(viewport_[3]);
+  kernel->addImageArg(image_);
 
     // Calculate the block and grid sizes.
-	kernel->block2d(BX, BY);
+  kernel->block2d(BX, BY);
     kernel->grid2d((width+BX-1)/BX, (height+BY-1)/BY);
 
-	kernel->launch();
+  kernel->launch();
 
-	delete kernel;
+  delete kernel;
 }
 
 } } // namespace xromm::opencl

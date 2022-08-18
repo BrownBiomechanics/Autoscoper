@@ -72,8 +72,8 @@ inline __device__ __host__ float clamp(float f, float a, float b)
 // smoothstep
 inline __device__ __host__ float smoothstep(float a, float b, float x)
 {
-	float y = clamp((x - a) / (b - a), 0.0f, 1.0f);
-	return (y*y*(3.0f - (2.0f*y)));
+  float y = clamp((x - a) / (b - a), 0.0f, 1.0f);
+  return (y*y*(3.0f - (2.0f*y)));
 }
 
 // int2 functions
@@ -145,13 +145,13 @@ inline __host__ __device__ float2 operator-(float2 &a)
 // min
 static __inline__ __host__ __device__ float2 fminf(float2 a, float2 b)
 {
-	return make_float2(fminf(a.x,b.x), fminf(a.y,b.y));
+  return make_float2(fminf(a.x,b.x), fminf(a.y,b.y));
 }
 
 // max
 static __inline__ __host__ __device__ float2 fmaxf(float2 a, float2 b)
 {
-	return make_float2(fmaxf(a.x,b.x), fmaxf(a.y,b.y));
+  return make_float2(fmaxf(a.x,b.x), fmaxf(a.y,b.y));
 }
 
 // addition
@@ -258,13 +258,13 @@ inline __host__ __device__ float2 floor(const float2 v)
 // reflect
 inline __host__ __device__ float2 reflect(float2 i, float2 n)
 {
-	return i - 2.0f * n * dot(n,i);
+  return i - 2.0f * n * dot(n,i);
 }
 
 // absolute value
 inline __host__ __device__ float2 fabs(float2 v)
 {
-	return make_float2(fabs(v.x), fabs(v.y));
+  return make_float2(fabs(v.x), fabs(v.y));
 }
 
 // float3 functions
@@ -301,13 +301,13 @@ inline __host__ __device__ float3 operator-(float3 &a)
 // min
 static __inline__ __host__ __device__ float3 fminf(float3 a, float3 b)
 {
-	return make_float3(fminf(a.x,b.x), fminf(a.y,b.y), fminf(a.z,b.z));
+  return make_float3(fminf(a.x,b.x), fminf(a.y,b.y), fminf(a.z,b.z));
 }
 
 // max
 static __inline__ __host__ __device__ float3 fmaxf(float3 a, float3 b)
 {
-	return make_float3(fmaxf(a.x,b.x), fmaxf(a.y,b.y), fmaxf(a.z,b.z));
+  return make_float3(fmaxf(a.x,b.x), fmaxf(a.y,b.y), fmaxf(a.z,b.z));
 }
 
 // addition
@@ -428,13 +428,13 @@ inline __host__ __device__ float3 floor(const float3 v)
 // reflect
 inline __host__ __device__ float3 reflect(float3 i, float3 n)
 {
-	return i - 2.0f * n * dot(n,i);
+  return i - 2.0f * n * dot(n,i);
 }
 
 // absolute value
 inline __host__ __device__ float3 fabs(float3 v)
 {
-	return make_float3(fabs(v.x), fabs(v.y), fabs(v.z));
+  return make_float3(fabs(v.x), fabs(v.y), fabs(v.z));
 }
 
 // float4 functions
@@ -467,13 +467,13 @@ inline __host__ __device__ float4 operator-(float4 &a)
 // min
 static __inline__ __host__ __device__ float4 fminf(float4 a, float4 b)
 {
-	return make_float4(fminf(a.x,b.x), fminf(a.y,b.y), fminf(a.z,b.z), fminf(a.w,b.w));
+  return make_float4(fminf(a.x,b.x), fminf(a.y,b.y), fminf(a.z,b.z), fminf(a.w,b.w));
 }
 
 // max
 static __inline__ __host__ __device__ float4 fmaxf(float4 a, float4 b)
 {
-	return make_float4(fmaxf(a.x,b.x), fmaxf(a.y,b.y), fmaxf(a.z,b.z), fmaxf(a.w,b.w));
+  return make_float4(fmaxf(a.x,b.x), fmaxf(a.y,b.y), fmaxf(a.z,b.z), fmaxf(a.w,b.w));
 }
 
 // addition
@@ -576,7 +576,7 @@ inline __host__ __device__ float4 floor(const float4 v)
 // absolute value
 inline __host__ __device__ float4 fabs(float4 v)
 {
-	return make_float4(fabs(v.x), fabs(v.y), fabs(v.z), fabs(v.w));
+  return make_float4(fabs(v.x), fabs(v.y), fabs(v.z), fabs(v.w));
 }
 
 // int3 functions

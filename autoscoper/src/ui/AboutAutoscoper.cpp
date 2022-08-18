@@ -44,12 +44,12 @@
 #include "ui/AutoscoperMainWindow.h"
 
 AboutAutoscoper::AboutAutoscoper(QWidget *parent) :
-								QDialog(parent),
-								about(new Ui::AboutAutoscoper) {
+                QDialog(parent),
+                about(new Ui::AboutAutoscoper) {
 
-	about->setupUi(this);
+  about->setupUi(this);
 }
 
 AboutAutoscoper::~AboutAutoscoper() {
-	delete about;
+  delete about;
 }

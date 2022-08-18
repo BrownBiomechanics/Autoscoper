@@ -42,7 +42,7 @@ macro(UseGLEW YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
 
         message(STATUS "Ok: GLEW Found.")
         message(STATUS "GLEW headers: ${GLEW_INCLUDE_DIR}")
-	message(STATUS "GLEW libs: ${GLEW_LIBRARIES}")
+  message(STATUS "GLEW libs: ${GLEW_LIBRARIES}")
 
 
 
@@ -92,7 +92,7 @@ macro(UseGLEW YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
         target_link_libraries(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} GLEW::GLEW)
     else()
         target_link_libraries(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${GLEW_LIBRARIES})
-		target_include_directories(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${GLEW_INCLUDE_DIR})
+    target_include_directories(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${GLEW_INCLUDE_DIR})
     endif()
 
     target_compile_definitions(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} -DUSE_GLEW)

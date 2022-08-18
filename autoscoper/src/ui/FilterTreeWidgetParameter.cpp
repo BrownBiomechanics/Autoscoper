@@ -43,9 +43,9 @@
 
 
 FilterTreeWidgetParameter::FilterTreeWidgetParameter(QString _name, double _value, double _minimumValue, double _maximumValue, double _step): QObject(),
-		name(_name), value(_value) , minimumValue(_minimumValue), maximumValue(_maximumValue), step(_step)
+    name(_name), value(_value) , minimumValue(_minimumValue), maximumValue(_maximumValue), step(_step)
 {
-	spinbox = NULL;
+  spinbox = NULL;
 }
 
 FilterTreeWidgetParameter::~FilterTreeWidgetParameter()
@@ -53,7 +53,7 @@ FilterTreeWidgetParameter::~FilterTreeWidgetParameter()
 }
 
 void FilterTreeWidgetParameter::valueChanged(double _value){
-	value = _value;
-	emit parameterChanged();
+  value = _value;
+  emit parameterChanged();
 }
 

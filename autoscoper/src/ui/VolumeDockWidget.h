@@ -5,7 +5,7 @@
 
 //forward declarations
 namespace Ui {
-	class VolumeDockWidget;
+  class VolumeDockWidget;
 }
 
 class AutoscoperMainWindow;
@@ -13,31 +13,31 @@ class QListWidgetItem;
 
 class VolumeDockWidget : public QDockWidget{
 
-	Q_OBJECT
+  Q_OBJECT
 
-	public:
-		explicit VolumeDockWidget(QWidget *parent = 0);
-		~VolumeDockWidget();
+  public:
+    explicit VolumeDockWidget(QWidget *parent = 0);
+    ~VolumeDockWidget();
 
-		AutoscoperMainWindow * getMainWindow(){return mainwindow;};
+    AutoscoperMainWindow * getMainWindow(){return mainwindow;};
 
-		void clearVol();
-		void addVolume(const std::string& filename);
+    void clearVol();
+    void addVolume(const std::string& filename);
 
 
-		QString getVolumeName(int volume_index);
+    QString getVolumeName(int volume_index);
 
-	private:
-		Ui::VolumeDockWidget *dock;
+  private:
+    Ui::VolumeDockWidget *dock;
 
-		AutoscoperMainWindow * mainwindow;
+    AutoscoperMainWindow * mainwindow;
 
-		std::vector<std::string> model_names_list;
+    std::vector<std::string> model_names_list;
 
-	protected:
+  protected:
 
-	public slots:
-		void on_listWidget_currentItemChanged( QListWidgetItem * current, QListWidgetItem* previous);
+  public slots:
+    void on_listWidget_currentItemChanged( QListWidgetItem * current, QListWidgetItem* previous);
 
 };
 

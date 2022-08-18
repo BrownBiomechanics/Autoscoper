@@ -49,36 +49,36 @@
 #include <QString>
 
 OpenCLPlatformSelectDialog::OpenCLPlatformSelectDialog(QWidget *parent) :
-												QDialog(parent),
-												diag(new Ui::OpenCLPlatformSelectDialog){
+                        QDialog(parent),
+                        diag(new Ui::OpenCLPlatformSelectDialog){
 
-	diag->setupUi(this);
+  diag->setupUi(this);
 
 #ifndef WITH_CUDA
-	platforms = xromm::gpu::get_platforms();
-	for (int i = 0 ; i < platforms.size();i++){
-		diag->comboBox->addItem(QString::fromStdString(platforms[i][0]));
-	}
+  platforms = xromm::gpu::get_platforms();
+  for (int i = 0 ; i < platforms.size();i++){
+    diag->comboBox->addItem(QString::fromStdString(platforms[i][0]));
+  }
 #endif
 }
 
 OpenCLPlatformSelectDialog::~OpenCLPlatformSelectDialog(){
-	delete diag;
+  delete diag;
 }
 
 void OpenCLPlatformSelectDialog::on_comboBox_currentIndexChanged ( int index ){
 
-	QString text = "";
-	for (int i = 1 ; i < platforms[index].size();i++){
-		text = text + QString::fromStdString(platforms[index][i]) + '\n';
-	}
+  QString text = "";
+  for (int i = 1 ; i < platforms[index].size();i++){
+    text = text + QString::fromStdString(platforms[index][i]) + '\n';
+  }
 
-	diag->textedit->setText(text);
+  diag->textedit->setText(text);
 }
 
 void OpenCLPlatformSelectDialog::on_pushButton_clicked(){
 #ifndef WITH_CUDA
-	xromm::gpu::setUsedPlatform(diag->comboBox->currentIndex());
+  xromm::gpu::setUsedPlatform(diag->comboBox->currentIndex());
 #endif
-	this->close();
+  this->close();
 }

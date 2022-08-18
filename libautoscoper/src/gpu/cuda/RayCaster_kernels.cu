@@ -141,10 +141,10 @@ int box_intersect(Ray ray, float3 boxMin, float3 boxMax, float *_near,
     float3 tMax = fmaxf(tTop, tBot);
 
     // Find the largest tMin and the smallest tMax.
-	*_near = fmaxf(fmaxf(tMin.x, tMin.y), tMin.z);
-	*_far = fminf(fminf(tMax.x, tMax.y), tMax.z);
+  *_near = fmaxf(fmaxf(tMin.x, tMin.y), tMin.z);
+  *_far = fminf(fminf(tMax.x, tMax.y), tMax.z);
 
-	return *_far > *_near;
+  return *_far > *_near;
 }
 
 // Transform vector by matrix (no translation).
@@ -171,7 +171,7 @@ __global__
 void cuda_volume_render_kernel(float* buffer, size_t width, size_t height,
                                float step, float intensity, float cutoff)
 {
-	uint x = blockIdx.x*blockDim.x+threadIdx.x;
+  uint x = blockIdx.x*blockDim.x+threadIdx.x;
     uint y = blockIdx.y*blockDim.y+threadIdx.y;
 
     if (x > width-1 || y > height-1) {
@@ -193,7 +193,7 @@ void cuda_volume_render_kernel(float* buffer, size_t width, size_t height,
     // Find intersection with box.
     float3 boxMin = make_float3(0.0f, 0.0f, -1.0f);
     float3 boxMax = make_float3(1.0f, 1.0f, 0.0f);
-	float _near;
+  float _near;
     float _far;
     if (!box_intersect(ray, boxMin, boxMax, &_near, &_far)) {
         buffer[y*width+x] = 0.0f;
@@ -201,7 +201,7 @@ void cuda_volume_render_kernel(float* buffer, size_t width, size_t height,
     }
 
     // Clamp to near plane.
-	if (_near < 0.0f) _near = 0.0f;
+  if (_near < 0.0f) _near = 0.0f;
 
     // Preform the ray marching from back to front.
     float t = _far;

@@ -107,8 +107,8 @@ e1:ILO=1;
   RTOL /= MPTS;
 
   if (RTOL < FTOL)  {
-	  //printf("The final pose tolerance is: %.3e\n", RTOL);
-	  return;  //normal exit
+    //printf("The final pose tolerance is: %.3e\n", RTOL);
+    return;  //normal exit
   }
   if (*ITER == ITMAX) {
     printf("Optimization exceeding maximum iterations. Pose tolerance is: %.3e\n",RTOL);
@@ -136,10 +136,10 @@ e1:ILO=1;
     else {
       for (J=1; J<=NDIM; J++) P[IHI][J]=PR[J];
       Y[IHI]=YPR;
-	}
+  }
   }
   else if (YPR >= Y[INHI]) {
-	if (YPR < Y[IHI]) {
+  if (YPR < Y[IHI]) {
       for (J=1; J<=NDIM; J++)  P[IHI][J]=PR[J];
       Y[IHI]=YPR;
     }
@@ -151,13 +151,13 @@ e1:ILO=1;
     }
     else
       for (I=1; I<=MPTS; I++)
-		if (I != ILO) {
-		  for (J=1; J<=NDIM; J++) {
+    if (I != ILO) {
+      for (J=1; J<=NDIM; J++) {
             PR[J]=0.5*(P[I][J] + P[ILO][J]);
-	        P[I][J]=PR[J];
-		  }
+          P[I][J]=PR[J];
+      }
           Y[I]=FUNC(PR);
-		}
+    }
   }
   else {
     for (J=1; J<=NDIM; J++)  P[IHI][J]=PR[J];

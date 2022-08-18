@@ -46,21 +46,21 @@
 
 
 namespace Ui {
-	class AboutAutoscoper;
+  class AboutAutoscoper;
 }
 
 class AboutAutoscoper : public QDialog {
 
 
-	Q_OBJECT
+  Q_OBJECT
 
 private:
 
 public:
-	explicit AboutAutoscoper(QWidget* parent = 0);
-	~AboutAutoscoper();
+  explicit AboutAutoscoper(QWidget* parent = 0);
+  ~AboutAutoscoper();
 
-	Ui::AboutAutoscoper *about;
+  Ui::AboutAutoscoper *about;
 
 };
 

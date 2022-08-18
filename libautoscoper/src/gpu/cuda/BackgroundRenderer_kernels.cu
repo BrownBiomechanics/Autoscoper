@@ -52,7 +52,7 @@ static texture<float,2> tex;
 __global__
 void background_render_kernel(float* output, int width, int height, float u0,
                          float v0, float u1, float v1, float u2, float v2,
-						 float u3, float v3, float threshold);
+             float u3, float v3, float threshold);
 
 namespace xromm
 {
@@ -82,7 +82,7 @@ void background_render(float* output, int width, int height, float u0,
     dim3 gridDim((width+blockDim.x-1)/blockDim.x,
                  (height+blockDim.y-1)/blockDim.y);
 
-	background_render_kernel << <gridDim, blockDim >> >(output, width, height,
+  background_render_kernel << <gridDim, blockDim >> >(output, width, height,
                                                u0, v0, u1, v1, u2, v2,
                                                u3, v3, threshold);
 }
@@ -94,9 +94,9 @@ void background_render(float* output, int width, int height, float u0,
 __global__
 void background_render_kernel(float* output, int width, int height, float u0,
                          float v0, float u1, float v1, float u2, float v2,
-						 float u3, float v3, float threshold)
+             float u3, float v3, float threshold)
 {
-	int x = blockIdx.x*blockDim.x+threadIdx.x;
+  int x = blockIdx.x*blockDim.x+threadIdx.x;
     int y = blockIdx.y*blockDim.y+threadIdx.y;
 
     if (x > width-1 || y > height-1) {
@@ -113,7 +113,7 @@ void background_render_kernel(float* output, int width, int height, float u0,
         output[width*y+x] = 0.0f;
     }
     else {
-		output[width*y + x] = (threshold <= tex2D(tex, s, t)) ? 1.0f : 0.0f;
+    output[width*y + x] = (threshold <= tex2D(tex, s, t)) ? 1.0f : 0.0f;
     }
 }
 

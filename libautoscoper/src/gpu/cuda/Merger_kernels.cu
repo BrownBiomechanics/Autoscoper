@@ -50,7 +50,7 @@ void merge_kernel(float* src1,
                       size_t height);
 
 namespace xromm {
-	namespace gpu {
+  namespace gpu {
 
 void merge(float* src1,
                float* src2,
@@ -78,16 +78,16 @@ float* dest,
 size_t width,
 size_t height)
 {
-	int x = blockIdx.x*blockDim.x + threadIdx.x;
-	int y = blockIdx.y*blockDim.y + threadIdx.y;
+  int x = blockIdx.x*blockDim.x + threadIdx.x;
+  int y = blockIdx.y*blockDim.y + threadIdx.y;
 
-	if (x > width - 1 || y > height - 1) {
-		return;
-	}
+  if (x > width - 1 || y > height - 1) {
+    return;
+  }
 
-	const unsigned int xy = y*width + x;
+  const unsigned int xy = y*width + x;
 
-	// src1 maps to orange and src2 to blue
-	dest[xy] = min(src1[xy] + src2[xy], 1.0);
+  // src1 maps to orange and src2 to blue
+  dest[xy] = min(src1[xy] + src2[xy], 1.0);
 }
 

@@ -54,24 +54,24 @@
 
 int main ( int argc, char **argv )
 {
-	QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-	QApplication app (argc, argv);
+  QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+  QApplication app (argc, argv);
 
-	if(argc <= 1){
-		AutoscoperMainWindow *widget = new AutoscoperMainWindow();
-		Socket* socket = new Socket(widget, 30007);
-		widget->show();
-		int ret = app.exec();
-		delete socket;
-		delete widget;
+  if(argc <= 1){
+    AutoscoperMainWindow *widget = new AutoscoperMainWindow();
+    Socket* socket = new Socket(widget, 30007);
+    widget->show();
+    int ret = app.exec();
+    delete socket;
+    delete widget;
         return ret;
-	} else {
-		fprintf(stderr, "Start Batch %s\n", argv[1]);
-		AutoscoperMainWindow *widget = new AutoscoperMainWindow(true);
-		Socket* socket = new Socket(widget, 30007);
-		widget->runBatch(argv[1], true);
-		delete socket;
-	}
+  } else {
+    fprintf(stderr, "Start Batch %s\n", argv[1]);
+    AutoscoperMainWindow *widget = new AutoscoperMainWindow(true);
+    Socket* socket = new Socket(widget, 30007);
+    widget->runBatch(argv[1], true);
+    delete socket;
+  }
 
 }
 

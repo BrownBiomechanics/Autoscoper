@@ -74,13 +74,13 @@ RayCaster::RayCaster() : volumeDescription_(0),
     viewport_[2] =  2.0f;
     viewport_[3] =  2.0f;
 
-	b_viewport_ = new Buffer(4*sizeof(float), CL_MEM_READ_ONLY);
-	b_viewport_->read(viewport_);
+  b_viewport_ = new Buffer(4*sizeof(float), CL_MEM_READ_ONLY);
+  b_viewport_->read(viewport_);
 }
 
 RayCaster::~RayCaster()
 {
-	if (b_viewport_) delete b_viewport_;
+  if (b_viewport_) delete b_viewport_;
 }
 
 void
@@ -130,11 +130,11 @@ RayCaster::setInvModelView(const double* invModelView)
     invModelView_[15] = invModelView[15];
 
 #if DEBUG
-	fprintf(stdout, "RayCaster: new invModelView:\n %f, %f, %f, %f\n %f, %f, %f, %f\n %f, %f, %f, %f\n %f, %f, %f, %f\n",
-			invModelView[0], invModelView[1], invModelView[2], invModelView[3],
-			invModelView[4], invModelView[5], invModelView[6], invModelView[7],
-			invModelView[8], invModelView[9], invModelView[10], invModelView[11],
-			invModelView[12], invModelView[13], invModelView[14], invModelView[15]);
+  fprintf(stdout, "RayCaster: new invModelView:\n %f, %f, %f, %f\n %f, %f, %f, %f\n %f, %f, %f, %f\n %f, %f, %f, %f\n",
+      invModelView[0], invModelView[1], invModelView[2], invModelView[3],
+      invModelView[4], invModelView[5], invModelView[6], invModelView[7],
+      invModelView[8], invModelView[9], invModelView[10], invModelView[11],
+      invModelView[12], invModelView[13], invModelView[14], invModelView[15]);
 #endif
 }
 
@@ -147,11 +147,11 @@ RayCaster::setViewport(float x, float y, float width, float height)
     viewport_[3] = height;
 
 #if DEBUG
-	fprintf(stdout, "RayCaster: new viewport: %f, %f, %f, %f\n",
-			viewport_[0], viewport_[1], viewport_[2], viewport_[3]);
+  fprintf(stdout, "RayCaster: new viewport: %f, %f, %f, %f\n",
+      viewport_[0], viewport_[1], viewport_[2], viewport_[3]);
 #endif
 
-	b_viewport_->read(viewport_);
+  b_viewport_->read(viewport_);
 }
 
 void
@@ -162,30 +162,30 @@ RayCaster::render(const Buffer* buffer, unsigned width, unsigned height)
         return;
     }
 
-	Kernel* kernel = raycaster_program_.compile(
-									RayCaster_cl, "volume_render_kernel");
+  Kernel* kernel = raycaster_program_.compile(
+                  RayCaster_cl, "volume_render_kernel");
 
-	Buffer* b_imv = new Buffer(12*sizeof(float), CL_MEM_READ_ONLY);
-	b_imv->read(invModelView_);
+  Buffer* b_imv = new Buffer(12*sizeof(float), CL_MEM_READ_ONLY);
+  b_imv->read(invModelView_);
 
     // Calculate the block and grid sizes.
-	kernel->block2d(BX, BY);
+  kernel->block2d(BX, BY);
     kernel->grid2d((width+BX-1)/BX, (height+BY-1)/BY);
 
-	kernel->addBufferArg(buffer);
-	kernel->addArg(width);
-	kernel->addArg(height);
-	kernel->addArg(sampleDistance_);
-	kernel->addArg(rayIntensity_);
-	kernel->addArg(cutoff_);
-	kernel->addBufferArg(b_viewport_);
-	kernel->addBufferArg(b_imv);
-	kernel->addImageArg(volumeDescription_->image());
+  kernel->addBufferArg(buffer);
+  kernel->addArg(width);
+  kernel->addArg(height);
+  kernel->addArg(sampleDistance_);
+  kernel->addArg(rayIntensity_);
+  kernel->addArg(cutoff_);
+  kernel->addBufferArg(b_viewport_);
+  kernel->addBufferArg(b_imv);
+  kernel->addImageArg(volumeDescription_->image());
 
-	kernel->launch();
+  kernel->launch();
 
-	delete kernel;
-	delete b_imv;
+  delete kernel;
+  delete b_imv;
 }
 
 } } // namespace xromm::opencl

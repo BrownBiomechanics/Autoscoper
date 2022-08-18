@@ -114,7 +114,7 @@ int tiffImageDumpMeta(TiffImage* img)
     std::cout << "planarConfig: " << img->planarConfig << "\n";
     std::cout << "compression: " << img->compression << "\n";
     std::cout << "sampleFormat: " << img->sampleFormat << std::endl;
-	return 1;
+  return 1;
 }
 
 int tiffImageRead(TIFF* tif, TiffImage* img)
@@ -149,13 +149,13 @@ int tiffImageRead(TIFF* tif, TiffImage* img)
 
 TiffImage* tiffImageCopy(TiffImage* img)
 {
-	TiffImage* copy = (TiffImage*)malloc(sizeof(TiffImage));
-	if (!copy) {
+  TiffImage* copy = (TiffImage*)malloc(sizeof(TiffImage));
+  if (!copy) {
         printf("Unable to allocate space for TiffImage struct.\n");
         return 0;
     }
 
-	memcpy(copy, img, sizeof(TiffImage));
+  memcpy(copy, img, sizeof(TiffImage));
 
     // Allocate buffer for image data.
     img->data = malloc(img->dataSize);
@@ -164,9 +164,9 @@ TiffImage* tiffImageCopy(TiffImage* img)
         return 0;
     }
 
-	memcpy(copy->data, img->data, img->dataSize);
+  memcpy(copy->data, img->data, img->dataSize);
 
-	return copy;
+  return copy;
 }
 
 void tiffImageFree(TiffImage* img)

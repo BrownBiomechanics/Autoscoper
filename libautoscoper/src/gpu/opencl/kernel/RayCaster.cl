@@ -7,12 +7,12 @@ void volume_render_kernel(__global float* buffer,
                           __constant float* imv,
                           __read_only image3d_t image)
 {
-	const uint x = get_global_id(0);
+  const uint x = get_global_id(0);
     const uint y = get_global_id(1);
 
-	const sampler_t sampler = CLK_NORMALIZED_COORDS_TRUE |
-	                          CLK_ADDRESS_CLAMP |
-	                          CLK_FILTER_LINEAR;
+  const sampler_t sampler = CLK_NORMALIZED_COORDS_TRUE |
+                            CLK_ADDRESS_CLAMP |
+                            CLK_FILTER_LINEAR;
 
     if (x > width-1 || y > height-1) return;
 
@@ -24,13 +24,13 @@ void volume_render_kernel(__global float* buffer,
     const float3 look = step*normalize((float3)(u, v, -2.f));
 
     // Calculate the ray in world space.
-	// Origin is the last column of the invModelView matrix
-	const float3 ray_origin = (float3)(imv[3], imv[7], imv[11]);
-	// Direction is the invModelView x look
-	const float3 ray_direction = (float3)(
-							dot((float3)(imv[0], imv[1], imv[2]), look),
-							dot((float3)(imv[4], imv[5], imv[6]), look),
-							dot((float3)(imv[8], imv[9], imv[10]), look));
+  // Origin is the last column of the invModelView matrix
+  const float3 ray_origin = (float3)(imv[3], imv[7], imv[11]);
+  // Direction is the invModelView x look
+  const float3 ray_direction = (float3)(
+              dot((float3)(imv[0], imv[1], imv[2]), look),
+              dot((float3)(imv[4], imv[5], imv[6]), look),
+              dot((float3)(imv[8], imv[9], imv[10]), look));
 
     // Find intersection with box.
     const float3 boxMin = (float3)(0.f, 0.f, -1.f);
@@ -45,16 +45,16 @@ void volume_render_kernel(__global float* buffer,
     const float3 tMax = max(tTop, tBot);
 
     // Find the largest tMin and the smallest tMax.
-	float near = max(max(tMin.x, tMin.y), tMin.z);
-	float far = min(min(tMax.x, tMax.y), tMax.z);
+  float near = max(max(tMin.x, tMin.y), tMin.z);
+  float far = min(min(tMax.x, tMax.y), tMax.z);
 
-	if (!(far > near)) {
+  if (!(far > near)) {
         buffer[y*width+x] = 0.f;
         return;
     }
 
     // Clamp to near plane.
-	if (near < 0.f) near = 0.f;
+  if (near < 0.f) near = 0.f;
 
     // Preform the ray marching from back to front.
     float t = far;

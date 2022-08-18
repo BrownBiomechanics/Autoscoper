@@ -86,7 +86,7 @@ function(ExternalProject_BuildAndInstallNow EXT_PROJECT_NAME RELPATH_TO_CMAKELIS
     execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" ${SRC_DIR} ${CMAKE_CONFIG_OPTIONS} WORKING_DIRECTORY ${BUILD_DIR})
 
     h2("Building external project ${EXT_PROJECT_NAME}.  (This may take some time...)")
-	execute_process(COMMAND "${CMAKE_COMMAND}" --build ${BUILD_DIR} --target install --config Debug)
+  execute_process(COMMAND "${CMAKE_COMMAND}" --build ${BUILD_DIR} --target install --config Debug)
     execute_process(COMMAND "${CMAKE_COMMAND}" --build ${BUILD_DIR} --target install --config Release)
 
     h2("Completed external build of ${EXT_PROJECT_NAME}.")

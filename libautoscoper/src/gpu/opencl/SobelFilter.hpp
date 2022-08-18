@@ -53,7 +53,7 @@ class SobelFilter : public Filter
 {
 public:
     SobelFilter();
-	virtual ~SobelFilter() {}
+  virtual ~SobelFilter() {}
 
     // Apply the filter to the input image
     virtual void apply(const Buffer* input,

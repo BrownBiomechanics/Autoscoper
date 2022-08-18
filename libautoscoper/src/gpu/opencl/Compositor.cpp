@@ -52,29 +52,29 @@ static Program compositor_kernel_;
 
 void composite(const Buffer* src1,
                const Buffer* src2,
-			   const Buffer* src3,
-			   const Buffer* src4,
+         const Buffer* src3,
+         const Buffer* src4,
                const GLBuffer* dest,
                unsigned width,
                unsigned height)
 {
-	Kernel* kernel = compositor_kernel_.compile(
-										Compositor_cl, "composite_kernel");
+  Kernel* kernel = compositor_kernel_.compile(
+                    Compositor_cl, "composite_kernel");
 
     kernel->block2d(BX, BY);
-	kernel->grid2d((width+BX-1)/BX, (height+BY-1)/BY);
+  kernel->grid2d((width+BX-1)/BX, (height+BY-1)/BY);
 
-	kernel->addBufferArg(src1);
-	kernel->addBufferArg(src2);
-	kernel->addBufferArg(src3);
-	kernel->addBufferArg(src4);
-	kernel->addGLBufferArg(dest);
-	kernel->addArg(width);
-	kernel->addArg(height);
+  kernel->addBufferArg(src1);
+  kernel->addBufferArg(src2);
+  kernel->addBufferArg(src3);
+  kernel->addBufferArg(src4);
+  kernel->addGLBufferArg(dest);
+  kernel->addArg(width);
+  kernel->addArg(height);
 
-	kernel->launch();
+  kernel->launch();
 
-	delete kernel;
+  delete kernel;
 }
 
 } // namespace gpu

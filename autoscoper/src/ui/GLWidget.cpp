@@ -70,13 +70,13 @@ GLWidget::GLWidget(QWidget *parent)
 {
     setAutoFillBackground(false);
 
-	viewdata.zoom = 1.0f;
+  viewdata.zoom = 1.0f;
     viewdata.zoom_x = 0.0f;
     viewdata.zoom_y = 0.0f;
 }
 
 void GLWidget::initializeGL(){
-	glDisable(GL_LIGHTING);
+  glDisable(GL_LIGHTING);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -86,7 +86,7 @@ void GLWidget::initializeGL(){
 }
 
 void GLWidget::resizeGL(int w, int h){
-	viewdata.window_width = w;
+  viewdata.window_width = w;
     viewdata.window_height = h;
 
     // Prevent divie by 0.
@@ -97,13 +97,13 @@ void GLWidget::resizeGL(int w, int h){
     viewdata.ratio = (float)viewdata.window_width/(float)viewdata.window_height;
 
 #ifdef WITH_CUDA
-	// Unregister and delete the pixel buffer if it already exists.
+  // Unregister and delete the pixel buffer if it already exists.
     if (!glIsBufferARB(viewdata.pbo)) {
         CALL_GL(glDeleteBuffersARB(1, &viewdata.pbo));
         CALL_GL(glGenBuffersARB(1, &viewdata.pbo));
     }
 
-	// Create a pixel buffer object.
+  // Create a pixel buffer object.
     CALL_GL(glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, viewdata.pbo));
     CALL_GL(glBufferDataARB(GL_PIXEL_UNPACK_BUFFER_ARB,
                 3*viewdata.window_width*viewdata.window_height*sizeof(float),
@@ -111,15 +111,15 @@ void GLWidget::resizeGL(int w, int h){
                 GL_STREAM_DRAW_ARB));
     CALL_GL(glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0));
 #else
-	// Unregister and delete the pixel buffer if it already exists.
-	if (!glIsBuffer(viewdata.pbo)) {
+  // Unregister and delete the pixel buffer if it already exists.
+  if (!glIsBuffer(viewdata.pbo)) {
         CALL_GL(glDeleteBuffers(1, &viewdata.pbo));
-		CALL_GL(glGenBuffers(1, &viewdata.pbo));
+    CALL_GL(glGenBuffers(1, &viewdata.pbo));
     }
 
-	// Create a pixel buffer object.
+  // Create a pixel buffer object.
     //glGenBuffersARB(1, &view->pbo);
-	CALL_GL(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, viewdata.pbo));
+  CALL_GL(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, viewdata.pbo));
     CALL_GL(glBufferData(GL_PIXEL_UNPACK_BUFFER,
                 3*viewdata.window_width*viewdata.window_height*sizeof(float),
                 0,
@@ -141,7 +141,7 @@ void GLWidget::resizeGL(int w, int h){
 
 void GLWidget::update_viewport(ViewData* view)
 {
-	 if (view->m_isStaticView) {
+   if (view->m_isStaticView) {
 
         view->zoom = 1.0f;
         view->zoom_x = 0.0f;

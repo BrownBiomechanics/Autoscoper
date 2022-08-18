@@ -51,29 +51,29 @@
 #include <QOpenGLContext>
 
 CameraViewWidget::CameraViewWidget(int id, View * view, QString name,QWidget *parent) :
-											QWidget(parent),
-												widget(new Ui::CameraViewWidget){
-	widget->setupUi(this);
-	m_name = name;
-	m_id = id;
-	widget->cameraTitleLabel->setText(m_name);
-	widget->glView->setView(view);
-	mainwindow  = dynamic_cast <AutoscoperMainWindow *> ( parent);
+                      QWidget(parent),
+                        widget(new Ui::CameraViewWidget){
+  widget->setupUi(this);
+  m_name = name;
+  m_id = id;
+  widget->cameraTitleLabel->setText(m_name);
+  widget->glView->setView(view);
+  mainwindow  = dynamic_cast <AutoscoperMainWindow *> ( parent);
 }
 
 CameraViewWidget::~CameraViewWidget(){
-	delete widget;
+  delete widget;
 }
 
 void CameraViewWidget::setSharedGLContext(QOpenGLContext * sharedContext){
-	widget->glView->context()->setShareContext(sharedContext);
-	widget->glView->context()->create();
+  widget->glView->context()->setShareContext(sharedContext);
+  widget->glView->context()->create();
 }
 
 void CameraViewWidget::draw(){
-	widget->glView->update();
+  widget->glView->update();
 }
 
 void CameraViewWidget::saveFrame(QString filename){
-	widget->glView->saveView(filename.toStdString().c_str());
+  widget->glView->saveView(filename.toStdString().c_str());
 }

@@ -66,7 +66,7 @@ private:
     RadRenderer(const RadRenderer& renderer);
     RadRenderer& operator=(const RadRenderer& renderer);
 
-	Image* image_;
+  Image* image_;
     float image_plane_[4];
     float viewport_[4];
     std::string name_;

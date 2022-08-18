@@ -10,7 +10,7 @@ option(BUILD_WITH_CUDA "Build With CUDA instead of OpenCL" ON)
 
 #SET BUILD-TYPE TO RELEASE IF NOT DEFINED
 if(NOT CMAKE_BUILD_TYPE)
-	set(CMAKE_BUILD_TYPE Release)
+  set(CMAKE_BUILD_TYPE Release)
 endif()
 
 if(NOT CMAKE_DEBUG_POSTFIX)
@@ -34,7 +34,7 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
 if(BUILD_WITH_CUDA)
-	add_definitions(-DWITH_CUDA)
+  add_definitions(-DWITH_CUDA)
 endif()
 
 #ADD QT4 SUPPORT
@@ -69,17 +69,17 @@ add_subdirectory (libautoscoper)
 add_subdirectory (autoscoper)
 
 if(WIN32)
-	file(GLOB external_dlls "${CMAKE_INSTALL_PREFIX}/external/bin/*.dll")
-	file(GLOB external_dllsd "${CMAKE_INSTALL_PREFIX}/external/bin/*d.dll")
-	list(REMOVE_ITEM external_dlls ${external_dllsd})
+  file(GLOB external_dlls "${CMAKE_INSTALL_PREFIX}/external/bin/*.dll")
+  file(GLOB external_dllsd "${CMAKE_INSTALL_PREFIX}/external/bin/*d.dll")
+  list(REMOVE_ITEM external_dlls ${external_dllsd})
 
-	install(FILES ${external_dlls} DESTINATION bin/Release CONFIGURATIONS Release)
-	install(FILES ${external_dllsd} DESTINATION bin/Debug CONFIGURATIONS Debug)
+  install(FILES ${external_dlls} DESTINATION bin/Release CONFIGURATIONS Release)
+  install(FILES ${external_dllsd} DESTINATION bin/Debug CONFIGURATIONS Debug)
 
-	file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/Release)
+  file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/Release)
 
 endif()
 
 if(UNIX)
-	file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+  file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 endif()
