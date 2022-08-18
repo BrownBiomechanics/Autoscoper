@@ -80,13 +80,13 @@ public:
         return cutoff_;
     }
 
-	float getMinCutoff() const {
-		return volumeDescription_->minValue();
-	}
+  float getMinCutoff() const {
+    return volumeDescription_->minValue();
+  }
 
-	float getMaxCutoff() const {
-		return volumeDescription_->maxValue();
-	}
+  float getMaxCutoff() const {
+    return volumeDescription_->maxValue();
+  }
 
     void setCutoff(float cutoff) {
         cutoff_ = cutoff;
@@ -104,7 +104,7 @@ private:
     VolumeDescription* volumeDescription_;
     float invModelView_[16];
     float viewport_[4];
-	Buffer* b_viewport_;
+  Buffer* b_viewport_;
     float sampleDistance_;
     float rayIntensity_;
     float cutoff_;

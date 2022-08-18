@@ -51,43 +51,43 @@
 
 
 FilterDockWidget::FilterDockWidget(QWidget *parent) :
-										QDockWidget(parent),
-										dock(new Ui::FilterDockWidget){
-	dock->setupUi(this);
+                    QDockWidget(parent),
+                    dock(new Ui::FilterDockWidget){
+  dock->setupUi(this);
 
-	mainwindow  = dynamic_cast <AutoscoperMainWindow *> ( parent);
+  mainwindow  = dynamic_cast <AutoscoperMainWindow *> ( parent);
 }
 
 FilterDockWidget::~FilterDockWidget(){
-	delete dock;
+  delete dock;
 }
 
 void FilterDockWidget::clearTree(){
-	int n = dock->treeWidget->topLevelItemCount();
-	while (n != 0)
-	{
-		n = dock->treeWidget->topLevelItemCount();
-		dock->treeWidget->takeTopLevelItem(0);
-	}
+  int n = dock->treeWidget->topLevelItemCount();
+  while (n != 0)
+  {
+    n = dock->treeWidget->topLevelItemCount();
+    dock->treeWidget->takeTopLevelItem(0);
+  }
 }
 
 void FilterDockWidget::toggle_drrs(){
-	dock->treeWidget->toggle_drrs();
+  dock->treeWidget->toggle_drrs();
 }
 
 void FilterDockWidget::saveAllSettings(QString directory){
-	dock->treeWidget->saveAllSettings(directory);
+  dock->treeWidget->saveAllSettings(directory);
 }
 
 void FilterDockWidget::loadAllSettings(QString directory){
-	dock->treeWidget->loadAllSettings(directory);
+  dock->treeWidget->loadAllSettings(directory);
 }
 
 void FilterDockWidget::loadFilterSettings(int camera, QString filename)
 {
-	dock->treeWidget->loadFilterSettings(camera, filename);
+  dock->treeWidget->loadFilterSettings(camera, filename);
 }
 
 void FilterDockWidget::addCamera(View * view){
-	dock->treeWidget->addCamera(view);
+  dock->treeWidget->addCamera(view);
 }

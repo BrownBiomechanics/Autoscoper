@@ -52,34 +52,34 @@ namespace xromm { namespace gpu {
 class SharpenFilter : public Filter
 {
 public:
-	SharpenFilter();
-	virtual ~SharpenFilter();
+  SharpenFilter();
+  virtual ~SharpenFilter();
 
-	// Apply the filter to the input image
+  // Apply the filter to the input image
     virtual void apply(const Buffer* input,
                        Buffer* output,
                        int width,
                        int height);
 
-	// Accessors and mutators
-	float radius() const { return radius_; }
-	void set_radius(float radius);
+  // Accessors and mutators
+  float radius() const { return radius_; }
+  void set_radius(float radius);
 
-	float contrast() const { return contrast_; }
-	void set_contrast(float contrast);
+  float contrast() const { return contrast_; }
+  void set_contrast(float contrast);
 
-	float threshold() const {return threshold_; }
-	void set_threshold(float threshold);
+  float threshold() const {return threshold_; }
+  void set_threshold(float threshold);
 
 private:
-	float radius_;
-	float contrast_;
-	float threshold_;
+  float radius_;
+  float contrast_;
+  float threshold_;
 
-	Buffer* sharpen_;
-	int filterSize_;
+  Buffer* sharpen_;
+  int filterSize_;
 
-	void makeFilter();
+  void makeFilter();
 };
 
 } } // namespace xromm::opencl

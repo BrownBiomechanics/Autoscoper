@@ -41,31 +41,31 @@ struct Mat2
 
     Mat2()
     {
-		data[0][0] = T(1);
-		data[0][1] = T(0);
-		data[1][0] = T(0);
-		data[1][1] = T(1);
-	}
+    data[0][0] = T(1);
+    data[0][1] = T(0);
+    data[1][0] = T(0);
+    data[1][1] = T(1);
+  }
 
     //! Constructs a matrix from the specified elements
 
     Mat2(const T& m00, const T& m01, const T& m10, const T& m11)
     {
-		data[0][0] = m00;
-		data[0][1] = m01;
-		data[1][0] = m10;
-		data[1][1] = m11;
-	}
+    data[0][0] = m00;
+    data[0][1] = m01;
+    data[1][0] = m10;
+    data[1][1] = m11;
+  }
 
     //! Constructs a matrix from the specified m
 
     explicit Mat2(const T* m)
     {
-		data[0][0] = m[0];
-		data[0][1] = m[1];
-		data[1][0] = m[3];
-		data[1][1] = m[4];
-	}
+    data[0][0] = m[0];
+    data[0][1] = m[1];
+    data[1][0] = m[3];
+    data[1][1] = m[4];
+  }
 
     //! Constructs a matrix with the specified vectors as columns
 
@@ -127,16 +127,16 @@ struct Mat2
 
     static Mat2 scale(const T& sx, const T& sy)
     {
-		return Mat2(sx,T(0),T(0),sy);
-	}
+    return Mat2(sx,T(0),T(0),sy);
+  }
 
     // Returns a rotation matrix
 
     static Mat2 rot(const T& rad)
     {
-		T sin_rad = sin(rad);
-		T cos_rad = cos(rad);
-	    return Mat2(cos_rad,-sin_rad,sin_rad,cos_rad);
+    T sin_rad = sin(rad);
+    T cos_rad = cos(rad);
+      return Mat2(cos_rad,-sin_rad,sin_rad,cos_rad);
     }
 
     // Swaps this matrix with the specified matrix
@@ -412,16 +412,16 @@ struct Mat3
 
     Mat3()
     {
-		data[0][0] = T(1);
-		data[0][1] = T(0);
-		data[0][2] = T(0);
-		data[1][0] = T(0);
-		data[1][1] = T(1);
-		data[1][2] = T(0);
-		data[2][0] = T(0);
-		data[2][1] = T(0);
-		data[2][2] = T(1);
-	}
+    data[0][0] = T(1);
+    data[0][1] = T(0);
+    data[0][2] = T(0);
+    data[1][0] = T(0);
+    data[1][1] = T(1);
+    data[1][2] = T(0);
+    data[2][0] = T(0);
+    data[2][1] = T(0);
+    data[2][2] = T(1);
+  }
 
     //! Constructs a matrix from the specified elements
 
@@ -429,45 +429,45 @@ struct Mat3
          const T& m10, const T& m11, const T& m12,
          const T& m20, const T& m21, const T& m22)
     {
-		data[0][0] = m00;
-		data[0][1] = m01;
-		data[0][2] = m02;
-		data[1][0] = m10;
-		data[1][1] = m11;
-		data[1][2] = m12;
-		data[2][0] = m20;
-		data[2][1] = m21;
-		data[2][2] = m22;
-	}
+    data[0][0] = m00;
+    data[0][1] = m01;
+    data[0][2] = m02;
+    data[1][0] = m10;
+    data[1][1] = m11;
+    data[1][2] = m12;
+    data[2][0] = m20;
+    data[2][1] = m21;
+    data[2][2] = m22;
+  }
 
     //! Constructs a matrix from the specified array
 
     explicit Mat3(const T* m)
     {
-		data[0][0] = m[0];
-		data[0][1] = m[1];
-		data[0][2] = m[2];
-		data[1][0] = m[3];
-		data[1][1] = m[4];
-		data[1][2] = m[5];
-		data[2][0] = m[6];
-		data[2][1] = m[7];
-		data[2][2] = m[8];
-	}
+    data[0][0] = m[0];
+    data[0][1] = m[1];
+    data[0][2] = m[2];
+    data[1][0] = m[3];
+    data[1][1] = m[4];
+    data[1][2] = m[5];
+    data[2][0] = m[6];
+    data[2][1] = m[7];
+    data[2][2] = m[8];
+  }
 
     //! Constructs a matrix with the specified vectors as columns
 
     Mat3(const Vec3<T>& u, const Vec3<T>& v, const Vec3<T>& n)
     {
-		data[0][0] = u.x;
-		data[0][1] = v.x;
-		data[0][2] = n.x;
-		data[1][0] = u.y;
-		data[1][1] = v.y;
-		data[1][2] = n.y;
-		data[2][0] = u.z;
-		data[2][1] = v.z;
-		data[2][2] = n.z;
+    data[0][0] = u.x;
+    data[0][1] = v.x;
+    data[0][2] = n.x;
+    data[1][0] = u.y;
+    data[1][1] = v.y;
+    data[1][2] = n.y;
+    data[2][0] = u.z;
+    data[2][1] = v.z;
+    data[2][2] = n.z;
     }
 
     //! Constructs an affine transformation from the specified matrix
@@ -535,41 +535,41 @@ struct Mat3
 
     static Mat3 scale(const T& sx, const T& sy, const T& sz)
     {
-		return Mat3(sx,T(0),T(0),T(0),sy,T(0),T(0),T(0),sz);
-	}
+    return Mat3(sx,T(0),T(0),T(0),sy,T(0),T(0),T(0),sz);
+  }
 
     //! Returns a matrix representing a rotation around the x-axis
 
     static Mat3 rot_x(const T& rad)
     {
-		T sin_rad = sin(rad);
-		T cos_rad = cos(rad);
-		return Mat3(T(1),T(0),T(0),
+    T sin_rad = sin(rad);
+    T cos_rad = cos(rad);
+    return Mat3(T(1),T(0),T(0),
                     T(0),cos_rad,-sin_rad,
                     T(0),sin_rad, cos_rad);
-	}
+  }
 
     //! Returns a matrix representing a rotation around the y-axis
 
     static Mat3 rot_y(const T& rad)
     {
-		T sin_rad = sin(rad);
-		T cos_rad = cos(rad);
-		return Mat3( cos_rad,T(0),sin_rad,
+    T sin_rad = sin(rad);
+    T cos_rad = cos(rad);
+    return Mat3( cos_rad,T(0),sin_rad,
                      T(0),T(1),T(0),
                     -sin_rad,T(0),cos_rad);
-	}
+  }
 
     //! Returns a matrix representing a rotation around the z-axis
 
     static Mat3 rot_z(const T& rad)
     {
-		T sin_rad = sin(rad);
-		T cos_rad = cos(rad);
-		return Mat3(cos_rad,-sin_rad,T(0),
+    T sin_rad = sin(rad);
+    T cos_rad = cos(rad);
+    return Mat3(cos_rad,-sin_rad,T(0),
                     sin_rad, cos_rad,T(0),
                     T(0),T(0),T(1));
-	}
+  }
 
     //! Returns a matrix representing a rotation around specified axis
 
@@ -807,23 +807,23 @@ struct Mat3
                        m(2,0)*v.x+m(2,1)*v.y+m(2,2)*v.z);
     }
 
-	//! Returns the point transformed by the specified matrix
+  //! Returns the point transformed by the specified matrix
 
-	friend Vec2<T> mul_pt(const Mat3& m, const Vec2<T>& p)
-	{
-		T w = m(2,0)*p.x+m(2,1)*p.y+m(2,2);
-		return Vec3<T>((m(0,0)*p.x+m(0,1)*p.y+m(0,2))/w,
-					   (m(1,0)*p.x+m(1,1)*p.y+m(1,2))/w);
-	}
+  friend Vec2<T> mul_pt(const Mat3& m, const Vec2<T>& p)
+  {
+    T w = m(2,0)*p.x+m(2,1)*p.y+m(2,2);
+    return Vec3<T>((m(0,0)*p.x+m(0,1)*p.y+m(0,2))/w,
+             (m(1,0)*p.x+m(1,1)*p.y+m(1,2))/w);
+  }
 
-	//! Returns the vector transformed by the specified matrix
+  //! Returns the vector transformed by the specified matrix
 
-	friend Vec3<T> mul_vec(const Mat3& m, const Vec2<T>& v)
-	{
-		return Vec3<T>(m(0,0)*v.x+m(0,1)*v.y,m(1,0)*v.x+m(1,1)*v.y);
-	}
+  friend Vec3<T> mul_vec(const Mat3& m, const Vec2<T>& v)
+  {
+    return Vec3<T>(m(0,0)*v.x+m(0,1)*v.y,m(1,0)*v.x+m(1,1)*v.y);
+  }
 
-	//! Returns m*inv(n)
+  //! Returns m*inv(n)
 
     friend Mat3 operator/(const Mat3& m, const Mat3& n)
     {
@@ -985,23 +985,23 @@ struct Mat4
 
     Mat4()
     {
-		data[0][0] = T(1);
-		data[0][1] = T(0);
-		data[0][2] = T(0);
-		data[0][3] = T(0);
-		data[1][0] = T(0);
-		data[1][1] = T(1);
-		data[1][2] = T(0);
-		data[1][3] = T(0);
-		data[2][0] = T(0);
-		data[2][1] = T(0);
-		data[2][2] = T(1);
-		data[2][3] = T(0);
-		data[3][0] = T(0);
-		data[3][1] = T(0);
-		data[3][2] = T(0);
-		data[3][3] = T(1);
-	}
+    data[0][0] = T(1);
+    data[0][1] = T(0);
+    data[0][2] = T(0);
+    data[0][3] = T(0);
+    data[1][0] = T(0);
+    data[1][1] = T(1);
+    data[1][2] = T(0);
+    data[1][3] = T(0);
+    data[2][0] = T(0);
+    data[2][1] = T(0);
+    data[2][2] = T(1);
+    data[2][3] = T(0);
+    data[3][0] = T(0);
+    data[3][1] = T(0);
+    data[3][2] = T(0);
+    data[3][3] = T(1);
+  }
 
     //! Constructs a matrix from the specified elements
 
@@ -1010,66 +1010,66 @@ struct Mat4
          const T& m20, const T& m21, const T& m22, const T& m23,
          const T& m30, const T& m31, const T& m32, const T& m33)
     {
-		data[0][0] = m00;
-		data[0][1] = m01;
-		data[0][2] = m02;
-		data[0][3] = m03;
-		data[1][0] = m10;
-		data[1][1] = m11;
-		data[1][2] = m12;
-		data[1][3] = m13;
-		data[2][0] = m20;
-		data[2][1] = m21;
-		data[2][2] = m22;
-		data[2][3] = m23;
-		data[3][0] = m30;
-		data[3][1] = m31;
-		data[3][2] = m32;
-		data[3][3] = m33;
-	}
+    data[0][0] = m00;
+    data[0][1] = m01;
+    data[0][2] = m02;
+    data[0][3] = m03;
+    data[1][0] = m10;
+    data[1][1] = m11;
+    data[1][2] = m12;
+    data[1][3] = m13;
+    data[2][0] = m20;
+    data[2][1] = m21;
+    data[2][2] = m22;
+    data[2][3] = m23;
+    data[3][0] = m30;
+    data[3][1] = m31;
+    data[3][2] = m32;
+    data[3][3] = m33;
+  }
 
     //! Constructs a matrix from the specified m
 
-	explicit Mat4(const T* m)
+  explicit Mat4(const T* m)
     {
-		data[0][0] = m[0];
-		data[0][1] = m[1];
-		data[0][2] = m[2];
-		data[0][3] = m[3];
-		data[1][0] = m[4];
-		data[1][1] = m[5];
-		data[1][2] = m[6];
-		data[1][3] = m[7];
-		data[2][0] = m[8];
-		data[2][1] = m[9];
-		data[2][2] = m[10];
-		data[2][3] = m[11];
-		data[3][0] = m[12];
-		data[3][1] = m[13];
-		data[3][2] = m[14];
-		data[3][3] = m[15];
-	}
+    data[0][0] = m[0];
+    data[0][1] = m[1];
+    data[0][2] = m[2];
+    data[0][3] = m[3];
+    data[1][0] = m[4];
+    data[1][1] = m[5];
+    data[1][2] = m[6];
+    data[1][3] = m[7];
+    data[2][0] = m[8];
+    data[2][1] = m[9];
+    data[2][2] = m[10];
+    data[2][3] = m[11];
+    data[3][0] = m[12];
+    data[3][1] = m[13];
+    data[3][2] = m[14];
+    data[3][3] = m[15];
+  }
 
     //! Constructs a matrix with the specified vectors as columns
 
     Mat4(const Vec4<T>& u, const Vec4<T>& v, const Vec4<T>& n, const Vec4<T>& t)
     {
-		data[0][0] = u.x;
-		data[0][1] = v.x;
-		data[0][2] = n.x;
-		data[0][3] = t.x;
-		data[1][0] = u.y;
-		data[1][1] = v.y;
-		data[1][2] = n.y;
-		data[1][3] = t.y;
-		data[2][0] = u.z;
-		data[2][1] = v.z;
-		data[2][2] = n.z;
-		data[2][3] = t.z;
-		data[3][0] = u.w;
-		data[3][1] = v.w;
-		data[3][2] = n.w;
-		data[3][3] = t.w;
+    data[0][0] = u.x;
+    data[0][1] = v.x;
+    data[0][2] = n.x;
+    data[0][3] = t.x;
+    data[1][0] = u.y;
+    data[1][1] = v.y;
+    data[1][2] = n.y;
+    data[1][3] = t.y;
+    data[2][0] = u.z;
+    data[2][1] = v.z;
+    data[2][2] = n.z;
+    data[2][3] = t.z;
+    data[3][0] = u.w;
+    data[3][1] = v.w;
+    data[3][2] = n.w;
+    data[3][3] = t.w;
     }
 
     //! Constructs a matrix from the specified matrix
@@ -1154,20 +1154,20 @@ struct Mat4
         return m;
     }
 
-	//! Returns a scaleonal matrix
+  //! Returns a scaleonal matrix
 
-	static Mat4 scale(const T& sx, const T& sy, const T& sz, const T& sw)
-	{
-		return Mat4(sx,T(0),T(0),T(0),
-					T(0),sy,T(0),T(0),
-					T(0),T(0),sz,T(0),
-					T(0),T(0),T(0),sw);
-	}
+  static Mat4 scale(const T& sx, const T& sy, const T& sz, const T& sw)
+  {
+    return Mat4(sx,T(0),T(0),T(0),
+          T(0),sy,T(0),T(0),
+          T(0),T(0),sz,T(0),
+          T(0),T(0),T(0),sw);
+  }
 
     //! Returns a perspective projection matrix
 
     static Mat4 persp(const T& fovy, const T& aspect,
-					  const T& near, const T& far)
+            const T& near, const T& far)
     {
         T top = near*tan(fovy/T(2));
         T right = aspect*top;
@@ -1449,24 +1449,24 @@ struct Mat4
                        m(3,0)*v.x+m(3,1)*v.y+m(3,2)*v.z+m(3,3)*v.w);
     }
 
-	//! Returns the point transformed by the specified matrix
+  //! Returns the point transformed by the specified matrix
 
-	friend Vec3<T> mul_pt(const Mat4& m, const Vec3<T>& p)
-	{
-		T w = m(3,0)*p.x+m(3,1)*p.y+m(3,2)*p.z+m(3,3);
-		return Vec3<T>((m(0,0)*p.x+m(0,1)*p.y+m(0,2)*p.z+m(0,3))/w,
-					   (m(1,0)*p.x+m(1,1)*p.y+m(1,2)*p.z+m(1,3))/w,
-					   (m(2,0)*p.x+m(2,1)*p.y+m(2,2)*p.z+m(2,3))/w);
-	}
+  friend Vec3<T> mul_pt(const Mat4& m, const Vec3<T>& p)
+  {
+    T w = m(3,0)*p.x+m(3,1)*p.y+m(3,2)*p.z+m(3,3);
+    return Vec3<T>((m(0,0)*p.x+m(0,1)*p.y+m(0,2)*p.z+m(0,3))/w,
+             (m(1,0)*p.x+m(1,1)*p.y+m(1,2)*p.z+m(1,3))/w,
+             (m(2,0)*p.x+m(2,1)*p.y+m(2,2)*p.z+m(2,3))/w);
+  }
 
-	//! Returns the vector transformed by the specified matrix
+  //! Returns the vector transformed by the specified matrix
 
-	friend Vec3<T> mul_vec(const Mat4& m, const Vec3<T>& v)
-	{
-		return Vec3<T>(m(0,0)*v.x+m(0,1)*v.y+m(0,2)*v.z,
-					   m(1,0)*v.x+m(1,1)*v.y+m(1,2)*v.z,
-					   m(2,0)*v.x+m(2,1)*v.y+m(2,2)*v.z);
-	}
+  friend Vec3<T> mul_vec(const Mat4& m, const Vec3<T>& v)
+  {
+    return Vec3<T>(m(0,0)*v.x+m(0,1)*v.y+m(0,2)*v.z,
+             m(1,0)*v.x+m(1,1)*v.y+m(1,2)*v.z,
+             m(2,0)*v.x+m(2,1)*v.y+m(2,2)*v.z);
+  }
 
     //! Returns the result of m*inv(n)
 

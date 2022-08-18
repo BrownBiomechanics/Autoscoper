@@ -72,13 +72,13 @@ public:
 
     virtual ~Manip3D() {}
 
-	void set_movePivot(bool movePivot){ movePivot_ = movePivot;}
+  void set_movePivot(bool movePivot){ movePivot_ = movePivot;}
 
-	bool get_movePivot() const { return movePivot_; }
+  bool get_movePivot() const { return movePivot_; }
 
-	void set_pivotSize(double pivotSize){ pivotSize_ = pivotSize;}
+  void set_pivotSize(double pivotSize){ pivotSize_ = pivotSize;}
 
-	double get_pivotSize() const { return pivotSize_; }
+  double get_pivotSize() const { return pivotSize_; }
 
     //! Sets the manipulator to be visible or not. If the manipulator is not
     //! visible, then it will not respond to mouse events.
@@ -206,9 +206,9 @@ private:
 
     Vec3d point2_;
 
-	bool movePivot_;
+  bool movePivot_;
 
-	double pivotSize_;
+  double pivotSize_;
 };
 
 #endif // MANIP_3D_HPP

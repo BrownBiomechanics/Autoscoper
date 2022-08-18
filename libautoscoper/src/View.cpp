@@ -83,19 +83,19 @@ namespace xromm { namespace gpu
 
 View::View(Camera& camera)
 {
-	camera_ = &camera;
-	drr_enabled = true;
-	rad_enabled = true;
-	radRenderer_ = new RadRenderer();
-	backgroundRenderer_ = new BackgroundRenderer();
-	maxWidth_ = 3000;
-	maxHeight_ = 3000;
-	drrFilterBuffer_ = 0;
-	radBuffer_ = 0;
-	radFilterBuffer_ = 0;
-	filterBuffer_ = 0;
-	backgroundThreshold_ = -1.0f;
-	inited_ = false;
+  camera_ = &camera;
+  drr_enabled = true;
+  rad_enabled = true;
+  radRenderer_ = new RadRenderer();
+  backgroundRenderer_ = new BackgroundRenderer();
+  maxWidth_ = 3000;
+  maxHeight_ = 3000;
+  drrFilterBuffer_ = 0;
+  radBuffer_ = 0;
+  radFilterBuffer_ = 0;
+  filterBuffer_ = 0;
+  backgroundThreshold_ = -1.0f;
+  inited_ = false;
 }
 
 View::~View()
@@ -109,51 +109,51 @@ View::~View()
         delete *iter;
     }
 #ifdef WITH_CUDA
-	cutilSafeCall(cudaFree(filterBuffer_));
-	for(int i = 0; i < drrBuffer_.size(); i++){
-		cutilSafeCall(cudaFree(drrBuffer_[i]));
-	}
-	cutilSafeCall(cudaFree(drrBufferMerged_));
+  cutilSafeCall(cudaFree(filterBuffer_));
+  for(int i = 0; i < drrBuffer_.size(); i++){
+    cutilSafeCall(cudaFree(drrBuffer_[i]));
+  }
+  cutilSafeCall(cudaFree(drrBufferMerged_));
     cutilSafeCall(cudaFree(drrFilterBuffer_));
     cutilSafeCall(cudaFree(radBuffer_));
     cutilSafeCall(cudaFree(radFilterBuffer_));
-	cutilSafeCall(cudaFree(backgroundmask_));
-	cutilSafeCall(cudaFree(drr_mask_));
+  cutilSafeCall(cudaFree(backgroundmask_));
+  cutilSafeCall(cudaFree(drr_mask_));
 #else
     delete filterBuffer_;
-	for (int i = 0; i < drrBuffer_.size(); i++){
-		delete drrBuffer_[i];
-	}
-	delete drrBufferMerged_;
-	delete drrFilterBuffer_;
+  for (int i = 0; i < drrBuffer_.size(); i++){
+    delete drrBuffer_[i];
+  }
+  delete drrBufferMerged_;
+  delete drrFilterBuffer_;
     delete drrFilterBuffer_;
     delete radBuffer_;
     delete radFilterBuffer_;
 
-	delete backgroundmask_;
-	delete drr_mask_;
+  delete backgroundmask_;
+  delete drr_mask_;
 #endif
-	drrBuffer_.clear();
+  drrBuffer_.clear();
 
-	for (int i = 0; i < drrRenderer_.size(); i++) {
-		delete drrRenderer_[i];
-	}
-	delete radRenderer_;
-	delete backgroundRenderer_;
+  for (int i = 0; i < drrRenderer_.size(); i++) {
+    delete drrRenderer_[i];
+  }
+  delete radRenderer_;
+  delete backgroundRenderer_;
 }
 
 void View::addDrrRenderer(){
-	drrRenderer_.push_back(new RayCaster());
-	drrBuffer_.push_back(0);
+  drrRenderer_.push_back(new RayCaster());
+  drrBuffer_.push_back(0);
 }
 
 void
 View::renderRad(Buffer* buffer, unsigned width, unsigned height)
 {
 #ifdef WITH_CUDA
-	init();
+  init();
 
-	if (width > maxWidth_ || height > maxHeight_) {
+  if (width > maxWidth_ || height > maxHeight_) {
         cerr << "View::renderRad(): ERROR: Buffer too large." << endl;
     }
     if (width > maxWidth_) {
@@ -166,7 +166,7 @@ View::renderRad(Buffer* buffer, unsigned width, unsigned height)
     radRenderer_->render(radBuffer_, width, height);
     filter(radFilters_, radBuffer_, buffer, width, height);
 #else
-	init(width, height);
+  init(width, height);
     radRenderer_->render(radBuffer_, width, height);
     filter(radFilters_, radBuffer_, buffer, width, height);
 #endif
@@ -175,39 +175,39 @@ View::renderRad(Buffer* buffer, unsigned width, unsigned height)
 void
 View::renderBackground(Buffer* buffer, unsigned width, unsigned height)
 {
-	if (backgroundThreshold_ < 0.0)
-		return;
+  if (backgroundThreshold_ < 0.0)
+    return;
 
 #ifdef WITH_CUDA
-	init();
+  init();
 
-	if (width > maxWidth_ || height > maxHeight_) {
-		cerr << "View::renderBackground(): ERROR: Buffer too large." << endl;
-	}
-	if (width > maxWidth_) {
-		width = maxWidth_;
-	}
-	if (height > maxHeight_) {
-		height = maxHeight_;
-	}
+  if (width > maxWidth_ || height > maxHeight_) {
+    cerr << "View::renderBackground(): ERROR: Buffer too large." << endl;
+  }
+  if (width > maxWidth_) {
+    width = maxWidth_;
+  }
+  if (height > maxHeight_) {
+    height = maxHeight_;
+  }
 
-	backgroundRenderer_->render(buffer, width, height, backgroundThreshold_);
+  backgroundRenderer_->render(buffer, width, height, backgroundThreshold_);
 
 #else
-	backgroundRenderer_->render(buffer, width, height, backgroundThreshold_);
+  backgroundRenderer_->render(buffer, width, height, backgroundThreshold_);
 #endif
 }
 
 void View::renderDRRMask(Buffer* in_buffer, Buffer* out_buffer, unsigned width, unsigned height)
 {
-	drr_background(in_buffer, out_buffer, width, height);
+  drr_background(in_buffer, out_buffer, width, height);
 }
 
 void
 View::renderDrr(Buffer* buffer, unsigned width, unsigned height)
 {
 #ifdef WITH_CUDA
-	init();
+  init();
 
     if (width > maxWidth_ || height > maxHeight_) {
         cerr << "View::renderDrr(): ERROR: Buffer too large." << endl;
@@ -219,45 +219,45 @@ View::renderDrr(Buffer* buffer, unsigned width, unsigned height)
         height = maxHeight_;
     }
 
-	cudaMemset(drrBufferMerged_, 0, width*height*sizeof(float));
-	for (int i = 0; i < drrRenderer_.size(); i++){
-		drrRenderer_[i]->render(drrBuffer_[i], width, height);
-		gpu::merge(drrBufferMerged_, drrBuffer_[i], drrBufferMerged_, width, height);
-	}
-	filter(drrFilters_, drrBufferMerged_, buffer, width, height);
+  cudaMemset(drrBufferMerged_, 0, width*height*sizeof(float));
+  for (int i = 0; i < drrRenderer_.size(); i++){
+    drrRenderer_[i]->render(drrBuffer_[i], width, height);
+    gpu::merge(drrBufferMerged_, drrBuffer_[i], drrBufferMerged_, width, height);
+  }
+  filter(drrFilters_, drrBufferMerged_, buffer, width, height);
 #else
-	init(width, height);
-	drrBufferMerged_->fill((char) 0x00);
-	for (int i = 0; i < drrRenderer_.size(); i++){
-		drrRenderer_[i]->render(drrBuffer_[i], width, height);
-		merge(drrBufferMerged_, drrBuffer_[i], drrBufferMerged_, width, height);
-	}
-	filter(drrFilters_, drrBufferMerged_, buffer, width, height);
+  init(width, height);
+  drrBufferMerged_->fill((char) 0x00);
+  for (int i = 0; i < drrRenderer_.size(); i++){
+    drrRenderer_[i]->render(drrBuffer_[i], width, height);
+    merge(drrBufferMerged_, drrBuffer_[i], drrBufferMerged_, width, height);
+  }
+  filter(drrFilters_, drrBufferMerged_, buffer, width, height);
 #endif
 }
 
 void View::renderDrrSingle(int volume, Buffer* buffer, unsigned width, unsigned height)
 {
 #ifdef WITH_CUDA
-	init();
+  init();
 
-	if (width > maxWidth_ || height > maxHeight_) {
-		cerr << "View::renderDrr(): ERROR: Buffer too large." << endl;
-	}
-	if (width > maxWidth_) {
-		width = maxWidth_;
-	}
-	if (height > maxHeight_) {
-		height = maxHeight_;
-	}
+  if (width > maxWidth_ || height > maxHeight_) {
+    cerr << "View::renderDrr(): ERROR: Buffer too large." << endl;
+  }
+  if (width > maxWidth_) {
+    width = maxWidth_;
+  }
+  if (height > maxHeight_) {
+    height = maxHeight_;
+  }
 
-	drrRenderer_[volume]->render(drrBuffer_[volume], width, height);
-	filter(drrFilters_, drrBuffer_[volume], buffer, width, height);
+  drrRenderer_[volume]->render(drrBuffer_[volume], width, height);
+  filter(drrFilters_, drrBuffer_[volume], buffer, width, height);
 
 #else
-	init(width, height);
-	drrRenderer_[volume]->render(drrBuffer_[volume], width, height);
-	filter(drrFilters_, drrBuffer_[volume], buffer, width, height);
+  init(width, height);
+  drrRenderer_[volume]->render(drrBuffer_[volume], width, height);
+  filter(drrFilters_, drrBuffer_[volume], buffer, width, height);
 #endif
 }
 
@@ -265,7 +265,7 @@ void
 View::renderDrr(unsigned int pbo, unsigned width, unsigned height)
 {
 #ifdef WITH_CUDA
-	struct cudaGraphicsResource* pboCudaResource;
+  struct cudaGraphicsResource* pboCudaResource;
     cutilSafeCall(cudaGraphicsGLRegisterBuffer(&pboCudaResource, pbo,
         cudaGraphicsMapFlagsWriteDiscard));
 
@@ -278,13 +278,13 @@ View::renderDrr(unsigned int pbo, unsigned width, unsigned height)
 
     renderDrr(drrFilterBuffer_, width, height);
 
-	gpu::fill(backgroundmask_, maxWidth_*maxHeight_, 1.0f);
-	gpu::fill(drr_mask_, maxWidth_*maxHeight_, 1.0f);
+  gpu::fill(backgroundmask_, maxWidth_*maxHeight_, 1.0f);
+  gpu::fill(drr_mask_, maxWidth_*maxHeight_, 1.0f);
 
     gpu::composite(drrFilterBuffer_,
                     drrFilterBuffer_,
-					backgroundmask_,
-					drr_mask_,
+          backgroundmask_,
+          drr_mask_,
                     buffer,
                     width,
                     height);
@@ -292,87 +292,87 @@ View::renderDrr(unsigned int pbo, unsigned width, unsigned height)
     cutilSafeCall(cudaGraphicsUnmapResources(1, &pboCudaResource, 0));
     cutilSafeCall(cudaGraphicsUnregisterResource(pboCudaResource));
 #else
-	GLBuffer* buffer = new GLBuffer(pbo, CL_MEM_WRITE_ONLY);
+  GLBuffer* buffer = new GLBuffer(pbo, CL_MEM_WRITE_ONLY);
 
-	init(width, height);
+  init(width, height);
     renderDrr(drrFilterBuffer_, width, height);
-	backgroundmask_->fill(1.0f);
-	drr_mask_->fill(1.0f);
-	composite(drrFilterBuffer_, drrFilterBuffer_, backgroundmask_, drr_mask_, buffer, width, height);
+  backgroundmask_->fill(1.0f);
+  drr_mask_->fill(1.0f);
+  composite(drrFilterBuffer_, drrFilterBuffer_, backgroundmask_, drr_mask_, buffer, width, height);
 
-	delete buffer;
+  delete buffer;
 #endif
 }
 
 void View::saveImage(std::string filename, int width, int height)
 {
-	fprintf(stderr, "Write to %s with size %d %d\n", filename.c_str(), width, height);
+  fprintf(stderr, "Write to %s with size %d %d\n", filename.c_str(), width, height);
 
-	Buffer* buffer = new Buffer(maxWidth_*maxHeight_*sizeof(float));
+  Buffer* buffer = new Buffer(maxWidth_*maxHeight_*sizeof(float));
 #ifdef WITH_CUDA
-	init();
+  init();
 
-	if (width > maxWidth_ || height > maxHeight_) {
-		cerr << "View::renderDrr(): ERROR: Buffer too large." << endl;
-	}
-	if (width > maxWidth_) {
-		width = maxWidth_;
-	}
-	if (height > maxHeight_) {
-		height = maxHeight_;
-	}
+  if (width > maxWidth_ || height > maxHeight_) {
+    cerr << "View::renderDrr(): ERROR: Buffer too large." << endl;
+  }
+  if (width > maxWidth_) {
+    width = maxWidth_;
+  }
+  if (height > maxHeight_) {
+    height = maxHeight_;
+  }
 
-	cudaMemset(drrBufferMerged_, 0, width*height*sizeof(float));
-	for (int i = 0; i < drrRenderer_.size(); i++){
-		drrRenderer_[i]->render(drrBuffer_[i], width, height);
-		gpu::merge(drrBufferMerged_, drrBuffer_[i], drrBufferMerged_, width, height);
-	}
-	filter(drrFilters_, drrBufferMerged_, buffer, width, height);
+  cudaMemset(drrBufferMerged_, 0, width*height*sizeof(float));
+  for (int i = 0; i < drrRenderer_.size(); i++){
+    drrRenderer_[i]->render(drrBuffer_[i], width, height);
+    gpu::merge(drrBufferMerged_, drrBuffer_[i], drrBufferMerged_, width, height);
+  }
+  filter(drrFilters_, drrBufferMerged_, buffer, width, height);
 
 #else
-	init(width, height);
+  init(width, height);
 
-	drrBufferMerged_->fill((char)0x00);
-	for(int i = 0; i < drrRenderer_.size(); i++){
-		drrRenderer_[i]->render(drrBuffer_[i], width, height);
-		merge(drrBufferMerged_, drrBuffer_[i], drrBufferMerged_, width, height);
-	}
-	filter(drrFilters_, drrBufferMerged_, buffer, width, height);
+  drrBufferMerged_->fill((char)0x00);
+  for(int i = 0; i < drrRenderer_.size(); i++){
+    drrRenderer_[i]->render(drrBuffer_[i], width, height);
+    merge(drrBufferMerged_, drrBuffer_[i], drrBufferMerged_, width, height);
+  }
+  filter(drrFilters_, drrBufferMerged_, buffer, width, height);
 
 #endif
-	float* host_image = new float[width*height];
-	unsigned char* uchar_image = new unsigned char[width*height];
+  float* host_image = new float[width*height];
+  unsigned char* uchar_image = new unsigned char[width*height];
 
-	// Copy the image to the host
+  // Copy the image to the host
 #ifdef WITH_CUDA
-	cudaMemcpy(host_image, buffer, width*height*sizeof(float), cudaMemcpyDeviceToHost);
+  cudaMemcpy(host_image, buffer, width*height*sizeof(float), cudaMemcpyDeviceToHost);
 #else
-	buffer->write(host_image, width*height*sizeof(float));
+  buffer->write(host_image, width*height*sizeof(float));
 #endif
 
-	for (int y = 0; y < height; y++){
-		for (int x = 0; x < width; x++){
-			uchar_image[y*width + x] = (int)(255 * (1.0 - host_image[(height - y - 1)*width + x]));
-		}
-	}
-	ofstream file(filename.c_str(), ios::out);
-	file << "P2" << endl;
-	file << width << " " << height << endl;
-	file << 255 << endl;
-	for (int i = 0; i < width*height; i++) {
-		file << (int)uchar_image[i] << " ";
-	}
+  for (int y = 0; y < height; y++){
+    for (int x = 0; x < width; x++){
+      uchar_image[y*width + x] = (int)(255 * (1.0 - host_image[(height - y - 1)*width + x]));
+    }
+  }
+  ofstream file(filename.c_str(), ios::out);
+  file << "P2" << endl;
+  file << width << " " << height << endl;
+  file << 255 << endl;
+  for (int i = 0; i < width*height; i++) {
+    file << (int)uchar_image[i] << " ";
+  }
 
-	delete[] uchar_image;
-	delete[] host_image;
-	delete buffer;
+  delete[] uchar_image;
+  delete[] host_image;
+  delete buffer;
 }
 
 void
 View::render(GLBuffer* buffer, unsigned width, unsigned height)
 {
 #ifdef WITH_CUDA
-	init();
+  init();
 
     if (drr_enabled) {
         renderDrr(drrFilterBuffer_, width, height);
@@ -388,35 +388,35 @@ View::render(GLBuffer* buffer, unsigned width, unsigned height)
         cudaMemset(radFilterBuffer_,0,width*height*sizeof(float));
     }
 
-	renderBackground(backgroundmask_, width, height);
-	renderDRRMask(drrFilterBuffer_, drr_mask_, width, height);
+  renderBackground(backgroundmask_, width, height);
+  renderDRRMask(drrFilterBuffer_, drr_mask_, width, height);
 
     gpu::composite(drrFilterBuffer_,
                     radFilterBuffer_,
-					backgroundmask_,
-					drr_mask_,
+          backgroundmask_,
+          drr_mask_,
                     buffer,
                     width,
                     height);
 #else
-	init(width, height);
-	const char c = 0x00;
+  init(width, height);
+  const char c = 0x00;
     if (drr_enabled) {
         renderDrr(drrFilterBuffer_, width, height);
     }
     else {
-		drrFilterBuffer_->fill(c);
+    drrFilterBuffer_->fill(c);
     }
 
     if (rad_enabled) {
         renderRad(radFilterBuffer_, width, height);
     }
     else {
-		radFilterBuffer_->fill(c);
+    radFilterBuffer_->fill(c);
     }
-	renderBackground(backgroundmask_, width, height);
-	renderDRRMask(drrFilterBuffer_, drr_mask_, width, height);
-	composite(drrFilterBuffer_, radFilterBuffer_, backgroundmask_, drr_mask_, buffer, width, height);
+  renderBackground(backgroundmask_, width, height);
+  renderDRRMask(drrFilterBuffer_, drr_mask_, width, height);
+  composite(drrFilterBuffer_, radFilterBuffer_, backgroundmask_, drr_mask_, buffer, width, height);
 #endif
 }
 
@@ -424,8 +424,8 @@ void
 View::render(unsigned int pbo, unsigned width, unsigned height)
 {
 #ifdef WITH_CUDA
-	struct cudaGraphicsResource* pboCudaResource;
-	cutilSafeCall(cudaGraphicsGLRegisterBuffer(&pboCudaResource, pbo,
+  struct cudaGraphicsResource* pboCudaResource;
+  cutilSafeCall(cudaGraphicsGLRegisterBuffer(&pboCudaResource, pbo,
         cudaGraphicsMapFlagsWriteDiscard));
 
     float* buffer = NULL;
@@ -433,27 +433,27 @@ View::render(unsigned int pbo, unsigned width, unsigned height)
     cutilSafeCall(cudaGraphicsMapResources(1, &pboCudaResource, 0));
     cutilSafeCall(cudaGraphicsResourceGetMappedPointer((void**)&buffer,
                                                        &numOfBytes,
-						                               pboCudaResource));
+                                           pboCudaResource));
 
     render(buffer, width, height);
 
     cutilSafeCall(cudaGraphicsUnmapResources(1, &pboCudaResource, 0));
-	cutilSafeCall(cudaGraphicsUnregisterResource(pboCudaResource));
+  cutilSafeCall(cudaGraphicsUnregisterResource(pboCudaResource));
 
 #else
-	GLBuffer* buffer = new GLBuffer(pbo, CL_MEM_WRITE_ONLY);
+  GLBuffer* buffer = new GLBuffer(pbo, CL_MEM_WRITE_ONLY);
 
-	init(width, height);
+  init(width, height);
     render(buffer, width, height);
 
-	delete buffer;
+  delete buffer;
 #endif
 }
 
 
 void View::updateBackground(const float* buffer, unsigned width, unsigned height)
 {
-	backgroundRenderer_->set_back(buffer,width,height);
+  backgroundRenderer_->set_back(buffer,width,height);
 }
 
 
@@ -461,43 +461,43 @@ void View::updateBackground(const float* buffer, unsigned width, unsigned height
 void
 View::init()
 {
-	if (!filterBuffer_) {
-		cutilSafeCall(cudaMalloc((void**)&filterBuffer_, maxWidth_ * maxHeight_ * sizeof(float)));
-		for (int i = 0; i < drrBuffer_.size(); i++)
-			cutilSafeCall(cudaMalloc((void**)&drrBuffer_[i], maxWidth_ * maxHeight_ * sizeof(float)));
-		cutilSafeCall(cudaMalloc((void**)&drrBufferMerged_, maxWidth_ * maxHeight_ * sizeof(float)));
-		cutilSafeCall(cudaMalloc((void**)&drrFilterBuffer_, maxWidth_ * maxHeight_ * sizeof(float)));
-		cutilSafeCall(cudaMalloc((void**)&radBuffer_, maxWidth_ * maxHeight_ * sizeof(float)));
-		cutilSafeCall(cudaMalloc((void**)&radFilterBuffer_, maxWidth_ * maxHeight_ * sizeof(float)));
-		cutilSafeCall(cudaMalloc((void**)&backgroundmask_, maxWidth_ * maxHeight_ * sizeof(float)));
-		cutilSafeCall(cudaMalloc((void**)&drr_mask_, maxWidth_ * maxHeight_ * sizeof(float)));
-		// fill the array
-		gpu::fill(backgroundmask_, maxWidth_ * maxHeight_, 1.0f);
-		gpu::fill(drr_mask_, maxWidth_ * maxHeight_, 1.0f);
-	}
+  if (!filterBuffer_) {
+    cutilSafeCall(cudaMalloc((void**)&filterBuffer_, maxWidth_ * maxHeight_ * sizeof(float)));
+    for (int i = 0; i < drrBuffer_.size(); i++)
+      cutilSafeCall(cudaMalloc((void**)&drrBuffer_[i], maxWidth_ * maxHeight_ * sizeof(float)));
+    cutilSafeCall(cudaMalloc((void**)&drrBufferMerged_, maxWidth_ * maxHeight_ * sizeof(float)));
+    cutilSafeCall(cudaMalloc((void**)&drrFilterBuffer_, maxWidth_ * maxHeight_ * sizeof(float)));
+    cutilSafeCall(cudaMalloc((void**)&radBuffer_, maxWidth_ * maxHeight_ * sizeof(float)));
+    cutilSafeCall(cudaMalloc((void**)&radFilterBuffer_, maxWidth_ * maxHeight_ * sizeof(float)));
+    cutilSafeCall(cudaMalloc((void**)&backgroundmask_, maxWidth_ * maxHeight_ * sizeof(float)));
+    cutilSafeCall(cudaMalloc((void**)&drr_mask_, maxWidth_ * maxHeight_ * sizeof(float)));
+    // fill the array
+    gpu::fill(backgroundmask_, maxWidth_ * maxHeight_, 1.0f);
+    gpu::fill(drr_mask_, maxWidth_ * maxHeight_, 1.0f);
+  }
 }
 #else
 void
 View::init(unsigned width, unsigned height)
 {
-	if (width*height > maxWidth_ * maxHeight_) {
-		throw runtime_error("GPU Buffers too small");
+  if (width*height > maxWidth_ * maxHeight_) {
+    throw runtime_error("GPU Buffers too small");
     }
 
     if (!inited_) {
         filterBuffer_    = new Buffer(maxWidth_*maxHeight_*sizeof(float));
-		for (int i = 0; i < drrBuffer_.size(); i++){
-			drrBuffer_[i] = new Buffer(maxWidth_*maxHeight_*sizeof(float));
-		}
-		drrBufferMerged_ = new Buffer(maxWidth_*maxHeight_*sizeof(float));
-		drrFilterBuffer_ = new Buffer(maxWidth_*maxHeight_*sizeof(float));
+    for (int i = 0; i < drrBuffer_.size(); i++){
+      drrBuffer_[i] = new Buffer(maxWidth_*maxHeight_*sizeof(float));
+    }
+    drrBufferMerged_ = new Buffer(maxWidth_*maxHeight_*sizeof(float));
+    drrFilterBuffer_ = new Buffer(maxWidth_*maxHeight_*sizeof(float));
         radBuffer_       = new Buffer(maxWidth_*maxHeight_*sizeof(float));
         radFilterBuffer_ = new Buffer(maxWidth_*maxHeight_*sizeof(float));
-		backgroundmask_  = new Buffer(maxWidth_*maxHeight_*sizeof(float));
-		drr_mask_		 = new Buffer(maxWidth_*maxHeight_*sizeof(float));
-		backgroundmask_->fill(1.0f);
-		drr_mask_->fill(1.0f);
-		inited_ = true;
+    backgroundmask_  = new Buffer(maxWidth_*maxHeight_*sizeof(float));
+    drr_mask_    = new Buffer(maxWidth_*maxHeight_*sizeof(float));
+    backgroundmask_->fill(1.0f);
+    drr_mask_->fill(1.0f);
+    inited_ = true;
     }
 }
 #endif
@@ -511,7 +511,7 @@ View::filter(const std::vector<Filter*>& filters,
 {
 
 #ifdef WITH_CUDA
-	// If there are no filters simply copy the input to the output
+  // If there are no filters simply copy the input to the output
     if (filters.size() == 0) {
         cudaMemcpy(output,
                    input,
@@ -561,7 +561,7 @@ View::filter(const std::vector<Filter*>& filters,
 #else
     // If there are no filters simply copy the input to the output
     if (filters.size() == 0) {
-		input->copy(output, width*height*sizeof(float));
+    input->copy(output, width*height*sizeof(float));
         return;
     }
 
@@ -585,7 +585,7 @@ View::filter(const std::vector<Filter*>& filters,
         (*iter)->apply(input, buffer1, (int)width, (int)height);
     }
     else {
-		input->copy(buffer1, width*height*sizeof(float));
+    input->copy(buffer1, width*height*sizeof(float));
     }
 
     for (iter += 1; iter != filters.end(); ++iter) {
@@ -593,7 +593,7 @@ View::filter(const std::vector<Filter*>& filters,
             (*iter)->apply(buffer1, buffer2, (int)width, (int)height);
         }
         else {
-			buffer1->copy(buffer2, width*height*sizeof(float));
+      buffer1->copy(buffer2, width*height*sizeof(float));
         }
         swap(buffer1, buffer2);
     }

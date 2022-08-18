@@ -71,7 +71,7 @@ public:
 
     const double* viewport() const { return viewport_; }
 
-	const double* size() const { return size_; }
+  const double* size() const { return size_; }
 
 private:
 
@@ -83,11 +83,11 @@ private:
 
     double viewport_[4];
 
-	double size_[2];
+  double size_[2];
 
-	void loadMayaCam1(const std::string& mayacam);
+  void loadMayaCam1(const std::string& mayacam);
 
-	void loadMayaCam2(const std::string& mayacam);
+  void loadMayaCam2(const std::string& mayacam);
 
 };
 

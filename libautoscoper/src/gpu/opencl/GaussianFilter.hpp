@@ -67,7 +67,7 @@ public:
 
 private:
     float radius_;
-	Buffer* gaussian_;
+  Buffer* gaussian_;
     int filterSize_;
 };
 

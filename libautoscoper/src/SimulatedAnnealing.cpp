@@ -47,25 +47,25 @@
 #include <iostream>
 
 void SA_BA(double pose0, double *Y, int *ITER, double MAX_TEMP, double MAX_ITER) {
-	// P0: This is a matrix of offsets. This is a manipulator on the model,
-	// so change in this will be multiply by the orientation and translation
-	// of model position. We run the optimization on this. Every change in the
-	// first three P0[1] to P0[3] are translation change (in mm)
-	// The last three P0[4] to P0[6] are rotation change (in degree)
-	// Y: This is the vector of minimized values from the Cost Function
+  // P0: This is a matrix of offsets. This is a manipulator on the model,
+  // so change in this will be multiply by the orientation and translation
+  // of model position. We run the optimization on this. Every change in the
+  // first three P0[1] to P0[3] are translation change (in mm)
+  // The last three P0[4] to P0[6] are rotation change (in degree)
+  // Y: This is the vector of minimized values from the Cost Function
 
-	double Pi;
-	double Pcur[6];
-	//double Pbest[];
+  double Pi;
+  double Pcur[6];
+  //double Pbest[];
 
-	printf("In Annealing Function\n");
-	std::cout << sizeof(P0[1]);
+  printf("In Annealing Function\n");
+  std::cout << sizeof(P0[1]);
 
-	for (int i = 0; i < 6; i++)
-	{
-		cout << xyzypr[i] << " ";
-	}
-	cout << endl;
+  for (int i = 0; i < 6; i++)
+  {
+    cout << xyzypr[i] << " ";
+  }
+  cout << endl;
 
 
 

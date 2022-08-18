@@ -58,99 +58,99 @@ static int num_gaussian_filters = 0;
 static Program gaussian_program_;
 
 GaussianFilter::GaussianFilter()
-	: Filter(XROMM_GPU_GAUSSIAN_FILTER,""),
-	  gaussian_(NULL)
+  : Filter(XROMM_GPU_GAUSSIAN_FILTER,""),
+    gaussian_(NULL)
 {
-	stringstream name_stream;
-	name_stream << "GaussianFilter" << (++num_gaussian_filters);
-	name_ = name_stream.str();
+  stringstream name_stream;
+  name_stream << "GaussianFilter" << (++num_gaussian_filters);
+  name_ = name_stream.str();
 
-	set_radius(1);
+  set_radius(1);
 }
 
 GaussianFilter::~GaussianFilter()
 {
-	 if (gaussian_ != NULL) delete gaussian_;
+   if (gaussian_ != NULL) delete gaussian_;
 }
 
 void GaussianFilter::set_radius(float radius)
 {
-	if (radius < 0)
-		radius = 0;
+  if (radius < 0)
+    radius = 0;
 
-	/* filter is (filterSize_*filterSize_) pixels with each radius being 3
-	 * stdevs (3*radius_) of the Gaussian */
+  /* filter is (filterSize_*filterSize_) pixels with each radius being 3
+   * stdevs (3*radius_) of the Gaussian */
 
-	radius_ = radius;
-	int filterRadius = 3*radius_;
-	filterSize_ = 2*filterRadius+1;
+  radius_ = radius;
+  int filterRadius = 3*radius_;
+  filterSize_ = 2*filterRadius+1;
 
-	if(filterSize_ == 1)
-		return;
+  if(filterSize_ == 1)
+    return;
 
-	size_t nBytes = sizeof(float) * filterSize_ * filterSize_;
-	float* gaussian = new float[nBytes];
+  size_t nBytes = sizeof(float) * filterSize_ * filterSize_;
+  float* gaussian = new float[nBytes];
 
-	float sum = 0.0f;
+  float sum = 0.0f;
 
-	for(int i = 0; i < filterSize_; ++i){
-		for(int j = 0; j < filterSize_ ; ++j){
-			/* equation for a gaussian with stdev radius_ */
-			gaussian[i*filterSize_+j] = exp((
-						(i-filterRadius)*(i-filterRadius)+
-						(j-filterRadius)*(j-filterRadius)) / (-2.0*radius_));
-			sum = sum + gaussian[i*filterSize_ +j];
-		}
-	}
+  for(int i = 0; i < filterSize_; ++i){
+    for(int j = 0; j < filterSize_ ; ++j){
+      /* equation for a gaussian with stdev radius_ */
+      gaussian[i*filterSize_+j] = exp((
+            (i-filterRadius)*(i-filterRadius)+
+            (j-filterRadius)*(j-filterRadius)) / (-2.0*radius_));
+      sum = sum + gaussian[i*filterSize_ +j];
+    }
+  }
 
-	float temp = 0.0f;
+  float temp = 0.0f;
 
-	/* normalize the filter */
+  /* normalize the filter */
 
-	for(int i = 0 ; i < filterSize_; ++i){
-		for(int j = 0 ; j < filterSize_; ++j) {
-			temp = gaussian[i*filterSize_ +j];
-			gaussian[i*filterSize_ + j] = temp / sum;
-		 }
-	}
+  for(int i = 0 ; i < filterSize_; ++i){
+    for(int j = 0 ; j < filterSize_; ++j) {
+      temp = gaussian[i*filterSize_ +j];
+      gaussian[i*filterSize_ + j] = temp / sum;
+     }
+  }
 
-	/* copies gaussian filter over to GPU */
-	if (gaussian_ != NULL) delete gaussian_;
-	gaussian_ = new Buffer(nBytes, CL_MEM_READ_ONLY);
-	gaussian_->read((void*)gaussian);
+  /* copies gaussian filter over to GPU */
+  if (gaussian_ != NULL) delete gaussian_;
+  gaussian_ = new Buffer(nBytes, CL_MEM_READ_ONLY);
+  gaussian_->read((void*)gaussian);
 
-	delete[] gaussian;
+  delete[] gaussian;
 }
 
 void
 GaussianFilter::apply(const Buffer* input,
-					  Buffer* output,
-					  int width,
-					  int height)
+            Buffer* output,
+            int width,
+            int height)
 {
-	if (filterSize_ == 1 )
-	{
-		/* if filterSize_ = 1, filter does not change image */
-		input->copy(output);
-	}
-	else
-	{
-		Kernel* kernel = gaussian_program_.compile(GaussianFilter_cl, KERNEL_NAME);
+  if (filterSize_ == 1 )
+  {
+    /* if filterSize_ = 1, filter does not change image */
+    input->copy(output);
+  }
+  else
+  {
+    Kernel* kernel = gaussian_program_.compile(GaussianFilter_cl, KERNEL_NAME);
 
-		kernel->block2d(KERNEL_X, KERNEL_Y);
-		kernel->grid2d((width-1)/KERNEL_X+1, (height-1)/KERNEL_Y+1);
+    kernel->block2d(KERNEL_X, KERNEL_Y);
+    kernel->grid2d((width-1)/KERNEL_X+1, (height-1)/KERNEL_Y+1);
 
-		kernel->addBufferArg(input);
-		kernel->addBufferArg(output);
-		kernel->addArg(width);
-		kernel->addArg(height);
-		kernel->addBufferArg(gaussian_);
-		kernel->addArg(filterSize_);
+    kernel->addBufferArg(input);
+    kernel->addBufferArg(output);
+    kernel->addArg(width);
+    kernel->addArg(height);
+    kernel->addBufferArg(gaussian_);
+    kernel->addArg(filterSize_);
 
-		kernel->launch();
+    kernel->launch();
 
-		delete kernel;
-	}
+    delete kernel;
+  }
 }
 
 } } // namespace xromm::opencl

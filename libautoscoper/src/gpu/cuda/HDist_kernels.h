@@ -44,15 +44,15 @@
 
 namespace xromm {
 
-	namespace gpu {
+  namespace gpu {
 
-		void hdist_init(unsigned int max_n, unsigned int maxNumThreads = 256);
+    void hdist_init(unsigned int max_n, unsigned int maxNumThreads = 256);
 
-		void hdist_deinit();
+    void hdist_deinit();
 
-		float hdist(float* f, float* g, float* mask, unsigned int n);
+    float hdist(float* f, float* g, float* mask, unsigned int n);
 
-	} // namespace gpu
+  } // namespace gpu
 
 } // namespace xromm
 

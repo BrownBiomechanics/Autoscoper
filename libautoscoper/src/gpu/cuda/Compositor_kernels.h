@@ -46,8 +46,8 @@ namespace xromm { namespace gpu {
 
 void composite(float* src1,
                float* src2,
-			   float* src3,
-			   float* src4,
+         float* src3,
+         float* src4,
                float* dest,
                size_t width,
                size_t height);

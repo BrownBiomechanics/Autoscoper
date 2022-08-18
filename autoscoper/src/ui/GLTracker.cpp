@@ -58,34 +58,34 @@
 #endif
 
 GLTracker::GLTracker(Tracker * tracker , QWidget *parent)
-	: QOpenGLWidget(parent)
+  : QOpenGLWidget(parent)
 {
-	//m_tracker = tracker;
+  //m_tracker = tracker;
     setAutoFillBackground(false);
-	//makeCurrent();
-	show();
-	initializeGL();
-	//shared_context = new QOpenGLContext(this);
-	//context()->setShareContext(shared_context);
-	//shared_context->create();
-	hide();
+  //makeCurrent();
+  show();
+  initializeGL();
+  //shared_context = new QOpenGLContext(this);
+  //context()->setShareContext(shared_context);
+  //shared_context->create();
+  hide();
 }
 
 GLTracker::~GLTracker()
 {
-	// delete shared_context;
+  // delete shared_context;
 }
 
 void GLTracker::initializeGL(){
-	glewInit();
+  glewInit();
 
-	std::cout << "Graphics Card Vendor: "<< glGetString(GL_VENDOR) << std::endl;
-	std::cout << glGetString(GL_RENDERER) << std::endl;
-	std::cout << glGetString(GL_VERSION)  << std::endl;
+  std::cout << "Graphics Card Vendor: "<< glGetString(GL_VENDOR) << std::endl;
+  std::cout << glGetString(GL_RENDERER) << std::endl;
+  std::cout << glGetString(GL_VERSION)  << std::endl;
 
-	//m_tracker->init();
+  //m_tracker->init();
 
-	std::cerr << "Initializing OpenGL..." << std::endl;
+  std::cerr << "Initializing OpenGL..." << std::endl;
 
 
     glDisable(GL_LIGHTING);
@@ -95,8 +95,8 @@ void GLTracker::initializeGL(){
 
 #ifdef WITH_CUDA
 #else
-	std::cerr << "Initializing OpenCL-OpenGL interoperability..." << std::endl;
-	xromm::gpu::opencl_global_gl_context();
+  std::cerr << "Initializing OpenCL-OpenGL interoperability..." << std::endl;
+  xromm::gpu::opencl_global_gl_context();
 #endif
 }
 

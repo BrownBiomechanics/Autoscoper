@@ -56,21 +56,21 @@ void multiply(const Buffer* src1,
                unsigned width,
                unsigned height)
 {
-	Kernel* kernel = Mult_kernel_.compile(
-										Mult_cl, "multiply_kernel");
+  Kernel* kernel = Mult_kernel_.compile(
+                    Mult_cl, "multiply_kernel");
 
     kernel->block2d(BX, BY);
-	kernel->grid2d((width+BX-1)/BX, (height+BY-1)/BY);
+  kernel->grid2d((width+BX-1)/BX, (height+BY-1)/BY);
 
-	kernel->addBufferArg(src1);
-	kernel->addBufferArg(src2);
-	kernel->addBufferArg(dest);
-	kernel->addArg(width);
-	kernel->addArg(height);
+  kernel->addBufferArg(src1);
+  kernel->addBufferArg(src2);
+  kernel->addBufferArg(dest);
+  kernel->addArg(width);
+  kernel->addArg(height);
 
-	kernel->launch();
+  kernel->launch();
 
-	delete kernel;
+  delete kernel;
 }
 
 } // namespace gpu

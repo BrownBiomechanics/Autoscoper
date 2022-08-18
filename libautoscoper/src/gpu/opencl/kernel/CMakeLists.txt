@@ -1,19 +1,19 @@
 set(SHADER_TO_HEADER "shader_to_header")
 
 set(opencl_shaders
-	gpu/opencl/kernel/Compositor.cl
-	gpu/opencl/kernel/ContrastFilter.cl
-	gpu/opencl/kernel/GaussianFilter.cl
-	gpu/opencl/kernel/Ncc.cl
-	gpu/opencl/kernel/NccSum.cl
-	gpu/opencl/kernel/RadRenderer.cl
-	gpu/opencl/kernel/RayCaster.cl
-	gpu/opencl/kernel/SharpenFilter.cl
-	gpu/opencl/kernel/SobelFilter.cl
-	gpu/opencl/kernel/Merger.cl
-	gpu/opencl/kernel/BackgroundRenderer.cl
-	gpu/opencl/kernel/DRRBackground.cl
-	gpu/opencl/kernel/Mult.cl
+  gpu/opencl/kernel/Compositor.cl
+  gpu/opencl/kernel/ContrastFilter.cl
+  gpu/opencl/kernel/GaussianFilter.cl
+  gpu/opencl/kernel/Ncc.cl
+  gpu/opencl/kernel/NccSum.cl
+  gpu/opencl/kernel/RadRenderer.cl
+  gpu/opencl/kernel/RayCaster.cl
+  gpu/opencl/kernel/SharpenFilter.cl
+  gpu/opencl/kernel/SobelFilter.cl
+  gpu/opencl/kernel/Merger.cl
+  gpu/opencl/kernel/BackgroundRenderer.cl
+  gpu/opencl/kernel/DRRBackground.cl
+  gpu/opencl/kernel/Mult.cl
 )
 
 foreach(SHADER_FILENAME ${opencl_shaders})

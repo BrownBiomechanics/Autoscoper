@@ -49,29 +49,29 @@ struct cudaArray;
 namespace xromm { namespace gpu
 {
 
-	class BackgroundRenderer
+  class BackgroundRenderer
 {
 public:
 
-	BackgroundRenderer();
+  BackgroundRenderer();
 
-	~BackgroundRenderer();
+  ~BackgroundRenderer();
 
 private:
 
-	BackgroundRenderer(const BackgroundRenderer& renderer);
+  BackgroundRenderer(const BackgroundRenderer& renderer);
 
-	BackgroundRenderer& operator=(const BackgroundRenderer& renderer);
+  BackgroundRenderer& operator=(const BackgroundRenderer& renderer);
 
 public:
 
-	void set_back(const void* data, size_t width, size_t height);
+  void set_back(const void* data, size_t width, size_t height);
 
     void set_image_plane(float x, float y, float width, float height);
 
     void set_viewport(float x, float y, float width, float height);
 
-	void render(float* buffer, size_t width, size_t height, float threshold) const;
+  void render(float* buffer, size_t width, size_t height, float threshold) const;
 
 private:
 

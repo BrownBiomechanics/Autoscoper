@@ -117,14 +117,14 @@ void ncc_deinit()
 
 float ncc(float* f, float* g, float* mask, unsigned int n)
 {
-	float nbPixel = sum(mask, n);
-	float meanF = sum(f, n) / nbPixel;
-	float meanG = sum(g, n) / nbPixel;
+  float nbPixel = sum(mask, n);
+  float meanF = sum(f, n) / nbPixel;
+  float meanG = sum(g, n) / nbPixel;
 
     unsigned int numThreads, numBlocks, sizeMem;
     get_device_params(n, g_maxNumThreads, numThreads, numBlocks, sizeMem);
 
-	cuda_ncc_kernel<<<numBlocks, numThreads, sizeMem>>> (f, meanF, g, meanG, mask,
+  cuda_ncc_kernel<<<numBlocks, numThreads, sizeMem>>> (f, meanF, g, meanG, mask,
                                                         d_nums, d_den1s,
                                                         d_den2s, n);
 
@@ -203,7 +203,7 @@ void cuda_ncc_kernel(float* f, float meanF, float* g, float meanG, float* mask,
 {
     unsigned int i = blockDim.x*blockIdx.x+threadIdx.x;
 
-	if (i < n && mask[i] > 0.5f /*&& f[i] > 0.8f*/) {
+  if (i < n && mask[i] > 0.5f /*&& f[i] > 0.8f*/) {
         float fMinusMean = f[i]-meanF;
         float gMinusMean = g[i]-meanG;
 

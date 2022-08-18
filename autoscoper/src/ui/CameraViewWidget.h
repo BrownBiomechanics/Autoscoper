@@ -50,14 +50,14 @@ class QOpenGLContext;
 
 //forward declarations
 namespace Ui {
-	class CameraViewWidget;
+  class CameraViewWidget;
 }
 class Camera;
 
 namespace xromm{
-	namespace gpu{
-		class View;
-	}
+  namespace gpu{
+    class View;
+  }
 }
 using xromm::gpu::View;
 
@@ -65,35 +65,35 @@ class AutoscoperMainWindow;
 
 class CameraViewWidget : public QWidget{
 
-	Q_OBJECT
+  Q_OBJECT
 
-	public:
-		explicit CameraViewWidget(int id, View * view, QString _name, QWidget *parent = 0);
-		~CameraViewWidget();
+  public:
+    explicit CameraViewWidget(int id, View * view, QString _name, QWidget *parent = 0);
+    ~CameraViewWidget();
 
-		Ui::CameraViewWidget *widget;
+    Ui::CameraViewWidget *widget;
 
-		void setSharedGLContext(QOpenGLContext * sharedContext);
+    void setSharedGLContext(QOpenGLContext * sharedContext);
 
-		int getID(){return m_id;};
+    int getID(){return m_id;};
 
-		QString getName(){ return m_name; };
+    QString getName(){ return m_name; };
 
-		AutoscoperMainWindow * getMainWindow(){return mainwindow;};
+    AutoscoperMainWindow * getMainWindow(){return mainwindow;};
 
-		void draw();
+    void draw();
 
-		void saveFrame(QString filename);
+    void saveFrame(QString filename);
 
-	protected:
+  protected:
 
-	public slots:
+  public slots:
 
-	private:
-		QString m_name;
-		int m_id;
+  private:
+    QString m_name;
+    int m_id;
 
-		AutoscoperMainWindow * mainwindow;
+    AutoscoperMainWindow * mainwindow;
 };
 
 #endif  // CAMERAVIEWWIDGET_H

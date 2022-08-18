@@ -42,7 +42,7 @@ macro(UseLIBTIFF YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
 
         message(STATUS "Ok: LIBTIFF Found.")
         message(STATUS "LIBTIFF headers: ${LIBTIFF_INCLUDE_DIR}")
-	message(STATUS "LIBTIFF libs: ${LIBTIFF_LIBRARIES}")
+  message(STATUS "LIBTIFF libs: ${LIBTIFF_LIBRARIES}")
 
 
 
@@ -92,7 +92,7 @@ macro(UseLIBTIFF YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
         target_link_libraries(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} LIBTIFF::LIBTIFF)
     else()
         target_link_libraries(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${TIFF_LIBRARIES})
-		target_include_directories(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${TIFF_INCLUDE_DIR})
+    target_include_directories(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${TIFF_INCLUDE_DIR})
     endif()
 
     target_compile_definitions(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} -DUSE_LIBTIFF)

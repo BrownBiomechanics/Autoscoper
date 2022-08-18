@@ -20,18 +20,18 @@ class WorldViewWindow : public QDockWidget
 
 public:
     WorldViewWindow(QWidget *parent);
-	GLView *openGL;
-	void setSharedGLContext(QOpenGLContext * sharedContext);
+  GLView *openGL;
+  void setSharedGLContext(QOpenGLContext * sharedContext);
 
-	AutoscoperMainWindow * getMainWindow(){return mainwindow;};
-	void draw();
+  AutoscoperMainWindow * getMainWindow(){return mainwindow;};
+  void draw();
 
 private:
-	QGridLayout *layout;
+  QGridLayout *layout;
 
-	AutoscoperMainWindow * mainwindow;
+  AutoscoperMainWindow * mainwindow;
 protected:
-	void  resizeEvent ( QResizeEvent * event );
+  void  resizeEvent ( QResizeEvent * event );
 };
 
 

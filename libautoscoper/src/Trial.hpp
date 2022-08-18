@@ -72,13 +72,13 @@ public:
     std::vector<Camera> cameras;
     std::vector<Video>  videos;
     std::vector<Volume> volumes;
-	std::vector<VolumeTransform> volumestransform;
+  std::vector<VolumeTransform> volumestransform;
 
     // State information
     int frame;
     int num_frames;
-	int current_volume;
-	int num_volumes;
+  int current_volume;
+  int num_volumes;
 
     //Controls for the optimization process
     int guess;
@@ -86,14 +86,14 @@ public:
     int render_width;
     int render_height;
 
-	KeyCurve * getXCurve(int volumeID);
-	KeyCurve * getYCurve(int volumeID);
-	KeyCurve * getZCurve(int volumeID);
-	KeyCurve * getYawCurve(int volumeID);
-	KeyCurve * getPitchCurve(int volumeID);
-	KeyCurve * getRollCurve(int volumeID);
+  KeyCurve * getXCurve(int volumeID);
+  KeyCurve * getYCurve(int volumeID);
+  KeyCurve * getZCurve(int volumeID);
+  KeyCurve * getYawCurve(int volumeID);
+  KeyCurve * getPitchCurve(int volumeID);
+  KeyCurve * getRollCurve(int volumeID);
 
-	CoordFrame * getVolumeMatrix(int volumeID); // Pivot
+  CoordFrame * getVolumeMatrix(int volumeID); // Pivot
 };
 
 } // namespace xromm

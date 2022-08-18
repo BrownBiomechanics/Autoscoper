@@ -72,7 +72,7 @@ public:
 
     // Accessors
 
-	int create_background_image();
+  int create_background_image();
 
     const std::string& dirname() const { return dirname_; }
 
@@ -94,7 +94,7 @@ public:
 
     const void* data() const;
 
-	const float* background() const { return background_; }
+  const float* background() const { return background_; }
 
 private:
 
@@ -106,7 +106,7 @@ private:
 
     TiffImage* image_;
 
-	float* background_;
+  float* background_;
 };
 
 } // namespace xromm

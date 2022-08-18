@@ -59,123 +59,123 @@ static Program sharpen_program_;
 static int num_sharpen_filters = 0;
 
 SharpenFilter::SharpenFilter()
-	: Filter(XROMM_GPU_SHARPEN_FILTER,""),
-	  radius_(1),
-	  contrast_(1),
-	  sharpen_(NULL)
+  : Filter(XROMM_GPU_SHARPEN_FILTER,""),
+    radius_(1),
+    contrast_(1),
+    sharpen_(NULL)
 {
-	stringstream name_stream;
-	name_stream << "SharpenFilter" << (++num_sharpen_filters);
-	name_ = name_stream.str();
+  stringstream name_stream;
+  name_stream << "SharpenFilter" << (++num_sharpen_filters);
+  name_ = name_stream.str();
 
-	/* default values--threshold = 0 so all pixels are sharpened */
-	set_radius(1);
-	set_contrast(1);
-	set_threshold(0);
+  /* default values--threshold = 0 so all pixels are sharpened */
+  set_radius(1);
+  set_contrast(1);
+  set_threshold(0);
 }
 
 SharpenFilter::~SharpenFilter()
 {
-	if (sharpen_ != NULL) delete sharpen_;
+  if (sharpen_ != NULL) delete sharpen_;
 }
 
 void SharpenFilter::set_radius(float radius)
 {
-	if (radius < 0)
-		radius = 0;
+  if (radius < 0)
+    radius = 0;
 
-	radius_ = radius;
+  radius_ = radius;
 
-	makeFilter();
+  makeFilter();
 }
 
 void SharpenFilter::set_contrast(float contrast)
 {
-	if(contrast<1)
-		contrast = 1;
+  if(contrast<1)
+    contrast = 1;
 
-	contrast_ = contrast;
+  contrast_ = contrast;
 }
 
 void SharpenFilter::set_threshold(float threshold)
 {
-	threshold_ = threshold;
+  threshold_ = threshold;
 }
 
 /* makes a Gaussian blur filter (filterSize*filterSize) with stdev radius_ */
 void SharpenFilter::makeFilter()
 {
-	int filterRadius= 3*radius_;
-	filterSize_ = 2*filterRadius + 1;
+  int filterRadius= 3*radius_;
+  filterSize_ = 2*filterRadius + 1;
 
-	if(filterSize_ == 1) return;
+  if(filterSize_ == 1) return;
 
-	size_t nBytes = sizeof(float) * filterSize_ * filterSize_;
-	float* sharpen = new float[nBytes];
+  size_t nBytes = sizeof(float) * filterSize_ * filterSize_;
+  float* sharpen = new float[nBytes];
 
-	float sum = 0.0f;
+  float sum = 0.0f;
 
-	for(int i = 0; i < filterSize_; ++i){
-		for(int j = 0; j < filterSize_ ; ++j){
-			sharpen[i*filterSize_+j] = exp((
-						(i-filterRadius)*(i-filterRadius)+
-						(j-filterRadius)*(j-filterRadius)) / (-2.0*radius_));
-			sum = sum + sharpen[i*filterSize_ +j];
-		}
-	}
+  for(int i = 0; i < filterSize_; ++i){
+    for(int j = 0; j < filterSize_ ; ++j){
+      sharpen[i*filterSize_+j] = exp((
+            (i-filterRadius)*(i-filterRadius)+
+            (j-filterRadius)*(j-filterRadius)) / (-2.0*radius_));
+      sum = sum + sharpen[i*filterSize_ +j];
+    }
+  }
 
-	float temp = 0.0f;
+  float temp = 0.0f;
 
-	/* normalize the filter */
+  /* normalize the filter */
 
-	for(int i = 0 ; i < filterSize_; ++i){
-		for(int j = 0 ; j < filterSize_; ++j) {
-			temp = sharpen[i*filterSize_ +j];
-			sharpen[i*filterSize_ + j] = temp / sum;
-		 }
-	}
+  for(int i = 0 ; i < filterSize_; ++i){
+    for(int j = 0 ; j < filterSize_; ++j) {
+      temp = sharpen[i*filterSize_ +j];
+      sharpen[i*filterSize_ + j] = temp / sum;
+     }
+  }
 
-	/* copy the filter to GPU */
-	if (sharpen_ != NULL) delete sharpen_;
-	sharpen_ = new Buffer(nBytes, CL_MEM_READ_ONLY);
-	sharpen_->read((void*)sharpen);
+  /* copy the filter to GPU */
+  if (sharpen_ != NULL) delete sharpen_;
+  sharpen_ = new Buffer(nBytes, CL_MEM_READ_ONLY);
+  sharpen_->read((void*)sharpen);
 
-	delete[] sharpen;
+  delete[] sharpen;
 }
 
 void
 SharpenFilter::apply(
-		const Buffer* input,
-		Buffer* output,
-		int width,
-		int height)
+    const Buffer* input,
+    Buffer* output,
+    int width,
+    int height)
 {
-	if (filterSize_ == 1 )
-	{
-		/* if filterSize_ = 1, filter does not change image */
-		input->copy(output);
-	}
-	else
-	{
-		Kernel* kernel = sharpen_program_.compile(
-									SharpenFilter_cl, "sharpen_filter_kernel");
+  if (filterSize_ == 1 )
+  {
+    /* if filterSize_ = 1, filter does not change image */
+    input->copy(output);
+  }
+  else
+  {
+    Kernel* kernel = sharpen_program_.compile(
+                  SharpenFilter_cl, "sharpen_filter_kernel");
 
-		kernel->block2d(BX, BY);
-		kernel->grid2d((width-1)/BX+1, (height-1)/BY+1);
+    kernel->block2d(BX, BY);
+    kernel->grid2d((width-1)/BX+1, (height-1)/BY+1);
 
-		kernel->addBufferArg(input);
-		kernel->addBufferArg(output);
-		kernel->addArg(width);
-		kernel->addArg(height);
-		kernel->addBufferArg(sharpen_);
-		kernel->addArg(filterSize_);
-		kernel->addArg(contrast_);
-		kernel->addArg(threshold_);
+    kernel->addBufferArg(input);
+    kernel->addBufferArg(output);
+    kernel->addArg(width);
+    kernel->addArg(height);
+    kernel->addBufferArg(sharpen_);
+    kernel->addArg(filterSize_);
+    kernel->addArg(contrast_);
+    kernel->addArg(threshold_);
 
-		kernel->launch();
+    kernel->launch();
 
-		delete kernel;
-	}
+    delete kernel;
+  }
 }
 
 } } // namespace xromm::cuda

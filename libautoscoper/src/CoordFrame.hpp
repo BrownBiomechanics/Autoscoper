@@ -65,9 +65,9 @@ public:
 
     static CoordFrame from_xyzypr(const double* xyzypr);
 
-	static CoordFrame from_xyzquat(const double* xyzijk);
+  static CoordFrame from_xyzquat(const double* xyzijk);
 
-	static CoordFrame from_xyzAxis_angle(const double* xyzijk);
+  static CoordFrame from_xyzAxis_angle(const double* xyzijk);
 
     void to_xyzypr(double* xyzypr) const;
 
@@ -117,7 +117,7 @@ private:
 
     double translation_[3];
 
-	void rotateQuat(double x, double y, double z);
+  void rotateQuat(double x, double y, double z);
 };
 
 std::ostream& operator<<(std::ostream& os, const CoordFrame& frame);

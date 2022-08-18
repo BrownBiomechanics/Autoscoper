@@ -53,7 +53,7 @@ class ContrastFilter : public Filter
 {
 public:
     ContrastFilter();
-	virtual ~ContrastFilter() {}
+  virtual ~ContrastFilter() {}
 
     // Apply the filter to the input image
     virtual void apply(const Buffer* input,

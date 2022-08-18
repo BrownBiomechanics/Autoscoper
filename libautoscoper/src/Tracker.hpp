@@ -63,66 +63,66 @@
 
 namespace xromm
 {
-	class Camera;
-	class CoordFrame;
+  class Camera;
+  class CoordFrame;
 
-	namespace gpu
-	{
-		class Filter;
-		class View;
-		class VolumeDescription;
+  namespace gpu
+  {
+    class Filter;
+    class View;
+    class VolumeDescription;
 
-	} // namespace gpu
-
-
-	class Tracker
-	{
-	public:
-
-		Tracker();
-		~Tracker();
-		void init();
-		void load(const Trial& trial);
-		Trial* trial() { return &trial_; }
-		void optimize(int frame, int dframe, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int max_stall_iter);
-		double minimizationFunc(const double* values) const;
-		std::vector <double> trackFrame(unsigned int volumeID, double* xyzpr) const;
-		std::vector<gpu::View*>& views() { return views_; }
-		const std::vector<gpu::View*>& views() const { return views_; }
-		gpu::View* view(size_t i) { return views_.at(i); }
-		const gpu::View* view(size_t i) const { return views_.at(i); }
-		void updateBackground();
-		void setBackgroundThreshold(float threshold);
-		std::vector<unsigned char> getImageData(unsigned volumeID, unsigned camera, double* xyzpr, unsigned& width, unsigned& height);
+  } // namespace gpu
 
 
-		// Bardiya Cost Function for Implants
-		//double implantMinFunc(const double* values) const;
-		//std::vector<double> trackImplantFrame(unsigned int volumeID, double * xyzypr) const;
+  class Tracker
+  {
+  public:
 
-		void getFullDRR(unsigned int volumeID) const;
+    Tracker();
+    ~Tracker();
+    void init();
+    void load(const Trial& trial);
+    Trial* trial() { return &trial_; }
+    void optimize(int frame, int dframe, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int max_stall_iter);
+    double minimizationFunc(const double* values) const;
+    std::vector <double> trackFrame(unsigned int volumeID, double* xyzpr) const;
+    std::vector<gpu::View*>& views() { return views_; }
+    const std::vector<gpu::View*>& views() const { return views_; }
+    gpu::View* view(size_t i) { return views_.at(i); }
+    const gpu::View* view(size_t i) const { return views_.at(i); }
+    void updateBackground();
+    void setBackgroundThreshold(float threshold);
+    std::vector<unsigned char> getImageData(unsigned volumeID, unsigned camera, double* xyzpr, unsigned& width, unsigned& height);
 
 
-	private:
-		void calculate_viewport(const CoordFrame& modelview, double* viewport) const;
+    // Bardiya Cost Function for Implants
+    //double implantMinFunc(const double* values) const;
+    //std::vector<double> trackImplantFrame(unsigned int volumeID, double * xyzypr) const;
 
-		int optimization_method = (int)0;
-		int cf_model_select = (int)0;
-		Trial trial_;
-		std::vector <gpu::VolumeDescription*> volumeDescription_;
-		std::vector <gpu::View*> views_;
+    void getFullDRR(unsigned int volumeID) const;
+
+
+  private:
+    void calculate_viewport(const CoordFrame& modelview, double* viewport) const;
+
+    int optimization_method = (int)0;
+    int cf_model_select = (int)0;
+    Trial trial_;
+    std::vector <gpu::VolumeDescription*> volumeDescription_;
+    std::vector <gpu::View*> views_;
 #ifdef WITH_CUDA
-		Buffer* rendered_drr_;
-		Buffer* rendered_rad_;
-		Buffer* background_mask_;
-		Buffer* drr_mask_;
+    Buffer* rendered_drr_;
+    Buffer* rendered_rad_;
+    Buffer* background_mask_;
+    Buffer* drr_mask_;
 #else
-		gpu::Buffer* rendered_drr_;
-		gpu::Buffer* rendered_rad_;
-		gpu::Buffer* background_mask_;
-		gpu::Buffer* drr_mask_;
+    gpu::Buffer* rendered_drr_;
+    gpu::Buffer* rendered_rad_;
+    gpu::Buffer* background_mask_;
+    gpu::Buffer* drr_mask_;
 #endif
-	};
+  };
 
 } // namespace XROMM
 

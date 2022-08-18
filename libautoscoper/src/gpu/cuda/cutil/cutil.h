@@ -69,7 +69,7 @@ extern "C" {
     ////////////////////////////////////////////////////////////////////////////
     DLL_MAPPING
     void CUTIL_API
-  	cutFree( void* ptr);
+    cutFree( void* ptr);
 
     ////////////////////////////////////////////////////////////////////////////
     //! Helper for bank conflict checking (should only be used with the
@@ -653,7 +653,7 @@ extern "C" {
     cutCompareL2fe( const float* reference, const float* data,
                     const unsigned int len, const float epsilon );
 
-	////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////
     //! Compare two PPM image files with an epsilon tolerance for equality
     //! @return  CUTTrue if \a reference and \a data are identical,
     //!          otherwise CUTFalse
@@ -665,7 +665,7 @@ extern "C" {
     ////////////////////////////////////////////////////////////////////////////////
     DLL_MAPPING
     CUTBoolean CUTIL_API
-	cutComparePPM( const char *src_file, const char *ref_file, const float epsilon, const float threshold, bool verboseErrors = false );
+  cutComparePPM( const char *src_file, const char *ref_file, const float epsilon, const float threshold, bool verboseErrors = false );
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -858,7 +858,7 @@ extern "C" {
     }                                                                        \
     int dev = 0;                                                             \
     cutGetCmdLineArgumenti(ARGC, (const char **) ARGV, "device", &dev);      \
-	if (dev < 0) dev = 0;                                                    \
+  if (dev < 0) dev = 0;                                                    \
     if (dev > deviceCount-1) dev = deviceCount - 1;                          \
     cudaDeviceProp deviceProp;                                               \
     CUDA_SAFE_CALL_NO_SYNC(cudaGetDeviceProperties(&deviceProp, dev));       \
@@ -917,7 +917,7 @@ extern "C" {
     }                                                                        \
     int dev = 0;                                                             \
     cutGetCmdLineArgumenti(ARGC, (const char **) ARGV, "device", &dev);      \
-	if (dev < 0) dev = 0;                                                    \
+  if (dev < 0) dev = 0;                                                    \
     if (dev > deviceCount-1) dev = deviceCount - 1;                          \
     CU_SAFE_CALL_NO_SYNC(cuDeviceGet(&cuDevice, dev));                       \
     char name[100];                                                          \

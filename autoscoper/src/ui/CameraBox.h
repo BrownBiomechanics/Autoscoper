@@ -45,26 +45,26 @@
 #include <QWidget>
 
 namespace Ui {
-	class CameraBox;
+  class CameraBox;
 }
 
 class CameraBox : public QWidget{
 
-	Q_OBJECT
+  Q_OBJECT
 
-	private:
+  private:
 
 
-	public:
-		explicit CameraBox(QWidget *parent = 0);
-		~CameraBox();
+  public:
+    explicit CameraBox(QWidget *parent = 0);
+    ~CameraBox();
 
-		Ui::CameraBox *widget;
+    Ui::CameraBox *widget;
 
-	public slots:
+  public slots:
 
-		void on_toolButton_MayaCam_clicked();
-		void on_toolButton_VideoPath_clicked();
+    void on_toolButton_MayaCam_clicked();
+    void on_toolButton_VideoPath_clicked();
 };
 
 #endif /* IMPORTEXPORTTRACKINGOPTIONSDIALOG_H_ */

@@ -56,37 +56,37 @@ static Program sobel_program_;
 static int num_sobel_filters = 0;
 
 SobelFilter::SobelFilter() : Filter(XROMM_GPU_SOBEL_FILTER,""),
-							 scale_(1.0f),
-							 blend_(0.5f)
+               scale_(1.0f),
+               blend_(0.5f)
 {
-	stringstream name_stream;
-	name_stream << "SobelFilter" << (++num_sobel_filters);
-	name_ = name_stream.str();
+  stringstream name_stream;
+  name_stream << "SobelFilter" << (++num_sobel_filters);
+  name_ = name_stream.str();
 }
 
 void
 SobelFilter::apply(
-		const Buffer* input,
-		Buffer* output,
-		int width,
-		int height)
+    const Buffer* input,
+    Buffer* output,
+    int width,
+    int height)
 {
-	Kernel* kernel = sobel_program_.compile(
-									SobelFilter_cl, "sobel_filter_kernel");
+  Kernel* kernel = sobel_program_.compile(
+                  SobelFilter_cl, "sobel_filter_kernel");
 
-	kernel->block2d(BX, BY);
-	kernel->grid2d((width-1)/BX+1, (height-1)/BY+1);
+  kernel->block2d(BX, BY);
+  kernel->grid2d((width-1)/BX+1, (height-1)/BY+1);
 
-	kernel->addBufferArg(input);
-	kernel->addBufferArg(output);
-	kernel->addArg(width);
-	kernel->addArg(height);
-	kernel->addArg(scale_);
-	kernel->addArg(blend_);
+  kernel->addBufferArg(input);
+  kernel->addBufferArg(output);
+  kernel->addArg(width);
+  kernel->addArg(height);
+  kernel->addArg(scale_);
+  kernel->addArg(blend_);
 
-	kernel->launch();
+  kernel->launch();
 
-	delete kernel;
+  delete kernel;
 }
 
 } } // namespace xromm::opencl

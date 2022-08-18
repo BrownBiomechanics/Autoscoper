@@ -67,7 +67,7 @@ struct TiffImage
 
     // Image data
     tdata_t data;
-	size_t dataSize;
+  size_t dataSize;
 };
 
 // This function reads in the metadata associated with a particular TIFF

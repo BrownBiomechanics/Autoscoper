@@ -56,21 +56,21 @@ void merge(const Buffer* src1,
                unsigned width,
                unsigned height)
 {
-	Kernel* kernel = Merger_kernel_.compile(
-										Merger_cl, "merge_kernel");
+  Kernel* kernel = Merger_kernel_.compile(
+                    Merger_cl, "merge_kernel");
 
     kernel->block2d(BX, BY);
-	kernel->grid2d((width+BX-1)/BX, (height+BY-1)/BY);
+  kernel->grid2d((width+BX-1)/BX, (height+BY-1)/BY);
 
-	kernel->addBufferArg(src1);
-	kernel->addBufferArg(src2);
-	kernel->addBufferArg(dest);
-	kernel->addArg(width);
-	kernel->addArg(height);
+  kernel->addBufferArg(src1);
+  kernel->addBufferArg(src2);
+  kernel->addBufferArg(dest);
+  kernel->addArg(width);
+  kernel->addArg(height);
 
-	kernel->launch();
+  kernel->launch();
 
-	delete kernel;
+  delete kernel;
 }
 
 } // namespace gpu

@@ -49,12 +49,12 @@
 
 struct State
 {
-	std::vector <KeyCurve> x_curve;
-	std::vector <KeyCurve> y_curve;
-	std::vector <KeyCurve> z_curve;
-	std::vector <KeyCurve> x_rot_curve;
-	std::vector <KeyCurve> y_rot_curve;
-	std::vector <KeyCurve> z_rot_curve;
+  std::vector <KeyCurve> x_curve;
+  std::vector <KeyCurve> y_curve;
+  std::vector <KeyCurve> z_curve;
+  std::vector <KeyCurve> x_rot_curve;
+  std::vector <KeyCurve> y_rot_curve;
+  std::vector <KeyCurve> z_rot_curve;
 };
 
 class History

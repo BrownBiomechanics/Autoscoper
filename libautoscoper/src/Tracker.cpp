@@ -54,17 +54,17 @@
 #endif
 
 #ifdef WITH_CUDA
-	#include "gpu/cuda/CudaWrap.hpp"
-	#include "gpu/cuda/Ncc_kernels.h"
-	#include "gpu/cuda/HDist_kernels.h"
-	#include "gpu/cuda/Compositor_kernels.h"
-	#include "gpu/cuda/Mult_kernels.h"
-	#include "gpu/cuda/PSO_kernel.h"
-	#include <cuda_runtime_api.h>
+  #include "gpu/cuda/CudaWrap.hpp"
+  #include "gpu/cuda/Ncc_kernels.h"
+  #include "gpu/cuda/HDist_kernels.h"
+  #include "gpu/cuda/Compositor_kernels.h"
+  #include "gpu/cuda/Mult_kernels.h"
+  #include "gpu/cuda/PSO_kernel.h"
+  #include <cuda_runtime_api.h>
 #else
-	#include "gpu/opencl/Ncc.hpp"
-	#include "gpu/opencl/Mult.hpp"
-	#include "gpu/cuda/PSO_kernel.h"
+  #include "gpu/opencl/Ncc.hpp"
+  #include "gpu/opencl/Mult.hpp"
+  #include "gpu/cuda/PSO_kernel.h"
 #endif
 
 #include "VolumeDescription.hpp"
@@ -98,132 +98,132 @@ namespace xromm {
 
 #if DEBUG
 #ifdef WITH_CUDA
-	void save_debug_image(const Buffer* dev_image, int width, int height)
+  void save_debug_image(const Buffer* dev_image, int width, int height)
 #else
-	void save_debug_image(const gpu::Buffer* dev_image, int width, int height)
+  void save_debug_image(const gpu::Buffer* dev_image, int width, int height)
 #endif
 {
-	static int count = 0; // static, so we add to it whenever we run this
-	float* host_image = new float[width*height];
-	unsigned char* uchar_image = new unsigned char[width*height];
+  static int count = 0; // static, so we add to it whenever we run this
+  float* host_image = new float[width*height];
+  unsigned char* uchar_image = new unsigned char[width*height];
 
 #ifdef WITH_CUDA
-	cudaMemcpy(host_image, dev_image, width*height*sizeof(float), cudaMemcpyDeviceToHost);
+  cudaMemcpy(host_image, dev_image, width*height*sizeof(float), cudaMemcpyDeviceToHost);
 #else
-	dev_image->write(host_image, width*height*sizeof(float));
+  dev_image->write(host_image, width*height*sizeof(float));
 #endif
 #undef max
 #undef min
-	float minim = std::numeric_limits<float>::max();
-	float maxim = std::numeric_limits<float>::min();
+  float minim = std::numeric_limits<float>::max();
+  float maxim = std::numeric_limits<float>::min();
 
-	// Copy to a char array
-	for (int i = 0; i < width*height; i++) {
-		if (host_image[i] > maxim) maxim = host_image[i];
-		if (host_image[i] < minim) minim = host_image[i];
-	}
+  // Copy to a char array
+  for (int i = 0; i < width*height; i++) {
+    if (host_image[i] > maxim) maxim = host_image[i];
+    if (host_image[i] < minim) minim = host_image[i];
+  }
 
-	// Copy to a char array
-	for (int i = 0; i < width*height; i++) {
-		uchar_image[i] = (int)(255*(host_image[i] - minim)/(maxim - minim));
-	}
+  // Copy to a char array
+  for (int i = 0; i < width*height; i++) {
+    uchar_image[i] = (int)(255*(host_image[i] - minim)/(maxim - minim));
+  }
 
     char filename[256];
     #ifdef __APPLE__
-	sprintf(filename,"/Users/bardiya/autoscoper-v2/debug/image_cam%02d.pgm",count++);
+  sprintf(filename,"/Users/bardiya/autoscoper-v2/debug/image_cam%02d.pgm",count++);
     #elif _WIN32
     sprintf(filename,"C:/Autoscoper-v2.7/build/install/bin/Release/debug/image_cam%02d.pgm",count++);
     #endif
 
     cout << filename << endl;
-	ofstream file(filename,ios::out);
-	file << "P2" << endl;
-	file << width << " " << height << endl;
-	file << 255 << endl;
-	for (int i = 0; i < width*height; i++) {
-		file << 255-(int)uchar_image[i] << " "; // (255-X) because we want white to be air
-	}
+  ofstream file(filename,ios::out);
+  file << "P2" << endl;
+  file << width << " " << height << endl;
+  file << 255 << endl;
+  for (int i = 0; i < width*height; i++) {
+    file << 255-(int)uchar_image[i] << " "; // (255-X) because we want white to be air
+  }
     file.close(); // we have to flip this vertically for the actual image
-	delete[] uchar_image;
-	delete[] host_image;
+  delete[] uchar_image;
+  delete[] host_image;
 }
 #endif
 
 
 #ifdef WITH_CUDA
-	void save_full_drr(const Buffer* dev_image, int width, int height)
+  void save_full_drr(const Buffer* dev_image, int width, int height)
 #else
-	void save_full_drr(const gpu::Buffer* dev_image, int width, int height)
+  void save_full_drr(const gpu::Buffer* dev_image, int width, int height)
 #endif
-	{
-		static int count = 0; // static, so we add to it whenever we run this
-		float* host_image = new float[width * height];
-		unsigned char* uchar_image = new unsigned char[width * height];
+  {
+    static int count = 0; // static, so we add to it whenever we run this
+    float* host_image = new float[width * height];
+    unsigned char* uchar_image = new unsigned char[width * height];
 
 #ifdef WITH_CUDA
-		cudaMemcpy(host_image, dev_image, width * height * sizeof(float), cudaMemcpyDeviceToHost);
+    cudaMemcpy(host_image, dev_image, width * height * sizeof(float), cudaMemcpyDeviceToHost);
 #else
-		dev_image->write(host_image, width * height * sizeof(float));
+    dev_image->write(host_image, width * height * sizeof(float));
 #endif
 #undef max
 #undef min
-		float minim = std::numeric_limits<float>::max();
-		float maxim = std::numeric_limits<float>::min();
+    float minim = std::numeric_limits<float>::max();
+    float maxim = std::numeric_limits<float>::min();
 
-		// Copy to a char array
-		for (int i = 0; i < width * height; i++) {
-			if (host_image[i] > maxim) maxim = host_image[i];
-			if (host_image[i] < minim) minim = host_image[i];
-		}
+    // Copy to a char array
+    for (int i = 0; i < width * height; i++) {
+      if (host_image[i] > maxim) maxim = host_image[i];
+      if (host_image[i] < minim) minim = host_image[i];
+    }
 
-		// Copy to a char array
-		for (int i = 0; i < width * height; i++) {
-			uchar_image[i] = (int)(255 * (host_image[i] - minim) / (maxim - minim));
-		}
+    // Copy to a char array
+    for (int i = 0; i < width * height; i++) {
+      uchar_image[i] = (int)(255 * (host_image[i] - minim) / (maxim - minim));
+    }
 
-		char filename[256];
+    char filename[256];
 #ifdef __APPLE__
-		sprintf(filename, "/Users/bardiya/autoscoper-v2/my_drr/image_cam%02d.pgm", count++);
+    sprintf(filename, "/Users/bardiya/autoscoper-v2/my_drr/image_cam%02d.pgm", count++);
 #elif _WIN32
-		sprintf_s(filename, "C:/_MyDRRs/image_cam%02d.pgm", count++);
+    sprintf_s(filename, "C:/_MyDRRs/image_cam%02d.pgm", count++);
 #endif
 
-		cout << filename << endl;
-		ofstream file(filename, ios::out);
-		file << "P2" << endl;
-		file << width << " " << height << endl;
-		file << 255 << endl;
-		for (int i = 0; i < width * height; i++) {
-			file << 255 - (int)uchar_image[i] << " "; // (255-X) because we want white to be air
-		}
-		file.close(); // we have to flip this vertically for the actual image
-		delete[] uchar_image;
-		delete[] host_image;
-	}
+    cout << filename << endl;
+    ofstream file(filename, ios::out);
+    file << "P2" << endl;
+    file << width << " " << height << endl;
+    file << 255 << endl;
+    for (int i = 0; i < width * height; i++) {
+      file << 255 - (int)uchar_image[i] << " "; // (255-X) because we want white to be air
+    }
+    file.close(); // we have to flip this vertically for the actual image
+    delete[] uchar_image;
+    delete[] host_image;
+  }
 
 
 Tracker::Tracker()
     : rendered_drr_(NULL),
       rendered_rad_(NULL),
-	  drr_mask_(NULL),
-	  background_mask_(NULL)
+    drr_mask_(NULL),
+    background_mask_(NULL)
 {
     g_markerless = this;
-	optimization_method = 0; // initialize cost function
-	cf_model_select = 0; //cost function selector
+  optimization_method = 0; // initialize cost function
+  cf_model_select = 0; //cost function selector
 }
 
 Tracker::~Tracker()
 {
-	for (int i = 0; i < volumeDescription_.size(); i++){
-		delete volumeDescription_[i];
-	}
-	volumeDescription_.clear();
+  for (int i = 0; i < volumeDescription_.size(); i++){
+    delete volumeDescription_[i];
+  }
+  volumeDescription_.clear();
 
-	for (int i = 0; i < views_.size(); i++) {
-		delete views_[i];
-	}
-	views_.clear();
+  for (int i = 0; i < views_.size(); i++) {
+    delete views_[i];
+  }
+  views_.clear();
 }
 
 //void Tracker::init()
@@ -243,38 +243,38 @@ void Tracker::load(const Trial& trial)
     }
     views_.clear();
 
-	for (int i = 0; i < volumeDescription_.size(); i++){
-		delete volumeDescription_[i];
-	}
-	volumeDescription_.clear();
-	for (int i = 0; i < trial_.volumes.size(); i++){
-		gpu::VolumeDescription * v_desc = new gpu::VolumeDescription(trial_.volumes[i]);
-		volumeDescription_.push_back(v_desc);
-		//center pivot
-		trial_.getVolumeMatrix(i)->translate(v_desc->transCenter());
-	}
+  for (int i = 0; i < volumeDescription_.size(); i++){
+    delete volumeDescription_[i];
+  }
+  volumeDescription_.clear();
+  for (int i = 0; i < trial_.volumes.size(); i++){
+    gpu::VolumeDescription * v_desc = new gpu::VolumeDescription(trial_.volumes[i]);
+    volumeDescription_.push_back(v_desc);
+    //center pivot
+    trial_.getVolumeMatrix(i)->translate(v_desc->transCenter());
+  }
 
-	unsigned npixels = trial_.render_width*trial_.render_height;
+  unsigned npixels = trial_.render_width*trial_.render_height;
 #ifdef WITH_CUDA
-	gpu::cudaMallocWrap(rendered_drr_,trial_.render_width*trial_.render_height*sizeof(float));
+  gpu::cudaMallocWrap(rendered_drr_,trial_.render_width*trial_.render_height*sizeof(float));
     gpu::cudaMallocWrap(rendered_rad_,trial_.render_width*trial_.render_height*sizeof(float));
-	gpu::cudaMallocWrap(drr_mask_, trial_.render_width*trial_.render_height*sizeof(float));
-	gpu::cudaMallocWrap(background_mask_, trial_.render_width*trial_.render_height*sizeof(float));
-	gpu::fill(drr_mask_, trial_.render_width*trial_.render_height, 1.0f);
-	gpu::fill(background_mask_, trial_.render_width*trial_.render_height, 1.0f);
+  gpu::cudaMallocWrap(drr_mask_, trial_.render_width*trial_.render_height*sizeof(float));
+  gpu::cudaMallocWrap(background_mask_, trial_.render_width*trial_.render_height*sizeof(float));
+  gpu::fill(drr_mask_, trial_.render_width*trial_.render_height, 1.0f);
+  gpu::fill(background_mask_, trial_.render_width*trial_.render_height, 1.0f);
 #else
-	rendered_drr_ = new gpu::Buffer(npixels*sizeof(float));
-	rendered_rad_ = new gpu::Buffer(npixels*sizeof(float));
-	drr_mask_ = new gpu::Buffer(npixels*sizeof(float));
-	background_mask_ = new gpu::Buffer(npixels*sizeof(float));
-	drr_mask_->fill(1.0f);
-	background_mask_->fill(1.0f);
+  rendered_drr_ = new gpu::Buffer(npixels*sizeof(float));
+  rendered_rad_ = new gpu::Buffer(npixels*sizeof(float));
+  drr_mask_ = new gpu::Buffer(npixels*sizeof(float));
+  background_mask_ = new gpu::Buffer(npixels*sizeof(float));
+  drr_mask_->fill(1.0f);
+  background_mask_->fill(1.0f);
 #endif
 
     gpu::ncc_init(npixels);
-	#ifdef WITH_CUDA // trying another cost function (Housdorff)
-		gpu::hdist_init(npixels);
-	#endif
+  #ifdef WITH_CUDA // trying another cost function (Housdorff)
+    gpu::hdist_init(npixels);
+  #endif
 
     for (unsigned int i = 0; i < trial_.cameras.size(); ++i) {
 
@@ -285,10 +285,10 @@ void Tracker::load(const Trial& trial)
 
         gpu::View* view = new gpu::View(camera);
 
-		for (int i = 0; i < volumeDescription_.size(); i++){
-			view->addDrrRenderer();
-			view->drrRenderer(i)->setVolume(*volumeDescription_[i]);
-		}
+    for (int i = 0; i < volumeDescription_.size(); i++){
+      view->addDrrRenderer();
+      view->drrRenderer(i)->setVolume(*volumeDescription_[i]);
+    }
 
         view->radRenderer()->set_image_plane(camera.viewport()[0],
                                              camera.viewport()[1],
@@ -298,10 +298,10 @@ void Tracker::load(const Trial& trial)
                                      video.width(),
                                      video.height(),
                                      video.bps());
-		view->backgroundRenderer()->set_image_plane(camera.viewport()[0],
-			camera.viewport()[1],
-			camera.viewport()[2],
-			camera.viewport()[3]);
+    view->backgroundRenderer()->set_image_plane(camera.viewport()[0],
+      camera.viewport()[1],
+      camera.viewport()[2],
+      camera.viewport()[3]);
 
         views_.push_back(view);
     }
@@ -311,8 +311,8 @@ void Tracker::load(const Trial& trial)
 void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int max_stall_iter)
 {
 
-	optimization_method = opt_method;
-	cf_model_select = cf_model;
+  optimization_method = opt_method;
+  cf_model_select = cf_model;
 
     if (frame < 0 || frame >= trial_.num_frames) {
         cerr << "Tracker::optimize(): Invalid frame." << endl;
@@ -343,242 +343,242 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
                        (int)trial_.num_frames-trial_.frame-1;
 
     if (trial_.guess == 2 && framesBehind > 1) {
-		double xyzypr1[6] = { (*trial_.getXCurve(-1))(trial_.frame - 2 * dFrame),
-			(*trial_.getYCurve(-1))(trial_.frame - 2 * dFrame),
-			(*trial_.getZCurve(-1))(trial_.frame - 2 * dFrame),
-			(*trial_.getYawCurve(-1))(trial_.frame - 2 * dFrame),
-			(*trial_.getPitchCurve(-1))(trial_.frame - 2 * dFrame),
-			(*trial_.getRollCurve(-1))(trial_.frame - 2 * dFrame) };
-		double xyzypr2[6] = { (*trial_.getXCurve(-1))(trial_.frame - dFrame),
-			(*trial_.getYCurve(-1))(trial_.frame - dFrame),
-			(*trial_.getZCurve(-1))(trial_.frame - dFrame),
-			(*trial_.getYawCurve(-1))(trial_.frame - dFrame),
-			(*trial_.getPitchCurve(-1))(trial_.frame - dFrame),
-			(*trial_.getRollCurve(-1))(trial_.frame - dFrame) };
+    double xyzypr1[6] = { (*trial_.getXCurve(-1))(trial_.frame - 2 * dFrame),
+      (*trial_.getYCurve(-1))(trial_.frame - 2 * dFrame),
+      (*trial_.getZCurve(-1))(trial_.frame - 2 * dFrame),
+      (*trial_.getYawCurve(-1))(trial_.frame - 2 * dFrame),
+      (*trial_.getPitchCurve(-1))(trial_.frame - 2 * dFrame),
+      (*trial_.getRollCurve(-1))(trial_.frame - 2 * dFrame) };
+    double xyzypr2[6] = { (*trial_.getXCurve(-1))(trial_.frame - dFrame),
+      (*trial_.getYCurve(-1))(trial_.frame - dFrame),
+      (*trial_.getZCurve(-1))(trial_.frame - dFrame),
+      (*trial_.getYawCurve(-1))(trial_.frame - dFrame),
+      (*trial_.getPitchCurve(-1))(trial_.frame - dFrame),
+      (*trial_.getRollCurve(-1))(trial_.frame - dFrame) };
 
 
         CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr1).linear_extrap(
                              CoordFrame::from_xyzypr(xyzypr2));
 
         xcframe.to_xyzypr(xyzypr1);
-		trial_.getXCurve(-1)->insert(trial_.frame, xyzypr1[0]);
-		trial_.getYCurve(-1)->insert(trial_.frame, xyzypr1[1]);
-		trial_.getZCurve(-1)->insert(trial_.frame, xyzypr1[2]);
-		trial_.getYawCurve(-1)->insert(trial_.frame, xyzypr1[3]);
-		trial_.getPitchCurve(-1)->insert(trial_.frame, xyzypr1[4]);
-		trial_.getRollCurve(-1)->insert(trial_.frame, xyzypr1[5]);
+    trial_.getXCurve(-1)->insert(trial_.frame, xyzypr1[0]);
+    trial_.getYCurve(-1)->insert(trial_.frame, xyzypr1[1]);
+    trial_.getZCurve(-1)->insert(trial_.frame, xyzypr1[2]);
+    trial_.getYawCurve(-1)->insert(trial_.frame, xyzypr1[3]);
+    trial_.getPitchCurve(-1)->insert(trial_.frame, xyzypr1[4]);
+    trial_.getRollCurve(-1)->insert(trial_.frame, xyzypr1[5]);
     }
     else if (trial_.guess == 1 && framesBehind > 0) {
-		trial_.getXCurve(-1)->insert(trial_.frame, (*trial_.getXCurve(-1))(trial_.frame - dFrame));
-		trial_.getYCurve(-1)->insert(trial_.frame, (*trial_.getYCurve(-1))(trial_.frame - dFrame));
-		trial_.getZCurve(-1)->insert(trial_.frame, (*trial_.getZCurve(-1))(trial_.frame - dFrame));
-		trial_.getYawCurve(-1)->insert(trial_.frame, (*trial_.getYawCurve(-1))(trial_.frame - dFrame));
-		trial_.getPitchCurve(-1)->insert(trial_.frame, (*trial_.getPitchCurve(-1))(trial_.frame - dFrame));
-		trial_.getRollCurve(-1)->insert(trial_.frame, (*trial_.getRollCurve(-1))(trial_.frame - dFrame));
+    trial_.getXCurve(-1)->insert(trial_.frame, (*trial_.getXCurve(-1))(trial_.frame - dFrame));
+    trial_.getYCurve(-1)->insert(trial_.frame, (*trial_.getYCurve(-1))(trial_.frame - dFrame));
+    trial_.getZCurve(-1)->insert(trial_.frame, (*trial_.getZCurve(-1))(trial_.frame - dFrame));
+    trial_.getYawCurve(-1)->insert(trial_.frame, (*trial_.getYawCurve(-1))(trial_.frame - dFrame));
+    trial_.getPitchCurve(-1)->insert(trial_.frame, (*trial_.getPitchCurve(-1))(trial_.frame - dFrame));
+    trial_.getRollCurve(-1)->insert(trial_.frame, (*trial_.getRollCurve(-1))(trial_.frame - dFrame));
     }
 
     int totalIter = 0;
     for (int j = 0; j < repeats; j++) {
 
-		// Get Current Pose
-		double xyzypr[6] = { (*trial_.getXCurve(-1))(trial_.frame),
-			(*trial_.getYCurve(-1))(trial_.frame),
-			(*trial_.getZCurve(-1))(trial_.frame),
-			(*trial_.getYawCurve(-1))(trial_.frame),
-			(*trial_.getPitchCurve(-1))(trial_.frame),
-			(*trial_.getRollCurve(-1))(trial_.frame) };
+    // Get Current Pose
+    double xyzypr[6] = { (*trial_.getXCurve(-1))(trial_.frame),
+      (*trial_.getYCurve(-1))(trial_.frame),
+      (*trial_.getZCurve(-1))(trial_.frame),
+      (*trial_.getYawCurve(-1))(trial_.frame),
+      (*trial_.getPitchCurve(-1))(trial_.frame),
+      (*trial_.getRollCurve(-1))(trial_.frame) };
 
-		// Init Manip for saving final optimum
-		double init_manip[6] = { 0 };
-		double init_ncc = minimizationFunc(init_manip);
+    // Init Manip for saving final optimum
+    double init_manip[6] = { 0 };
+    double init_ncc = minimizationFunc(init_manip);
 
-		CoordFrame manip = CoordFrame::from_xyzAxis_angle(init_manip);
+    CoordFrame manip = CoordFrame::from_xyzAxis_angle(init_manip);
 
-		if (optimization_method == 0) // 0: PSO + Downhill Simplex, 1: Downhill Simplex
-		{
-			// PSO Algorithm
-			double xyzypr_manip[6] = { 0 };
-			//int gBest = 0;
-			//int gBestTest = 1000;
-			int stall_iter = 0;
-			bool done = false;
-			float START_RANGE_MIN = (float)min_limit;
-			float START_RANGE_MAX = (float)max_limit;
-			unsigned int MAX_EPOCHS = max_iter;
-			unsigned int MAX_STALL = max_stall_iter;
+    if (optimization_method == 0) // 0: PSO + Downhill Simplex, 1: Downhill Simplex
+    {
+      // PSO Algorithm
+      double xyzypr_manip[6] = { 0 };
+      //int gBest = 0;
+      //int gBestTest = 1000;
+      int stall_iter = 0;
+      bool done = false;
+      float START_RANGE_MIN = (float)min_limit;
+      float START_RANGE_MAX = (float)max_limit;
+      unsigned int MAX_EPOCHS = max_iter;
+      unsigned int MAX_STALL = max_stall_iter;
 
-			float positions[NUM_OF_PARTICLES*NUM_OF_DIMENSIONS];
-			float velocities[NUM_OF_PARTICLES*NUM_OF_DIMENSIONS];
-			float pBests[NUM_OF_PARTICLES*NUM_OF_DIMENSIONS];
-			float gBest[NUM_OF_DIMENSIONS];
+      float positions[NUM_OF_PARTICLES*NUM_OF_DIMENSIONS];
+      float velocities[NUM_OF_PARTICLES*NUM_OF_DIMENSIONS];
+      float pBests[NUM_OF_PARTICLES*NUM_OF_DIMENSIONS];
+      float gBest[NUM_OF_DIMENSIONS];
 
-			srand((unsigned)time(NULL));
+      srand((unsigned)time(NULL));
 
-			for (int i = 0; i < NUM_OF_PARTICLES*NUM_OF_DIMENSIONS; i++)
-			{
-				if (i >= NUM_OF_DIMENSIONS) {
-					positions[i] = getRandom(START_RANGE_MIN, START_RANGE_MAX);
-				}
-				// First point will be the initial position
-				else {
-					//if (j > 1)
-					//{
-						positions[i] = (float)0.0;
-					//}
-					//else
-					//{
-					//	positions[i] = (float)0.2; // Noise for refinements
-					//}
-				}
-				pBests[i] = positions[i];
-				velocities[i] = 0;
-			}
+      for (int i = 0; i < NUM_OF_PARTICLES*NUM_OF_DIMENSIONS; i++)
+      {
+        if (i >= NUM_OF_DIMENSIONS) {
+          positions[i] = getRandom(START_RANGE_MIN, START_RANGE_MAX);
+        }
+        // First point will be the initial position
+        else {
+          //if (j > 1)
+          //{
+            positions[i] = (float)0.0;
+          //}
+          //else
+          //{
+          //  positions[i] = (float)0.2; // Noise for refinements
+          //}
+        }
+        pBests[i] = positions[i];
+        velocities[i] = 0;
+      }
 
-			for (int i = 0; i < NUM_OF_DIMENSIONS; i++)
-			{
-				gBest[i] = pBests[i];
-			}
+      for (int i = 0; i < NUM_OF_DIMENSIONS; i++)
+      {
+        gBest[i] = pBests[i];
+      }
 
-			clock_t cpu_begin = clock();
+      clock_t cpu_begin = clock();
 
-			pso(positions, velocities, pBests, gBest, MAX_EPOCHS, MAX_STALL);
-			//cuda_pso(positions, velocities, pBests, gBest, MAX_EPOCHS);
+      pso(positions, velocities, pBests, gBest, MAX_EPOCHS, MAX_STALL);
+      //cuda_pso(positions, velocities, pBests, gBest, MAX_EPOCHS);
 
-			clock_t cpu_end = clock();
+      clock_t cpu_end = clock();
 
-			printf("Time elapsed:%10.3lf s\n", (double)(cpu_end - cpu_begin) / CLOCKS_PER_SEC);
+      printf("Time elapsed:%10.3lf s\n", (double)(cpu_end - cpu_begin) / CLOCKS_PER_SEC);
 
-			cout << "Pose change from initial position: ";
-			for (int i = 0; i < NUM_OF_DIMENSIONS; i++)
-			{
-				if (i == NUM_OF_DIMENSIONS - 1)
-				{
-					cout << gBest[i] << endl;
-				}
-				else {
-					cout << gBest[i] << ",";
-				}
-				xyzypr_manip[i] = gBest[i];
-			}
+      cout << "Pose change from initial position: ";
+      for (int i = 0; i < NUM_OF_DIMENSIONS; i++)
+      {
+        if (i == NUM_OF_DIMENSIONS - 1)
+        {
+          cout << gBest[i] << endl;
+        }
+        else {
+          cout << gBest[i] << ",";
+        }
+        xyzypr_manip[i] = gBest[i];
+      }
 
-			printf("Minimum NCC from PSO = %f\n", host_fitness_function(gBest));
+      printf("Minimum NCC from PSO = %f\n", host_fitness_function(gBest));
 
-			manip = CoordFrame::from_xyzAxis_angle(xyzypr_manip);
-			// PSO End
+      manip = CoordFrame::from_xyzAxis_angle(xyzypr_manip);
+      // PSO End
 
-			// Additional DOWNHILL SIMPLEX AT THE END:
-			// Move the pose to the optimized pose
-			// Convert Current Pose to its Coordinate System Frame
-			CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
+      // Additional DOWNHILL SIMPLEX AT THE END:
+      // Move the pose to the optimized pose
+      // Convert Current Pose to its Coordinate System Frame
+      CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
-			xcframe = xcframe * trial_.getVolumeMatrix(-1)->inverse() * manip * *trial_.getVolumeMatrix(-1);
-			xcframe.to_xyzypr(xyzypr);
+      xcframe = xcframe * trial_.getVolumeMatrix(-1)->inverse() * manip * *trial_.getVolumeMatrix(-1);
+      xcframe.to_xyzypr(xyzypr);
 
-			xcframe = xcframe * trial_.getVolumeMatrix(-1)->inverse() * manip * *trial_.getVolumeMatrix(-1);
+      xcframe = xcframe * trial_.getVolumeMatrix(-1)->inverse() * manip * *trial_.getVolumeMatrix(-1);
 
-			trial_.getXCurve(-1)->insert(trial_.frame, xyzypr[0]);
-			trial_.getYCurve(-1)->insert(trial_.frame, xyzypr[1]);
-			trial_.getZCurve(-1)->insert(trial_.frame, xyzypr[2]);
-			trial_.getYawCurve(-1)->insert(trial_.frame, xyzypr[3]);
-			trial_.getPitchCurve(-1)->insert(trial_.frame, xyzypr[4]);
-			trial_.getRollCurve(-1)->insert(trial_.frame, xyzypr[5]);
+      trial_.getXCurve(-1)->insert(trial_.frame, xyzypr[0]);
+      trial_.getYCurve(-1)->insert(trial_.frame, xyzypr[1]);
+      trial_.getZCurve(-1)->insert(trial_.frame, xyzypr[2]);
+      trial_.getYawCurve(-1)->insert(trial_.frame, xyzypr[3]);
+      trial_.getPitchCurve(-1)->insert(trial_.frame, xyzypr[4]);
+      trial_.getRollCurve(-1)->insert(trial_.frame, xyzypr[5]);
 
 
-			// Get Current Pose
-			double xyzypr[6] = { (*trial_.getXCurve(-1))(trial_.frame),
-				(*trial_.getYCurve(-1))(trial_.frame),
-				(*trial_.getZCurve(-1))(trial_.frame),
-				(*trial_.getYawCurve(-1))(trial_.frame),
-				(*trial_.getPitchCurve(-1))(trial_.frame),
-				(*trial_.getRollCurve(-1))(trial_.frame) };
+      // Get Current Pose
+      double xyzypr[6] = { (*trial_.getXCurve(-1))(trial_.frame),
+        (*trial_.getYCurve(-1))(trial_.frame),
+        (*trial_.getZCurve(-1))(trial_.frame),
+        (*trial_.getYawCurve(-1))(trial_.frame),
+        (*trial_.getPitchCurve(-1))(trial_.frame),
+        (*trial_.getRollCurve(-1))(trial_.frame) };
 
-			// DOWNHILL SIMPLEX
-			// Generate the 7 vertices that form the initial simplex. Because
-			// the independent variables of the function we are optimizing over
-			// are relative to the initial guess, the same vertices can be used
-			// to form the initial simplex for every frame.
-			for (int i = 0; i < 7; ++i) {
-				P[i + 1][1] = (i == 1) ? trial_.offsets[0] : 0.0;
-				P[i + 1][2] = (i == 2) ? trial_.offsets[1] : 0.0;
-				P[i + 1][3] = (i == 3) ? trial_.offsets[2] : 0.0;
-				P[i + 1][4] = (i == 4) ? trial_.offsets[3] : 0.0;
-				P[i + 1][5] = (i == 5) ? trial_.offsets[4] : 0.0;
-				P[i + 1][6] = (i == 6) ? trial_.offsets[5] : 0.0;
-			}
+      // DOWNHILL SIMPLEX
+      // Generate the 7 vertices that form the initial simplex. Because
+      // the independent variables of the function we are optimizing over
+      // are relative to the initial guess, the same vertices can be used
+      // to form the initial simplex for every frame.
+      for (int i = 0; i < 7; ++i) {
+        P[i + 1][1] = (i == 1) ? trial_.offsets[0] : 0.0;
+        P[i + 1][2] = (i == 2) ? trial_.offsets[1] : 0.0;
+        P[i + 1][3] = (i == 3) ? trial_.offsets[2] : 0.0;
+        P[i + 1][4] = (i == 4) ? trial_.offsets[3] : 0.0;
+        P[i + 1][5] = (i == 5) ? trial_.offsets[4] : 0.0;
+        P[i + 1][6] = (i == 6) ? trial_.offsets[5] : 0.0;
+      }
 
-			// Determine the function values at the vertices of the initial
-			// simplex
-			for (int i = 0; i < 7; ++i) {
-				Y[i + 1] = FUNC(P[i + 1]);
-			}
+      // Determine the function values at the vertices of the initial
+      // simplex
+      for (int i = 0; i < 7; ++i) {
+        Y[i + 1] = FUNC(P[i + 1]);
+      }
 
-			// Downhill Simplex Optimization
-			// Optimize the frame
-			AMOEBA(P, Y, NDIM, FTOL, &ITER);
+      // Downhill Simplex Optimization
+      // Optimize the frame
+      AMOEBA(P, Y, NDIM, FTOL, &ITER);
 
-			// get the final ncc value to print out for user
-			double final_ncc = minimizationFunc((P[1] + 1));
+      // get the final ncc value to print out for user
+      double final_ncc = minimizationFunc((P[1] + 1));
 
-			if (final_ncc < init_ncc) {
-				cout << "Downhill Simplex Optimized Final NCC: " << minimizationFunc((P[1] + 1)) << endl;
-				// For Downhill Simplex Method (Final)
-				manip = CoordFrame::from_xyzAxis_angle(P[1] + 1);
-			}
-			else {
-				cout << "The initial position was optimized." << endl;
-				manip = CoordFrame::from_xyzAxis_angle(init_manip);
-			}
+      if (final_ncc < init_ncc) {
+        cout << "Downhill Simplex Optimized Final NCC: " << minimizationFunc((P[1] + 1)) << endl;
+        // For Downhill Simplex Method (Final)
+        manip = CoordFrame::from_xyzAxis_angle(P[1] + 1);
+      }
+      else {
+        cout << "The initial position was optimized." << endl;
+        manip = CoordFrame::from_xyzAxis_angle(init_manip);
+      }
 
-		}
-		else {
-			// DOWNHILL SIMPLEX Only
-			// Generate the 7 vertices that form the initial simplex. Because
-			// the independent variables of the function we are optimizing over
-			// are relative to the initial guess, the same vertices can be used
-			// to form the initial simplex for every frame.
-			for (int i = 0; i < 7; ++i) {
-				P[i + 1][1] = (i == 1) ? trial_.offsets[0] : 0.0;
-				P[i + 1][2] = (i == 2) ? trial_.offsets[1] : 0.0;
-				P[i + 1][3] = (i == 3) ? trial_.offsets[2] : 0.0;
-				P[i + 1][4] = (i == 4) ? trial_.offsets[3] : 0.0;
-				P[i + 1][5] = (i == 5) ? trial_.offsets[4] : 0.0;
-				P[i + 1][6] = (i == 6) ? trial_.offsets[5] : 0.0;
-			}
+    }
+    else {
+      // DOWNHILL SIMPLEX Only
+      // Generate the 7 vertices that form the initial simplex. Because
+      // the independent variables of the function we are optimizing over
+      // are relative to the initial guess, the same vertices can be used
+      // to form the initial simplex for every frame.
+      for (int i = 0; i < 7; ++i) {
+        P[i + 1][1] = (i == 1) ? trial_.offsets[0] : 0.0;
+        P[i + 1][2] = (i == 2) ? trial_.offsets[1] : 0.0;
+        P[i + 1][3] = (i == 3) ? trial_.offsets[2] : 0.0;
+        P[i + 1][4] = (i == 4) ? trial_.offsets[3] : 0.0;
+        P[i + 1][5] = (i == 5) ? trial_.offsets[4] : 0.0;
+        P[i + 1][6] = (i == 6) ? trial_.offsets[5] : 0.0;
+      }
 
-			// Determine the function values at the vertices of the initial
-			// simplex
-			for (int i = 0; i < 7; ++i) {
-				Y[i + 1] = FUNC(P[i + 1]);
-			}
+      // Determine the function values at the vertices of the initial
+      // simplex
+      for (int i = 0; i < 7; ++i) {
+        Y[i + 1] = FUNC(P[i + 1]);
+      }
 
-			// Downhill Simplex Optimization
-			// Optimize the frame
-			AMOEBA(P, Y, NDIM, FTOL, &ITER);
+      // Downhill Simplex Optimization
+      // Optimize the frame
+      AMOEBA(P, Y, NDIM, FTOL, &ITER);
 
-			cout << "Optimized Final NCC: " << minimizationFunc((P[1] + 1)) << endl;
+      cout << "Optimized Final NCC: " << minimizationFunc((P[1] + 1)) << endl;
 
-			// For Downhill Simplex Method
-			manip = CoordFrame::from_xyzAxis_angle(P[1] + 1);
-		}
+      // For Downhill Simplex Method
+      manip = CoordFrame::from_xyzAxis_angle(P[1] + 1);
+    }
 
-		// Move the pose to the optimized pose
-		// Convert Current Pose to its Coordinate System Frame
+    // Move the pose to the optimized pose
+    // Convert Current Pose to its Coordinate System Frame
         CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
-		xcframe = xcframe * trial_.getVolumeMatrix(-1)->inverse() * manip * *trial_.getVolumeMatrix(-1);
+    xcframe = xcframe * trial_.getVolumeMatrix(-1)->inverse() * manip * *trial_.getVolumeMatrix(-1);
         xcframe.to_xyzypr(xyzypr);
 
-		xcframe = xcframe * trial_.getVolumeMatrix(-1)->inverse() * manip * *trial_.getVolumeMatrix(-1);
+    xcframe = xcframe * trial_.getVolumeMatrix(-1)->inverse() * manip * *trial_.getVolumeMatrix(-1);
 
 
-		trial_.getXCurve(-1)->insert(trial_.frame, xyzypr[0]);
-		trial_.getYCurve(-1)->insert(trial_.frame, xyzypr[1]);
-		trial_.getZCurve(-1)->insert(trial_.frame, xyzypr[2]);
-		trial_.getYawCurve(-1)->insert(trial_.frame, xyzypr[3]);
-		trial_.getPitchCurve(-1)->insert(trial_.frame, xyzypr[4]);
-		trial_.getRollCurve(-1)->insert(trial_.frame, xyzypr[5]);
+    trial_.getXCurve(-1)->insert(trial_.frame, xyzypr[0]);
+    trial_.getYCurve(-1)->insert(trial_.frame, xyzypr[1]);
+    trial_.getZCurve(-1)->insert(trial_.frame, xyzypr[2]);
+    trial_.getYawCurve(-1)->insert(trial_.frame, xyzypr[3]);
+    trial_.getPitchCurve(-1)->insert(trial_.frame, xyzypr[4]);
+    trial_.getRollCurve(-1)->insert(trial_.frame, xyzypr[5]);
     }
-	totalIter += ITER;
+  totalIter += ITER;
 
     cerr << "Tracker::optimize(): Frame " << trial_.frame
          << " done in " << totalIter << " total iterations" << endl;
@@ -587,150 +587,150 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
 
 // Calculate Correlation for Bone Matching
 std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) const
-	{
-		std::vector<double> correlations;
-		CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
+  {
+    std::vector<double> correlations;
+    CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
-		for (unsigned int i = 0; i < views_.size(); ++i) {
-			// Set the modelview matrix for DRR rendering
-			CoordFrame modelview = views_[i]->camera()->coord_frame().inverse()*xcframe;
-			double imv[16]; modelview.inverse().to_matrix_row_order(imv);
-			views_[i]->drrRenderer(volumeID)->setInvModelView(imv);
+    for (unsigned int i = 0; i < views_.size(); ++i) {
+      // Set the modelview matrix for DRR rendering
+      CoordFrame modelview = views_[i]->camera()->coord_frame().inverse()*xcframe;
+      double imv[16]; modelview.inverse().to_matrix_row_order(imv);
+      views_[i]->drrRenderer(volumeID)->setInvModelView(imv);
 
-			// Calculate the viewport surrounding the volume
-			double viewport[4];
-			this->calculate_viewport(modelview, viewport);
+      // Calculate the viewport surrounding the volume
+      double viewport[4];
+      this->calculate_viewport(modelview, viewport);
 
-			// Calculate the size of the image to render
-			unsigned render_width = viewport[2] * trial_.render_width / views_[i]->camera()->viewport()[2];
-			unsigned render_height = viewport[3] * trial_.render_height / views_[i]->camera()->viewport()[3];
+      // Calculate the size of the image to render
+      unsigned render_width = viewport[2] * trial_.render_width / views_[i]->camera()->viewport()[2];
+      unsigned render_height = viewport[3] * trial_.render_height / views_[i]->camera()->viewport()[3];
 
-			// Set the viewports
-			views_[i]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1],
-				viewport[2], viewport[3]);
-			views_[i]->radRenderer()->set_viewport(viewport[0], viewport[1],
-				viewport[2], viewport[3]);
+      // Set the viewports
+      views_[i]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1],
+        viewport[2], viewport[3]);
+      views_[i]->radRenderer()->set_viewport(viewport[0], viewport[1],
+        viewport[2], viewport[3]);
 
-			// Render the DRR and Radiograph
-			views_[i]->renderDrrSingle(volumeID, rendered_drr_, render_width, render_height);
-			views_[i]->renderRad(rendered_rad_, render_width, render_height);
+      // Render the DRR and Radiograph
+      views_[i]->renderDrrSingle(volumeID, rendered_drr_, render_width, render_height);
+      views_[i]->renderRad(rendered_rad_, render_width, render_height);
 
-			//render masks
-			views_[i]->backgroundRenderer()->set_viewport(viewport[0], viewport[1],
-				viewport[2], viewport[3]);
+      //render masks
+      views_[i]->backgroundRenderer()->set_viewport(viewport[0], viewport[1],
+        viewport[2], viewport[3]);
 
-			views_[i]->renderBackground(background_mask_, render_width, render_height);
-			views_[i]->renderDRRMask(rendered_drr_, drr_mask_, render_width, render_height);
+      views_[i]->renderBackground(background_mask_, render_width, render_height);
+      views_[i]->renderDRRMask(rendered_drr_, drr_mask_, render_width, render_height);
 
-			gpu::multiply(background_mask_, drr_mask_, drr_mask_, render_width, render_height);
-			gpu::multiply(rendered_rad_, drr_mask_, rendered_rad_, render_width, render_height);
-			gpu::multiply(rendered_drr_, drr_mask_, rendered_drr_, render_width, render_height);
+      gpu::multiply(background_mask_, drr_mask_, drr_mask_, render_width, render_height);
+      gpu::multiply(rendered_rad_, drr_mask_, rendered_rad_, render_width, render_height);
+      gpu::multiply(rendered_drr_, drr_mask_, rendered_drr_, render_width, render_height);
 
 #if DEBUG
-			save_debug_image(rendered_drr_, render_width, render_height);
-			//save_debug_image(rendered_rad_, render_width, render_height);
-			//save_debug_image(drr_mask_, render_width, render_height);
-			//save_debug_image(background_mask_, render_width, render_height);
+      save_debug_image(rendered_drr_, render_width, render_height);
+      //save_debug_image(rendered_rad_, render_width, render_height);
+      //save_debug_image(drr_mask_, render_width, render_height);
+      //save_debug_image(background_mask_, render_width, render_height);
 #endif
-			if (cf_model_select) // If 1, we do Implant
-			{
-				// Calculate the correlation for implant
-				// Calculate Hausdorff Distance for Implant Matching _ FUTURE
-				#ifdef WITH_CUDA
-					correlations.push_back(gpu::hdist(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
-				#endif
-			}
-			else { // If 0, we do bone model
-				// Calculate the correlation for ncc
-				correlations.push_back(1.0 - gpu::ncc(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
-			}
+      if (cf_model_select) // If 1, we do Implant
+      {
+        // Calculate the correlation for implant
+        // Calculate Hausdorff Distance for Implant Matching _ FUTURE
+        #ifdef WITH_CUDA
+          correlations.push_back(gpu::hdist(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
+        #endif
+      }
+      else { // If 0, we do bone model
+        // Calculate the correlation for ncc
+        correlations.push_back(1.0 - gpu::ncc(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
+      }
 
-		}
-		return correlations;
-	}
+    }
+    return correlations;
+  }
 // Minimizing Function for Bone Matching
 double Tracker::minimizationFunc(const double* values) const
 {
-	// Construct a coordinate frame from the given values
+  // Construct a coordinate frame from the given values
 
-	double xyzypr[6] = { (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame),
-		(*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame),
-		(*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame),
-		(*(const_cast<Trial&>(trial_)).getYawCurve(-1))(trial_.frame),
-		(*(const_cast<Trial&>(trial_)).getPitchCurve(-1))(trial_.frame),
-		(*(const_cast<Trial&>(trial_)).getRollCurve(-1))(trial_.frame) };
+  double xyzypr[6] = { (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame),
+    (*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame),
+    (*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame),
+    (*(const_cast<Trial&>(trial_)).getYawCurve(-1))(trial_.frame),
+    (*(const_cast<Trial&>(trial_)).getPitchCurve(-1))(trial_.frame),
+    (*(const_cast<Trial&>(trial_)).getRollCurve(-1))(trial_.frame) };
     CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
 
-	CoordFrame manip = CoordFrame::from_xyzAxis_angle(values);
-	xcframe = xcframe * (const_cast<Trial&>(trial_)).getVolumeMatrix(-1)->inverse() * manip * *(const_cast<Trial&>(trial_)).getVolumeMatrix(-1);
+  CoordFrame manip = CoordFrame::from_xyzAxis_angle(values);
+  xcframe = xcframe * (const_cast<Trial&>(trial_)).getVolumeMatrix(-1)->inverse() * manip * *(const_cast<Trial&>(trial_)).getVolumeMatrix(-1);
 
-	unsigned int idx = trial_.current_volume;
-	xcframe.to_xyzypr(xyzypr);
-	std::vector <double> correlations = trackFrame(idx, &xyzypr[0]);
+  unsigned int idx = trial_.current_volume;
+  xcframe.to_xyzypr(xyzypr);
+  std::vector <double> correlations = trackFrame(idx, &xyzypr[0]);
 
-	double correlation = correlations[0];
-	//printf("Cam 0: %4.5f", correlation);
-	for (unsigned int i = 1; i < trial_.cameras.size(); ++i) {
-		correlation += correlations[i];
-	//	printf("\tCam %d: %4.5f", i, correlations[i]);
-	}
-	//printf("\tFinal NCC: %4.5f\n", correlation);
-	if (correlation < 0) { correlation = 9999; } // In case we have a really bad filters and correlation ends up negative... This should not happen...
-	return correlation;
+  double correlation = correlations[0];
+  //printf("Cam 0: %4.5f", correlation);
+  for (unsigned int i = 1; i < trial_.cameras.size(); ++i) {
+    correlation += correlations[i];
+  //  printf("\tCam %d: %4.5f", i, correlations[i]);
+  }
+  //printf("\tFinal NCC: %4.5f\n", correlation);
+  if (correlation < 0) { correlation = 9999; } // In case we have a really bad filters and correlation ends up negative... This should not happen...
+  return correlation;
 }
 
 void Tracker::updateBackground()
 {
-	for (unsigned int i = 0; i < views_.size(); ++i) {
-		views_[i]->updateBackground(trial_.videos[i].background(), trial_.videos[i].width(), trial_.videos[i].height());
-	}
+  for (unsigned int i = 0; i < views_.size(); ++i) {
+    views_[i]->updateBackground(trial_.videos[i].background(), trial_.videos[i].width(), trial_.videos[i].height());
+  }
 }
 
 void Tracker::setBackgroundThreshold(float threshold)
 {
-	for (unsigned int i = 0; i < views_.size(); ++i) {
-		views_[i]->setBackgroundThreshold(threshold);
-	}
+  for (unsigned int i = 0; i < views_.size(); ++i) {
+    views_[i]->setBackgroundThreshold(threshold);
+  }
 }
 
 
 #ifdef WITH_CUDA
-	void get_image(const Buffer* dev_image, int width, int height, std::vector<unsigned char> &data)
+  void get_image(const Buffer* dev_image, int width, int height, std::vector<unsigned char> &data)
 #else
-	void get_image(const gpu::Buffer* dev_image, int width, int height, std::vector<unsigned char> &data)
+  void get_image(const gpu::Buffer* dev_image, int width, int height, std::vector<unsigned char> &data)
 #endif
-	{
-		static int count = 0;
-		float* host_image = new float[width*height];
+  {
+    static int count = 0;
+    float* host_image = new float[width*height];
 
 #ifdef WITH_CUDA
-		cudaMemcpy(host_image, dev_image, width*height*sizeof(float), cudaMemcpyDeviceToHost);
+    cudaMemcpy(host_image, dev_image, width*height*sizeof(float), cudaMemcpyDeviceToHost);
 #else
-		dev_image->write(host_image, width*height*sizeof(float));
+    dev_image->write(host_image, width*height*sizeof(float));
 #endif
-		// Copy to a char array
-		for (int i = 0; i < width*height; i++) {
-			data.push_back((unsigned char)(255 * host_image[i]));
-		}
+    // Copy to a char array
+    for (int i = 0; i < width*height; i++) {
+      data.push_back((unsigned char)(255 * host_image[i]));
+    }
 
-		delete[] host_image;
-	}
+    delete[] host_image;
+  }
 
 
 std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned camera, double* xyzypr, unsigned& width, unsigned& height)
 {
-		trial()->current_volume = volumeID;
+    trial()->current_volume = volumeID;
 
-		CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
+    CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
-		CoordFrame modelview = views_[camera]->camera()->coord_frame().inverse()*xcframe;
-		double imv[16]; modelview.inverse().to_matrix_row_order(imv);
-		views_[camera]->drrRenderer(volumeID)->setInvModelView(imv);
+    CoordFrame modelview = views_[camera]->camera()->coord_frame().inverse()*xcframe;
+    double imv[16]; modelview.inverse().to_matrix_row_order(imv);
+    views_[camera]->drrRenderer(volumeID)->setInvModelView(imv);
 
-		// Calculate the viewport surrounding the volume
-		double viewport[4];
-		//this->calculate_viewport(modelview, viewport);
+    // Calculate the viewport surrounding the volume
+    double viewport[4];
+    //this->calculate_viewport(modelview, viewport);
 
         // Export Full Images
         viewport[0] = -views_[camera]->camera()->viewport()[2]/2;
@@ -738,41 +738,41 @@ std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned cam
         viewport[2] = views_[camera]->camera()->viewport()[2];
         viewport[3] = views_[camera]->camera()->viewport()[3];
 
-		// Calculate the size of the image to render
-		unsigned render_width = viewport[2] * trial_.render_width / views_[camera]->camera()->viewport()[2];
-		unsigned render_height = viewport[3] * trial_.render_height / views_[camera]->camera()->viewport()[3];
+    // Calculate the size of the image to render
+    unsigned render_width = viewport[2] * trial_.render_width / views_[camera]->camera()->viewport()[2];
+    unsigned render_height = viewport[3] * trial_.render_height / views_[camera]->camera()->viewport()[3];
 
-		// Set the viewports
-		views_[camera]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1],
-			viewport[2], viewport[3]);
-		views_[camera]->radRenderer()->set_viewport(viewport[0], viewport[1],
-			viewport[2], viewport[3]);
+    // Set the viewports
+    views_[camera]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1],
+      viewport[2], viewport[3]);
+    views_[camera]->radRenderer()->set_viewport(viewport[0], viewport[1],
+      viewport[2], viewport[3]);
 
-		// Render the DRR and Radiograph
-		views_[camera]->renderDrrSingle(volumeID, rendered_drr_, render_width, render_height);
-		views_[camera]->renderRad(rendered_rad_, render_width, render_height);
+    // Render the DRR and Radiograph
+    views_[camera]->renderDrrSingle(volumeID, rendered_drr_, render_width, render_height);
+    views_[camera]->renderRad(rendered_rad_, render_width, render_height);
 
-		//render masks
-		views_[camera]->backgroundRenderer()->set_viewport(viewport[0], viewport[1],
-			viewport[2], viewport[3]);
+    //render masks
+    views_[camera]->backgroundRenderer()->set_viewport(viewport[0], viewport[1],
+      viewport[2], viewport[3]);
 
-		views_[camera]->renderBackground(background_mask_, render_width, render_height);
-		views_[camera]->renderDRRMask(rendered_drr_, drr_mask_, render_width, render_height);
+    views_[camera]->renderBackground(background_mask_, render_width, render_height);
+    views_[camera]->renderDRRMask(rendered_drr_, drr_mask_, render_width, render_height);
 
-		gpu::multiply(background_mask_, drr_mask_, drr_mask_, render_width, render_height);
-		gpu::multiply(rendered_rad_, drr_mask_, rendered_rad_, render_width, render_height);
-		gpu::multiply(rendered_drr_, drr_mask_, rendered_drr_, render_width, render_height);
+    gpu::multiply(background_mask_, drr_mask_, drr_mask_, render_width, render_height);
+    gpu::multiply(rendered_rad_, drr_mask_, rendered_rad_, render_width, render_height);
+    gpu::multiply(rendered_drr_, drr_mask_, rendered_drr_, render_width, render_height);
 
-		width = render_width;
-		height = render_height;
+    width = render_width;
+    height = render_height;
 
 
-		std::vector<unsigned char> out_data;
-		get_image(rendered_rad_, width, height, out_data);
-		get_image(rendered_drr_, width, height, out_data);
-		get_image(drr_mask_, width, height, out_data);
+    std::vector<unsigned char> out_data;
+    get_image(rendered_rad_, width, height, out_data);
+    get_image(rendered_drr_, width, height, out_data);
+    get_image(drr_mask_, width, height, out_data);
 
-		return out_data;
+    return out_data;
 }
 
 void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) const
@@ -782,14 +782,14 @@ void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) c
     double min_max[4] = {1.0,1.0,-1.0,-1.0};
     double corners[24] = {0,0,-1,0,0,0, 0,1,-1,0,1,0, 1,0,-1,1,0,0,1,1,-1,1,1,0};
 
-	int idx = trial_.current_volume;
+  int idx = trial_.current_volume;
 
     for (int j = 0; j < 8; j++) {
 
         // Calculate the location of the corner in object space
-		corners[3 * j + 0] = (corners[3 * j + 0] - volumeDescription_[idx]->invTrans()[0]) / volumeDescription_[idx]->invScale()[0];
-		corners[3 * j + 1] = (corners[3 * j + 1] - volumeDescription_[idx]->invTrans()[1]) / volumeDescription_[idx]->invScale()[1];
-		corners[3 * j + 2] = (corners[3 * j + 2] - volumeDescription_[idx]->invTrans()[2]) / volumeDescription_[idx]->invScale()[2];
+    corners[3 * j + 0] = (corners[3 * j + 0] - volumeDescription_[idx]->invTrans()[0]) / volumeDescription_[idx]->invScale()[0];
+    corners[3 * j + 1] = (corners[3 * j + 1] - volumeDescription_[idx]->invTrans()[1]) / volumeDescription_[idx]->invScale()[1];
+    corners[3 * j + 2] = (corners[3 * j + 2] - volumeDescription_[idx]->invTrans()[2]) / volumeDescription_[idx]->invScale()[2];
 
         // Calculate the location of the corner in camera space
         double corner[3];
@@ -832,51 +832,51 @@ void Tracker::getFullDRR(unsigned int volumeID) const
         (*(const_cast<Trial&>(trial_)).getPitchCurve(-1))(trial_.frame),
         (*(const_cast<Trial&>(trial_)).getRollCurve(-1))(trial_.frame) };
 
-	CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
+  CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
-	for (unsigned int i = 0; i < views_.size(); ++i) {
-		// Set the modelview matrix for DRR rendering
-		CoordFrame modelview = views_[i]->camera()->coord_frame().inverse() * xcframe;
-		double imv[16]; modelview.inverse().to_matrix_row_order(imv);
-		views_[i]->drrRenderer(volumeID)->setInvModelView(imv);
+  for (unsigned int i = 0; i < views_.size(); ++i) {
+    // Set the modelview matrix for DRR rendering
+    CoordFrame modelview = views_[i]->camera()->coord_frame().inverse() * xcframe;
+    double imv[16]; modelview.inverse().to_matrix_row_order(imv);
+    views_[i]->drrRenderer(volumeID)->setInvModelView(imv);
 
-		// Calculate the viewport surrounding the volume
-		double viewport[4];
-		//this->calculate_viewport(modelview, viewport);
+    // Calculate the viewport surrounding the volume
+    double viewport[4];
+    //this->calculate_viewport(modelview, viewport);
 
-		// Export Full Images
-		viewport[0] = -views_[i]->camera()->viewport()[2]/2;
-		viewport[1] = -views_[i]->camera()->viewport()[3]/2;
-		viewport[2] = views_[i]->camera()->viewport()[2];
-		viewport[3] = views_[i]->camera()->viewport()[3];
+    // Export Full Images
+    viewport[0] = -views_[i]->camera()->viewport()[2]/2;
+    viewport[1] = -views_[i]->camera()->viewport()[3]/2;
+    viewport[2] = views_[i]->camera()->viewport()[2];
+    viewport[3] = views_[i]->camera()->viewport()[3];
 
-		// Calculate the size of the image to render
-		unsigned render_width = viewport[2] * trial_.render_width / views_[i]->camera()->viewport()[2];
-		unsigned render_height = viewport[3] * trial_.render_height / views_[i]->camera()->viewport()[3];
+    // Calculate the size of the image to render
+    unsigned render_width = viewport[2] * trial_.render_width / views_[i]->camera()->viewport()[2];
+    unsigned render_height = viewport[3] * trial_.render_height / views_[i]->camera()->viewport()[3];
 
-		// Set the viewports
-		views_[i]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1],
-			viewport[2], viewport[3]);
-		views_[i]->radRenderer()->set_viewport(viewport[0], viewport[1],
-			viewport[2], viewport[3]);
+    // Set the viewports
+    views_[i]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1],
+      viewport[2], viewport[3]);
+    views_[i]->radRenderer()->set_viewport(viewport[0], viewport[1],
+      viewport[2], viewport[3]);
 
-		// Render the DRR and Radiograph
-		views_[i]->renderDrrSingle(volumeID, rendered_drr_, render_width, render_height);
-		views_[i]->renderRad(rendered_rad_, render_width, render_height);
+    // Render the DRR and Radiograph
+    views_[i]->renderDrrSingle(volumeID, rendered_drr_, render_width, render_height);
+    views_[i]->renderRad(rendered_rad_, render_width, render_height);
 
-		//render masks
-		views_[i]->backgroundRenderer()->set_viewport(viewport[0], viewport[1],
-			viewport[2], viewport[3]);
+    //render masks
+    views_[i]->backgroundRenderer()->set_viewport(viewport[0], viewport[1],
+      viewport[2], viewport[3]);
 
-		views_[i]->renderBackground(background_mask_, render_width, render_height);
-		views_[i]->renderDRRMask(rendered_drr_, drr_mask_, render_width, render_height);
+    views_[i]->renderBackground(background_mask_, render_width, render_height);
+    views_[i]->renderDRRMask(rendered_drr_, drr_mask_, render_width, render_height);
 
-		gpu::multiply(background_mask_, drr_mask_, drr_mask_, render_width, render_height);
-		gpu::multiply(rendered_rad_, drr_mask_, rendered_rad_, render_width, render_height);
-		gpu::multiply(rendered_drr_, drr_mask_, rendered_drr_, render_width, render_height);
+    gpu::multiply(background_mask_, drr_mask_, drr_mask_, render_width, render_height);
+    gpu::multiply(rendered_rad_, drr_mask_, rendered_rad_, render_width, render_height);
+    gpu::multiply(rendered_drr_, drr_mask_, rendered_drr_, render_width, render_height);
 
-		save_full_drr(rendered_drr_, render_width, render_height);
-	}
+    save_full_drr(rendered_drr_, render_width, render_height);
+  }
 }
 
 

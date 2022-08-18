@@ -52,23 +52,23 @@ class AutoscoperMainWindow;
 
 class Socket : public QObject
 {
-	Q_OBJECT
+  Q_OBJECT
 
 public:
-	Socket(AutoscoperMainWindow* mainwindow, unsigned long long int listenPort);
-	~Socket();
+  Socket(AutoscoperMainWindow* mainwindow, unsigned long long int listenPort);
+  ~Socket();
 
 private:
-	QTcpServer *tcpServer;
-	std::vector<QTcpSocket *> clientConnections;
-	void handleMessage(QTcpSocket * connection, char* data, qint64 length);
+  QTcpServer *tcpServer;
+  std::vector<QTcpSocket *> clientConnections;
+  void handleMessage(QTcpSocket * connection, char* data, qint64 length);
 private:
-	AutoscoperMainWindow* m_mainwindow;
+  AutoscoperMainWindow* m_mainwindow;
 
 private slots:
-	void createNewConnection();
-	void deleteConnection();
-	void reading();
+  void createNewConnection();
+  void deleteConnection();
+  void reading();
 };
 
 #endif // SOCKET_H

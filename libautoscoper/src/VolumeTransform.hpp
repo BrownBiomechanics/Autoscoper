@@ -59,7 +59,7 @@ public:
 
     // Loads a trial file
     VolumeTransform();
-	~VolumeTransform();
+  ~VolumeTransform();
 
     KeyCurve x_curve;
     KeyCurve y_curve;
@@ -69,7 +69,7 @@ public:
     KeyCurve roll_curve;
 
     //CoordFrame volumeTrans; //FromWorldToVolume
-	CoordFrame volumeMatrix; //FromWorldToPivot
+  CoordFrame volumeMatrix; //FromWorldToPivot
 };
 
 } // namespace xromm

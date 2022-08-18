@@ -62,23 +62,23 @@ using namespace std;
 
 template <class T>
 void flipVolume(const T* data,
-				T* dest,
+        T* dest,
                 int width,
                 int height,
                 int depth,
                 bool flipX,
-				bool flipY,
-				bool flipZ)
+        bool flipY,
+        bool flipZ)
 {
-	int x,y,z;
+  int x,y,z;
     for (int k = 0; k < depth; k++) {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 x = flipX ? (width-1) - j : j;
-				y = flipY ? (height-1) - i : i;
-				z = flipZ ? (depth-1) - k : k;
+        y = flipY ? (height-1) - i : i;
+        z = flipZ ? (depth-1) - k : k;
 
-				dest[z*width*height+y*width+x]= data[k*width*height+i*width+j];
+        dest[z*width*height+y*width+x]= data[k*width*height+i*width+j];
             }
         }
     }
@@ -171,19 +171,19 @@ VolumeDescription::VolumeDescription(const Volume& volume)
 {
     // Crop the volume
     int min[3], max[3];
-	vector<char> data_flipped(volume.width()*volume.height()*volume.depth()*(volume.bps()/8));
+  vector<char> data_flipped(volume.width()*volume.height()*volume.depth()*(volume.bps()/8));
 
     switch(volume.bps()) {
         case 8: {
-			flipVolume((unsigned char*)volume.data(),
-					(unsigned char*)&data_flipped[0],
+      flipVolume((unsigned char*)volume.data(),
+          (unsigned char*)&data_flipped[0],
                     (int)volume.width(),
                     (int)volume.height(),
                     (int)volume.depth(),
-					(bool)volume.flipX(),
+          (bool)volume.flipX(),
                     (bool)volume.flipY(),
                     (bool)volume.flipZ()
-			);
+      );
 
             cropVolume((unsigned char*)&data_flipped[0],
                     (int)volume.width(),
@@ -194,15 +194,15 @@ VolumeDescription::VolumeDescription(const Volume& volume)
             break;
         }
         case 16: {
-			flipVolume((unsigned short*)volume.data(),
-					(unsigned short*)&data_flipped[0],
+      flipVolume((unsigned short*)volume.data(),
+          (unsigned short*)&data_flipped[0],
                     (int)volume.width(),
                     (int)volume.height(),
                     (int)volume.depth(),
-					(bool)volume.flipX(),
+          (bool)volume.flipX(),
                     (bool)volume.flipY(),
                     (bool)volume.flipZ()
-			);
+      );
             cropVolume((unsigned short*)&data_flipped[0],
                     (int)volume.width(),
                     (int)volume.height(),
@@ -264,10 +264,10 @@ VolumeDescription::VolumeDescription(const Volume& volume)
             exit(0);
     }
 
-	//calculate translation to center pivot
-	transCenter_[0] = - volume.scaleX() * 0.5 * (min[0] + max[0]);
-	transCenter_[1] = - volume.scaleY() * 0.5 * (min[1] + max[1]);
-	transCenter_[2] = volume.scaleZ() * 0.5 * (min[2] + max[2]);
+  //calculate translation to center pivot
+  transCenter_[0] = - volume.scaleX() * 0.5 * (min[0] + max[0]);
+  transCenter_[1] = - volume.scaleY() * 0.5 * (min[1] + max[1]);
+  transCenter_[2] = volume.scaleZ() * 0.5 * (min[2] + max[2]);
 
     // Calculate the offset and size of the sub-volume
     invScale_[0] = 1.0f/(float)(volume.scaleX()*dim[0]);
@@ -280,7 +280,7 @@ VolumeDescription::VolumeDescription(const Volume& volume)
     // Free any previously allocated memory.
 
 #ifdef WITH_CUDA
-	// Free any previously allocated memory.
+  // Free any previously allocated memory.
     cutilSafeCall(cudaFreeArray(image_));
 
     // Create a 3D array.
@@ -306,11 +306,11 @@ VolumeDescription::VolumeDescription(const Volume& volume)
     copyParams.kind = cudaMemcpyHostToDevice;
     cutilSafeCall(cudaMemcpy3D(&copyParams));
 #else
-	if (image_) delete image_;
+  if (image_) delete image_;
 
     // Create a 3D array.
-	cl_image_format format;
-	format.image_channel_order = CL_R;
+  cl_image_format format;
+  format.image_channel_order = CL_R;
     switch (volume.bps()) {
         case 8:  format.image_channel_data_type = CL_UNORM_INT8; break;
         case 16: format.image_channel_data_type = CL_UNORM_INT16; break;
@@ -320,18 +320,18 @@ VolumeDescription::VolumeDescription(const Volume& volume)
             return;
     }
 
-	size_t sdim[3] = { (size_t)dim[0], (size_t)dim[1], (size_t)dim[2] };
-	image_ = new Image(sdim, &format, CL_MEM_READ_ONLY);
-	image_->read(&data[0]);
+  size_t sdim[3] = { (size_t)dim[0], (size_t)dim[1], (size_t)dim[2] };
+  image_ = new Image(sdim, &format, CL_MEM_READ_ONLY);
+  image_->read(&data[0]);
 #endif
 }
 
 VolumeDescription::~VolumeDescription()
 {
 #ifdef WITH_CUDA
-	cutilSafeCall(cudaFreeArray(image_));
+  cutilSafeCall(cudaFreeArray(image_));
 #else
-	if (image_) delete image_;
+  if (image_) delete image_;
 #endif
 }
 

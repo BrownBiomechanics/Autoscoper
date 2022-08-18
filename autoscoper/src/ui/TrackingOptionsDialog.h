@@ -46,54 +46,54 @@
 
 
 namespace Ui {
-	class TrackingOptionsDialog;
+  class TrackingOptionsDialog;
 }
 
 class TrackingOptionsDialog : public QDialog{
 
-	Q_OBJECT
+  Q_OBJECT
 
-	private:
-		bool is_backup_on;
-		int opt_method;
-		int cf_model;
+  private:
+    bool is_backup_on;
+    int opt_method;
+    int cf_model;
 
-	public:
-		explicit TrackingOptionsDialog(QWidget *parent = 0);
-		~TrackingOptionsDialog();
+  public:
+    explicit TrackingOptionsDialog(QWidget *parent = 0);
+    ~TrackingOptionsDialog();
 
-		Ui::TrackingOptionsDialog *diag;
-
-
-		int frame, from_frame, to_frame, d_frame, skip_frame;
-		bool doExit;
-		bool frame_optimizing;
-		int num_repeats;
+    Ui::TrackingOptionsDialog *diag;
 
 
-		// Read random search limits and iterations
-		unsigned int max_iter;
-		unsigned int max_stall_iter;
-		double min_lim;
-		double max_lim;
+    int frame, from_frame, to_frame, d_frame, skip_frame;
+    bool doExit;
+    bool frame_optimizing;
+    int num_repeats;
 
 
-		int curFrame;
-		void frame_optimize();
-		void setRange(int from, int to, int max);
-		//void track();
-		//void retrack();
-		void trackCurrent();
+    // Read random search limits and iterations
+    unsigned int max_iter;
+    unsigned int max_stall_iter;
+    double min_lim;
+    double max_lim;
 
-		bool inActive;
 
-	public slots:
-		void on_pushButton_OK_clicked(bool checked);
-		void on_pushButton_Cancel_clicked(bool checked);
-		void on_radioButton_CurrentFrame_clicked(bool checked);
-		void on_radioButton_PreviousFrame_clicked(bool checked);
-		void on_radioButton_LinearExtrapolation_clicked(bool checked);
-		void on_radioButton_SplineInterpolation_clicked(bool checked);
+    int curFrame;
+    void frame_optimize();
+    void setRange(int from, int to, int max);
+    //void track();
+    //void retrack();
+    void trackCurrent();
+
+    bool inActive;
+
+  public slots:
+    void on_pushButton_OK_clicked(bool checked);
+    void on_pushButton_Cancel_clicked(bool checked);
+    void on_radioButton_CurrentFrame_clicked(bool checked);
+    void on_radioButton_PreviousFrame_clicked(bool checked);
+    void on_radioButton_LinearExtrapolation_clicked(bool checked);
+    void on_radioButton_SplineInterpolation_clicked(bool checked);
 
 };
 

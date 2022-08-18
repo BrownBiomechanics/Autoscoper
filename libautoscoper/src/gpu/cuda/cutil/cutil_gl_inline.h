@@ -38,7 +38,7 @@
         }
         int dev = 0;
         cutGetCmdLineArgumenti(ARGC, (const char **) ARGV, "device", &dev);
-	    if (dev < 0) dev = 0;\
+      if (dev < 0) dev = 0;\
         if (dev > deviceCount-1) dev = deviceCount - 1;
         cudaDeviceProp deviceProp;
         cutilSafeCallNoSync(cudaGetDeviceProperties(&deviceProp, dev));
@@ -64,7 +64,7 @@
         }
         int dev = 0;
         cutGetCmdLineArgumenti(ARGC, (const char **) ARGV, "device", &dev);
-	    if (dev < 0) dev = 0;
+      if (dev < 0) dev = 0;
         if (dev > deviceCount-1) dev = deviceCount - 1;
         cutilDrvSafeCallNoSync(cuDeviceGet(&cuDevice, dev));
         char name[100];

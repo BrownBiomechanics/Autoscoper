@@ -46,41 +46,41 @@
 
 //forward declarations
 namespace Ui {
-	class FilterDockWidget;
+  class FilterDockWidget;
 }
 namespace xromm{
-	namespace gpu{
-		class View;
-	}
+  namespace gpu{
+    class View;
+  }
 }
 using xromm::gpu::View;
 class AutoscoperMainWindow;
 
 class FilterDockWidget : public QDockWidget{
 
-	Q_OBJECT
+  Q_OBJECT
 
-	public:
-		explicit FilterDockWidget(QWidget *parent = 0);
-		~FilterDockWidget();
+  public:
+    explicit FilterDockWidget(QWidget *parent = 0);
+    ~FilterDockWidget();
 
-		void clearTree();
-		void addCamera(View * view);
-		void toggle_drrs();
-		void saveAllSettings(QString directory);
-		void loadAllSettings(QString directory);
-		void loadFilterSettings(int camera, QString filename);
+    void clearTree();
+    void addCamera(View * view);
+    void toggle_drrs();
+    void saveAllSettings(QString directory);
+    void loadAllSettings(QString directory);
+    void loadFilterSettings(int camera, QString filename);
 
-		AutoscoperMainWindow * getMainWindow(){return mainwindow;};
+    AutoscoperMainWindow * getMainWindow(){return mainwindow;};
 
-	private:
-		Ui::FilterDockWidget *dock;
+  private:
+    Ui::FilterDockWidget *dock;
 
-		AutoscoperMainWindow * mainwindow;
+    AutoscoperMainWindow * mainwindow;
 
-	protected:
+  protected:
 
-	public slots:
+  public slots:
 };
 
 #endif  // UAUTOSCOPERMAINWINDOW_H

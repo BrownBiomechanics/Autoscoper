@@ -47,7 +47,7 @@
 #include "ui/GLWidget.h"
 
 namespace xromm {
-	class Trial;
+  class Trial;
 
 }
 using xromm::Trial;
@@ -62,27 +62,27 @@ class GLTimeline: public GLWidget
 
 protected:
     void paintGL();
-	void mousePressEvent(QMouseEvent *e);
-	void mouseMoveEvent(QMouseEvent *e);
-	void mouseReleaseEvent(QMouseEvent *e);
+  void mousePressEvent(QMouseEvent *e);
+  void mouseMoveEvent(QMouseEvent *e);
+  void mouseReleaseEvent(QMouseEvent *e);
 
 public:
     GLTimeline(QWidget *parent);
-	void setTrial(Trial* trial);
-	void setGraphData(GraphData* position_graph);
+  void setTrial(Trial* trial);
+  void setGraphData(GraphData* position_graph);
 
 private:
-	Trial * m_trial;
-	GraphData* m_position_graph;
+  Trial * m_trial;
+  GraphData* m_position_graph;
 
-	bool draw_marquee;
-	float marquee[4];
-	bool modify_nodes;
-	bool glutIsInitialised;
-	void mouse_to_graph(double mouse_x, double mouse_y, double& graph_x, double& graph_y);
-	void draw_curve(const KeyCurve& curve);
-	void render_bitmap_string(double x, double y, const char* string);
-	void renderText(double textPosX, double textPosY, QString text);
+  bool draw_marquee;
+  float marquee[4];
+  bool modify_nodes;
+  bool glutIsInitialised;
+  void mouse_to_graph(double mouse_x, double mouse_y, double& graph_x, double& graph_y);
+  void draw_curve(const KeyCurve& curve);
+  void render_bitmap_string(double x, double y, const char* string);
+  void renderText(double textPosX, double textPosY, QString text);
     float round_this(double my_val);
 };
 

@@ -50,7 +50,7 @@
     exp; \
     if (glGetError() != GL_NO_ERROR) \
         cerr << "Error in OpenGL call at " \
-	         << __FILE__ << ':' << __LINE__ << endl; \
+           << __FILE__ << ':' << __LINE__ << endl; \
 }while(0)
 #else
 #define CALL_GL(exp) exp
@@ -58,7 +58,7 @@
 
 struct ViewData
 {
-	bool m_isStaticView;
+  bool m_isStaticView;
 
     int window_width;
     int window_height;
@@ -95,15 +95,15 @@ public slots:
 
 
 protected:
-	void initializeGL();
-	void resizeGL(int w, int h);
+  void initializeGL();
+  void resizeGL(int w, int h);
 
-	ViewData viewdata;
+  ViewData viewdata;
 
-	void update_viewport(ViewData* view);
+  void update_viewport(ViewData* view);
 
 private:
-	int w,h;
+  int w,h;
 
 };
 

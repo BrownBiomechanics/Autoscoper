@@ -136,8 +136,8 @@ static double safe_acos(double x)
 Manip3D::Manip3D()
 
     : movePivot_(false),
-	  pivotSize_(0.25f),
-	  is_visible_(true),
+    pivotSize_(0.25f),
+    is_visible_(true),
       is_locked_(false),
       transform1_(Mat4d::eye()),
       transform2_(Mat4d::eye()),

@@ -83,13 +83,13 @@ public:
         return cutoff_;
     }
 
-	float getMinCutoff() const {
-		return volumeDescription_->minValue();
-	}
+  float getMinCutoff() const {
+    return volumeDescription_->minValue();
+  }
 
-	float getMaxCutoff() const {
-		return volumeDescription_->maxValue();
-	}
+  float getMaxCutoff() const {
+    return volumeDescription_->maxValue();
+  }
 
     void setCutoff(float cutoff) {
         cutoff_ = cutoff;
