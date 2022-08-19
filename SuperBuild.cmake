@@ -11,8 +11,10 @@ foreach(dependency IN LISTS Autoscoper_DEPENDENCIES)
 endforeach()
 
 ExternalProject_Add(Autoscoper
-  DEPENDS ${DEPENDENCIES}
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}
+  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
+  BINARY_DIR ${CMAKE_BINARY_DIR}/${Autoscoper_BINARY_INNER_SUBDIR}
+  DOWNLOAD_COMMAND ""
+  UPDATE_COMMAND ""
   CMAKE_CACHE_ARGS
     # Compiler settings
     -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
@@ -23,5 +25,4 @@ ExternalProject_Add(Autoscoper
   DEPENDS
     ${Autoscoper_DEPENDENCIES}
   INSTALL_COMMAND ""
-  BINARY_DIR ${CMAKE_BINARY_DIR}
 )
