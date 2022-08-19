@@ -22,6 +22,14 @@ if(NOT DEFINED GLEW_ROOT AND NOT Autoscoper_USE_SYSTEM_${proj})
   set(EP_BINARY_DIR ${CMAKE_BINARY_DIR}/${proj}-build)
   set(EP_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/external)
 
+  set(EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS)
+
+  if(NOT CMAKE_CONFIGURATION_TYPES)
+    list(APPEND EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS
+      -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+      )
+  endif()
+
   ExternalProject_Add(${proj}
     URL https://sourceforge.net/projects/glew/files/glew/2.2.0/glew-2.2.0.zip
     URL_MD5 970535b75b1b69ebd018a0fa05af63d1
@@ -37,6 +45,7 @@ if(NOT DEFINED GLEW_ROOT AND NOT Autoscoper_USE_SYSTEM_${proj})
       -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
       # Install directories
       -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      ${EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS}
     DEPENDS
       ${${proj}_DEPENDENCIES}
     )
