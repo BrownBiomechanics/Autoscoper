@@ -62,22 +62,22 @@ if(Autoscoper_SUPERBUILD)
   return()
 endif()
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_INSTALL_PREFIX}/external)
-list(APPEND CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX}/external)
-
 add_subdirectory(libautoscoper)
 add_subdirectory(autoscoper)
 
 if(WIN32)
-  file(GLOB external_dlls "${CMAKE_INSTALL_PREFIX}/external/bin/*.dll")
-  file(GLOB external_dllsd "${CMAKE_INSTALL_PREFIX}/external/bin/*d.dll")
-  list(REMOVE_ITEM external_dlls ${external_dllsd})
+  # Autoscoper_DEPENDENCIES and Autoscoper_SUPERBUILD_DIR CMake variables are set
+  # in SuperBuild.cmake.
+  foreach(dependency IN LISTS Autoscoper_DEPENDENCIES)
+    file(GLOB external_dlls "${Autoscoper_SUPERBUILD_DIR}/${dependency}-install/bin/*.dll")
+    file(GLOB external_dllsd "${Autoscoper_SUPERBUILD_DIR}/${dependency}-install/bin/*d.dll")
+    list(REMOVE_ITEM external_dlls ${external_dllsd})
 
-  install(FILES ${external_dlls} DESTINATION bin/Release CONFIGURATIONS Release)
-  install(FILES ${external_dllsd} DESTINATION bin/Debug CONFIGURATIONS Debug)
+    install(FILES ${external_dlls} DESTINATION bin/Release CONFIGURATIONS Release)
+    install(FILES ${external_dllsd} DESTINATION bin/Debug CONFIGURATIONS Debug)
+  endforeach()
 
   file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/Release)
-
 endif()
 
 if(UNIX)
