@@ -1,11 +1,14 @@
 include (ExternalProject)
 
+set(Autoscoper_DEPENDENCIES
+  GLEW
+  TIFF
+  )
 
-set (DEPENDENCIES)
-list (APPEND DEPENDENCIES TIFF)
-include(${PROJECT_SOURCE_DIR}/Superbuild/External_TIFF.cmake)
-list (APPEND DEPENDENCIES GLEW)
-include(${PROJECT_SOURCE_DIR}/Superbuild/External_GLEW.cmake)
+foreach(dependency IN LISTS Autoscoper_DEPENDENCIES)
+  message(STATUS "SuperBuild - Adding ${dependency}")
+  include(${CMAKE_CURRENT_SOURCE_DIR}/Superbuild/External_${dependency}.cmake)
+endforeach()
 
 ExternalProject_Add (Autoscoper
   DEPENDS ${DEPENDENCIES}
@@ -19,6 +22,8 @@ ExternalProject_Add (Autoscoper
     # Options
     -DAutoscoper_SUPERBUILD:BOOL=OFF
     -DAutoscoper_BUILD_WITH_CUDA:BOOL=${Autoscoper_BUILD_WITH_CUDA}
+  DEPENDS
+    ${Autoscoper_DEPENDENCIES}
   INSTALL_COMMAND ""
   BINARY_DIR ${CMAKE_BINARY_DIR}
 )
