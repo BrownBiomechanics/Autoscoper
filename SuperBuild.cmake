@@ -3,7 +3,7 @@ include (ExternalProject)
 
 set (DEPENDENCIES)
 list (APPEND DEPENDENCIES TIFF)
-include(${PROJECT_SOURCE_DIR}/Superbuild/External_LIBTIFF.cmake)
+include(${PROJECT_SOURCE_DIR}/Superbuild/External_TIFF.cmake)
 list (APPEND DEPENDENCIES GLEW)
 include(${PROJECT_SOURCE_DIR}/Superbuild/External_GLEW.cmake)
 
