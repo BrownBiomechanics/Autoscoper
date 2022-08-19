@@ -1,22 +1,18 @@
-############
-# This code was adapted from https://github.com/Slicer/Slicer/blob/main/SuperBuild/External_zlib.cmake
-############
+
 set(proj GLEW)
 
 set(${proj}_DEPENDENCIES "")
 
 if(Autoscoper_USE_SYSTEM_${proj})
-  unset(GLEW_ROOT CACHE)
-  find_package(GLEW REQUIRED)
-  set(GLEW_INCLUDE_DIR ${LIBGLEW_INCLUDE_DIR})
-  set(GLEW_LIBRARY ${LIBGLEW_LIBRARIES})
+  message(FATAL_ERROR "Enabling Autoscoper_USE_SYSTEM_${proj} is not supported !")
 endif()
 
-if(DEFINED GLEW_ROOT AND NOT EXISTS ${GLEW_ROOT})
-  message(FATAL_ERROR "GLEW_ROOT variable is defined but corresponds to nonexistent directory")
+# Sanity checks
+if(DEFINED GLEW_DIR AND NOT EXISTS ${GLEW_DIR})
+  message(FATAL_ERROR "GLEW_DIR variable is defined but corresponds to nonexistent directory")
 endif()
 
-if(NOT DEFINED GLEW_ROOT AND NOT Autoscoper_USE_SYSTEM_${proj})
+if(NOT DEFINED GLEW_DIR AND NOT Autoscoper_USE_SYSTEM_${proj})
 
   set(EP_SOURCE_DIR ${CMAKE_BINARY_DIR}/${proj})
   set(EP_BINARY_DIR ${CMAKE_BINARY_DIR}/${proj}-build)
@@ -49,12 +45,6 @@ if(NOT DEFINED GLEW_ROOT AND NOT Autoscoper_USE_SYSTEM_${proj})
     DEPENDS
       ${${proj}_DEPENDENCIES}
     )
-  set(GLEW_DIR ${EP_INSTALL_DIR})
-  set(GLEW_ROOT ${GLEW_DIR})
-  set(GLEW_INCLUDE_DIR ${GLEW_DIR}/include)
-  if(WIN32)
-    set(GLEW_LIBRARY ${GLEW_DIR}/lib/GLEW.lib)
-  else()
-    set(GLEW_LIBRARY ${GLEW_DIR}/lib/libGLEW.a)
-  endif()
+  set(GLEW_DIR ${EP_INSTALL_DIR}/lib/cmake/glew)
+  message(STATUS "SuperBuild - GLEW_DIR: ${GLEW_DIR}")
 endif()
