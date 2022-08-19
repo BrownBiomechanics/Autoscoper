@@ -24,6 +24,10 @@ ExternalProject_Add(Autoscoper
     # Options
     -DAutoscoper_SUPERBUILD:BOOL=OFF
     -DAutoscoper_BUILD_WITH_CUDA:BOOL=${Autoscoper_BUILD_WITH_CUDA}
+    # Dependencies
+    -DGLEW_DIR:PATH=${GLEW_DIR}
+    -DTIFF_LIBRARY:FILEPATH=${TIFF_LIBRARY}
+    -DTIFF_INCLUDE_DIR:PATH=${TIFF_INCLUDE_DIR}
   DEPENDS
     ${Autoscoper_DEPENDENCIES}
   INSTALL_COMMAND ""

@@ -1,22 +1,22 @@
-############
-# This code was adapted from https://github.com/Slicer/Slicer/blob/main/SuperBuild/External_zlib.cmake
-############
+
 set(proj TIFF)
 
 set(${proj}_DEPENDENCIES "")
 
 if(Autoscoper_USE_SYSTEM_${proj})
-  unset(TIFF_ROOT CACHE)
-  find_package(TIFF REQUIRED)
-  set(TIFF_INCLUDE_DIR ${LIBTIFF_INCLUDE_DIR})
-  set(TIFF_LIBRARY ${LIBTIFF_LIBRARIES})
+  message(FATAL_ERROR "Enabling Autoscoper_USE_SYSTEM_${proj} is not supported !")
 endif()
 
-if(DEFINED TIFF_ROOT AND NOT EXISTS ${TIFF_ROOT})
-  message(FATAL_ERROR "TIFF_ROOT variable is defined but corresponds to nonexistent directory")
+# Sanity checks
+if(DEFINED TIFF_INCLUDE_DIR AND NOT EXISTS ${TIFF_INCLUDE_DIR})
+  message(FATAL_ERROR "TIFF_INCLUDE_DIR variable is defined but corresponds to nonexistent directory")
+endif()
+if(DEFINED TIFF_LIBRARY AND NOT EXISTS ${TIFF_LIBRARY})
+  message(FATAL_ERROR "TIFF_LIBRARY variable is defined but corresponds to nonexistent file")
 endif()
 
-if(NOT DEFINED TIFF_ROOT AND NOT Autoscoper_USE_SYSTEM_${proj})
+if((NOT DEFINED TIFF_INCLUDE_DIR
+   OR NOT DEFINED TIFF_LIBRARY) AND NOT Autoscoper_USE_SYSTEM_${proj})
 
   set(EP_SOURCE_DIR ${CMAKE_BINARY_DIR}/${proj})
   set(EP_BINARY_DIR ${CMAKE_BINARY_DIR}/${proj}-build)
@@ -56,4 +56,6 @@ if(NOT DEFINED TIFF_ROOT AND NOT Autoscoper_USE_SYSTEM_${proj})
   else()
     set(TIFF_LIBRARY ${tiff_DIR}/lib/libtiff.a)
   endif()
+  message(STATUS "SuperBuild - TIFF_INCLUDE_DIR: ${TIFF_INCLUDE_DIR}")
+  message(STATUS "SuperBuild - TIFF_LIBRARY: ${TIFF_LIBRARY}")
 endif()
