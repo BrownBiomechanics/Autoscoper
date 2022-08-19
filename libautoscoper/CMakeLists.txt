@@ -49,7 +49,7 @@ else()
   add_dependencies(libautoscoper ${SHADER_TO_HEADER})
 endif()
 
-find_package(TIFF)
+find_package(TIFF REQUIRED MODULE)
 target_link_libraries(libautoscoper PUBLIC TIFF::TIFF)
 target_compile_definitions(libautoscoper PUBLIC -DUSE_LIBTIFF)
 
