@@ -40,6 +40,8 @@ if((NOT DEFINED TIFF_INCLUDE_DIR
       # Compiler settings
       -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
       -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
+      # Options
+      -DBUILD_SHARED_LIBS:BOOL=ON
       # Install directories
       -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
       ${EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS}
@@ -51,8 +53,10 @@ if((NOT DEFINED TIFF_INCLUDE_DIR
   set(TIFF_INCLUDE_DIR ${tiff_DIR}/include)
   if(WIN32)
     set(TIFF_LIBRARY $<IF:$<CONFIG:Debug>, ${tiff_DIR}/lib/tiffd.lib, ${tiff_DIR}/lib/tiff.lib>)
+  elseif(APPLE)
+    set(TIFF_LIBRARY ${tiff_DIR}/lib/libtiff.dylib)
   else()
-    set(TIFF_LIBRARY ${tiff_DIR}/lib/libtiff.a)
+    set(TIFF_LIBRARY ${tiff_DIR}/lib/libtiff.so)
   endif()
   message(STATUS "SuperBuild - TIFF_INCLUDE_DIR: ${TIFF_INCLUDE_DIR}")
   message(STATUS "SuperBuild - TIFF_LIBRARY: ${TIFF_LIBRARY}")
