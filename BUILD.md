@@ -30,8 +30,8 @@ Cli-Build (Using Powershell)
 2. Enter the repos directory
 3. Make and enter a build directory `mkdir build` and `cd build`
 4. Configure project `cmake .. `
-5. Build external dependencies `cmake --build . `
-6. Install project `cmake --build . --target install`
+5. Build external dependencies `cmake --build . -- config Release`
+6. Install project `cmake --build . --target install -- config Release`
 7. The autoscoper.exe will be in the folder build/install/bin/Debug or build/nstall/bin/Release depending on which build was performed.
 
 ## LINUX / HPC SERVER

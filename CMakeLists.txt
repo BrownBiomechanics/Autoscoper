@@ -19,9 +19,18 @@ option(Autoscoper_SUPERBUILD "Build ${PROJECT_NAME} and the projects it depends 
 mark_as_advanced(Autoscoper_SUPERBUILD)
 set(Autoscoper_BINARY_INNER_SUBDIR Autoscoper-build)
 
-#SET BUILD-TYPE TO RELEASE IF NOT DEFINED
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
+#-----------------------------------------------------------------------------
+# Set a default build type if none was specified
+#-----------------------------------------------------------------------------
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Setting build type to 'Release' as none was specified.")
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" )
+endif()
+# Pass variables to dependent projects
+if(NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Configuring with build type '${CMAKE_BUILD_TYPE}'")
 endif()
 
 if(NOT CMAKE_DEBUG_POSTFIX)
