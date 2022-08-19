@@ -148,10 +148,10 @@ target_include_directories(autoscoper PUBLIC
   ${Qt5Network_INCLUDE_DIRS}
   ${Qt5Gui_INCLUDE_DIRS})
 
-find_package(GLEW)
+find_package(GLEW REQUIRED CONFIG)
 target_link_libraries(autoscoper PUBLIC GLEW::GLEW)
 target_compile_definitions(autoscoper PUBLIC -DUSE_GLEW)
-find_package(TIFF)
+find_package(TIFF REQUIRED)
 target_link_libraries(autoscoper PUBLIC TIFF::TIFF)
 target_compile_definitions(autoscoper PUBLIC -DUSE_LIBTIFF)
 
