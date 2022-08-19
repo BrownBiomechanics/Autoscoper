@@ -1,4 +1,4 @@
-include (ExternalProject)
+include(ExternalProject)
 
 set(Autoscoper_DEPENDENCIES
   GLEW
@@ -10,7 +10,7 @@ foreach(dependency IN LISTS Autoscoper_DEPENDENCIES)
   include(${CMAKE_CURRENT_SOURCE_DIR}/Superbuild/External_${dependency}.cmake)
 endforeach()
 
-ExternalProject_Add (Autoscoper
+ExternalProject_Add(Autoscoper
   DEPENDS ${DEPENDENCIES}
   SOURCE_DIR ${PROJECT_SOURCE_DIR}
   CMAKE_CACHE_ARGS
