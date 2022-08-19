@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>resource-files/icons/next_blue.png</file>
+        <file>resource-files/icons/play_blue.png</file>
+        <file>resource-files/icons/prev_blue.png</file>
+        <file>resource-files/icons/stop_blue.png</file>
+        <file>resource-files/icons/settings_cancel.png</file>
+        <file>resource-files/icons/settings.png</file>
+        <file>resource-files/icons/section_collapsed.png</file>
+        <file>resource-files/icons/section_expanded.png</file>
+        <file>resource-files/icons/application_osx_go.png</file>
+        <file>resource-files/icons/application_osx_split.png</file>
+        <file>resource-files/icons/application_start.png</file>
+        <file>resource-files/icons/arrow_nsew.png</file>
+        <file>resource-files/icons/disk_download.png</file>
+        <file>resource-files/icons/disk_upload.png</file>
+        <file>resource-files/icons/forward_blue.png</file>
+        <file>resource-files/icons/forward_green.png</file>
+        <file>resource-files/icons/reload.png</file>
+        <file>resource-files/icons/star_gold.png</file>
+        <file alias="app_icon">resource-files/icons/Autoscoper_App_Icon.png</file>
+    </qresource>
+</RCC>
