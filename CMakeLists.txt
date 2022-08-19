@@ -19,26 +19,26 @@ option(Autoscoper_SUPERBUILD "Build ${PROJECT_NAME} and the projects it depends 
 mark_as_advanced(Autoscoper_SUPERBUILD)
 set(Autoscoper_BINARY_INNER_SUBDIR Autoscoper-build)
 
-#SET BUILD-TYPE TO RELEASE IF NOT DEFINED
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
+#-----------------------------------------------------------------------------
+# Set a default build type if none was specified
+#-----------------------------------------------------------------------------
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Setting build type to 'Release' as none was specified.")
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" )
+endif()
+if(NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Configuring with build type '${CMAKE_BUILD_TYPE}'")
 endif()
 
 if(NOT CMAKE_DEBUG_POSTFIX)
   set(CMAKE_DEBUG_POSTFIX d)
 endif()
 
-if(NOT CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
-  add_definitions(-DQT_NO_DEBUG_OUTPUT)
-  set(CMAKE_BUILD_RELEASE TRUE)
-else()
-  set(CMAKE_BUILD_RELEASE FALSE)
-endif()
-
 set(CMAKE_C_FLAGS_RELEASE "-O3")
 set(BUILD_SHARED_LIBS ON)
 
-message(STATUS "Building ${PROJECT_NAME} in ${CMAKE_BUILD_TYPE} mode")
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
