@@ -153,9 +153,9 @@ target_include_directories(autoscoper PUBLIC
 find_package(GLEW REQUIRED CONFIG)
 target_link_libraries(autoscoper PUBLIC GLEW::GLEW)
 target_compile_definitions(autoscoper PUBLIC -DUSE_GLEW)
-find_package(TIFF REQUIRED)
-target_link_libraries(autoscoper PUBLIC TIFF::TIFF)
-target_compile_definitions(autoscoper PUBLIC -DUSE_LIBTIFF)
+# find_package(TIFF REQUIRED)
+# target_link_libraries(autoscoper PUBLIC TIFF::TIFF)
+# target_compile_definitions(autoscoper PUBLIC -DUSE_LIBTIFF)
 
 install(TARGETS autoscoper DESTINATION bin/Debug CONFIGURATIONS Debug)
 install(TARGETS autoscoper DESTINATION bin/Release CONFIGURATIONS Release)

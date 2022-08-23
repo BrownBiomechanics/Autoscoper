@@ -1,4 +1,3 @@
-
 set(proj GLEW)
 
 set(${proj}_DEPENDENCIES "")
@@ -29,6 +28,7 @@ if(NOT DEFINED GLEW_DIR AND NOT Autoscoper_USE_SYSTEM_${proj})
   ExternalProject_Add(${proj}
     URL https://sourceforge.net/projects/glew/files/glew/2.2.0/glew-2.2.0.zip
     URL_MD5 970535b75b1b69ebd018a0fa05af63d1
+    DOWNLOAD_EXTRACT_TIMESTAMP FALSE
     SOURCE_DIR ${EP_SOURCE_DIR}
     SOURCE_SUBDIR build/cmake
     BINARY_DIR ${EP_BINARY_DIR}

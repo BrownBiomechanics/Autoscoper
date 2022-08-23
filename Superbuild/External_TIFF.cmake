@@ -52,7 +52,7 @@ if((NOT DEFINED TIFF_INCLUDE_DIR
   set(TIFF_ROOT ${tiff_DIR})
   set(TIFF_INCLUDE_DIR ${tiff_DIR}/include)
   if(WIN32)
-    set(TIFF_LIBRARY ${tiff_DIR}/lib/tiff.lib)
+    set(TIFF_LIBRARY $<IF:$<CONFIG:Debug>, ${tiff_DIR}/lib/tiffd.lib, ${tiff_DIR}/lib/tiff.lib>)
   else()
     set(TIFF_LIBRARY ${tiff_DIR}/lib/libtiff.a)
   endif()
