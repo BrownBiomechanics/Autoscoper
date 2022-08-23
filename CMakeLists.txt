@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD 11)
 
 cmake_policy(SET CMP0048 NEW)
 
+include("${CMAKE_SOURCE_DIR}/CMake/PreventInSourceBuilds.cmake")
+AssureOutOfSourceBuilds()
+
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "default install path" FORCE)
 endif()

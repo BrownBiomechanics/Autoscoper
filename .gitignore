@@ -1,13 +1,5 @@
-build-*/*
-build/*
+build*/*
 external/*
 /.project
 .DS_Store
 _make_installer/*
-cmake_install.cmake
-.vs/
-out/
-*.depend*
-*.vcxproj*
-libautoscoper/CMakeFiles/*
-autoscoper/CMakeFiles/*
