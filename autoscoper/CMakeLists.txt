@@ -3,7 +3,6 @@ find_package(OpenGL)
 
 #ADD QT4 SUPPORT
 find_package(Qt5 COMPONENTS Core Widgets Gui OpenGL Network REQUIRED)
-cmake_policy(SET CMP0020 OLD)
 set(CMAKE_AUTOMOC ON)
 
 set(autoscoper_SOURCES
