@@ -125,24 +125,19 @@ endif()
 target_link_libraries(autoscoper PUBLIC libautoscoper
   ${OPENGL_LIBRARIES}
   ${GPU_LIBRARIES}
-  ${Qt5Core_LIBRARIES}
-  ${Qt5Widgets_LIBRARIES}
-  ${Qt5OpenGL_LIBRARIES}
-  ${Qt5Network_LIBRARIES}
-  ${Qt5Gui_LIBRARIES})
+  Qt5::Core
+  Qt5::Widgets
+  Qt5::OpenGL
+  Qt5::Network
+  Qt5::Gui
+)
 
 target_include_directories(autoscoper PUBLIC
   ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
-target_include_directories(autoscoper PUBLIC
   ../math
   ../libautoscoper/src
-  ${Qt5Core_INCLUDE_DIRS}
-  ${Qt5Widgets_INCLUDE_DIRS}
-  ${Qt5OpenGL_INCLUDE_DIRS}
-  ${Qt5Network_INCLUDE_DIRS}
-  ${Qt5Gui_INCLUDE_DIRS})
+)
 
 find_package(GLEW REQUIRED CONFIG)
 target_link_libraries(autoscoper PUBLIC GLEW::GLEW)
