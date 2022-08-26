@@ -1,4 +1,3 @@
-
 find_package(OpenGL)
 
 #ADD QT4 SUPPORT
@@ -101,6 +100,12 @@ add_executable(autoscoper  ${GUI_TYPE} ${autoscoper_SOURCES} ${autoscoper_HEADER
   ${autoscoper_FORMS_HEADERS_GEN}
   ${autoscoper_RESOURCES_RCC}
   src/ui/autoscoper_resource.qrc
+)
+
+set_target_properties(autoscoper PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_BIN_DIR}"
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_BIN_DIR}"
+  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_LIB_DIR}"
 )
 
 if(Autoscoper_BUILD_WITH_CUDA)
