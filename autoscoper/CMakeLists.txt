@@ -143,11 +143,11 @@ find_package(GLEW REQUIRED CONFIG)
 target_link_libraries(autoscoper PUBLIC GLEW::GLEW)
 target_compile_definitions(autoscoper PUBLIC -DUSE_GLEW)
 
-install(TARGETS autoscoper DESTINATION bin/Debug CONFIGURATIONS Debug)
-install(TARGETS autoscoper DESTINATION bin/Release CONFIGURATIONS Release)
+install(TARGETS autoscoper DESTINATION ${Autoscoper_BIN_DIR}/Debug CONFIGURATIONS Debug)
+install(TARGETS autoscoper DESTINATION ${Autoscoper_BIN_DIR}/Release CONFIGURATIONS Release)
 include("${Autoscoper_SOURCE_DIR}/CMake/AutoscoperInstallQt.cmake")
 
 if(APPLE)
-  file(COPY ../sample_data DESTINATION ../bin/Debug/autoscoper.app/Contents/MacOS)
+  file(COPY ../sample_data DESTINATION ../${Autoscoper_BIN_DIR}/Debug/autoscoper.app/Contents/MacOS)
 endif()
 
