@@ -93,8 +93,8 @@ if(WIN32)
     file(GLOB external_dllsd "${Autoscoper_SUPERBUILD_DIR}/${dependency}-install/bin/*d.dll")
     list(REMOVE_ITEM external_dlls ${external_dllsd})
 
-    install(FILES ${external_dlls} DESTINATION ${Autoscoper_BIN_DIR}/Release CONFIGURATIONS Release)
-    install(FILES ${external_dllsd} DESTINATION ${Autoscoper_BIN_DIR}/Debug CONFIGURATIONS Debug)
+    install(FILES ${external_dlls} DESTINATION ${Autoscoper_BIN_DIR}/Release CONFIGURATIONS Release COMPONENT Runtime)
+    install(FILES ${external_dllsd} DESTINATION ${Autoscoper_BIN_DIR}/Debug CONFIGURATIONS Debug COMPONENT Runtime)
   endforeach()
 
   file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/${Autoscoper_BIN_DIR}/Release)

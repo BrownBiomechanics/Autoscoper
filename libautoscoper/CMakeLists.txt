@@ -61,5 +61,9 @@ target_include_directories(libautoscoper PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-install(TARGETS libautoscoper DESTINATION ${Autoscoper_LIB_DIR})
+install(TARGETS libautoscoper
+  RUNTIME DESTINATION ${Autoscoper_BIN_DIR} COMPONENT Runtime
+  LIBRARY DESTINATION ${Autoscoper_BIN_DIR} COMPONENT Runtime
+  ARCHIVE DESTINATION ${Autoscoper_LIB_DIR} COMPONENT Development
+)
 
