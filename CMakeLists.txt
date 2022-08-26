@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.8)
 
 project(Autoscoper)
 
-cmake_policy(SET CMP0048 NEW)
 
 include("${Autoscoper_SOURCE_DIR}/CMake/PreventInSourceBuilds.cmake")
 AssureOutOfSourceBuilds()
