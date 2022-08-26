@@ -46,6 +46,12 @@ else()
   add_dependencies(libautoscoper ${SHADER_TO_HEADER})
 endif()
 
+set_target_properties(libautoscoper PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_BIN_DIR}"
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_BIN_DIR}"
+  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_LIB_DIR}"
+  )
+
 find_package(TIFF REQUIRED MODULE)
 target_link_libraries(libautoscoper PUBLIC TIFF::TIFF)
 target_compile_definitions(libautoscoper PUBLIC -DUSE_LIBTIFF)
