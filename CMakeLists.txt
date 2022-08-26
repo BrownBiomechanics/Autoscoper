@@ -25,6 +25,13 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "default install path" FORCE)
 endif()
 
+if(NOT DEFINED Autoscoper_BIN_DIR)
+  set(Autoscoper_BIN_DIR bin)
+endif()
+if(NOT DEFINED Autoscoper_LIB_DIR)
+  set(Autoscoper_LIB_DIR lib)
+endif()
+
 #-----------------------------------------------------------------------------
 # Build with Cuda Option - Enabled by default
 #-----------------------------------------------------------------------------
@@ -57,9 +64,6 @@ endif()
 
 set(CMAKE_C_FLAGS_RELEASE "-O3")
 set(BUILD_SHARED_LIBS ON)
-
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
 if(Autoscoper_BUILD_WITH_CUDA)
   add_definitions(-DWITH_CUDA)
