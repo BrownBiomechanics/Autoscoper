@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.8)
+
 project(Autoscoper)
 
 cmake_policy(SET CMP0048 NEW)
@@ -41,8 +43,6 @@ endif()
 
 set(CMAKE_C_FLAGS_RELEASE "-O3")
 set(BUILD_SHARED_LIBS ON)
-
-cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
