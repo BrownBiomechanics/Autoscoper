@@ -91,18 +91,8 @@ set(autoscoper_RESOURCES
 )
 QT5_ADD_RESOURCES(autoscoper_RESOURCES_RCC ${autoscoper_RESOURCES})
 
-# Set some Win32 Specific Settings
-
-# Set some Apple MacOS Specific settings
 if(APPLE)
   set(GUI_TYPE MACOSX_BUNDLE)
-  #set(MACOSX_BUNDLE_ICON_FILE xromm.icns)
-# Allows for bundle re-creation just by running "make". Also installs bundle icon
-#add_custom_target(osx_bundle_dirs
-#    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/bin/Undistortion.app/Contents/Resources
-#    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/bin/Undistortion.app/Contents/MacOS
-#    COMMAND cp ${CMAKE_SOURCE_DIR}/src/ui/ui-files/images/icons/${MACOSX_BUNDLE_ICON_FILE}
-#            ${CMAKE_CURRENT_BINARY_DIR}/bin/Undistortion.app/Contents/Resources/${MACOSX_BUNDLE_ICON_FILE})
 endif()
 
 add_executable(autoscoper  ${GUI_TYPE} ${autoscoper_SOURCES} ${autoscoper_HEADERS}

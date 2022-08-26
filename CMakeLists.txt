@@ -65,11 +65,10 @@ if(Autoscoper_BUILD_WITH_CUDA)
   add_definitions(-DWITH_CUDA)
 endif()
 
-#ADD QT4 SUPPORT
+#-----------------------------------------------------------------------------
+# Dependencies
+#-----------------------------------------------------------------------------
 find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
-#set(QT_USE_QTOPENGL TRUE)
-#include(${QT_USE_FILE})
-#set(CMAKE_AUTOMOC ON)
 
 #-----------------------------------------------------------------------------
 # Superbuild script
