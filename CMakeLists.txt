@@ -2,7 +2,22 @@ cmake_minimum_required(VERSION 3.8)
 
 project(Autoscoper)
 
+#-----------------------------------------------------------------------------
+# Setting C++ Standard
+#-----------------------------------------------------------------------------
+set(_msg "Setting C++ standard")
+message(STATUS "${_msg}")
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 11)
+endif()
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+message(STATUS "${_msg} - C++${CMAKE_CXX_STANDARD}")
+if(NOT CMAKE_CXX_STANDARD MATCHES "^(11|14|17|20)$")
+  message(FATAL_ERROR "CMAKE_CXX_STANDARD must be set to 11, 14, 17 or 20")
+endif()
 
+#-----------------------------------------------------------------------------
 include("${Autoscoper_SOURCE_DIR}/CMake/PreventInSourceBuilds.cmake")
 AssureOutOfSourceBuilds()
 
