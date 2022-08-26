@@ -130,11 +130,12 @@ endif()
 target_link_libraries(autoscoper PUBLIC libautoscoper
   ${OPENGL_LIBRARIES}
   ${GPU_LIBRARIES}
-  ${Qt5Core_LIBRARIES}
-  ${Qt5Widgets_LIBRARIES}
-  ${Qt5OpenGL_LIBRARIES}
-  ${Qt5Network_LIBRARIES}
-  ${Qt5Gui_LIBRARIES})
+  Qt5::Core
+  Qt5::Widgets
+  Qt5::OpenGL
+  Qt5::Network
+  Qt5::Gui
+)
 
 target_include_directories(autoscoper PUBLIC
   ${CMAKE_CURRENT_BINARY_DIR}
@@ -143,11 +144,7 @@ target_include_directories(autoscoper PUBLIC
 target_include_directories(autoscoper PUBLIC
   ../math
   ../libautoscoper/src
-  ${Qt5Core_INCLUDE_DIRS}
-  ${Qt5Widgets_INCLUDE_DIRS}
-  ${Qt5OpenGL_INCLUDE_DIRS}
-  ${Qt5Network_INCLUDE_DIRS}
-  ${Qt5Gui_INCLUDE_DIRS})
+)
 
 find_package(GLEW REQUIRED CONFIG)
 target_link_libraries(autoscoper PUBLIC GLEW::GLEW)
@@ -158,13 +155,7 @@ target_compile_definitions(autoscoper PUBLIC -DUSE_GLEW)
 
 install(TARGETS autoscoper DESTINATION bin/Debug CONFIGURATIONS Debug)
 install(TARGETS autoscoper DESTINATION bin/Release CONFIGURATIONS Release)
-
-if(WIN32)
-  install(FILES ${_qt5Core_install_prefix}/bin/Qt5OpenGL.dll ${_qt5Core_install_prefix}/bin/Qt5Widgets.dll ${_qt5Core_install_prefix}/bin/Qt5Gui.dll ${_qt5Core_install_prefix}/bin/Qt5Core.dll ${_qt5Core_install_prefix}/bin/Qt5Network.dll DESTINATION bin/Release CONFIGURATIONS Release)
-  install(FILES ${_qt5Core_install_prefix}/bin/Qt5OpenGLd.dll ${_qt5Core_install_prefix}/bin/Qt5Widgetsd.dll ${_qt5Core_install_prefix}/bin/Qt5Guid.dll ${_qt5Core_install_prefix}/bin/Qt5Cored.dll ${_qt5Core_install_prefix}/bin/Qt5Networkd.dll DESTINATION bin/Debug CONFIGURATIONS Debug)
-  install(FILES ${_qt5Core_install_prefix}/plugins/platforms/qwindows.dll DESTINATION bin/Release/platforms CONFIGURATIONS Release)
-  install(FILES ${_qt5Core_install_prefix}/plugins/platforms/qwindowsd.dll DESTINATION bin/Debug/platforms CONFIGURATIONS Debug)
-endif()
+include("${CMAKE_SOURCE_DIR}/cmake/AutoscoperInstallQt.cmake")
 
 if(APPLE)
   file(COPY ../sample_data DESTINATION ../bin/Debug/autoscoper.app/Contents/MacOS)
