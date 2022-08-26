@@ -50,8 +50,6 @@ else()
   set(CMAKE_BUILD_RELEASE FALSE)
 endif()
 
-set(CMAKE_C_FLAGS_RELEASE "-O3")
-# set(BUILD_SHARED_LIBS ON)
 
 message(STATUS "Building ${PROJECT_NAME} in ${CMAKE_BUILD_TYPE} mode")
 
@@ -64,9 +62,6 @@ endif()
 
 #ADD QT4 SUPPORT
 find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
-#set(QT_USE_QTOPENGL TRUE)
-#include(${QT_USE_FILE})
-#set(CMAKE_AUTOMOC ON)
 
 #-----------------------------------------------------------------------------
 # Superbuild script
@@ -76,9 +71,6 @@ if(Autoscoper_SUPERBUILD)
   return()
 endif()
 
-# list(APPEND CMAKE_MODULE_PATH ${CMAKE_INSTALL_PREFIX}/external)
-# list(APPEND CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX}/external)
-# list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 add_subdirectory(libautoscoper)
 add_subdirectory(autoscoper)
@@ -90,7 +82,6 @@ if(WIN32)
     GLEW
     TIFF
   )
-
   foreach(dependency IN LISTS Autoscoper_DEPENDENCIES)
     file(GLOB external_dlls "${PARENT_DIR}/${dependency}-install/bin/*.dll")
     file(GLOB external_dllsd "${PARENT_DIR}/${dependency}-install/bin/*d.dll")
@@ -99,10 +90,7 @@ if(WIN32)
     install(FILES ${external_dlls} DESTINATION bin/Release CONFIGURATIONS Release)
     install(FILES ${external_dllsd} DESTINATION bin/Debug CONFIGURATIONS Debug)
   endforeach()
-  
-
-  # file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/Release)
-
+  file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/Release)
 endif()
 
 if(UNIX)

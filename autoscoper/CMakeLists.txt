@@ -91,18 +91,8 @@ set(autoscoper_RESOURCES
 )
 QT5_ADD_RESOURCES(autoscoper_RESOURCES_RCC ${autoscoper_RESOURCES})
 
-# Set some Win32 Specific Settings
-
-# Set some Apple MacOS Specific settings
 if(APPLE)
   set(GUI_TYPE MACOSX_BUNDLE)
-  #set(MACOSX_BUNDLE_ICON_FILE xromm.icns)
-# Allows for bundle re-creation just by running "make". Also installs bundle icon
-#add_custom_target(osx_bundle_dirs
-#    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/bin/Undistortion.app/Contents/Resources
-#    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/bin/Undistortion.app/Contents/MacOS
-#    COMMAND cp ${CMAKE_SOURCE_DIR}/src/ui/ui-files/images/icons/${MACOSX_BUNDLE_ICON_FILE}
-#            ${CMAKE_CURRENT_BINARY_DIR}/bin/Undistortion.app/Contents/Resources/${MACOSX_BUNDLE_ICON_FILE})
 endif()
 
 add_executable(autoscoper  ${GUI_TYPE} ${autoscoper_SOURCES} ${autoscoper_HEADERS}
@@ -149,9 +139,6 @@ target_include_directories(autoscoper PUBLIC
 find_package(GLEW REQUIRED CONFIG)
 target_link_libraries(autoscoper PUBLIC GLEW::GLEW)
 target_compile_definitions(autoscoper PUBLIC -DUSE_GLEW)
-# find_package(TIFF REQUIRED)
-# target_link_libraries(autoscoper PUBLIC TIFF::TIFF)
-# target_compile_definitions(autoscoper PUBLIC -DUSE_LIBTIFF)
 
 install(TARGETS autoscoper DESTINATION bin/Debug CONFIGURATIONS Debug)
 install(TARGETS autoscoper DESTINATION bin/Release CONFIGURATIONS Release)
