@@ -18,7 +18,15 @@ if(NOT CMAKE_CXX_STANDARD MATCHES "^(11|14|17|20)$")
 endif()
 
 #-----------------------------------------------------------------------------
-include("${Autoscoper_SOURCE_DIR}/CMake/PreventInSourceBuilds.cmake")
+list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
+
+set(EXTERNAL_PROJECT_DIR "${CMAKE_SOURCE_DIR}/Superbuild")
+set(SUPERBUILD_TOPLEVEL_PROJECT Autoscoper)
+include(ExternalProject)
+include(ExternalProjectDependency)
+
+#-----------------------------------------------------------------------------
+include(PreventInSourceBuilds)
 AssureOutOfSourceBuilds()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -33,14 +41,11 @@ if(NOT DEFINED Autoscoper_LIB_DIR)
 endif()
 
 #-----------------------------------------------------------------------------
-# Build with Cuda Option - Enabled by default
+# Options
 #-----------------------------------------------------------------------------
 option(Autoscoper_BUILD_WITH_CUDA "Build With CUDA instead of OpenCL" ON)
+mark_as_superbuild(Autoscoper_BUILD_WITH_CUDA)
 
-#-----------------------------------------------------------------------------
-# Superbuild Option - Enabled by default
-#-----------------------------------------------------------------------------
-set(SUPERBUILD_TOPLEVEL_PROJECT Autoscoper)
 option(Autoscoper_SUPERBUILD "Build ${PROJECT_NAME} and the projects it depends on." ON)
 mark_as_advanced(Autoscoper_SUPERBUILD)
 set(Autoscoper_BINARY_INNER_SUBDIR Autoscoper-build)
@@ -56,6 +61,9 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 if(NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Configuring with build type '${CMAKE_BUILD_TYPE}'")
+  mark_as_superbuild(VARS CMAKE_BUILD_TYPE ALL_PROJECTS)
+else()
+  mark_as_superbuild(VARS CMAKE_CONFIGURATION_TYPES ALL_PROJECTS)
 endif()
 
 if(NOT CMAKE_DEBUG_POSTFIX)
