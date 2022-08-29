@@ -38,9 +38,10 @@ endif()
 option(Autoscoper_BUILD_WITH_CUDA "Build With CUDA instead of OpenCL" ON)
 
 #-----------------------------------------------------------------------------
-# Superbuild Option - Enabled by default
+# Configure SuperBuild
 #-----------------------------------------------------------------------------
 set(SUPERBUILD_TOPLEVEL_PROJECT Autoscoper)
+include(CMake/ExternalProjectDependency.cmake)
 option(Autoscoper_SUPERBUILD "Build ${PROJECT_NAME} and the projects it depends on." ON)
 mark_as_advanced(Autoscoper_SUPERBUILD)
 set(Autoscoper_BINARY_INNER_SUBDIR Autoscoper-build)

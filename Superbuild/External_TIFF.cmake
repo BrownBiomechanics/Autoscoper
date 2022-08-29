@@ -1,7 +1,8 @@
 
 set(proj TIFF)
 
-set(${proj}_DEPENDENCIES "")
+# Include dependent projects if any
+ExternalProject_Include_Dependencies(${proj} PROJECT_VAR proj DEPENDS_VAR ${proj}_DEPENDENCIES)
 
 if(Autoscoper_USE_SYSTEM_${proj})
   message(FATAL_ERROR "Enabling Autoscoper_USE_SYSTEM_${proj} is not supported !")
@@ -31,6 +32,7 @@ if((NOT DEFINED TIFF_INCLUDE_DIR
   endif()
 
   ExternalProject_Add(${proj}
+    ${${proj}_EP_ARGS}
     GIT_REPOSITORY https://gitlab.com/libtiff/libtiff.git
     GIT_TAG b6a17e567f143fab49734a9e09e5bafeb6f97354
     SOURCE_DIR ${EP_SOURCE_DIR}
@@ -61,6 +63,8 @@ if((NOT DEFINED TIFF_INCLUDE_DIR
   else()
     set(TIFF_LIBRARY ${tiff_DIR}/lib/libtiff.so)
   endif()
-  message(STATUS "SuperBuild - TIFF_INCLUDE_DIR: ${TIFF_INCLUDE_DIR}")
-  message(STATUS "SuperBuild - TIFF_LIBRARY: ${TIFF_LIBRARY}")
+  ExternalProject_Message(${proj} "TIFF_INCLUDE_DIR:${TIFF_INCLUDE_DIR}")
+  ExternalProject_Message(${proj} "TIFF_LIBRARY:${TIFF_LIBRARY}")
+  mark_as_superbuild(TIFF_INCLUDE_DIR:PATH)
+  mark_as_superbuild(TIFF_LIBRARY:PATH)
 endif()
