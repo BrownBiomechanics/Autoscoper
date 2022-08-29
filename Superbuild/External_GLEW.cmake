@@ -3,6 +3,9 @@ set(proj GLEW)
 
 set(${proj}_DEPENDENCIES "")
 
+# Include dependent projects if any
+ExternalProject_Include_Dependencies(${proj} PROJECT_VAR proj DEPENDS_VAR ${proj}_DEPENDENCIES)
+
 if(Autoscoper_USE_SYSTEM_${proj})
   message(FATAL_ERROR "Enabling Autoscoper_USE_SYSTEM_${proj} is not supported !")
 endif()
@@ -27,6 +30,7 @@ if(NOT DEFINED GLEW_DIR AND NOT Autoscoper_USE_SYSTEM_${proj})
   endif()
 
   ExternalProject_Add(${proj}
+    ${${proj}_EP_ARGS}
     URL https://sourceforge.net/projects/glew/files/glew/2.2.0/glew-2.2.0.zip
     URL_MD5 970535b75b1b69ebd018a0fa05af63d1
     SOURCE_DIR ${EP_SOURCE_DIR}
@@ -47,5 +51,6 @@ if(NOT DEFINED GLEW_DIR AND NOT Autoscoper_USE_SYSTEM_${proj})
       ${${proj}_DEPENDENCIES}
     )
   set(GLEW_DIR ${EP_INSTALL_DIR}/lib/cmake/glew)
-  message(STATUS "SuperBuild - GLEW_DIR: ${GLEW_DIR}")
+  ExternalProject_Message(${proj} "GLEW_DIR:${GLEW_DIR}")
+  mark_as_superbuild(GLEW_DIR:PATH)
 endif()

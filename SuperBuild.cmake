@@ -1,16 +1,19 @@
-include(ExternalProject)
 
 set(Autoscoper_DEPENDENCIES
   GLEW
   TIFF
   )
 
-foreach(dependency IN LISTS Autoscoper_DEPENDENCIES)
-  message(STATUS "SuperBuild - Adding ${dependency}")
-  include(${CMAKE_CURRENT_SOURCE_DIR}/Superbuild/External_${dependency}.cmake)
-endforeach()
+set(proj ${SUPERBUILD_TOPLEVEL_PROJECT})
 
-ExternalProject_Add(Autoscoper
+ExternalProject_Include_Dependencies(${proj}
+  PROJECT_VAR proj
+  SUPERBUILD_VAR Autoscoper_SUPERBUILD
+  DEPENDS_VAR Autoscoper_DEPENDENCIES
+  )
+
+ExternalProject_Add(${proj}
+  ${${proj}_EP_ARGS}
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
   BINARY_DIR ${CMAKE_BINARY_DIR}/${Autoscoper_BINARY_INNER_SUBDIR}
   DOWNLOAD_COMMAND ""
@@ -25,13 +28,11 @@ ExternalProject_Add(Autoscoper
     # Options
     -DAutoscoper_SUPERBUILD:BOOL=OFF
     -DAutoscoper_SUPERBUILD_DIR:PATH=${CMAKE_BINARY_DIR}
-    -DAutoscoper_BUILD_WITH_CUDA:BOOL=${Autoscoper_BUILD_WITH_CUDA}
     # Dependencies
     -DAutoscoper_DEPENDENCIES:STRING=${Autoscoper_DEPENDENCIES}
-    -DGLEW_DIR:PATH=${GLEW_DIR}
-    -DTIFF_LIBRARY:FILEPATH=${TIFF_LIBRARY}
-    -DTIFF_INCLUDE_DIR:PATH=${TIFF_INCLUDE_DIR}
   DEPENDS
     ${Autoscoper_DEPENDENCIES}
   INSTALL_COMMAND ""
 )
+
+ExternalProject_AlwaysConfigure(${proj})
