@@ -39,12 +39,18 @@ endif()
 if(NOT DEFINED Autoscoper_LIB_DIR)
   set(Autoscoper_LIB_DIR lib)
 endif()
+if(NOT DEFINED Autoscoper_SAMPLE_DATA_DIR)
+  set(Autoscoper_SAMPLE_DATA_DIR "${Autoscoper_BIN_DIR}")
+endif()
 
 #-----------------------------------------------------------------------------
 # Options
 #-----------------------------------------------------------------------------
 option(Autoscoper_BUILD_WITH_CUDA "Build With CUDA instead of OpenCL" ON)
 mark_as_superbuild(Autoscoper_BUILD_WITH_CUDA)
+
+option(Autoscoper_INSTALL_SAMPLE_DATA "Copy/Install the sample data to the build/install directory" ON)
+mark_as_superbuild(Autoscoper_INSTALL_SAMPLE_DATA)
 
 option(Autoscoper_SUPERBUILD "Build ${PROJECT_NAME} and the projects it depends on." ON)
 mark_as_advanced(Autoscoper_SUPERBUILD)
@@ -104,10 +110,41 @@ if(WIN32)
     install(FILES ${external_dlls} DESTINATION ${Autoscoper_BIN_DIR}/Release CONFIGURATIONS Release COMPONENT Runtime)
     install(FILES ${external_dllsd} DESTINATION ${Autoscoper_BIN_DIR}/Debug CONFIGURATIONS Debug COMPONENT Runtime)
   endforeach()
-
-  file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/${Autoscoper_BIN_DIR}/Release)
 endif()
 
-if(UNIX)
-  file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/${Autoscoper_BIN_DIR})
+#-----------------------------------------------------------------------------
+# Sample Data
+#-----------------------------------------------------------------------------
+set(Autoscoper_INSTALL_ROOT "./")
+set(Autoscoper_BUNDLE_LOCATION "Autoscoper.app/Contents")
+if(APPLE)
+  set(Autoscoper_INSTALL_ROOT "${Autoscoper_BUNDLE_LOCATION}/") # Set to create Bundle
+endif()
+
+set(Autoscoper_INSTALL_SAMPLE_DATA_DIR "${Autoscoper_INSTALL_ROOT}${Autoscoper_SAMPLE_DATA_DIR}")
+
+if(Autoscoper_INSTALL_SAMPLE_DATA)
+
+  # Copy sample_data
+  if(NOT CMAKE_CONFIGURATION_TYPES)
+    set(_copy_subdir "")
+  else()
+    set(_copy_subdir "$<CONFIG>")
+  endif()
+  set(_copy_output "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/copy_autoscoper_sample_data_complete")
+  add_custom_command(
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+      ${Autoscoper_SOURCE_DIR}/sample_data
+      ${CMAKE_BINARY_DIR}/${Autoscoper_SAMPLE_DATA_DIR}/${_copy_subdir}/sample_data
+    COMMAND ${CMAKE_COMMAND} -E touch ${_copy_output}
+    OUTPUT ${_copy_output}
+    COMMENT "Copying sample_data to build directory"
+    )
+  add_custom_target(CopyAutoscoperSampleData ALL
+    DEPENDS
+      ${_copy_output}
+    )
+
+  # Install sample_data
+  install(DIRECTORY sample_data DESTINATION "${Autoscoper_INSTALL_SAMPLE_DATA_DIR}/$<CONFIG>" COMPONENT Runtime)
 endif()
