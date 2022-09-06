@@ -1,0 +1,15 @@
+@echo off
+setlocal enabledelayedexpansion	
+set argCount=0
+for %%x in (%*) do (
+  set /A argCount+=1
+)
+
+@PATHS_CONFIG@
+
+if %argCount% gtr 0 (
+  echo Starting %1
+  %*
+) else (
+  echo Usage: %0 \path\to\executable [argument1 [...]] 1>&2
+)
