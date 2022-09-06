@@ -102,7 +102,9 @@ add_subdirectory(autoscoper)
 if(WIN32)
   # Autoscoper_DEPENDENCIES and Autoscoper_SUPERBUILD_DIR CMake variables are set
   # in SuperBuild.cmake.
+  set(PATHS_CONFIG "@set Path=${_qt5Core_install_prefix}/bin")
   foreach(dependency IN LISTS Autoscoper_DEPENDENCIES)
+    set(PATHS_CONFIG "${PATHS_CONFIG};${Autoscoper_SUPERBUILD_DIR}/${dependency}-install/bin/")
     file(GLOB external_dlls "${Autoscoper_SUPERBUILD_DIR}/${dependency}-install/bin/*.dll")
     file(GLOB external_dllsd "${Autoscoper_SUPERBUILD_DIR}/${dependency}-install/bin/*d.dll")
     list(REMOVE_ITEM external_dlls ${external_dllsd})
@@ -110,6 +112,16 @@ if(WIN32)
     install(FILES ${external_dlls} DESTINATION ${Autoscoper_BIN_DIR}/Release CONFIGURATIONS Release COMPONENT Runtime)
     install(FILES ${external_dllsd} DESTINATION ${Autoscoper_BIN_DIR}/Debug CONFIGURATIONS Debug COMPONENT Runtime)
   endforeach()
+
+  file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/${Autoscoper_BIN_DIR}/Release)
+
+  set(PATHS_CONFIG "${PATHS_CONFIG};%Path%")
+  
+  configure_file(
+    CMake/autoscoper_set_env.bat.in
+    ${Autoscoper_BINARY_DIR}/${Autoscoper_BIN_DIR}/autoscoper_set_env.bat
+    @ONLY
+    )
 endif()
 
 #-----------------------------------------------------------------------------
