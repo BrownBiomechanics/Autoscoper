@@ -4,18 +4,13 @@ set(Autoscoper_DEPENDENCIES
   GLEW
   TIFF
   )
+if(Autoscoper_BUILD_WITH_VTK)
+  list(APPEND Autoscoper_DEPENDENCIES VTK)
+endif()
 
-# foreach(dependency IN LISTS Autoscoper_DEPENDENCIES)
-#   message(STATUS "SuperBuild - Adding ${dependency}")
-#   include(${CMAKE_CURRENT_SOURCE_DIR}/Superbuild/External_${dependency}.cmake)
-# endforeach()
 set(proj ${SUPERBUILD_TOPLEVEL_PROJECT})
 
-# # Project dependencies
-# set(${proj}_DEPENDS
-#   GLEW
-#   TIFF
-# )
+
 
 ExternalProject_Include_Dependencies(${proj}
   PROJECT_VAR proj

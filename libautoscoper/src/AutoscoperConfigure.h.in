@@ -1,0 +1,3 @@
+#cmakedefine Autoscoper_BUILD_WITH_CUDA
+#cmakedefine Autoscoper_BUILD_WITH_VTK
+#cmakedefine Autoscoper_INSTALL_SAMPLE_DATA

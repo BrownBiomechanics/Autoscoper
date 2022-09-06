@@ -1,3 +1,8 @@
+configure_file(
+  src/AutoscoperConfigure.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/AutoscoperConfigure.h
+)
+
 set(libautoscoper_HEADERS
   src/Backtrace.hpp
   src/Camera.hpp
@@ -13,6 +18,7 @@ set(libautoscoper_HEADERS
   src/Volume.hpp
   src/VolumeDescription.hpp
   src/VolumeTransform.hpp
+  ${CMAKE_CURRENT_BINARY_DIR}/AutoscoperConfigure.h
 )
 
 set(libautoscoper_SOURCES

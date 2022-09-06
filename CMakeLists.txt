@@ -38,6 +38,11 @@ endif()
 option(Autoscoper_BUILD_WITH_CUDA "Build With CUDA instead of OpenCL" ON)
 
 #-----------------------------------------------------------------------------
+# Build with VTK Option - Enabled by default
+#-----------------------------------------------------------------------------
+option(Autoscoper_BUILD_WITH_VTK "Build With VTK" ON)
+
+#-----------------------------------------------------------------------------
 # Configure SuperBuild
 #-----------------------------------------------------------------------------
 set(SUPERBUILD_TOPLEVEL_PROJECT Autoscoper)
