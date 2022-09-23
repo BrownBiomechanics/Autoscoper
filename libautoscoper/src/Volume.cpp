@@ -47,6 +47,11 @@
 #include "Volume.hpp"
 #include "TiffImage.h"
 
+#include <itkImage.h>
+#include <itkImageFileReader.h>
+#include <itkSobelEdgeDetectionImageFilter.h>
+#include "itkImageFileWriter.h"
+
 using namespace std;
 
 namespace xromm
@@ -61,6 +66,22 @@ Volume::Volume(const string& filename)
 {
     TIFFSetWarningHandler(0);
     TIFF* tif = TIFFOpen(filename.c_str(), "r");
+
+    constexpr unsigned int Dimension = 3;
+
+    using PixelType = unsigned char;
+    using ImageType = itk::Image<PixelType, Dimension>;
+
+    auto image = itk::ReadImage<ImageType>(filename);
+
+    /*using OutputPixelType = float;
+    using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+
+    using FilterType = itk::SobelEdgeDetectionImageFilter<ImageType, OutputImageType>;
+    auto filter = FilterType::New();
+    filter->SetInput(image);*/
+
+
     if (!tif) {
         throw runtime_error("Unable to open volume file: " + filename);
     }

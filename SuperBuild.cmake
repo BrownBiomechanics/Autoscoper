@@ -6,6 +6,7 @@ set(Autoscoper_DEPENDENCIES
   )
 if(Autoscoper_BUILD_WITH_VTK)
   list(APPEND Autoscoper_DEPENDENCIES VTK)
+  list(APPEND Autoscoper_DEPENDENCIES ITK)
 endif()
 
 set(proj ${SUPERBUILD_TOPLEVEL_PROJECT})

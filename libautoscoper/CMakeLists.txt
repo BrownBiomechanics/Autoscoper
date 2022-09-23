@@ -61,6 +61,9 @@ set_target_properties(libautoscoper PROPERTIES
 find_package(TIFF REQUIRED MODULE)
 target_link_libraries(libautoscoper PUBLIC TIFF::TIFF)
 target_compile_definitions(libautoscoper PUBLIC -DUSE_LIBTIFF)
+find_package(ITK REQUIRED)
+include(${ITK_USE_FILE})
+target_link_libraries(libautoscoper PUBLIC ${ITK_LIBRARIES})
 
 target_include_directories(libautoscoper PUBLIC
   ${CMAKE_CURRENT_BINARY_DIR}
