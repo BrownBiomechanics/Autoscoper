@@ -19,6 +19,7 @@ set(libautoscoper_HEADERS
   src/VolumeDescription.hpp
   src/VolumeTransform.hpp
   ${CMAKE_CURRENT_BINARY_DIR}/AutoscoperConfigure.h
+  src/ImageUtils.hpp
 )
 
 set(libautoscoper_SOURCES
@@ -36,6 +37,7 @@ set(libautoscoper_SOURCES
   src/Volume.cpp
   src/VolumeDescription.cpp
   src/VolumeTransform.cpp
+  src/ImageUtils.cpp
 )
 
 if(Autoscoper_BUILD_WITH_CUDA)
@@ -61,9 +63,28 @@ set_target_properties(libautoscoper PROPERTIES
 find_package(TIFF REQUIRED MODULE)
 target_link_libraries(libautoscoper PUBLIC TIFF::TIFF)
 target_compile_definitions(libautoscoper PUBLIC -DUSE_LIBTIFF)
+
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 target_link_libraries(libautoscoper PUBLIC ${ITK_LIBRARIES})
+
+# find_package(VTK COMPONENTS 
+#   CommonColor
+#   CommonCore
+#   FiltersSources
+#   InteractionStyle
+#   RenderingContextOpenGL2
+#   RenderingCore
+#   RenderingFreeType
+#   RenderingGL2PSOpenGL2
+#   RenderingOpenGL2
+#   ImagingMath
+# )
+# target_link_libraries(libautoscoper PUBLIC ${VTK_LIBRARIES})
+# vtk_module_autoinit(
+#   TARGETS libautoscoper
+#   MODULES ${VTK_LIBRARIES}
+# )
 
 target_include_directories(libautoscoper PUBLIC
   ${CMAKE_CURRENT_BINARY_DIR}

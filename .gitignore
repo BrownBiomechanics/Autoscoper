@@ -4,3 +4,4 @@ external/*
 .DS_Store
 _make_installer/*
 .vs/
+out/
