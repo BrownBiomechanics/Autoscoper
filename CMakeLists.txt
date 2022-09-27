@@ -46,8 +46,22 @@ endif()
 #-----------------------------------------------------------------------------
 # Options
 #-----------------------------------------------------------------------------
-option(Autoscoper_BUILD_WITH_CUDA "Build With CUDA instead of OpenCL" ON)
-mark_as_superbuild(Autoscoper_BUILD_WITH_CUDA)
+set(_default_backend "CUDA")
+set(_force_backend )
+if(DEFINED Autoscoper_BUILD_WITH_CUDA)
+  set(_force_backend FORCE)
+  if(NOT Autoscoper_BUILD_WITH_CUDA)
+    set(_default_backend "OpenCL")
+  endif()
+  message(DEPRECATION "Consider setting Autoscoper_RENDERING_BACKEND to '${_default_backend}' instead of Autoscoper_BUILD_WITH_CUDA to '${Autoscoper_BUILD_WITH_CUDA}'")
+endif()
+set(Autoscoper_RENDERING_BACKEND "${_default_backend}" CACHE STRING "Backend to use for DRR and radiograph rendering" ${_force_backend})
+set_property(CACHE Autoscoper_RENDERING_BACKEND PROPERTY STRINGS "CUDA" "OpenCL")
+if(NOT Autoscoper_RENDERING_BACKEND MATCHES "^(CUDA|OpenCL)$")
+  message(FATAL_ERROR "Autoscoper_RENDERING_BACKEND must be set to CUDA or OpenCL")
+endif()
+mark_as_superbuild(Autoscoper_RENDERING_BACKEND)
+message(STATUS "Configuring with rendering backend '${Autoscoper_RENDERING_BACKEND}'")
 
 option(Autoscoper_INSTALL_SAMPLE_DATA "Copy/Install the sample data to the build/install directory" ON)
 mark_as_superbuild(Autoscoper_INSTALL_SAMPLE_DATA)
@@ -79,7 +93,7 @@ endif()
 set(CMAKE_C_FLAGS_RELEASE "-O3")
 set(BUILD_SHARED_LIBS ON)
 
-if(Autoscoper_BUILD_WITH_CUDA)
+if(Autoscoper_RENDERING_BACKEND STREQUAL "CUDA")
   add_definitions(-DWITH_CUDA)
 endif()
 

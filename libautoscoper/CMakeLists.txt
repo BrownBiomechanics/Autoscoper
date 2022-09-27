@@ -32,18 +32,20 @@ set(libautoscoper_SOURCES
   src/VolumeTransform.cpp
 )
 
-if(Autoscoper_BUILD_WITH_CUDA)
+if(Autoscoper_RENDERING_BACKEND STREQUAL "CUDA")
   find_package(CUDA REQUIRED)
   set(CUDA_LIBRARIES PUBLIC ${CUDA_LIBRARIES})
   include(${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/cuda/CMakeLists.txt)
   CUDA_ADD_LIBRARY(libautoscoper STATIC ${libautoscoper_SOURCES} ${libautoscoper_HEADERS} ${cuda_HEADERS} ${cuda_SOURCES} ${cuda_KERNEL_HEADERS} ${cuda_KERNEL})
   target_include_directories(libautoscoper PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/cuda/cutil)
-else()
+elseif(Autoscoper_RENDERING_BACKEND STREQUAL "OpenCL")
   find_package(OpenCL REQUIRED)
   include(${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/opencl/CMakeLists.txt)
   add_library(libautoscoper STATIC ${libautoscoper_SOURCES} ${libautoscoper_HEADERS} ${opencl_SOURCES} ${opencl_HEADERS})
   target_include_directories(libautoscoper PUBLIC  ${OpenCL_INCLUDE_DIRS})
   add_dependencies(libautoscoper ${SHADER_TO_HEADER})
+else()
+  message(FATAL_ERROR "Setting Autoscoper_RENDERING_BACKEND to '${Autoscoper_RENDERING_BACKEND}' is not supported")
 endif()
 
 set_target_properties(libautoscoper PROPERTIES
