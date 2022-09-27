@@ -108,18 +108,20 @@ set_target_properties(autoscoper PROPERTIES
   ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_LIB_DIR}"
 )
 
-if(Autoscoper_BUILD_WITH_CUDA)
+if(Autoscoper_RENDERING_BACKEND STREQUAL "CUDA")
   find_package(CUDA REQUIRED)
   target_include_directories(autoscoper PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/cuda/cutil)
   set(GPU_LIBRARIES
     ${CUDA_LIBRARIES}
   )
-else()
+elseif(Autoscoper_RENDERING_BACKEND STREQUAL "OpenCL")
   find_package(OpenCL REQUIRED)
   target_include_directories(autoscoper PUBLIC ${OPENCL_INCLUDE_DIRS})
   set(GPU_LIBRARIES
     ${OpenCL_LIBRARIES}
   )
+else()
+  message(FATAL_ERROR "Setting Autoscoper_RENDERING_BACKEND to '${Autoscoper_RENDERING_BACKEND}' is not supported")
 endif()
 
 target_link_libraries(autoscoper PUBLIC libautoscoper
