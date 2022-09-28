@@ -253,7 +253,7 @@ void ModelViewTreeWidgetItem::addToCameraTreeWidgetItem(QTreeWidget * treewidget
   cameraWidget->addModelView(this);
     treewidget->setItemWidget(this, 0, pFrame);
   setExpanded(true);
-  this->setBackgroundColor(0,QColor::fromRgb(240,240,240));
+  this->setBackground(0,QColor::fromRgb(240,240,240));
   this->setFlags(this->flags() & ~Qt::ItemIsDragEnabled);
 }
 
@@ -263,12 +263,12 @@ void ModelViewTreeWidgetItem::settingsButtonClicked(){
 
   if(settingsShown)
   {
-    this->setBackgroundColor(0,QColor::fromRgb(225,225,225));
+    this->setBackground(0,QColor::fromRgb(225,225,225));
     QIcon icon;
     icon.addFile(QString::fromUtf8(":/images/resource-files/icons/settings_cancel.png"), QSize(), QIcon::Normal, QIcon::Off);
     settingsButton->setIcon(icon);
   }else{
-    this->setBackgroundColor(0,QColor::fromRgb(240,240,240));
+    this->setBackground(0,QColor::fromRgb(240,240,240));
     QIcon icon;
     icon.addFile(QString::fromUtf8(":/images/resource-files/icons/settings.png"), QSize(), QIcon::Normal, QIcon::Off);
     settingsButton->setIcon(icon);
