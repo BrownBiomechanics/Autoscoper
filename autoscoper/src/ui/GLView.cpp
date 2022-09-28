@@ -173,10 +173,10 @@ void GLView::select_manip_in_view(double x, double y, int button)
   }
 
    if ( Qt::ControlModifier & e->modifiers() ) {
-     if (e->delta() > 0) {
+     if (e->angleDelta().y() > 0) {
             viewdata.zoom *= 1.1f;
         }
-        else if (e->delta() < 0) {
+        else if (e->angleDelta().y() < 0) {
             viewdata.zoom /= 1.1f;
         }
 
