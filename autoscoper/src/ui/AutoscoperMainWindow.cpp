@@ -1444,7 +1444,11 @@ void AutoscoperMainWindow::on_actionSave_Test_Sequence_triggered(bool checked){
           dir.mkdir(".");
         }
       }
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+      QString filename = fi.absolutePath() + OS_SEP + fi.completeBaseName() + OS_SEP + fi.completeBaseName() + QString().asprintf("%05d", i) + ".pgm";
+#else
       QString filename = fi.absolutePath() + OS_SEP + fi.completeBaseName() + OS_SEP + fi.completeBaseName() + QString().sprintf("%05d", i) + ".pgm";
+#endif
       cameraViews[j]->saveFrame(filename);
     }
     QApplication::processEvents();
