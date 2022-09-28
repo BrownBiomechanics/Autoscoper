@@ -18,3 +18,9 @@ d6ea8ed817d1c77e202344040848ab3fa6ab6467
 4634aae00cd89dfb55568d3cbf322185829771a1
 # STYLE: Fix line endings to be consistent
 36e8b77c62b5e69cfddfc9cd77f5e522fe11edd0
+# STYLE: Remove trailing white spaces from source files
+214d7376131ff665b7db1fe3eb337ceba90eba5f
+# STYLE: Update source files expanding tabs to 2 spaces
+03f8ee9418be98e5fa40dfa9726fbe488de34446
+# STYLE: Update CMake sources to use consistent indentation and spacing
+6c933dc51248b0cd47adeda36b6592b2d8779c09
