@@ -1333,7 +1333,7 @@ void AutoscoperMainWindow::MovingAverageFilter(int nWin, int firstFrame, int las
       else {
         q_step = 1 / (2 * (double)q);
       }
-      std::transform(cur_pose.begin(), cur_pose.end(), temp_sma.begin(), std::bind1st(std::multiplies<double>(), q_step));
+      std::transform(cur_pose.begin(), cur_pose.end(), temp_sma.begin(), std::bind(std::multiplies<double>(), q_step, std::placeholders::_1));
 
       std::transform(temp_sma.begin(), temp_sma.end(), filt_pose.begin(), filt_pose.begin(), std::plus<double>());
     }
