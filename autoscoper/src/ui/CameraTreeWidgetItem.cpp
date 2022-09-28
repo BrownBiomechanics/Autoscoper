@@ -87,7 +87,7 @@ void CameraTreeWidgetItem::addToGrid(QTreeWidget * treewidget){
   treewidget->addTopLevelItem(this);
     treewidget->setItemWidget(this, 0, pFrame);
   setExpanded(true);
-  this->setBackgroundColor(0,QColor::fromRgb(230,230,230));
+  this->setBackground(0,QColor::fromRgb(230,230,230));
   this->setFlags(this->flags() & ~Qt::ItemIsDragEnabled & ~Qt::ItemIsDropEnabled);
 }
 

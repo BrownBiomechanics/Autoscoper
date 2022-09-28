@@ -270,12 +270,12 @@ void FilterTreeWidgetItem::settingsButtonClicked(){
 
   if(settingsShown)
   {
-    this->setBackgroundColor(0,QColor::fromRgb(235,235,235));
+    this->setBackground(0,QColor::fromRgb(235,235,235));
     QIcon icon;
     icon.addFile(QString::fromUtf8(":/images/resource-files/icons/settings_cancel.png"), QSize(), QIcon::Normal, QIcon::Off);
     settingsButton->setIcon(icon);
   }else{
-    this->setBackgroundColor(0,QColor::fromRgb(255,255,255));
+    this->setBackground(0,QColor::fromRgb(255,255,255));
     QIcon icon;
     icon.addFile(QString::fromUtf8(":/images/resource-files/icons/settings.png"), QSize(), QIcon::Normal, QIcon::Off);
     settingsButton->setIcon(icon);
