@@ -49,8 +49,8 @@
 
 #include "ui/GLTracker.h"
 #include "Tracker.hpp"
-#include <QOpenGLContext>
-#include <QOpenGLFunctions>
+//#include <QOpenGLContext>
+//#include <QOpenGLFunctions>
 
 #ifdef WITH_CUDA
 #else
