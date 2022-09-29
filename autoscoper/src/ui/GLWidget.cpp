@@ -96,7 +96,7 @@ void GLWidget::resizeGL(int w, int h){
 
     viewdata.ratio = (float)viewdata.window_width/(float)viewdata.window_height;
 
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   // Unregister and delete the pixel buffer if it already exists.
     if (!glIsBufferARB(viewdata.pbo)) {
         CALL_GL(glDeleteBuffersARB(1, &viewdata.pbo));
@@ -110,7 +110,7 @@ void GLWidget::resizeGL(int w, int h){
                 0,
                 GL_STREAM_DRAW_ARB));
     CALL_GL(glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0));
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   // Unregister and delete the pixel buffer if it already exists.
   if (!glIsBuffer(viewdata.pbo)) {
         CALL_GL(glDeleteBuffers(1, &viewdata.pbo));

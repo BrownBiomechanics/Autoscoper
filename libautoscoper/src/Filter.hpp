@@ -44,9 +44,9 @@
 
 #include <string>
 
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
 typedef float Buffer;
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
 #include "gpu/opencl/OpenCL.hpp"
 #endif
 

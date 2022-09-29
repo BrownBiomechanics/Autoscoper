@@ -42,7 +42,7 @@
 #include "ui/OpenCLPlatformSelectDialog.h"
 #include "ui_OpenCLPlatformSelectDialog.h"
 
-#ifndef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
 #include <gpu/opencl/OpenCL.hpp>
 #endif
 
@@ -54,7 +54,7 @@ OpenCLPlatformSelectDialog::OpenCLPlatformSelectDialog(QWidget *parent) :
 
   diag->setupUi(this);
 
-#ifndef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   platforms = xromm::gpu::get_platforms();
   for (int i = 0 ; i < platforms.size();i++){
     diag->comboBox->addItem(QString::fromStdString(platforms[i][0]));
@@ -77,7 +77,7 @@ void OpenCLPlatformSelectDialog::on_comboBox_currentIndexChanged ( int index ){
 }
 
 void OpenCLPlatformSelectDialog::on_pushButton_clicked(){
-#ifndef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   xromm::gpu::setUsedPlatform(diag->comboBox->currentIndex());
 #endif
   this->close();

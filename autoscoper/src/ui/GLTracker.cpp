@@ -52,8 +52,7 @@
 //#include <QOpenGLContext>
 //#include <QOpenGLFunctions>
 
-#ifdef WITH_CUDA
-#else
+#if defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
 #include <gpu/opencl/OpenCL.hpp>
 #endif
 
@@ -93,8 +92,7 @@ void GLTracker::initializeGL(){
     glClearColor(0.5,0.5,0.5,1.0);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-#ifdef WITH_CUDA
-#else
+#if defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   std::cerr << "Initializing OpenCL-OpenGL interoperability..." << std::endl;
   xromm::gpu::opencl_global_gl_context();
 #endif

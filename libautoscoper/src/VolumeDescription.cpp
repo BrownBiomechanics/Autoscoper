@@ -46,7 +46,7 @@
 #include <fstream>
 #include <vector>
 
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
 #include <cuda.h>
 #include <cutil_inline.h>
 #include <cutil_math.h>
@@ -279,7 +279,7 @@ VolumeDescription::VolumeDescription(const Volume& volume)
     invTrans_[2] = min[2]/(float)dim[2];
     // Free any previously allocated memory.
 
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   // Free any previously allocated memory.
     cutilSafeCall(cudaFreeArray(image_));
 
@@ -305,7 +305,7 @@ VolumeDescription::VolumeDescription(const Volume& volume)
     copyParams.extent = extent;
     copyParams.kind = cudaMemcpyHostToDevice;
     cutilSafeCall(cudaMemcpy3D(&copyParams));
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   if (image_) delete image_;
 
     // Create a 3D array.
@@ -328,9 +328,9 @@ VolumeDescription::VolumeDescription(const Volume& volume)
 
 VolumeDescription::~VolumeDescription()
 {
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   cutilSafeCall(cudaFreeArray(image_));
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   if (image_) delete image_;
 #endif
 }

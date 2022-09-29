@@ -42,10 +42,10 @@
 #ifndef XROMM_GPU_VOLUME_DESCRIPTION_HPP
 #define XROMM_GPU_VOLUME_DESCRIPTION_HPP
 
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
 struct cudaArray;
 typedef cudaArray Image;
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
 #include "gpu/opencl/OpenCL.hpp"
 #endif
 

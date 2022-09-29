@@ -70,10 +70,10 @@
 #include "Manip3D.hpp"
 
 
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
 #include <gpu/cuda/RadRenderer.hpp>
 #include <gpu/cuda/RayCaster.hpp>
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
 #include <gpu/opencl/RadRenderer.hpp>
 #include <gpu/opencl/RayCaster.hpp>
 #endif
@@ -481,19 +481,19 @@ void GLView::paintGL()
 
         CALL_GL(glRasterPos2i(0, 0));
 
-  #ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
         CALL_GL(glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, viewdata.pbo));
         CALL_GL(glDrawPixels(viewdata.window_width,
                viewdata.window_height,
                GL_RGB, GL_FLOAT, 0));
         CALL_GL(glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0));
-  #else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
         CALL_GL(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, viewdata.pbo));
         CALL_GL(glDrawPixels(viewdata.window_width,
                viewdata.window_height,
                GL_RGB, GL_FLOAT, 0));
         CALL_GL(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0));
-  #endif
+#endif
         CALL_GL(glDisable(GL_BLEND));
         CALL_GL(glEnable(GL_DEPTH_TEST));
       }
@@ -538,19 +538,19 @@ void GLView::paintGL()
       glDisable(GL_DEPTH_TEST);
       glRasterPos2i(0, 0);
 
-      #ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
       CALL_GL(glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, viewdata.pbo));
       CALL_GL(glDrawPixels(viewdata.window_width,
               viewdata.window_height,
               GL_RGB, GL_FLOAT, 0));
       CALL_GL(glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0));
-      #else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
       CALL_GL(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, viewdata.pbo));
       CALL_GL(glDrawPixels(viewdata.window_width,
               viewdata.window_height,
               GL_RGB, GL_FLOAT, 0));
       CALL_GL(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0));
-      #endif
+#endif
 
       glEnable(GL_DEPTH_TEST);
 

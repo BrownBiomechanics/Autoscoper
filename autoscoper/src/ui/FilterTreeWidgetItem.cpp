@@ -55,12 +55,12 @@
 #include <QGroupBox>
 #include <QCheckBox>
 
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
 #include <gpu/cuda/SobelFilter.hpp>
 #include <gpu/cuda/ContrastFilter.hpp>
 #include <gpu/cuda/SharpenFilter.hpp>
 #include <gpu/cuda/GaussianFilter.hpp>
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
 #include <gpu/opencl/SobelFilter.hpp>
 #include <gpu/opencl/ContrastFilter.hpp>
 #include <gpu/opencl/SharpenFilter.hpp>
