@@ -53,7 +53,7 @@
 
 #include "Camera.hpp"
 
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
 #include <cutil_inline.h>
 #include <cutil_gl_inline.h>
 
@@ -63,7 +63,8 @@
 #include "gpu/cuda/Merger_kernels.h"
 #include "gpu/cuda/BackgroundRenderer.hpp"
 #include "gpu/cuda/DRRBackground_kernels.h"
-#else
+
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
 #include "gpu/opencl/Compositor.hpp"
 #include "gpu/opencl/Merger.hpp"
 #include "gpu/opencl/RayCaster.hpp"
@@ -108,7 +109,7 @@ View::~View()
     for (iter = radFilters_.begin(); iter != radFilters_.end(); ++iter) {
         delete *iter;
     }
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   cutilSafeCall(cudaFree(filterBuffer_));
   for(int i = 0; i < drrBuffer_.size(); i++){
     cutilSafeCall(cudaFree(drrBuffer_[i]));
@@ -119,7 +120,8 @@ View::~View()
     cutilSafeCall(cudaFree(radFilterBuffer_));
   cutilSafeCall(cudaFree(backgroundmask_));
   cutilSafeCall(cudaFree(drr_mask_));
-#else
+
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
     delete filterBuffer_;
   for (int i = 0; i < drrBuffer_.size(); i++){
     delete drrBuffer_[i];
@@ -150,7 +152,7 @@ void View::addDrrRenderer(){
 void
 View::renderRad(Buffer* buffer, unsigned width, unsigned height)
 {
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   init();
 
   if (width > maxWidth_ || height > maxHeight_) {
@@ -165,7 +167,7 @@ View::renderRad(Buffer* buffer, unsigned width, unsigned height)
 
     radRenderer_->render(radBuffer_, width, height);
     filter(radFilters_, radBuffer_, buffer, width, height);
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   init(width, height);
     radRenderer_->render(radBuffer_, width, height);
     filter(radFilters_, radBuffer_, buffer, width, height);
@@ -178,7 +180,7 @@ View::renderBackground(Buffer* buffer, unsigned width, unsigned height)
   if (backgroundThreshold_ < 0.0)
     return;
 
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   init();
 
   if (width > maxWidth_ || height > maxHeight_) {
@@ -193,7 +195,7 @@ View::renderBackground(Buffer* buffer, unsigned width, unsigned height)
 
   backgroundRenderer_->render(buffer, width, height, backgroundThreshold_);
 
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   backgroundRenderer_->render(buffer, width, height, backgroundThreshold_);
 #endif
 }
@@ -206,7 +208,7 @@ void View::renderDRRMask(Buffer* in_buffer, Buffer* out_buffer, unsigned width, 
 void
 View::renderDrr(Buffer* buffer, unsigned width, unsigned height)
 {
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   init();
 
     if (width > maxWidth_ || height > maxHeight_) {
@@ -225,7 +227,7 @@ View::renderDrr(Buffer* buffer, unsigned width, unsigned height)
     gpu::merge(drrBufferMerged_, drrBuffer_[i], drrBufferMerged_, width, height);
   }
   filter(drrFilters_, drrBufferMerged_, buffer, width, height);
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   init(width, height);
   drrBufferMerged_->fill((char) 0x00);
   for (int i = 0; i < drrRenderer_.size(); i++){
@@ -238,7 +240,7 @@ View::renderDrr(Buffer* buffer, unsigned width, unsigned height)
 
 void View::renderDrrSingle(int volume, Buffer* buffer, unsigned width, unsigned height)
 {
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   init();
 
   if (width > maxWidth_ || height > maxHeight_) {
@@ -254,7 +256,7 @@ void View::renderDrrSingle(int volume, Buffer* buffer, unsigned width, unsigned 
   drrRenderer_[volume]->render(drrBuffer_[volume], width, height);
   filter(drrFilters_, drrBuffer_[volume], buffer, width, height);
 
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   init(width, height);
   drrRenderer_[volume]->render(drrBuffer_[volume], width, height);
   filter(drrFilters_, drrBuffer_[volume], buffer, width, height);
@@ -264,7 +266,7 @@ void View::renderDrrSingle(int volume, Buffer* buffer, unsigned width, unsigned 
 void
 View::renderDrr(unsigned int pbo, unsigned width, unsigned height)
 {
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   struct cudaGraphicsResource* pboCudaResource;
     cutilSafeCall(cudaGraphicsGLRegisterBuffer(&pboCudaResource, pbo,
         cudaGraphicsMapFlagsWriteDiscard));
@@ -291,7 +293,7 @@ View::renderDrr(unsigned int pbo, unsigned width, unsigned height)
 
     cutilSafeCall(cudaGraphicsUnmapResources(1, &pboCudaResource, 0));
     cutilSafeCall(cudaGraphicsUnregisterResource(pboCudaResource));
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   GLBuffer* buffer = new GLBuffer(pbo, CL_MEM_WRITE_ONLY);
 
   init(width, height);
@@ -309,7 +311,7 @@ void View::saveImage(std::string filename, int width, int height)
   fprintf(stderr, "Write to %s with size %d %d\n", filename.c_str(), width, height);
 
   Buffer* buffer = new Buffer(maxWidth_*maxHeight_*sizeof(float));
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   init();
 
   if (width > maxWidth_ || height > maxHeight_) {
@@ -329,7 +331,7 @@ void View::saveImage(std::string filename, int width, int height)
   }
   filter(drrFilters_, drrBufferMerged_, buffer, width, height);
 
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   init(width, height);
 
   drrBufferMerged_->fill((char)0x00);
@@ -344,9 +346,9 @@ void View::saveImage(std::string filename, int width, int height)
   unsigned char* uchar_image = new unsigned char[width*height];
 
   // Copy the image to the host
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   cudaMemcpy(host_image, buffer, width*height*sizeof(float), cudaMemcpyDeviceToHost);
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   buffer->write(host_image, width*height*sizeof(float));
 #endif
 
@@ -371,7 +373,7 @@ void View::saveImage(std::string filename, int width, int height)
 void
 View::render(GLBuffer* buffer, unsigned width, unsigned height)
 {
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   init();
 
     if (drr_enabled) {
@@ -398,7 +400,7 @@ View::render(GLBuffer* buffer, unsigned width, unsigned height)
                     buffer,
                     width,
                     height);
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   init(width, height);
   const char c = 0x00;
     if (drr_enabled) {
@@ -423,7 +425,7 @@ View::render(GLBuffer* buffer, unsigned width, unsigned height)
 void
 View::render(unsigned int pbo, unsigned width, unsigned height)
 {
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   struct cudaGraphicsResource* pboCudaResource;
   cutilSafeCall(cudaGraphicsGLRegisterBuffer(&pboCudaResource, pbo,
         cudaGraphicsMapFlagsWriteDiscard));
@@ -440,7 +442,7 @@ View::render(unsigned int pbo, unsigned width, unsigned height)
     cutilSafeCall(cudaGraphicsUnmapResources(1, &pboCudaResource, 0));
   cutilSafeCall(cudaGraphicsUnregisterResource(pboCudaResource));
 
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   GLBuffer* buffer = new GLBuffer(pbo, CL_MEM_WRITE_ONLY);
 
   init(width, height);
@@ -457,7 +459,7 @@ void View::updateBackground(const float* buffer, unsigned width, unsigned height
 }
 
 
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
 void
 View::init()
 {
@@ -476,7 +478,7 @@ View::init()
     gpu::fill(drr_mask_, maxWidth_ * maxHeight_, 1.0f);
   }
 }
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
 void
 View::init(unsigned width, unsigned height)
 {
@@ -510,7 +512,7 @@ View::filter(const std::vector<Filter*>& filters,
              unsigned height)
 {
 
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   // If there are no filters simply copy the input to the output
     if (filters.size() == 0) {
         cudaMemcpy(output,
@@ -558,7 +560,7 @@ View::filter(const std::vector<Filter*>& filters,
         }
         swap(buffer1, buffer2);
     }
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
     // If there are no filters simply copy the input to the output
     if (filters.size() == 0) {
     input->copy(output, width*height*sizeof(float));

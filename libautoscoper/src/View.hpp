@@ -44,10 +44,10 @@
 
 #include <vector>
 #include <string>
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
 typedef float Buffer;
 typedef float GLBuffer;
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
 #include "gpu/opencl/OpenCL.hpp"
 #endif
 
@@ -122,9 +122,9 @@ public:
   }
 
 private:
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   void init();
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   void init(unsigned width, unsigned height);
 #endif
 

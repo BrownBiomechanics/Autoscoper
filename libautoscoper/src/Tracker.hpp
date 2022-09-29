@@ -47,17 +47,17 @@
 
 #include "Filter.hpp"
 
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
 #include "gpu/cuda/RayCaster.hpp"
 #include "gpu/cuda/RadRenderer.hpp"
 #include "gpu/cuda/BackgroundRenderer.hpp"
-
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
 #include "gpu/opencl/RayCaster.hpp"
 #include "gpu/opencl/RadRenderer.hpp"
 #include "gpu/opencl/BackgroundRenderer.hpp"
 #include "gpu/opencl/OpenCL.hpp"
 #endif
+
 #include "Trial.hpp"
 
 
@@ -111,12 +111,12 @@ namespace xromm
     Trial trial_;
     std::vector <gpu::VolumeDescription*> volumeDescription_;
     std::vector <gpu::View*> views_;
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
     Buffer* rendered_drr_;
     Buffer* rendered_rad_;
     Buffer* background_mask_;
     Buffer* drr_mask_;
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
     gpu::Buffer* rendered_drr_;
     gpu::Buffer* rendered_rad_;
     gpu::Buffer* background_mask_;

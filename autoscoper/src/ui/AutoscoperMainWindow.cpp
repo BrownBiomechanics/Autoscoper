@@ -74,7 +74,7 @@
 #include <QShortcut>
 #include <QXmlStreamWriter>
 
-#ifndef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
 #include <gpu/opencl/OpenCL.hpp>
 #endif
 
@@ -132,7 +132,7 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
   setLastFolder(QDir::currentPath());
 
 
-#ifndef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   if (!skipGpuDevice){
     OpenCLPlatformSelectDialog * dialog = new OpenCLPlatformSelectDialog(this);
     if (dialog->getNumberPlatforms() > 1)dialog->exec();
@@ -1471,7 +1471,7 @@ void AutoscoperMainWindow::on_actionSaveForBatch_triggered(bool checked){
         xmlWriter.writeStartElement("Batch");
         xmlWriter.setAutoFormatting(true);
         //save GPU_devices
-#ifndef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
         xmlWriter.writeStartElement("GPUDevice");
         xmlWriter.writeAttribute("Platform", QString::number(xromm::gpu::getUsedPlatform().first));
         xmlWriter.writeAttribute("Device", QString::number(xromm::gpu::getUsedPlatform().second));
@@ -1579,7 +1579,7 @@ void AutoscoperMainWindow::runBatch(QString batchfile, bool saveData){
             QString name = xmlReader.name().toString();
             if (name == "GPUDevice")
             {
-#ifndef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
               fprintf(stderr, "Load GPUDevice Setting\n");
               xromm::gpu::setUsedPlatform(xmlReader.readElementText().toInt());
               QApplication::processEvents();

@@ -53,7 +53,7 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   #include "gpu/cuda/CudaWrap.hpp"
   #include "gpu/cuda/Ncc_kernels.h"
   #include "gpu/cuda/HDist_kernels.h"
@@ -61,7 +61,7 @@
   #include "gpu/cuda/Mult_kernels.h"
   #include "gpu/cuda/PSO_kernel.h"
   #include <cuda_runtime_api.h>
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   #include "gpu/opencl/Ncc.hpp"
   #include "gpu/opencl/Mult.hpp"
   #include "gpu/cuda/PSO_kernel.h"
@@ -97,9 +97,9 @@ double PSO_FUNC(double* P) { return g_markerless->minimizationFunc(P); }
 namespace xromm {
 
 #if DEBUG
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   void save_debug_image(const Buffer* dev_image, int width, int height)
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   void save_debug_image(const gpu::Buffer* dev_image, int width, int height)
 #endif
 {
@@ -107,9 +107,9 @@ namespace xromm {
   float* host_image = new float[width*height];
   unsigned char* uchar_image = new unsigned char[width*height];
 
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   cudaMemcpy(host_image, dev_image, width*height*sizeof(float), cudaMemcpyDeviceToHost);
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   dev_image->write(host_image, width*height*sizeof(float));
 #endif
 #undef max
@@ -150,9 +150,9 @@ namespace xromm {
 #endif
 
 
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   void save_full_drr(const Buffer* dev_image, int width, int height)
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   void save_full_drr(const gpu::Buffer* dev_image, int width, int height)
 #endif
   {
@@ -160,9 +160,9 @@ namespace xromm {
     float* host_image = new float[width * height];
     unsigned char* uchar_image = new unsigned char[width * height];
 
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
     cudaMemcpy(host_image, dev_image, width * height * sizeof(float), cudaMemcpyDeviceToHost);
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
     dev_image->write(host_image, width * height * sizeof(float));
 #endif
 #undef max
@@ -228,7 +228,7 @@ Tracker::~Tracker()
 
 //void Tracker::init()
 //{
-//#ifdef WITH_CUDA
+//#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
 //    gpu::cudaInitWrap();
 //#endif
 //}
@@ -255,14 +255,14 @@ void Tracker::load(const Trial& trial)
   }
 
   unsigned npixels = trial_.render_width*trial_.render_height;
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   gpu::cudaMallocWrap(rendered_drr_,trial_.render_width*trial_.render_height*sizeof(float));
     gpu::cudaMallocWrap(rendered_rad_,trial_.render_width*trial_.render_height*sizeof(float));
   gpu::cudaMallocWrap(drr_mask_, trial_.render_width*trial_.render_height*sizeof(float));
   gpu::cudaMallocWrap(background_mask_, trial_.render_width*trial_.render_height*sizeof(float));
   gpu::fill(drr_mask_, trial_.render_width*trial_.render_height, 1.0f);
   gpu::fill(background_mask_, trial_.render_width*trial_.render_height, 1.0f);
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   rendered_drr_ = new gpu::Buffer(npixels*sizeof(float));
   rendered_rad_ = new gpu::Buffer(npixels*sizeof(float));
   drr_mask_ = new gpu::Buffer(npixels*sizeof(float));
@@ -272,7 +272,7 @@ void Tracker::load(const Trial& trial)
 #endif
 
     gpu::ncc_init(npixels);
-  #ifdef WITH_CUDA // trying another cost function (Housdorff)
+  #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND) // trying another cost function (Housdorff)
     gpu::hdist_init(npixels);
   #endif
 
@@ -636,7 +636,7 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
       {
         // Calculate the correlation for implant
         // Calculate Hausdorff Distance for Implant Matching _ FUTURE
-        #ifdef WITH_CUDA
+        #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
           correlations.push_back(gpu::hdist(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
         #endif
       }
@@ -695,18 +695,18 @@ void Tracker::setBackgroundThreshold(float threshold)
 }
 
 
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   void get_image(const Buffer* dev_image, int width, int height, std::vector<unsigned char> &data)
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   void get_image(const gpu::Buffer* dev_image, int width, int height, std::vector<unsigned char> &data)
 #endif
   {
     static int count = 0;
     float* host_image = new float[width*height];
 
-#ifdef WITH_CUDA
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
     cudaMemcpy(host_image, dev_image, width*height*sizeof(float), cudaMemcpyDeviceToHost);
-#else
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
     dev_image->write(host_image, width*height*sizeof(float));
 #endif
     // Copy to a char array

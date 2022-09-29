@@ -61,6 +61,7 @@ if(NOT Autoscoper_RENDERING_BACKEND MATCHES "^(CUDA|OpenCL)$")
   message(FATAL_ERROR "Autoscoper_RENDERING_BACKEND must be set to CUDA or OpenCL")
 endif()
 mark_as_superbuild(Autoscoper_RENDERING_BACKEND)
+set(Autoscoper_RENDERING_USE_${Autoscoper_RENDERING_BACKEND}_BACKEND 1)
 message(STATUS "Configuring with rendering backend '${Autoscoper_RENDERING_BACKEND}'")
 
 option(Autoscoper_INSTALL_SAMPLE_DATA "Copy/Install the sample data to the build/install directory" ON)
@@ -92,10 +93,6 @@ endif()
 
 set(CMAKE_C_FLAGS_RELEASE "-O3")
 set(BUILD_SHARED_LIBS ON)
-
-if(Autoscoper_RENDERING_BACKEND STREQUAL "CUDA")
-  add_definitions(-DWITH_CUDA)
-endif()
 
 #-----------------------------------------------------------------------------
 # Dependencies

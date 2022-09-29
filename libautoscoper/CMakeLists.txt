@@ -48,6 +48,10 @@ else()
   message(FATAL_ERROR "Setting Autoscoper_RENDERING_BACKEND to '${Autoscoper_RENDERING_BACKEND}' is not supported")
 endif()
 
+target_compile_definitions(libautoscoper PUBLIC
+  Autoscoper_RENDERING_USE_${Autoscoper_RENDERING_BACKEND}_BACKEND
+)
+
 set_target_properties(libautoscoper PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_BIN_DIR}"
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_BIN_DIR}"
