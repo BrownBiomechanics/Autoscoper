@@ -126,13 +126,26 @@ if(WIN32)
 
   file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/${Autoscoper_BIN_DIR}/Release)
 
-  set(PATHS_CONFIG "${PATHS_CONFIG};%Path%")
-  
-  configure_file(
-    CMake/autoscoper_set_env.bat.in
-    ${Autoscoper_BINARY_DIR}/${Autoscoper_BIN_DIR}/autoscoper_set_env.bat
-    @ONLY
+  set(pathsep ":")
+  if(WIN32)
+    set(pathsep "\;")
+  endif()
+
+  set(PATHS_CONFIG "${PATHS_CONFIG}${pathsep}%Path%")
+  if(WIN32)
+    configure_file(
+      CMake/autoscoper_set_env.bat.in
+      ${Autoscoper_BINARY_DIR}/${Autoscoper_BIN_DIR}/autoscoper_set_env.bat
+      @ONLY
     )
+  else()
+    configure_file(
+      CMake/autoscoper_set_env.sh.in
+      ${Autoscoper_BINARY_DIR}/${Autoscoper_BIN_DIR}/autoscoper_set_env.sh
+      @ONLY
+    )
+  endif()
+  
 endif()
 
 #-----------------------------------------------------------------------------

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+@PATHS_CONFIG@
+
+if [[ $# -gt 0 ]]; then
+  echo "Starting $1"
+  exec "$@"
+else
+  >&2 echo "Usage: %0 \path\to\executable [argument1 [...]]"
+fi
