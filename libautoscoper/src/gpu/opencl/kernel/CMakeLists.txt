@@ -22,7 +22,7 @@ foreach(SHADER_FILENAME ${opencl_shaders})
     get_filename_component(SHADER_NAME ${SHADER_FILENAME} NAME_WE)
 
     # Construct the header file full path
-    set(SHADER_NAME "${CMAKE_CURRENT_BINARY_DIR}/${SHADER_NAME}.h")
+    set(SHADER_NAME "${CMAKE_CURRENT_BINARY_DIR}/gpu/opencl/kernel/${SHADER_NAME}.cl.h")
 
     list(APPEND GENERATED_LIST ${SHADER_NAME})
 
