@@ -16,6 +16,9 @@ message(STATUS "${_msg} - C++${CMAKE_CXX_STANDARD}")
 if(NOT CMAKE_CXX_STANDARD MATCHES "^(17|20)$")
   message(FATAL_ERROR "CMAKE_CXX_STANDARD must be set to 17 or 20")
 endif()
+if(NOT DEFINED Qt5_DIR)
+  message(FATAL_ERROR "Qt5_DIR is not defined")
+endif()
 
 #-----------------------------------------------------------------------------
 list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
