@@ -128,7 +128,6 @@ View::~View()
   }
   delete drrBufferMerged_;
   delete drrFilterBuffer_;
-    delete drrFilterBuffer_;
     delete radBuffer_;
     delete radFilterBuffer_;
 
