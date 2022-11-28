@@ -31,7 +31,7 @@ if(NOT DEFINED GLEW_DIR AND NOT Autoscoper_USE_SYSTEM_${proj})
 
   ExternalProject_Add(${proj}
     ${${proj}_EP_ARGS}
-    URL https://sourceforge.net/projects/glew/files/glew/2.2.0/glew-2.2.0.zip
+    URL https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0.zip
     URL_MD5 970535b75b1b69ebd018a0fa05af63d1
     SOURCE_DIR ${EP_SOURCE_DIR}
     SOURCE_SUBDIR build/cmake
