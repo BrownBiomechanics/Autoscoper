@@ -251,6 +251,15 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
     }
     break;
 
+  case 13:
+    // close connection
+    {
+      std::cerr << "Closing connection to Matlab Client..." << std::endl;
+      connection->write(QByteArray(1, 13));
+      deleteConnection();
+    }
+    break;
+  
   default:
     std::cerr << "Cannot handle message" << std::endl;
     connection->write(QByteArray(1,0));
@@ -272,11 +281,11 @@ void Socket::deleteConnection()
 {
   //std::cerr << "client disconnected" << std::endl;
   QTcpSocket * obj = dynamic_cast<QTcpSocket *>(sender());
-  if (obj)
+  if (obj != NULL)
   {
     clientConnections.erase(std::remove(clientConnections.begin(), clientConnections.end(), obj), clientConnections.end());
+    obj->deleteLater();
   }
-  obj->deleteLater();
 }
 
 void Socket::reading()
