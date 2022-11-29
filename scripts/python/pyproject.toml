@@ -23,3 +23,13 @@ requires = [
     "setuptools_scm >= 2.0.0, <3"
 ]
 build-backend = "setuptools.build_meta"
+
+[project.optional-dependencies]
+dev = [
+    "black>=22.3.0",
+]
+
+[tool.black]
+line-length = 88
+target_version = ['py36']
+include = '\.pyi?$'
