@@ -18,11 +18,7 @@ homepage = "https://autoscoperm.slicer.org/"
 repository = "https://github.com/BrownBiomechanics/Autoscoper/tree/main/scripts/python"
 
 [build-system]
-requires = [
-    "setuptools >= 35.0.2",
-    "setuptools_scm >= 2.0.0, <3"
-]
-build-backend = "setuptools.build_meta"
+requires = ["setuptools>=65", "setuptools_scm[toml]>=7"]
 
 [project.optional-dependencies]
 dev = [

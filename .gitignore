@@ -3,10 +3,8 @@ external/*
 /.project
 .DS_Store
 _make_installer/*
-<<<<<<< HEAD
 .vs/
 out/
-=======
 __pycache__/
 PyAutoscoper.egg-info/
->>>>>>> 17cfd5c (ENH: Improve socket connection support)
+build/
