@@ -1,10 +1,13 @@
-import socket,struct
+import socket, struct
+
 
 def wait_for_server(s):
     while True:
         data = s.recv(1024)
         if data:
             return data
+
+
 def openConnection(address):
     """
     Open a tcp connection to the given address and port.
@@ -16,7 +19,8 @@ def openConnection(address):
     s.connect((address, 30007))
     return s
 
-def loadTrial(s,trial_file):
+
+def loadTrial(s, trial_file):
     """
     Load a trial file into the PyAutoscoper server.
 
@@ -27,12 +31,22 @@ def loadTrial(s,trial_file):
     """
     b = bytearray()
     b.append(0x01)
-    b.extend(trial_file.encode('utf-8'))
+    b.extend(trial_file.encode("utf-8"))
     s.sendall(b)
     wait_for_server(s)
-    
 
-def loadTrackingData(s,volume,tracking_data,save_as_matrix=True,save_as_rows=True,save_with_commas=True,convert_to_cm=False,convert_to_rad=False,interpolate=False):
+
+def loadTrackingData(
+    s,
+    volume,
+    tracking_data,
+    save_as_matrix=True,
+    save_as_rows=True,
+    save_with_commas=True,
+    convert_to_cm=False,
+    convert_to_rad=False,
+    interpolate=False,
+):
     """
     Load tracking data into the PyAutoscoper server.
 
@@ -57,18 +71,29 @@ def loadTrackingData(s,volume,tracking_data,save_as_matrix=True,save_as_rows=Tru
     """
     b = bytearray()
     b.append(0x02)
-    b.extend(volume.to_bytes(4, byteorder='little', signed=False))
-    b.extend((int(save_as_matrix)).to_bytes(4, byteorder='little', signed=False))
-    b.extend((int(save_as_rows)).to_bytes(4, byteorder='little', signed=False))
-    b.extend((int(save_with_commas)).to_bytes(4, byteorder='little', signed=False))
-    b.extend((int(convert_to_cm)).to_bytes(4, byteorder='little', signed=False))
-    b.extend((int(convert_to_rad)).to_bytes(4, byteorder='little', signed=False))
-    b.extend((int(interpolate)).to_bytes(4, byteorder='little', signed=False))
-    b.extend(tracking_data.encode('utf-8'))
+    b.extend(volume.to_bytes(4, byteorder="little", signed=False))
+    b.extend((int(save_as_matrix)).to_bytes(4, byteorder="little", signed=False))
+    b.extend((int(save_as_rows)).to_bytes(4, byteorder="little", signed=False))
+    b.extend((int(save_with_commas)).to_bytes(4, byteorder="little", signed=False))
+    b.extend((int(convert_to_cm)).to_bytes(4, byteorder="little", signed=False))
+    b.extend((int(convert_to_rad)).to_bytes(4, byteorder="little", signed=False))
+    b.extend((int(interpolate)).to_bytes(4, byteorder="little", signed=False))
+    b.extend(tracking_data.encode("utf-8"))
     s.sendall(b)
     wait_for_server(s)
 
-def saveTracking(s,volume,tracking_file,save_as_matrix=True,save_as_rows=True,save_with_commas=True,convert_to_cm=False,convert_to_rad=False,interpolate=False):
+
+def saveTracking(
+    s,
+    volume,
+    tracking_file,
+    save_as_matrix=True,
+    save_as_rows=True,
+    save_with_commas=True,
+    convert_to_cm=False,
+    convert_to_rad=False,
+    interpolate=False,
+):
     """
     Save tracking data from the PyAutoscoper server.
 
@@ -93,18 +118,19 @@ def saveTracking(s,volume,tracking_file,save_as_matrix=True,save_as_rows=True,sa
     """
     b = bytearray()
     b.append(0x03)
-    b.extend(volume.to_bytes(4, byteorder='little', signed=False))
-    b.extend((int(save_as_matrix)).to_bytes(4, byteorder='little', signed=False))
-    b.extend((int(save_as_rows)).to_bytes(4, byteorder='little', signed=False))
-    b.extend((int(save_with_commas)).to_bytes(4, byteorder='little', signed=False))
-    b.extend((int(convert_to_cm)).to_bytes(4, byteorder='little', signed=False))
-    b.extend((int(convert_to_rad)).to_bytes(4, byteorder='little', signed=False))
-    b.extend((int(interpolate)).to_bytes(4, byteorder='little', signed=False))
-    b.extend(tracking_file.encode('utf-8'))
+    b.extend(volume.to_bytes(4, byteorder="little", signed=False))
+    b.extend((int(save_as_matrix)).to_bytes(4, byteorder="little", signed=False))
+    b.extend((int(save_as_rows)).to_bytes(4, byteorder="little", signed=False))
+    b.extend((int(save_with_commas)).to_bytes(4, byteorder="little", signed=False))
+    b.extend((int(convert_to_cm)).to_bytes(4, byteorder="little", signed=False))
+    b.extend((int(convert_to_rad)).to_bytes(4, byteorder="little", signed=False))
+    b.extend((int(interpolate)).to_bytes(4, byteorder="little", signed=False))
+    b.extend(tracking_file.encode("utf-8"))
     s.sendall(b)
     wait_for_server(s)
 
-def loadFilters(s,camera,settings_file):
+
+def loadFilters(s, camera, settings_file):
     """
     Load filter settings into the PyAutoscoper server.
 
@@ -117,12 +143,13 @@ def loadFilters(s,camera,settings_file):
     """
     b = bytearray()
     b.append(0x04)
-    b.extend(camera.to_bytes(4, byteorder='little', signed=False))
-    b.extend(settings_file.encode('utf-8'))
+    b.extend(camera.to_bytes(4, byteorder="little", signed=False))
+    b.extend(settings_file.encode("utf-8"))
     s.sendall(b)
     wait_for_server(s)
 
-def setFrame(s,frame):
+
+def setFrame(s, frame):
     """
     Set the frame to be used for the next acquisition.
 
@@ -133,11 +160,12 @@ def setFrame(s,frame):
     """
     b = bytearray()
     b.append(0x05)
-    b.extend(frame.to_bytes(4, byteorder='little', signed=False))
+    b.extend(frame.to_bytes(4, byteorder="little", signed=False))
     s.sendall(b)
     wait_for_server(s)
 
-def getPose(s,volume,frame):
+
+def getPose(s, volume, frame):
     """
     Get the pose of the volume at the specified frame.
 
@@ -152,14 +180,22 @@ def getPose(s,volume,frame):
     """
     b = bytearray()
     b.append(0x06)
-    b.extend(volume.to_bytes(4, byteorder='little', signed=False))
-    b.extend(frame.to_bytes(4, byteorder='little', signed=False))
+    b.extend(volume.to_bytes(4, byteorder="little", signed=False))
+    b.extend(frame.to_bytes(4, byteorder="little", signed=False))
     s.sendall(b)
     data = wait_for_server(s)
     data = bytearray(data)
-    return [struct.unpack('d', data[1:9])[0], struct.unpack('d', data[9:17])[0], struct.unpack('d', data[17:25])[0], struct.unpack('d', data[25:33])[0], struct.unpack('d', data[33:41])[0], struct.unpack('d', data[41:49])[0]]
+    return [
+        struct.unpack("d", data[1:9])[0],
+        struct.unpack("d", data[9:17])[0],
+        struct.unpack("d", data[17:25])[0],
+        struct.unpack("d", data[25:33])[0],
+        struct.unpack("d", data[33:41])[0],
+        struct.unpack("d", data[41:49])[0],
+    ]
 
-def setPose(s,volume,frame,pose):
+
+def setPose(s, volume, frame, pose):
     """
     Set the pose of the volume at the specified frame.
 
@@ -174,18 +210,19 @@ def setPose(s,volume,frame,pose):
     """
     b = bytearray()
     b.append(0x07)
-    b.extend(volume.to_bytes(4, byteorder='little', signed=False))
-    b.extend(frame.to_bytes(4, byteorder='little', signed=False))
-    b.extend(struct.pack('d', pose[0]))
-    b.extend(struct.pack('d', pose[1]))
-    b.extend(struct.pack('d', pose[2]))
-    b.extend(struct.pack('d', pose[3]))
-    b.extend(struct.pack('d', pose[4]))
-    b.extend(struct.pack('d', pose[5]))
+    b.extend(volume.to_bytes(4, byteorder="little", signed=False))
+    b.extend(frame.to_bytes(4, byteorder="little", signed=False))
+    b.extend(struct.pack("d", pose[0]))
+    b.extend(struct.pack("d", pose[1]))
+    b.extend(struct.pack("d", pose[2]))
+    b.extend(struct.pack("d", pose[3]))
+    b.extend(struct.pack("d", pose[4]))
+    b.extend(struct.pack("d", pose[5]))
     s.sendall(b)
     wait_for_server(s)
 
-def getNCC(s,volume,pose):
+
+def getNCC(s, volume, pose):
     """
     Get the normalized cross correlation of the volume at the specified pose.
 
@@ -200,23 +237,24 @@ def getNCC(s,volume,pose):
     """
     b = bytearray()
     b.append(0x08)
-    b.extend(volume.to_bytes(4, byteorder='little', signed=False))
-    b.extend(struct.pack('d', pose[0]))
-    b.extend(struct.pack('d', pose[1]))
-    b.extend(struct.pack('d', pose[2]))
-    b.extend(struct.pack('d', pose[3]))
-    b.extend(struct.pack('d', pose[4]))
-    b.extend(struct.pack('d', pose[5]))
+    b.extend(volume.to_bytes(4, byteorder="little", signed=False))
+    b.extend(struct.pack("d", pose[0]))
+    b.extend(struct.pack("d", pose[1]))
+    b.extend(struct.pack("d", pose[2]))
+    b.extend(struct.pack("d", pose[3]))
+    b.extend(struct.pack("d", pose[4]))
+    b.extend(struct.pack("d", pose[5]))
     s.sendall(b)
     data = wait_for_server(s)
     data = bytearray(data)
     ncc = []
     for i in range(0, 2):
-        val = data[2 + (i)*8: 10+(i)*8]
-        ncc.append(struct.unpack('d', val)[0])
+        val = data[2 + (i) * 8 : 10 + (i) * 8]
+        ncc.append(struct.unpack("d", val)[0])
     return ncc
 
-def setBackground(s,threshold):
+
+def setBackground(s, threshold):
     """
     Set the background threshold.
 
@@ -227,11 +265,12 @@ def setBackground(s,threshold):
     """
     b = bytearray()
     b.append(0x09)
-    b.extend(struct.pack('d', threshold))
+    b.extend(struct.pack("d", threshold))
     s.sendall(b)
     wait_for_server(s)
 
-def getImageCropped(s,volume,camera,pose):
+
+def getImageCropped(s, volume, camera, pose):
     """
     Get the cropped image of the volume at the specified pose.
 
@@ -248,23 +287,24 @@ def getImageCropped(s,volume,camera,pose):
     """
     b = bytearray()
     b.append(0x0A)
-    b.extend(volume.to_bytes(4, byteorder='little', signed=False))
-    b.extend(camera.to_bytes(4, byteorder='little', signed=False))
-    b.extend(struct.pack('d', pose[0]))
-    b.extend(struct.pack('d', pose[1]))
-    b.extend(struct.pack('d', pose[2]))
-    b.extend(struct.pack('d', pose[3]))
-    b.extend(struct.pack('d', pose[4]))
-    b.extend(struct.pack('d', pose[5]))
+    b.extend(volume.to_bytes(4, byteorder="little", signed=False))
+    b.extend(camera.to_bytes(4, byteorder="little", signed=False))
+    b.extend(struct.pack("d", pose[0]))
+    b.extend(struct.pack("d", pose[1]))
+    b.extend(struct.pack("d", pose[2]))
+    b.extend(struct.pack("d", pose[3]))
+    b.extend(struct.pack("d", pose[4]))
+    b.extend(struct.pack("d", pose[5]))
     s.sendall(b)
     data = wait_for_server(s)
     data = bytearray(data)
-    width = struct.unpack('i', data[1:5])[0]
-    height = struct.unpack('i', data[5:9])[0]
+    width = struct.unpack("i", data[1:5])[0]
+    height = struct.unpack("i", data[5:9])[0]
     img_data = data[9:]
     return [width, height, img_data]
 
-def optimizeFrame(s,volume,frame,repeats,max_itr,min_lim,max_lim,max_stall_itr):
+
+def optimizeFrame(s, volume, frame, repeats, max_itr, min_lim, max_lim, max_stall_itr):
     """
     Optimize the pose of the volume at the specified frame.
 
@@ -287,15 +327,16 @@ def optimizeFrame(s,volume,frame,repeats,max_itr,min_lim,max_lim,max_stall_itr):
     """
     b = bytearray()
     b.append(0x0B)
-    b.extend(volume.to_bytes(4, byteorder='little', signed=False))
-    b.extend(frame.to_bytes(4, byteorder='little', signed=False))
-    b.extend(repeats.to_bytes(4, byteorder='little', signed=False))
-    b.extend(max_itr.to_bytes(4, byteorder='little', signed=False))
-    b.extend(struct.pack('d', min_lim))
-    b.extend(struct.pack('d', max_lim))
-    b.extend(max_stall_itr.to_bytes(4, byteorder='little', signed=False))
+    b.extend(volume.to_bytes(4, byteorder="little", signed=False))
+    b.extend(frame.to_bytes(4, byteorder="little", signed=False))
+    b.extend(repeats.to_bytes(4, byteorder="little", signed=False))
+    b.extend(max_itr.to_bytes(4, byteorder="little", signed=False))
+    b.extend(struct.pack("d", min_lim))
+    b.extend(struct.pack("d", max_lim))
+    b.extend(max_stall_itr.to_bytes(4, byteorder="little", signed=False))
     s.sendall(b)
     wait_for_server(s)
+
 
 def saveFullDRR(s):
     """
@@ -309,6 +350,7 @@ def saveFullDRR(s):
     s.sendall(b)
     wait_for_server(s)
 
+
 def closeConnection(s):
     """
     Close the connection to the server.
@@ -319,4 +361,4 @@ def closeConnection(s):
     b = bytearray()
     b.append(0xFF)
     s.sendall(b)
-    wait_for_server(s)    
+    wait_for_server(s)
