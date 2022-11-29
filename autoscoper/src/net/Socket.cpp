@@ -83,10 +83,17 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
     //load tracking data
     {
       qint32* volume = reinterpret_cast<qint32*>(&data[1]);
-      std::string filename = std::string(&data[5], length - 5);
+      qint32* save_as_matrix = reinterpret_cast<qint32*>(&data[5]);
+      qint32* save_as_rows = reinterpret_cast<qint32*>(&data[9]);
+      qint32* save_with_commas = reinterpret_cast<qint32*>(&data[13]);
+      qint32* convert_to_cm = reinterpret_cast<qint32*>(&data[17]);
+      qint32* convert_to_rad = reinterpret_cast<qint32*>(&data[21]);
+      qint32* interpolate = reinterpret_cast<qint32*>(&data[25]);
+      std::string filename = std::string(&data[29], length - 29);
       std::cerr << "load tracking data Volume " << *volume << " : " << filename.c_str() << std::endl;
+      std::cerr << "Save as matrix: " << *save_as_matrix << " save as rows: " << *save_as_rows << " save with commas: " << *save_with_commas << " convert to cm: " << *convert_to_cm << " convert to rad: " << *convert_to_rad << " interpolate: " << *interpolate << std::endl;
 
-      m_mainwindow->load_tracking_results(QString(filename.c_str()), true, true, true, false, false, false, *volume);
+      m_mainwindow->load_tracking_results(QString(filename.c_str()), *save_as_matrix, *save_as_rows, *save_with_commas, *convert_to_cm, *convert_to_rad, *interpolate, *volume);
 
       connection->write(QByteArray(1, 2));
     }
@@ -95,10 +102,18 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
     //save tracking data
     {
       qint32* volume = reinterpret_cast<qint32*>(&data[1]);
-      std::string filename = std::string(&data[5], length - 5);
+      qint32* save_as_matrix = reinterpret_cast<qint32*>(&data[5]);
+      qint32* save_as_rows = reinterpret_cast<qint32*>(&data[9]);
+      qint32* save_with_commas = reinterpret_cast<qint32*>(&data[13]);
+      qint32* convert_to_cm = reinterpret_cast<qint32*>(&data[17]);
+      qint32* convert_to_rad = reinterpret_cast<qint32*>(&data[21]);
+      qint32* interpolate = reinterpret_cast<qint32*>(&data[25]);
+      std::string filename = std::string(&data[29], length - 29);
 
       std::cerr << "save tracking data Volume " << *volume << " : " << filename.c_str() << std::endl;
-      m_mainwindow->save_tracking_results(QString(filename.c_str()), true, true, true, false, false, false, *volume);
+      std::cerr << "Save as matrix: " << *save_as_matrix << " save as rows: " << *save_as_rows << " save with commas: " << *save_with_commas << " convert to cm: " << *convert_to_cm << " convert to rad: " << *convert_to_rad << " interpolate: " << *interpolate << std::endl;
+
+      m_mainwindow->save_tracking_results(QString(filename.c_str()), *save_as_matrix, *save_as_rows, *save_with_commas, *convert_to_cm, *convert_to_rad, *interpolate, *volume);
 
       connection->write(QByteArray(1, 3));
     }
@@ -269,7 +284,7 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 
 void Socket::createNewConnection()
 {
-  std::cerr << "New Matlab Client is Connected..." << std::endl;
+  std::cerr << "New Client is Connected..." << std::endl;
   QTcpSocket *clientConnection = tcpServer->nextPendingConnection();
   connect(clientConnection, &QAbstractSocket::disconnected, this, &Socket::deleteConnection);
   connect(clientConnection, &QIODevice::readyRead, this, &Socket::reading);
