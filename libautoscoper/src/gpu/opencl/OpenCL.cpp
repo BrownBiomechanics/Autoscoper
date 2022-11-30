@@ -673,7 +673,8 @@ cl_int opencl_global_context()
       (cl_context_properties)(platforms[used_platform]),
       0 };
 
-      clGetGLContextInfoKHR(prop, CL_DEVICES_FOR_GL_CONTEXT_KHR, 10 * sizeof(cl_device_id), devices_, &size));
+      size_t size;
+      clGetGLContextInfoKHR(prop, CL_DEVICES_FOR_GL_CONTEXT_KHR, 10 * sizeof(cl_device_id), devices_, &size);
 
       int _count = size / sizeof(cl_device_id);
       if(used_device >= _count) used_device = 0;

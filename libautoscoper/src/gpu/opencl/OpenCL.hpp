@@ -49,7 +49,9 @@
 #include <OpenCL/opencl.h>
 #include <OpenGL/OpenGL.h>
 #else
+#if defined(_WIN32)
 #include <windows.h>
+#endif
 #include <CL/opencl.h>
 #include <GL/gl.h>
 #endif
