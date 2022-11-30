@@ -998,7 +998,7 @@ void Buffer::fill(const float val) const
 #endif
 }
 
-GLBuffer::GLBuffer(GLuint pbo, cl_mem_flags access)
+GLBuffer::GLBuffer(cl_GLuint pbo, cl_mem_flags access)
 {
   err_ = opencl_global_context();
   CHECK_CL

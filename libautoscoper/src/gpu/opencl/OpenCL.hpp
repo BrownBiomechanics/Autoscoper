@@ -141,7 +141,7 @@ protected:
 class GLBuffer
 {
 public:
-  GLBuffer(GLuint pbo, cl_mem_flags access=CL_MEM_READ_WRITE);
+  GLBuffer(cl_GLuint pbo, cl_mem_flags access=CL_MEM_READ_WRITE);
   ~GLBuffer();
   friend class Kernel;
 protected:
