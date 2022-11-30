@@ -74,6 +74,17 @@ option(Autoscoper_SUPERBUILD "Build ${PROJECT_NAME} and the projects it depends 
 mark_as_advanced(Autoscoper_SUPERBUILD)
 set(Autoscoper_BINARY_INNER_SUBDIR Autoscoper-build)
 
+
+if(Autoscoper_RENDERING_BACKEND STREQUAL "OpenCL")
+  set(Autoscoper_OpenCL_MINIMUM_REQUIRED_VERSION "1.2.0")
+  mark_as_superbuild(Autoscoper_OpenCL_MINIMUM_REQUIRED_VERSION:STRING)
+  message(STATUS "Setting Autoscoper_OpenCL_MINIMUM_REQUIRED_VERSION to ${Autoscoper_OpenCL_MINIMUM_REQUIRED_VERSION}")
+
+  set(Autoscoper_CL_TARGET_OPENCL_VERSION "120")
+  mark_as_superbuild(Autoscoper_CL_TARGET_OPENCL_VERSION:STRING)
+  message(STATUS "Setting Autoscoper_CL_TARGET_OPENCL_VERSION to ${Autoscoper_CL_TARGET_OPENCL_VERSION}")
+endif()
+
 #-----------------------------------------------------------------------------
 # Set a default build type if none was specified
 #-----------------------------------------------------------------------------
