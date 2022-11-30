@@ -3,6 +3,11 @@ set(Autoscoper_DEPENDENCIES
   GLEW
   TIFF
   )
+if(Autoscoper_RENDERING_BACKEND STREQUAL "OpenCL")
+  list(APPEND Autoscoper_DEPENDENCIES
+    OpenCL-ICD-Loader
+    )
+endif()
 
 set(proj ${SUPERBUILD_TOPLEVEL_PROJECT})
 
