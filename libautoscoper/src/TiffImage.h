@@ -53,17 +53,17 @@
 struct TiffImage
 {
     // Baseline Tiff metadata
-    uint32 width;
-    uint32 height;
-    uint16 bitsPerSample;
-    uint16 photometric;
-    uint16 orientation;
-    uint16 samplesPerPixel;
-    uint16 planarConfig;
-    uint16 compression;
+    uint32_t width;
+    uint32_t height;
+    uint16_t bitsPerSample;
+    uint16_t photometric;
+    uint16_t orientation;
+    uint16_t samplesPerPixel;
+    uint16_t planarConfig;
+    uint16_t compression;
 
     // Extended Tiff metadata
-    uint16 sampleFormat;
+    uint16_t sampleFormat;
 
     // Image data
     tdata_t data;
@@ -95,14 +95,14 @@ int tiffImageWrite(TIFF* tif, TiffImage* img);
 // TIFF file. The data is written in strips of the specified size. If the
 // rowsPerStrip parameter is left at zero then a default value will be chosen
 // by the tiff library. It returns 1 on success and 0 on failure.
-int tiffImageWriteStripped(TIFF* tif, TiffImage* img, uint32 rowsPerStrip);
+int tiffImageWriteStripped(TIFF* tif, TiffImage* img, uint32_t rowsPerStrip);
 
 // This function writes out an image to the current directory of an open
 // TIFF file. The data is written in tiles of the specified dimension. If the
 // tileWidth or tileHeight is set to zero than default values will be chosen
 // by the tiff library. It returns 1 on success and 0 on failure.
-int tiffImageWriteTiled(TIFF* tif, TiffImage* img, uint32 tileWidth,
-                        uint32 tileHeight);
+int tiffImageWriteTiled(TIFF* tif, TiffImage* img, uint32_t tileWidth,
+                        uint32_t tileHeight);
 
 #endif // TIFF_IMAGE_H
 

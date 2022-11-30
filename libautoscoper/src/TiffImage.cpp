@@ -46,19 +46,19 @@
 
 // Helper Functions
 
-static int tiffReadContigTiledData(TIFF* tif, uint8* data, uint32 width,
-                                   uint32 height, uint32 spp);
+static int tiffReadContigTiledData(TIFF* tif, uint8_t* data, uint32_t width,
+                                   uint32_t height, uint32_t spp);
 
-static int tiffReadContigStrippedData(TIFF* tif, uint8* data, uint32 width,
-                                      uint32 height, uint32 spp);
+static int tiffReadContigStrippedData(TIFF* tif, uint8_t* data, uint32_t width,
+                                      uint32_t height, uint32_t spp);
 
 static int tiffImageWriteMeta(TIFF* tif, TiffImage* img);
 
-static int tiffWriteContigTiledData(TIFF* tif, uint8* data, uint32 width,
-                                    uint32 height, uint32 spp);
+static int tiffWriteContigTiledData(TIFF* tif, uint8_t* data, uint32_t width,
+                                    uint32_t height, uint32_t spp);
 
-static int tiffWriteContigStrippedData(TIFF* tif, uint8* data, uint32 width,
-                                       uint32 height, uint32 spp);
+static int tiffWriteContigStrippedData(TIFF* tif, uint8_t* data, uint32_t width,
+                                       uint32_t height, uint32_t spp);
 
 // Function definitions
 
@@ -138,11 +138,11 @@ int tiffImageRead(TIFF* tif, TiffImage* img)
     }
 
     if (TIFFIsTiled(tif)) {
-        return tiffReadContigTiledData(tif, (uint8*)img->data, img->width,
+        return tiffReadContigTiledData(tif, (uint8_t*)img->data, img->width,
                                        img->height, img->samplesPerPixel);
     }
     else {
-        return tiffReadContigStrippedData(tif, (uint8*)img->data, img->width,
+        return tiffReadContigStrippedData(tif, (uint8_t*)img->data, img->width,
                                           img->height, img->samplesPerPixel);
     }
 }
@@ -181,7 +181,7 @@ int tiffImageWrite(TIFF* tif, TiffImage* img)
     return tiffImageWriteStripped(tif, img, 0);
 }
 
-int tiffImageWriteStripped(TIFF* tif, TiffImage* img, uint32 rowsPerStrip)
+int tiffImageWriteStripped(TIFF* tif, TiffImage* img, uint32_t rowsPerStrip)
 {
     if (!tiffImageWriteMeta(tif, img)) {
         return 0;
@@ -195,7 +195,7 @@ int tiffImageWriteStripped(TIFF* tif, TiffImage* img, uint32 rowsPerStrip)
 
     switch (img->planarConfig) {
         case PLANARCONFIG_CONTIG:
-            return tiffWriteContigStrippedData(tif, (uint8*)img->data,
+            return tiffWriteContigStrippedData(tif, (uint8_t*)img->data,
                                                img->width, img->height,
                                                img->samplesPerPixel);
         case PLANARCONFIG_SEPARATE:
@@ -207,8 +207,8 @@ int tiffImageWriteStripped(TIFF* tif, TiffImage* img, uint32 rowsPerStrip)
     }
 }
 
-int tiffImageWriteTiled(TIFF* tif, TiffImage* img, uint32 tileWidth,
-                        uint32 tileHeight)
+int tiffImageWriteTiled(TIFF* tif, TiffImage* img, uint32_t tileWidth,
+                        uint32_t tileHeight)
 {
     if (!tiffImageWriteMeta(tif, img)) {
         return 0;
@@ -223,7 +223,7 @@ int tiffImageWriteTiled(TIFF* tif, TiffImage* img, uint32 tileWidth,
 
     switch (img->planarConfig) {
         case PLANARCONFIG_CONTIG:
-            return tiffWriteContigTiledData(tif, (uint8*)img->data, img->width,
+            return tiffWriteContigTiledData(tif, (uint8_t*)img->data, img->width,
                                             img->height, img->samplesPerPixel);
         case PLANARCONFIG_SEPARATE:
             printf("Support for planar data has not yet been implemented.\n");
@@ -236,13 +236,13 @@ int tiffImageWriteTiled(TIFF* tif, TiffImage* img, uint32 tileWidth,
 
 //////////////////////////////////////////////////////////////////////////////
 
-static int tiffReadContigStrippedData(TIFF* tif, uint8* data, uint32 width,
-                                      uint32 height, uint32 spp)
+static int tiffReadContigStrippedData(TIFF* tif, uint8_t* data, uint32_t width,
+                                      uint32_t height, uint32_t spp)
 {
     tsize_t scanlineSize = TIFFScanlineSize(tif);
 
     // Read in row data one line at a time.
-    uint32 y;
+    uint32_t y;
     for (y = 0; y < height; ++y) {
 
         // Read in the strip data.
@@ -257,16 +257,16 @@ static int tiffReadContigStrippedData(TIFF* tif, uint8* data, uint32 width,
     return 1;
 }
 
-static int tiffReadContigTiledData(TIFF* tif, uint8* data, uint32 width,
-                                   uint32 height, uint32 spp)
+static int tiffReadContigTiledData(TIFF* tif, uint8_t* data, uint32_t width,
+                                   uint32_t height, uint32_t spp)
 {
     // Get the tile dimensions.
-    uint32 tileWidth, tileHeight;
+    uint32_t tileWidth, tileHeight;
     TIFFGetField(tif, TIFFTAG_TILEWIDTH, &tileWidth);
     TIFFGetField(tif, TIFFTAG_TILELENGTH, &tileHeight);
 
     // Allocate space for tile buffer.
-    uint8* tileBuf = (uint8*)_TIFFmalloc(TIFFTileSize(tif));
+    uint8_t* tileBuf = (uint8_t*)_TIFFmalloc(TIFFTileSize(tif));
     if (!tileBuf) {
         printf("Unable to allocate space for tile (%d bytes).\n",
                TIFFTileSize(tif));
@@ -277,17 +277,17 @@ static int tiffReadContigTiledData(TIFF* tif, uint8* data, uint32 width,
     tsize_t scanlineSize = TIFFScanlineSize(tif);
     tsize_t tileRowSize = TIFFTileRowSize(tif);
 
-    uint32 y;
+    uint32_t y;
     for (y = 0; y < height; y += tileHeight) {
 
         // Number of rows in these tiles that are visible
-        uint32 numRows = y+tileHeight > height? height-y: tileHeight;
+        uint32_t numRows = y+tileHeight > height? height-y: tileHeight;
 
         // Size of the offset from the first column of the image to the
         // first column of the tile.
         tsize_t byteOffset = 0;
 
-        uint32 x;
+        uint32_t x;
         for (x = 0; x < width; x += tileWidth) {
 
             // Read in the tile data.
@@ -301,7 +301,7 @@ static int tiffReadContigTiledData(TIFF* tif, uint8* data, uint32 width,
                               scanlineSize-byteOffset: tileRowSize;
 
             // Copy each tile into the image buffer one row at a time.
-            uint32 i;
+            uint32_t i;
             for (i = 0; i < numRows; ++i) {
                 memcpy(data+i*scanlineSize+byteOffset,
                        tileBuf+i*tileRowSize,
@@ -340,20 +340,20 @@ static int tiffImageWriteMeta(TIFF* tif, TiffImage* img)
     }
 }
 
-static int tiffWriteContigStrippedData(TIFF* tif, uint8* data, uint32 width,
-                                       uint32 height, uint32 spp)
+static int tiffWriteContigStrippedData(TIFF* tif, uint8_t* data, uint32_t width,
+                                       uint32_t height, uint32_t spp)
 {
-    uint32 rowsPerStrip;
+    uint32_t rowsPerStrip;
     TIFFGetFieldDefaulted(tif, TIFFTAG_ROWSPERSTRIP, &rowsPerStrip);
 
     tstrip_t strip = 0;
 
     // Write out one strip at a time.
-    uint32 y;
+    uint32_t y;
     for (y = 0; y < height; y += rowsPerStrip) {
 
         // The number of visible rows in this strip
-        uint32 numRows = y+rowsPerStrip > height? height-y: rowsPerStrip;
+        uint32_t numRows = y+rowsPerStrip > height? height-y: rowsPerStrip;
 
         // The number of bytes in this strip
         tsize_t stripSize = TIFFVStripSize(tif, numRows);
@@ -370,16 +370,16 @@ static int tiffWriteContigStrippedData(TIFF* tif, uint8* data, uint32 width,
     return 1;
 }
 
-static int tiffWriteContigTiledData(TIFF* tif, uint8* data, uint32 width,
-                                    uint32 height, uint32 spp)
+static int tiffWriteContigTiledData(TIFF* tif, uint8_t* data, uint32_t width,
+                                    uint32_t height, uint32_t spp)
 {
     // Get the tile dimensions.
-    uint32 tileWidth, tileHeight;
+    uint32_t tileWidth, tileHeight;
     TIFFGetField(tif, TIFFTAG_TILEWIDTH, &tileWidth);
     TIFFGetField(tif, TIFFTAG_TILELENGTH, &tileHeight);
 
     // Allocate space for tile buffer.
-    uint8* tileBuf = (uint8*)_TIFFmalloc(TIFFTileSize(tif));
+    uint8_t* tileBuf = (uint8_t*)_TIFFmalloc(TIFFTileSize(tif));
     if (!tileBuf) {
         printf("Unable to allocate space for tile (%d bytes).\n",
                TIFFTileSize(tif));
@@ -390,17 +390,17 @@ static int tiffWriteContigTiledData(TIFF* tif, uint8* data, uint32 width,
     tsize_t scanlineSize = TIFFScanlineSize(tif);
     tsize_t tileRowSize = TIFFTileRowSize(tif);
 
-    uint32 y;
+    uint32_t y;
     for (y = 0; y < height; y += tileHeight) {
 
         // Number of rows in these tiles that are visible
-        uint32 numRows = y+tileHeight > height? height-y: tileHeight;
+        uint32_t numRows = y+tileHeight > height? height-y: tileHeight;
 
         // Size of the offset from the first column of the image to the
         // first column of the tile.
         tsize_t byteOffset = 0;
 
-        uint32 x;
+        uint32_t x;
         for (x = 0; x < width; x += tileWidth) {
 
             // The size in bytes of the visible portion of each row
@@ -408,7 +408,7 @@ static int tiffWriteContigTiledData(TIFF* tif, uint8* data, uint32 width,
                               scanlineSize-byteOffset: tileRowSize;
 
             // Copy each tile row into the tile buffer one row at a time.
-            uint32 i;
+            uint32_t i;
             for (i = 0; i < numRows; ++i) {
                 memcpy(tileBuf+i*tileRowSize,
                        data+i*scanlineSize+byteOffset,
