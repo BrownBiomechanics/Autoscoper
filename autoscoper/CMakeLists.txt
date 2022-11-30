@@ -120,6 +120,7 @@ elseif(Autoscoper_RENDERING_BACKEND STREQUAL "OpenCL")
   set(GPU_LIBRARIES
     ${OpenCL_LIBRARIES}
   )
+  target_compile_definitions (libautoscoper PRIVATE CL_TARGET_OPENCL_VERSION=120)
 else()
   message(FATAL_ERROR "Setting Autoscoper_RENDERING_BACKEND to '${Autoscoper_RENDERING_BACKEND}' is not supported")
 endif()
