@@ -42,19 +42,10 @@
 #ifndef XROMM_HPP
 #define XROMM_HPP
 
+#include <CL/opencl.hpp>
+
 #include <iostream>
 #include <vector>
-
-#if defined(__APPLE__) || defined(__MACOSX)
-#include <OpenCL/opencl.h>
-#include <OpenGL/OpenGL.h>
-#else
-#if defined(_WIN32)
-#include <windows.h>
-#endif
-#include <CL/opencl.h>
-#include <GL/gl.h>
-#endif
 
 namespace xromm { namespace gpu {
 
