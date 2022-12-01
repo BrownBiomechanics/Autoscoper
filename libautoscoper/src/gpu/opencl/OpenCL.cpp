@@ -701,7 +701,7 @@ cl_int opencl_global_context()
   return CL_SUCCESS;
 }
 
-Kernel::Kernel(cl_program program, const char* func)
+Kernel::Kernel(const cl::Program& program, const char* func)
 {
   err_ = opencl_global_context();
   CHECK_CL
@@ -881,44 +881,18 @@ void Kernel::setArg(cl_uint i, size_t size, const void* value)
   CHECK_CL
 }
 
-Program::Program() { compiled_ = false; }
-
 Kernel* Program::compile(const char* code, const char* func)
 {
   if (!compiled_)
   {
-    err_ = opencl_global_context();
-    CHECK_CL
-
-    size_t len = strlen(code);
-    program_ = clCreateProgramWithSource(context_, 1, &code, &len, &err_);
-    CHECK_CL
-
-    err_ = clBuildProgram(program_, 1, devices_, NULL, NULL, NULL);
-    if (err_ == CL_BUILD_PROGRAM_FAILURE) {
-      size_t log_size;
-      err_ = clGetProgramBuildInfo(
-          program_, devices_[0], CL_PROGRAM_BUILD_LOG,
-          0, NULL, &log_size);
-      CHECK_CL
-      char* build_log = (char*)malloc(log_size+1);
-      if (!build_log) ERROR("malloc for build log");
-      err_ = clGetProgramBuildInfo(
-          program_, devices_[0], CL_PROGRAM_BUILD_LOG,
-          log_size, build_log, NULL);
-      CHECK_CL
-      build_log[log_size] = '\0';
+    if (program_.compile(code) != CL_SUCCESS)
+    {
       cerr << "OpenCL build failure for kernel function '" << func
-           << "':\n" << build_log << endl;
-      free(build_log);
+           << "':\n" << program_.getBuildInfo<CL_PROGRAM_BUILD_LOG>() << endl;
       exit(1);
-    } else {
-      CHECK_CL
     }
-
     compiled_ = true;
   }
-
   return new Kernel(program_, func);
 }
 

@@ -65,7 +65,7 @@ class Image;
 class Kernel
 {
 public:
-  Kernel(cl_program program, const char* func);
+  Kernel(const cl::Program& program, const char* func);
   void reset();
 
   static size_t getLocalMemSize();
@@ -105,7 +105,7 @@ public:
   Program();
     Kernel* compile(const char* code, const char* func);
 protected:
-  cl_program program_;
+  cl::Program program_;
   bool compiled_;
 };
 
