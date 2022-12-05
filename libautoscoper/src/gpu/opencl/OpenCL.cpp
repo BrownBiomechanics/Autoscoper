@@ -178,6 +178,14 @@ static const char* opencl_error(cl_int err)
     case CL_INVALID_LINKER_OPTIONS: return "CL_INVALID_LINKER_OPTIONS";
     case CL_INVALID_DEVICE_PARTITION_COUNT: return "CL_INVALID_DEVICE_PARTITION_COUNT";
 #endif
+#ifdef CL_VERSION_2_0
+    case CL_INVALID_PIPE_SIZE: return "CL_INVALID_PIPE_SIZE";
+    case CL_INVALID_DEVICE_QUEUE: return "CL_INVALID_DEVICE_QUEUE";
+#endif
+#ifdef CL_VERSION_2_2
+    case CL_INVALID_SPEC_ID: return "CL_INVALID_SPEC_ID";
+    case CL_MAX_SIZE_RESTRICTION_EXCEEDED: return "CL_MAX_SIZE_RESTRICTION_EXCEEDED";
+#endif
     default: return "Unknown";
     }
 }
@@ -693,7 +701,7 @@ cl_int opencl_global_context()
   return CL_SUCCESS;
 }
 
-Kernel::Kernel(cl_program program, const char* func)
+Kernel::Kernel(const cl::Program& program, const char* func)
 {
   err_ = opencl_global_context();
   CHECK_CL
@@ -873,44 +881,18 @@ void Kernel::setArg(cl_uint i, size_t size, const void* value)
   CHECK_CL
 }
 
-Program::Program() { compiled_ = false; }
-
 Kernel* Program::compile(const char* code, const char* func)
 {
   if (!compiled_)
   {
-    err_ = opencl_global_context();
-    CHECK_CL
-
-    size_t len = strlen(code);
-    program_ = clCreateProgramWithSource(context_, 1, &code, &len, &err_);
-    CHECK_CL
-
-    err_ = clBuildProgram(program_, 1, devices_, NULL, NULL, NULL);
-    if (err_ == CL_BUILD_PROGRAM_FAILURE) {
-      size_t log_size;
-      err_ = clGetProgramBuildInfo(
-          program_, devices_[0], CL_PROGRAM_BUILD_LOG,
-          0, NULL, &log_size);
-      CHECK_CL
-      char* build_log = (char*)malloc(log_size+1);
-      if (!build_log) ERROR("malloc for build log");
-      err_ = clGetProgramBuildInfo(
-          program_, devices_[0], CL_PROGRAM_BUILD_LOG,
-          log_size, build_log, NULL);
-      CHECK_CL
-      build_log[log_size] = '\0';
+    if (program_.compile(code) != CL_SUCCESS)
+    {
       cerr << "OpenCL build failure for kernel function '" << func
-           << "':\n" << build_log << endl;
-      free(build_log);
+           << "':\n" << program_.getBuildInfo<CL_PROGRAM_BUILD_LOG>() << endl;
       exit(1);
-    } else {
-      CHECK_CL
     }
-
     compiled_ = true;
   }
-
   return new Kernel(program_, func);
 }
 
@@ -986,7 +968,7 @@ void Buffer::fill(const float val) const
 #endif
 }
 
-GLBuffer::GLBuffer(GLuint pbo, cl_mem_flags access)
+GLBuffer::GLBuffer(cl_GLuint pbo, cl_mem_flags access)
 {
   err_ = opencl_global_context();
   CHECK_CL

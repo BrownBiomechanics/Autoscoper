@@ -42,19 +42,10 @@
 #ifndef XROMM_HPP
 #define XROMM_HPP
 
+#include <CL/opencl.hpp>
+
 #include <iostream>
 #include <vector>
-
-#if defined(__APPLE__) || defined(__MACOSX)
-#include <OpenCL/opencl.h>
-#include <OpenGL/OpenGL.h>
-#else
-#if defined(_WIN32)
-#include <windows.h>
-#endif
-#include <CL/opencl.h>
-#include <GL/gl.h>
-#endif
 
 namespace xromm { namespace gpu {
 
@@ -74,7 +65,7 @@ class Image;
 class Kernel
 {
 public:
-  Kernel(cl_program program, const char* func);
+  Kernel(const cl::Program& program, const char* func);
   void reset();
 
   static size_t getLocalMemSize();
@@ -114,7 +105,7 @@ public:
   Program();
     Kernel* compile(const char* code, const char* func);
 protected:
-  cl_program program_;
+  cl::Program program_;
   bool compiled_;
 };
 
@@ -140,7 +131,7 @@ protected:
 class GLBuffer
 {
 public:
-  GLBuffer(GLuint pbo, cl_mem_flags access=CL_MEM_READ_WRITE);
+  GLBuffer(cl_GLuint pbo, cl_mem_flags access=CL_MEM_READ_WRITE);
   ~GLBuffer();
   friend class Kernel;
 protected:

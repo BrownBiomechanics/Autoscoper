@@ -116,11 +116,19 @@ if(Autoscoper_RENDERING_BACKEND STREQUAL "CUDA")
   )
 elseif(Autoscoper_RENDERING_BACKEND STREQUAL "OpenCL")
   find_package(OpenCL ${Autoscoper_OpenCL_MINIMUM_REQUIRED_VERSION} REQUIRED)
-  target_include_directories(autoscoper PUBLIC ${OPENCL_INCLUDE_DIRS})
+  find_package(OpenCLHeaders REQUIRED)
+  find_package(OpenCLHeadersCpp REQUIRED)
+  #target_include_directories(autoscoper PUBLIC ${OPENCL_INCLUDE_DIRS})
   set(GPU_LIBRARIES
     ${OpenCL_LIBRARIES}
+    OpenCL::HeadersCpp
   )
-  target_compile_definitions(autoscoper PRIVATE CL_TARGET_OPENCL_VERSION=${Autoscoper_CL_TARGET_OPENCL_VERSION})
+  target_compile_definitions(autoscoper PRIVATE
+    CL_TARGET_OPENCL_VERSION=${Autoscoper_CL_TARGET_OPENCL_VERSION}
+    CL_HPP_TARGET_OPENCL_VERSION=${Autoscoper_CL_TARGET_OPENCL_VERSION}
+    CL_HPP_MINIMUM_OPENCL_VERSION=${Autoscoper_CL_TARGET_OPENCL_VERSION}
+    CL_HPP_ENABLE_EXCEPTIONS
+  )
 else()
   message(FATAL_ERROR "Setting Autoscoper_RENDERING_BACKEND to '${Autoscoper_RENDERING_BACKEND}' is not supported")
 endif()

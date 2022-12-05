@@ -40,11 +40,21 @@ if(Autoscoper_RENDERING_BACKEND STREQUAL "CUDA")
   target_include_directories(libautoscoper PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/cuda/cutil)
 elseif(Autoscoper_RENDERING_BACKEND STREQUAL "OpenCL")
   find_package(OpenCL ${Autoscoper_OpenCL_MINIMUM_REQUIRED_VERSION} REQUIRED)
+  find_package(OpenCLHeaders REQUIRED)
+  find_package(OpenCLHeadersCpp REQUIRED)
   include(${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/opencl/CMakeLists.txt)
   add_library(libautoscoper STATIC ${libautoscoper_SOURCES} ${libautoscoper_HEADERS} ${opencl_SOURCES} ${opencl_HEADERS})
-  target_include_directories(libautoscoper PUBLIC  ${OpenCL_INCLUDE_DIRS})
+  #target_include_directories(libautoscoper PUBLIC  ${OpenCL_INCLUDE_DIRS})
   add_dependencies(libautoscoper ${SHADER_TO_HEADER})
-  target_compile_definitions(libautoscoper PRIVATE CL_TARGET_OPENCL_VERSION=${Autoscoper_CL_TARGET_OPENCL_VERSION})
+  target_link_libraries(libautoscoper PUBLIC
+    OpenCL::HeadersCpp
+  )
+  target_compile_definitions(libautoscoper PRIVATE
+    CL_TARGET_OPENCL_VERSION=${Autoscoper_CL_TARGET_OPENCL_VERSION}
+    CL_HPP_TARGET_OPENCL_VERSION=${Autoscoper_CL_TARGET_OPENCL_VERSION}
+    CL_HPP_MINIMUM_OPENCL_VERSION=${Autoscoper_CL_TARGET_OPENCL_VERSION}
+    CL_HPP_ENABLE_EXCEPTIONS
+  )
 else()
   message(FATAL_ERROR "Setting Autoscoper_RENDERING_BACKEND to '${Autoscoper_RENDERING_BACKEND}' is not supported")
 endif()
