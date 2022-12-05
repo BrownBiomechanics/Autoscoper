@@ -362,3 +362,41 @@ def closeConnection(s):
     b.append(0xFF)
     s.sendall(b)
     wait_for_server(s)
+
+
+def trackingDialog(s,volume, start_frame, end_frame, frame_skip=1, repeats=1, max_itr=1000, min_lim=-3.0, max_lim=3.0, max_stall_itr=25):
+    """
+    Automatically tracks the volume accross the given frames.
+
+    Currently using previous frame for intial guess.
+
+    :param s: The socket connection to the server
+    :type s: socket.socket
+    :param volume: The id of the volume to be tracked
+    :type volume: int
+    :param start_frame: The frame to start the tracking on
+    :type start_frame: int
+    :param end_frame: The frame to end the tracking on
+    :type end_frame: int
+    :param frame_skip: The amount of frames to skip over during tracking
+    :type frame_skip: int
+    :param repeats: The number of times to repeat the optimization
+    :type repeats: int
+    :param max_itr: The maximum number of iterations to run
+    :type max_itr: int
+    :param min_lim: The minimum limit of the optimization
+    :type min_lim: float
+    :param max_lim: The maximum limit of the optimization
+    :type max_lim: float
+    :param max_stall_itr: The maximum number of iterations to stall
+    :type max_stall_itr: int
+    """
+    print(f"Automated tracking of volume {volume} from frame {start_frame} to {end_frame}.\n")
+    for frame in range(start_frame, end_frame,frame_skip):
+        print(f"Beginning track for frame {frame}.")
+        setFrame(s=s,frame=frame)
+        if frame != 0:
+            pose = getPose(s=s,volume=volume,frame=frame)
+            setPose(s=s,volume=volume,frame=frame,pose=pose)
+        optimizeFrame(s=s,volume=volume,frame=frame,repeats=repeats,max_itr=max_itr,min_lim=min_lim,max_lim=max_lim,max_stall_itr=max_stall_itr)
+
