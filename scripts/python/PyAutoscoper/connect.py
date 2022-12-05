@@ -1,402 +1,477 @@
-import socket, struct
+import socket, struct, os
 
 
-def wait_for_server(s):
-    while True:
-        data = s.recv(1024)
-        if data:
-            return data
+class AutoscoperConnection:
+    def __init__(self, address="127.0.0.1", verbose=False) -> None:
+        self.address = address
+        self.verbose = verbose
+        self.socket = self.openConnection()
 
+    def wait_for_server(self):
+        """
+        Internal function, should not be called by a user.
 
-def openConnection(address):
-    """
-    Open a tcp connection to the given address and port.
+        Waits for the server response after sending a message
+        """
+        while True:
+            data = self.socket.recv(1024)
+            if data:
+                return data
 
-    :param address: The address to connect to
-    :type address: str
-    """
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((address, 30007))
-    return s
+    def openConnection(self):
+        """
+        Internal function, should not be called by a user.
 
+        Open a tcp connection to the given address and port.
 
-def loadTrial(s, trial_file):
-    """
-    Load a trial file into the PyAutoscoper server.
+        Called automatically upon init.
+        """
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((self.address, 30007))
+        return s
 
-    :param s: The socket connection to the server
-    :type s: socket.socket
-    :param trial_file: The path to the trial file to load
-    :type trial_file: str
-    """
-    b = bytearray()
-    b.append(0x01)
-    b.extend(trial_file.encode("utf-8"))
-    s.sendall(b)
-    wait_for_server(s)
+    def loadTrial(self, trial_file):
+        """
+        Load a trial file into the PyAutoscoper server.
 
+        :param trial_file: The path to the trial file to load
+        :type trial_file: str
+        :raises Exception: If the trial file is not found, or If the server fails to load the trial file
+        """
+        if self.verbose:
+            print(f"Loading trial file: {trial_file}")
+        if not os.path.exists(trial_file):
+            self.closeConnection()
+            raise Exception("Trial file not found")
+        b = bytearray()
+        b.append(0x01)
+        b.extend(trial_file.encode("utf-8"))
+        self.socket.sendall(b)
+        res = self.wait_for_server()
+        if int.from_bytes(res, byteorder="little", signed=False) != 0x01:
+            self.closeConnection()
+            raise Exception("Server Error loading trial file")
 
-def loadTrackingData(
-    s,
-    volume,
-    tracking_data,
-    save_as_matrix=True,
-    save_as_rows=True,
-    save_with_commas=True,
-    convert_to_cm=False,
-    convert_to_rad=False,
-    interpolate=False,
-):
-    """
-    Load tracking data into the PyAutoscoper server.
+    def loadTrackingData(
+        self,
+        volume,
+        tracking_data,
+        save_as_matrix=True,
+        save_as_rows=True,
+        save_with_commas=True,
+        convert_to_cm=False,
+        convert_to_rad=False,
+        interpolate=False,
+    ):
+        """
+        Load tracking data into the PyAutoscoper server.
 
-    :param s: The socket connection to the server
-    :type s: socket.socket
-    :param volume: The volume to load the tracking data into
-    :type volume: int
-    :param tracking_data: The path to the tracking data to load
-    :type tracking_data: str
-    :param save_as_matrix: Optional - If true, the tracking data will be saved as a 4 by 4 matrix. If false, the tracking data will be saved in xyz roll pitch yaw format. Defaults to true.
-    :type save_as_matrix: bool
-    :param save_as_rows: Optional - If true, the tracking data will be saved as rows. If false, the tracking data will be saved as columns. Defaults to true.
-    :type save_as_rows: bool
-    :param save_with_commas: Optional - If true, the tracking data will be saved with commas. If false, the tracking data will be saved with spaces. Defaults to true.
-    :type save_with_commas: bool
-    :param convert_to_cm: Optional - If true, the tracking data will be converted to cm. If false, the tracking data will be saved in mm. Defaults to false.
-    :type convert_to_cm: bool
-    :param convert_to_rad: Optional - If true, the tracking data will be converted to radians. If false, the tracking data will be saved in degrees. Defaults to false.
-    :type convert_to_rad: bool
-    :param interpolate: Optional - If true, the tracking data will be interpolated using the spline method. If false, the tracking data will be saved as is (with NaN values). Defaults to false.
-    :type interpolate: bool
-    """
-    b = bytearray()
-    b.append(0x02)
-    b.extend(volume.to_bytes(4, byteorder="little", signed=False))
-    b.extend((int(save_as_matrix)).to_bytes(4, byteorder="little", signed=False))
-    b.extend((int(save_as_rows)).to_bytes(4, byteorder="little", signed=False))
-    b.extend((int(save_with_commas)).to_bytes(4, byteorder="little", signed=False))
-    b.extend((int(convert_to_cm)).to_bytes(4, byteorder="little", signed=False))
-    b.extend((int(convert_to_rad)).to_bytes(4, byteorder="little", signed=False))
-    b.extend((int(interpolate)).to_bytes(4, byteorder="little", signed=False))
-    b.extend(tracking_data.encode("utf-8"))
-    s.sendall(b)
-    wait_for_server(s)
+        :param volume: The volume to load the tracking data into
+        :type volume: int
+        :param tracking_data: The path to the tracking data to load
+        :type tracking_data: str
+        :param save_as_matrix: Optional - If true, the tracking data will be saved as a 4 by 4 matrix. If false, the tracking data will be saved in xyz roll pitch yaw format. Defaults to true.
+        :type save_as_matrix: bool
+        :param save_as_rows: Optional - If true, the tracking data will be saved as rows. If false, the tracking data will be saved as columns. Defaults to true.
+        :type save_as_rows: bool
+        :param save_with_commas: Optional - If true, the tracking data will be saved with commas. If false, the tracking data will be saved with spaces. Defaults to true.
+        :type save_with_commas: bool
+        :param convert_to_cm: Optional - If true, the tracking data will be converted to cm. If false, the tracking data will be saved in mm. Defaults to false.
+        :type convert_to_cm: bool
+        :param convert_to_rad: Optional - If true, the tracking data will be converted to radians. If false, the tracking data will be saved in degrees. Defaults to false.
+        :type convert_to_rad: bool
+        :param interpolate: Optional - If true, the tracking data will be interpolated using the spline method. If false, the tracking data will be saved as is (with NaN values). Defaults to false.
+        :type interpolate: bool
+        :raises Exception: If the tracking data file is not found, or If the server fails to load the tracking data
+        """
+        if self.verbose:
+            print(f"Loading tracking data: {tracking_data}")
+        if not os.path.exists(tracking_data):
+            self.closeConnection()
+            raise Exception("Tracking data file not found")
+        b = bytearray()
+        b.append(0x02)
+        b.extend(volume.to_bytes(4, byteorder="little", signed=False))
+        b.extend((int(save_as_matrix)).to_bytes(4, byteorder="little", signed=False))
+        b.extend((int(save_as_rows)).to_bytes(4, byteorder="little", signed=False))
+        b.extend((int(save_with_commas)).to_bytes(4, byteorder="little", signed=False))
+        b.extend((int(convert_to_cm)).to_bytes(4, byteorder="little", signed=False))
+        b.extend((int(convert_to_rad)).to_bytes(4, byteorder="little", signed=False))
+        b.extend((int(interpolate)).to_bytes(4, byteorder="little", signed=False))
+        b.extend(tracking_data.encode("utf-8"))
+        self.socket.sendall(b)
+        res = self.wait_for_server()
+        if int.from_bytes(res, byteorder="little", signed=False) != 0x02:
+            self.closeConnection()
+            raise Exception("Server Error loading tracking data")
 
+    def saveTracking(
+        self,
+        volume,
+        tracking_file,
+        save_as_matrix=True,
+        save_as_rows=True,
+        save_with_commas=True,
+        convert_to_cm=False,
+        convert_to_rad=False,
+        interpolate=False,
+    ):
+        """
+        Save tracking data from the PyAutoscoper server.
 
-def saveTracking(
-    s,
-    volume,
-    tracking_file,
-    save_as_matrix=True,
-    save_as_rows=True,
-    save_with_commas=True,
-    convert_to_cm=False,
-    convert_to_rad=False,
-    interpolate=False,
-):
-    """
-    Save tracking data from the PyAutoscoper server.
+        :param volume: The volume to save the tracking data from
+        :type volume: int
+        :param tracking_file: The path to the tracking data to save
+        :type tracking_file: str
+        :param save_as_matrix: Optional - If true, the tracking data will be saved as a 4 by 4 matrix. If false, the tracking data will be saved in xyz roll pitch yaw format. Defaults to true.
+        :type save_as_matrix: bool
+        :param save_as_rows: Optional - If true, the tracking data will be saved as rows. If false, the tracking data will be saved as columns. Defaults to true.
+        :type save_as_rows: bool
+        :param save_with_commas: Optional - If true, the tracking data will be saved with commas. If false, the tracking data will be saved with spaces. Defaults to true.
+        :type save_with_commas: bool
+        :param convert_to_cm: Optional - If true, the tracking data will be converted to cm. If false, the tracking data will be saved in mm. Defaults to false.
+        :type convert_to_cm: bool
+        :param convert_to_rad: Optional - If true, the tracking data will be converted to radians. If false, the tracking data will be saved in degrees. Defaults to false.
+        :type convert_to_rad: bool
+        :param interpolate: Optional - If true, the tracking data will be interpolated using the spline method. If false, the tracking data will be saved as is (with NaN values). Defaults to false.
+        :type interpolate: bool
+        :raises Exception: If the server fails to save the tracking data
+        """
+        if self.verbose:
+            print(f"Saving tracking data: {tracking_file}")
+        b = bytearray()
+        b.append(0x03)
+        b.extend(volume.to_bytes(4, byteorder="little", signed=False))
+        b.extend((int(save_as_matrix)).to_bytes(4, byteorder="little", signed=False))
+        b.extend((int(save_as_rows)).to_bytes(4, byteorder="little", signed=False))
+        b.extend((int(save_with_commas)).to_bytes(4, byteorder="little", signed=False))
+        b.extend((int(convert_to_cm)).to_bytes(4, byteorder="little", signed=False))
+        b.extend((int(convert_to_rad)).to_bytes(4, byteorder="little", signed=False))
+        b.extend((int(interpolate)).to_bytes(4, byteorder="little", signed=False))
+        b.extend(tracking_file.encode("utf-8"))
+        self.socket.sendall(b)
+        res = self.wait_for_server()
+        if int.from_bytes(res, byteorder="little", signed=False) != 0x03:
+            self.closeConnection()
+            raise Exception("Server Error saving tracking data")
 
-    :param s: The socket connection to the server
-    :type s: socket.socket
-    :param volume: The volume to save the tracking data from
-    :type volume: int
-    :param tracking_file: The path to the tracking data to save
-    :type tracking_file: str
-    :param save_as_matrix: Optional - If true, the tracking data will be saved as a 4 by 4 matrix. If false, the tracking data will be saved in xyz roll pitch yaw format. Defaults to true.
-    :type save_as_matrix: bool
-    :param save_as_rows: Optional - If true, the tracking data will be saved as rows. If false, the tracking data will be saved as columns. Defaults to true.
-    :type save_as_rows: bool
-    :param save_with_commas: Optional - If true, the tracking data will be saved with commas. If false, the tracking data will be saved with spaces. Defaults to true.
-    :type save_with_commas: bool
-    :param convert_to_cm: Optional - If true, the tracking data will be converted to cm. If false, the tracking data will be saved in mm. Defaults to false.
-    :type convert_to_cm: bool
-    :param convert_to_rad: Optional - If true, the tracking data will be converted to radians. If false, the tracking data will be saved in degrees. Defaults to false.
-    :type convert_to_rad: bool
-    :param interpolate: Optional - If true, the tracking data will be interpolated using the spline method. If false, the tracking data will be saved as is (with NaN values). Defaults to false.
-    :type interpolate: bool
-    """
-    b = bytearray()
-    b.append(0x03)
-    b.extend(volume.to_bytes(4, byteorder="little", signed=False))
-    b.extend((int(save_as_matrix)).to_bytes(4, byteorder="little", signed=False))
-    b.extend((int(save_as_rows)).to_bytes(4, byteorder="little", signed=False))
-    b.extend((int(save_with_commas)).to_bytes(4, byteorder="little", signed=False))
-    b.extend((int(convert_to_cm)).to_bytes(4, byteorder="little", signed=False))
-    b.extend((int(convert_to_rad)).to_bytes(4, byteorder="little", signed=False))
-    b.extend((int(interpolate)).to_bytes(4, byteorder="little", signed=False))
-    b.extend(tracking_file.encode("utf-8"))
-    s.sendall(b)
-    wait_for_server(s)
+    def loadFilters(self, camera, settings_file):
+        """
+        Load filter settings into the PyAutoscoper server.
 
+        :param camera: The camera to load the filter settings into
+        :type camera: int
+        :param settings_file: The path to the filter settings to load
+        :type settings_file: str
+        :raises Exception: If the filter settings file is not found, or If the server fails to load the filter settings
+        """
+        if self.verbose:
+            print(f"Loading filter settings: {settings_file}")
+        if not os.path.exists(settings_file):
+            self.closeConnection()
+            raise Exception("Filter settings file not found")
+        b = bytearray()
+        b.append(0x04)
+        b.extend(camera.to_bytes(4, byteorder="little", signed=False))
+        b.extend(settings_file.encode("utf-8"))
+        self.socket.sendall(b)
+        res = self.wait_for_server()
+        if int.from_bytes(res, byteorder="little", signed=False) != 0x04:
+            self.closeConnection()
+            raise Exception("Server Error loading filter settings")
 
-def loadFilters(s, camera, settings_file):
-    """
-    Load filter settings into the PyAutoscoper server.
+    def setFrame(self, frame):
+        """
+        Set the frame to be used for the next acquisition.
 
-    :param s: The socket connection to the server
-    :type s: socket.socket
-    :param camera: The camera to load the filter settings into
-    :type camera: int
-    :param settings_file: The path to the filter settings to load
-    :type settings_file: str
-    """
-    b = bytearray()
-    b.append(0x04)
-    b.extend(camera.to_bytes(4, byteorder="little", signed=False))
-    b.extend(settings_file.encode("utf-8"))
-    s.sendall(b)
-    wait_for_server(s)
+        :param frame: The frame to be used for the next acquisition
+        :type frame: int
+        :raises Exception: If the server fails to set the frame
+        """
+        if self.verbose:
+            print(f"Setting frame: {frame}")
+        b = bytearray()
+        b.append(0x05)
+        b.extend(frame.to_bytes(4, byteorder="little", signed=False))
+        self.socket.sendall(b)
+        res = self.wait_for_server()
+        if int.from_bytes(res, byteorder="little", signed=False) != 0x05:
+            self.closeConnection()
+            raise Exception("Server Error setting frame")
 
+    def getPose(self, volume, frame):
+        """
+        Get the pose of the volume at the specified frame.
 
-def setFrame(s, frame):
-    """
-    Set the frame to be used for the next acquisition.
+        :param volume: The volume to get the pose of
+        :type volume: int
+        :param frame: The frame to get the pose at
+        :type frame: int
+        :return: The pose of the volume at the specified frame
+        :rtype: list[float]
+        :raises Exception: If the server fails to get the pose
+        """
+        if self.verbose:
+            print(f"Getting pose for volume {volume} on frame {frame}")
+        b = bytearray()
+        b.append(0x06)
+        b.extend(volume.to_bytes(4, byteorder="little", signed=False))
+        b.extend(frame.to_bytes(4, byteorder="little", signed=False))
+        self.socket.sendall(b)
+        data = self.wait_for_server()
+        print(data[0])
+        if data[0] != 0x06:
+            self.closeConnection()
+            raise Exception("Server Error getting pose")
+        data = bytearray(data)
+        return [
+            struct.unpack("d", data[1:9])[0],
+            struct.unpack("d", data[9:17])[0],
+            struct.unpack("d", data[17:25])[0],
+            struct.unpack("d", data[25:33])[0],
+            struct.unpack("d", data[33:41])[0],
+            struct.unpack("d", data[41:49])[0],
+        ]
 
-    :param s: The socket connection to the server
-    :type s: socket.socket
-    :param frame: The frame to be used for the next acquisition
-    :type frame: int
-    """
-    b = bytearray()
-    b.append(0x05)
-    b.extend(frame.to_bytes(4, byteorder="little", signed=False))
-    s.sendall(b)
-    wait_for_server(s)
+    def setPose(self, volume, frame, pose):
+        """
+        Set the pose of the volume at the specified frame.
 
+        :param volume: The volume to set the pose of
+        :type volume: int
+        :param frame: The frame to set the pose at
+        :type frame: int
+        :param pose: The pose to set the volume to
+        :type pose: list[float]
+        :raises Exception: If the server fails to set the pose
+        """
+        if self.verbose:
+            print(f"Setting pose {pose} for volume {volume} on frame {frame}")
+        b = bytearray()
+        b.append(0x07)
+        b.extend(volume.to_bytes(4, byteorder="little", signed=False))
+        b.extend(frame.to_bytes(4, byteorder="little", signed=False))
+        b.extend(struct.pack("d", pose[0]))
+        b.extend(struct.pack("d", pose[1]))
+        b.extend(struct.pack("d", pose[2]))
+        b.extend(struct.pack("d", pose[3]))
+        b.extend(struct.pack("d", pose[4]))
+        b.extend(struct.pack("d", pose[5]))
+        self.socket.sendall(b)
+        res = self.wait_for_server()
+        if int.from_bytes(res, byteorder="little", signed=False) != 0x07:
+            self.closeConnection()
+            raise Exception("Server Error setting pose")
 
-def getPose(s, volume, frame):
-    """
-    Get the pose of the volume at the specified frame.
+    def getNCC(self, volume, pose):
+        """
+        Get the normalized cross correlation of the volume at the specified pose.
 
-    :param s: The socket connection to the server
-    :type s: socket.socket
-    :param volume: The volume to get the pose of
-    :type volume: int
-    :param frame: The frame to get the pose at
-    :type frame: int
-    :return: The pose of the volume at the specified frame
-    :rtype: list[float]
-    """
-    b = bytearray()
-    b.append(0x06)
-    b.extend(volume.to_bytes(4, byteorder="little", signed=False))
-    b.extend(frame.to_bytes(4, byteorder="little", signed=False))
-    s.sendall(b)
-    data = wait_for_server(s)
-    data = bytearray(data)
-    return [
-        struct.unpack("d", data[1:9])[0],
-        struct.unpack("d", data[9:17])[0],
-        struct.unpack("d", data[17:25])[0],
-        struct.unpack("d", data[25:33])[0],
-        struct.unpack("d", data[33:41])[0],
-        struct.unpack("d", data[41:49])[0],
-    ]
+        :param volume: The volume to get the NCC of
+        :type volume: int
+        :param pose: The pose to get the NCC at
+        :type pose: list[float]
+        :return: The NCC of the volume at the specified pose
+        :rtype: list[float]
+        :raises Exception: If the server fails to get the NCC
+        """
+        if self.verbose:
+            print(f"Getting NCC for volume {volume} on pose {pose}")
+        b = bytearray()
+        b.append(0x08)
+        b.extend(volume.to_bytes(4, byteorder="little", signed=False))
+        b.extend(struct.pack("d", pose[0]))
+        b.extend(struct.pack("d", pose[1]))
+        b.extend(struct.pack("d", pose[2]))
+        b.extend(struct.pack("d", pose[3]))
+        b.extend(struct.pack("d", pose[4]))
+        b.extend(struct.pack("d", pose[5]))
+        self.socket.sendall(b)
+        data = self.wait_for_server()
+        if data[0] != 0x08:
+            self.closeConnection()
+            raise Exception("Server Error getting NCC")
+        data = bytearray(data)
+        ncc = []
+        for i in range(0, 2):
+            val = data[2 + (i) * 8 : 10 + (i) * 8]
+            ncc.append(struct.unpack("d", val)[0])
+        return ncc
 
+    def setBackground(self, threshold):
+        """
+        Set the background threshold.
 
-def setPose(s, volume, frame, pose):
-    """
-    Set the pose of the volume at the specified frame.
+        :param threshold: The background threshold
+        :type threshold: float
+        :raises Exception: If the server fails to set the background threshold
+        """
+        if self.verbose:
+            print(f"Setting background threshold: {threshold}")
+        b = bytearray()
+        b.append(0x09)
+        b.extend(struct.pack("d", threshold))
+        self.socket.sendall(b)
+        res = self.wait_for_server()
+        if int.from_bytes(res, byteorder="little", signed=False) != 0x09:
+            self.closeConnection()
+            raise Exception("Server Error setting background threshold")
 
-    :param s: The socket connection to the server
-    :type s: socket.socket
-    :param volume: The volume to set the pose of
-    :type volume: int
-    :param frame: The frame to set the pose at
-    :type frame: int
-    :param pose: The pose to set the volume to
-    :type pose: list[float]
-    """
-    b = bytearray()
-    b.append(0x07)
-    b.extend(volume.to_bytes(4, byteorder="little", signed=False))
-    b.extend(frame.to_bytes(4, byteorder="little", signed=False))
-    b.extend(struct.pack("d", pose[0]))
-    b.extend(struct.pack("d", pose[1]))
-    b.extend(struct.pack("d", pose[2]))
-    b.extend(struct.pack("d", pose[3]))
-    b.extend(struct.pack("d", pose[4]))
-    b.extend(struct.pack("d", pose[5]))
-    s.sendall(b)
-    wait_for_server(s)
+    def getImageCropped(self, volume, camera, pose):
+        """
+        Get the cropped image of the volume at the specified pose.
 
+        :param volume: The volume to get the image of
+        :type volume: int
+        :param camera: The camera to get the image from
+        :type camera: int
+        :param pose: The pose to get the image at
+        :type pose: list[float]
+        :return: The cropped image of the volume at the specified pose
+        :rtype: list[float]
+        :raises Exception: If the server fails to get the image
+        """
+        if self.verbose:
+            print(
+                f"Getting image for volume {volume} on pose {pose} from camera {camera}"
+            )
+        b = bytearray()
+        b.append(0x0A)
+        b.extend(volume.to_bytes(4, byteorder="little", signed=False))
+        b.extend(camera.to_bytes(4, byteorder="little", signed=False))
+        b.extend(struct.pack("d", pose[0]))
+        b.extend(struct.pack("d", pose[1]))
+        b.extend(struct.pack("d", pose[2]))
+        b.extend(struct.pack("d", pose[3]))
+        b.extend(struct.pack("d", pose[4]))
+        b.extend(struct.pack("d", pose[5]))
+        self.socket.sendall(b)
+        data = self.wait_for_server()
+        if data[0] != 0x0A:
+            self.closeConnection()
+            raise Exception("Server Error getting image")
+        data = bytearray(data)
+        width = struct.unpack("i", data[1:5])[0]
+        height = struct.unpack("i", data[5:9])[0]
+        img_data = data[9:]
+        return [width, height, img_data]
 
-def getNCC(s, volume, pose):
-    """
-    Get the normalized cross correlation of the volume at the specified pose.
+    def optimizeFrame(
+        self, volume, frame, repeats, max_itr, min_lim, max_lim, max_stall_itr
+    ):
+        """
+        Optimize the pose of the volume at the specified frame.
 
-    :param s: The socket connection to the server
-    :type s: socket.socket
-    :param volume: The volume to get the NCC of
-    :type volume: int
-    :param pose: The pose to get the NCC at
-    :type pose: list[float]
-    :return: The NCC of the volume at the specified pose
-    :rtype: float
-    """
-    b = bytearray()
-    b.append(0x08)
-    b.extend(volume.to_bytes(4, byteorder="little", signed=False))
-    b.extend(struct.pack("d", pose[0]))
-    b.extend(struct.pack("d", pose[1]))
-    b.extend(struct.pack("d", pose[2]))
-    b.extend(struct.pack("d", pose[3]))
-    b.extend(struct.pack("d", pose[4]))
-    b.extend(struct.pack("d", pose[5]))
-    s.sendall(b)
-    data = wait_for_server(s)
-    data = bytearray(data)
-    ncc = []
-    for i in range(0, 2):
-        val = data[2 + (i) * 8 : 10 + (i) * 8]
-        ncc.append(struct.unpack("d", val)[0])
-    return ncc
+        :param volume: The volume to optimize
+        :type volume: int
+        :param frame: The frame to optimize
+        :type frame: int
+        :param repeats: The number of times to repeat the optimization
+        :type repeats: int
+        :param max_itr: The maximum number of iterations to run
+        :type max_itr: int
+        :param min_lim: The minimum limit of the optimization
+        :type min_lim: float
+        :param max_lim: The maximum limit of the optimization
+        :type max_lim: float
+        :param max_stall_itr: The maximum number of iterations to stall
+        :type max_stall_itr: int
+        :raises Exception: If the server fails to optimize the frame
+        """
+        if self.verbose:
+            print(f"Optimizing volume {volume} on frame {frame}")
+        b = bytearray()
+        b.append(0x0B)
+        b.extend(volume.to_bytes(4, byteorder="little", signed=False))
+        b.extend(frame.to_bytes(4, byteorder="little", signed=False))
+        b.extend(repeats.to_bytes(4, byteorder="little", signed=False))
+        b.extend(max_itr.to_bytes(4, byteorder="little", signed=False))
+        b.extend(struct.pack("d", min_lim))
+        b.extend(struct.pack("d", max_lim))
+        b.extend(max_stall_itr.to_bytes(4, byteorder="little", signed=False))
+        self.socket.sendall(b)
+        res = self.wait_for_server()
+        if int.from_bytes(res, byteorder="little", signed=False) != 0x0B:
+            self.closeConnection()
+            raise Exception("Server Error optimizing frame")
 
+    def saveFullDRR(self):
+        """
+        Save the full DRR.
 
-def setBackground(s, threshold):
-    """
-    Set the background threshold.
+        :raises Exception: If the server fails to save the full DRR
+        """
+        b = bytearray()
+        b.append(0x0C)
+        self.socket.sendall(b)
+        res = self.wait_for_server()
+        if int.from_bytes(res, byteorder="little", signed=False) != 0x0C:
+            self.closeConnection()
+            raise Exception("Server Error saving full DRR")
 
-    :param s: The socket connection to the server
-    :type s: socket.socket
-    :param threshold: The background threshold
-    :type threshold: float
-    """
-    b = bytearray()
-    b.append(0x09)
-    b.extend(struct.pack("d", threshold))
-    s.sendall(b)
-    wait_for_server(s)
+    def closeConnection(self):
+        """
+        Close the connection to the server.
 
+        """
+        b = bytearray()
+        b.append(0xFF)
+        self.socket.sendall(b)
+        res = self.wait_for_server()
+        if int.from_bytes(res, byteorder="little", signed=False) != 0xFF:
+            raise Exception("Server Error closing connection")
 
-def getImageCropped(s, volume, camera, pose):
-    """
-    Get the cropped image of the volume at the specified pose.
+    def trackingDialog(
+        self,
+        volume,
+        start_frame,
+        end_frame,
+        frame_skip=1,
+        repeats=1,
+        max_itr=1000,
+        min_lim=-3,
+        max_lim=3,
+        max_stall_itr=25,
+    ):
+        """
+        Automatically tracks the volume accross the given frames.
 
-    :param s: The socket connection to the server
-    :type s: socket.socket
-    :param volume: The volume to get the image of
-    :type volume: int
-    :param camera: The camera to get the image from
-    :type camera: int
-    :param pose: The pose to get the image at
-    :type pose: list[float]
-    :return: The cropped image of the volume at the specified pose
-    :rtype: list[float]
-    """
-    b = bytearray()
-    b.append(0x0A)
-    b.extend(volume.to_bytes(4, byteorder="little", signed=False))
-    b.extend(camera.to_bytes(4, byteorder="little", signed=False))
-    b.extend(struct.pack("d", pose[0]))
-    b.extend(struct.pack("d", pose[1]))
-    b.extend(struct.pack("d", pose[2]))
-    b.extend(struct.pack("d", pose[3]))
-    b.extend(struct.pack("d", pose[4]))
-    b.extend(struct.pack("d", pose[5]))
-    s.sendall(b)
-    data = wait_for_server(s)
-    data = bytearray(data)
-    width = struct.unpack("i", data[1:5])[0]
-    height = struct.unpack("i", data[5:9])[0]
-    img_data = data[9:]
-    return [width, height, img_data]
+        Currently using previous frame for intial guess.
 
-
-def optimizeFrame(s, volume, frame, repeats, max_itr, min_lim, max_lim, max_stall_itr):
-    """
-    Optimize the pose of the volume at the specified frame.
-
-    :param s: The socket connection to the server
-    :type s: socket.socket
-    :param volume: The volume to optimize
-    :type volume: int
-    :param frame: The frame to optimize
-    :type frame: int
-    :param repeats: The number of times to repeat the optimization
-    :type repeats: int
-    :param max_itr: The maximum number of iterations to run
-    :type max_itr: int
-    :param min_lim: The minimum limit of the optimization
-    :type min_lim: float
-    :param max_lim: The maximum limit of the optimization
-    :type max_lim: float
-    :param max_stall_itr: The maximum number of iterations to stall
-    :type max_stall_itr: int
-    """
-    b = bytearray()
-    b.append(0x0B)
-    b.extend(volume.to_bytes(4, byteorder="little", signed=False))
-    b.extend(frame.to_bytes(4, byteorder="little", signed=False))
-    b.extend(repeats.to_bytes(4, byteorder="little", signed=False))
-    b.extend(max_itr.to_bytes(4, byteorder="little", signed=False))
-    b.extend(struct.pack("d", min_lim))
-    b.extend(struct.pack("d", max_lim))
-    b.extend(max_stall_itr.to_bytes(4, byteorder="little", signed=False))
-    s.sendall(b)
-    wait_for_server(s)
-
-
-def saveFullDRR(s):
-    """
-    Save the full DRR.
-
-    :param s: The socket connection to the server
-    :type s: socket.socket
-    """
-    b = bytearray()
-    b.append(0x0C)
-    s.sendall(b)
-    wait_for_server(s)
-
-
-def closeConnection(s):
-    """
-    Close the connection to the server.
-
-    :param s: The socket connection to the server
-    :type s: socket.socket
-    """
-    b = bytearray()
-    b.append(0xFF)
-    s.sendall(b)
-    wait_for_server(s)
-
-
-def trackingDialog(s,volume, start_frame, end_frame, frame_skip=1, repeats=1, max_itr=1000, min_lim=-3.0, max_lim=3.0, max_stall_itr=25):
-    """
-    Automatically tracks the volume accross the given frames.
-
-    Currently using previous frame for intial guess.
-
-    :param s: The socket connection to the server
-    :type s: socket.socket
-    :param volume: The id of the volume to be tracked
-    :type volume: int
-    :param start_frame: The frame to start the tracking on
-    :type start_frame: int
-    :param end_frame: The frame to end the tracking on
-    :type end_frame: int
-    :param frame_skip: The amount of frames to skip over during tracking
-    :type frame_skip: int
-    :param repeats: The number of times to repeat the optimization
-    :type repeats: int
-    :param max_itr: The maximum number of iterations to run
-    :type max_itr: int
-    :param min_lim: The minimum limit of the optimization
-    :type min_lim: float
-    :param max_lim: The maximum limit of the optimization
-    :type max_lim: float
-    :param max_stall_itr: The maximum number of iterations to stall
-    :type max_stall_itr: int
-    """
-    print(f"Automated tracking of volume {volume} from frame {start_frame} to {end_frame}.\n")
-    for frame in range(start_frame, end_frame,frame_skip):
-        print(f"Beginning track for frame {frame}.")
-        setFrame(s=s,frame=frame)
-        if frame != 0:
-            pose = getPose(s=s,volume=volume,frame=frame)
-            setPose(s=s,volume=volume,frame=frame,pose=pose)
-        optimizeFrame(s=s,volume=volume,frame=frame,repeats=repeats,max_itr=max_itr,min_lim=min_lim,max_lim=max_lim,max_stall_itr=max_stall_itr)
-
+        :param volume: The id of the volume to be tracked
+        :type volume: int
+        :param start_frame: The frame to start the tracking on
+        :type start_frame: int
+        :param end_frame: The frame to end the tracking on
+        :type end_frame: int
+        :param frame_skip: The amount of frames to skip over during tracking
+        :type frame_skip: int
+        :param repeats: The number of times to repeat the optimization
+        :type repeats: int
+        :param max_itr: The maximum number of iterations to run
+        :type max_itr: int
+        :param min_lim: The minimum limit of the optimization
+        :type min_lim: float
+        :param max_lim: The maximum limit of the optimization
+        :type max_lim: float
+        :param max_stall_itr: The maximum number of iterations to stall
+        :type max_stall_itr: int
+        """
+        if self.verbose:
+            print(
+                f"Automated tracking of volume {volume} from frame {start_frame} to {end_frame}.\n"
+            )
+        for frame in range(start_frame, end_frame, frame_skip):
+            self.setFrame(frame=frame)
+            if frame != 0:
+                pose = self.getPose(volume=volume, frame=(frame - 1))
+                self.setPose(volume=volume, frame=frame, pose=pose)
+            self.optimizeFrame(
+                volume=volume,
+                frame=frame,
+                repeats=repeats,
+                max_itr=max_itr,
+                min_lim=min_lim,
+                max_lim=max_lim,
+                max_stall_itr=max_stall_itr,
+            )
