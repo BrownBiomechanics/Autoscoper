@@ -75,6 +75,7 @@ class Kernel
 {
 public:
   Kernel(cl_program program, const char* func);
+  ~Kernel();
   void reset();
 
   static size_t getLocalMemSize();

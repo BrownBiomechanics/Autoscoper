@@ -701,6 +701,10 @@ Kernel::Kernel(cl_program program, const char* func)
   kernel_ = clCreateKernel(program, func, &err_);
   CHECK_CL
 }
+Kernel::~Kernel() {
+    err_ = clReleaseKernel(kernel_);
+    CHECK_CL
+}
 
 void Kernel::reset()
 {
