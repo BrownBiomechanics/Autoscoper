@@ -210,6 +210,7 @@ Tracker::Tracker()
     g_markerless = this;
   optimization_method = 0; // initialize cost function
   cf_model_select = 0; //cost function selector
+  intializeRandom();
 }
 
 Tracker::~Tracker()

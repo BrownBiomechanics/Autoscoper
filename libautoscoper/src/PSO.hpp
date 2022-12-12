@@ -20,6 +20,8 @@ const float c2 = 1.5f;
 
 double PSO_FUNC(double *P);
 
+void intializeRandom();
+
 float getRandom(float low, float high);
 float getRandomClamped();
 float host_fitness_function(float x[]);
