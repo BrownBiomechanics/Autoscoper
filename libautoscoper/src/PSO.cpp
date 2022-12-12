@@ -1,5 +1,6 @@
 #include "PSO.hpp"
 #include <iostream>
+#include <string>
 
 
 // New Particle Swarm Optimization
@@ -14,6 +15,25 @@ float host_fitness_function(float x[])
   double total = PSO_FUNC(xyzypr_manip);
 
   return (float)total;
+}
+
+void intializeRandom()
+{
+  if (char* randomSeed = std::getenv("Autoscoper_RANDOM_SEED")) {
+    try {
+      std::cout << "Setting to Autoscoper_RANDOM_SEED to " << randomSeed << std::endl;
+      unsigned int seed = std::stoi(std::string(randomSeed));
+      srand(seed);
+    }
+    catch (const std::invalid_argument &e) {
+      std::cerr << "Autoscoper_RANDOM_SEED is not a valid integer" << std::endl;
+      exit(1);
+    }
+    catch (const std::out_of_range &e) {
+      std::cerr << "Autoscoper_RANDOM_SEED is out of range" << std::endl;
+      exit(1);
+    }
+  }
 }
 
 float getRandom(float low, float high)
