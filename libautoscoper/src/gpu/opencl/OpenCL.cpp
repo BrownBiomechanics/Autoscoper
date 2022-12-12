@@ -646,7 +646,11 @@ cl_int opencl_global_context()
 
       if (!pfn_clGetGLContextInfoKHR)
       {
+#ifdef CL_VERSION_1_2
+        pfn_clGetGLContextInfoKHR = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddressForPlatform(platforms[used_platform], "clGetGLContextInfoKHR");
+#else
         pfn_clGetGLContextInfoKHR = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddress("clGetGLContextInfoKHR");
+#endif
         if (!pfn_clGetGLContextInfoKHR)
         {
            std::cout << "Failed to query proc address for clGetGLContextInfoKHR." << std::endl;
