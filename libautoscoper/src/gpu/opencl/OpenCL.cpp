@@ -60,6 +60,7 @@ static clGetGLContextInfoKHR_fn pfn_clGetGLContextInfoKHR;
 #else
 #include <GL/glx.h>
 #include <CL/cl_gl.h>
+static clGetGLContextInfoKHR_fn pfn_clGetGLContextInfoKHR;
 #endif
 
 #define TYPE CL_DEVICE_TYPE_GPU
@@ -676,8 +677,22 @@ cl_int opencl_global_context()
       (cl_context_properties)(platforms[used_platform]),
       0 };
 
+      if (!pfn_clGetGLContextInfoKHR)
+      {
+#ifdef CL_VERSION_1_2
+        pfn_clGetGLContextInfoKHR = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddressForPlatform(platforms[used_platform], "clGetGLContextInfoKHR");
+#else
+        pfn_clGetGLContextInfoKHR = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddress("clGetGLContextInfoKHR");
+#endif
+        if (!pfn_clGetGLContextInfoKHR)
+        {
+          std::cout << "Failed to query proc address for clGetGLContextInfoKHR." << std::endl;
+          exit(EXIT_FAILURE);
+        }
+      }
+
       size_t size;
-      clGetGLContextInfoKHR(prop, CL_DEVICES_FOR_GL_CONTEXT_KHR, 10 * sizeof(cl_device_id), devices_, &size);
+      pfn_clGetGLContextInfoKHR(prop, CL_DEVICES_FOR_GL_CONTEXT_KHR, 10 * sizeof(cl_device_id), devices_, &size);
 
       int _count = size / sizeof(cl_device_id);
       if(used_device >= _count) used_device = 0;
