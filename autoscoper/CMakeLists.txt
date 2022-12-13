@@ -108,26 +108,8 @@ set_target_properties(autoscoper PROPERTIES
   ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_LIB_DIR}"
 )
 
-if(Autoscoper_RENDERING_BACKEND STREQUAL "CUDA")
-  find_package(CUDA REQUIRED)
-  target_include_directories(autoscoper PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/cuda/cutil)
-  set(GPU_LIBRARIES
-    ${CUDA_LIBRARIES}
-  )
-elseif(Autoscoper_RENDERING_BACKEND STREQUAL "OpenCL")
-  find_package(OpenCL ${Autoscoper_OpenCL_MINIMUM_REQUIRED_VERSION} REQUIRED)
-  target_include_directories(autoscoper PUBLIC ${OPENCL_INCLUDE_DIRS})
-  set(GPU_LIBRARIES
-    ${OpenCL_LIBRARIES}
-  )
-  target_compile_definitions(autoscoper PRIVATE CL_TARGET_OPENCL_VERSION=${Autoscoper_CL_TARGET_OPENCL_VERSION})
-else()
-  message(FATAL_ERROR "Setting Autoscoper_RENDERING_BACKEND to '${Autoscoper_RENDERING_BACKEND}' is not supported")
-endif()
-
 target_link_libraries(autoscoper PUBLIC libautoscoper
   ${OPENGL_LIBRARIES}
-  ${GPU_LIBRARIES}
   Qt5::Core
   Qt5::Widgets
   Qt5::OpenGL
@@ -139,7 +121,6 @@ target_include_directories(autoscoper PUBLIC
   ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/src
   ../math
-  ../libautoscoper/src
 )
 
 find_package(GLEW REQUIRED CONFIG)
