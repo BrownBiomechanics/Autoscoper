@@ -35,9 +35,12 @@ set(libautoscoper_SOURCES
 if(Autoscoper_RENDERING_BACKEND STREQUAL "CUDA")
   find_package(CUDA REQUIRED)
   include(${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/cuda/CMakeLists.txt)
+  # Ensure calls to "target_link_libraries()" used in "CUDA_ADD_LIBRARY()" also
+  # specify a scope keyword.
+  set(CUDA_LINK_LIBRARIES_KEYWORD "PUBLIC")
   CUDA_ADD_LIBRARY(libautoscoper STATIC ${libautoscoper_SOURCES} ${libautoscoper_HEADERS} ${cuda_HEADERS} ${cuda_SOURCES} ${cuda_KERNEL_HEADERS} ${cuda_KERNEL})
   target_include_directories(libautoscoper PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/cuda/cutil)
-  target_link_libraries(libautoscoper PUBLIC ${CUDA_LIBRARIES})
+  # Explicitly linking against CUDA_LIBRARIES is already done in "CUDA_ADD_LIBRARY()".
 elseif(Autoscoper_RENDERING_BACKEND STREQUAL "OpenCL")
   find_package(OpenCL ${Autoscoper_OpenCL_MINIMUM_REQUIRED_VERSION} REQUIRED)
   include(${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/opencl/CMakeLists.txt)
