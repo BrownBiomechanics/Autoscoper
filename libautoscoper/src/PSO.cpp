@@ -1,4 +1,4 @@
-#include "gpu/cuda/PSO_kernel.h"
+#include "PSO.hpp"
 #include <iostream>
 
 
