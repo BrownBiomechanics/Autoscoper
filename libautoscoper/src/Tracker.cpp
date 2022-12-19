@@ -310,6 +310,7 @@ void Tracker::load(const Trial& trial)
 
 void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int max_stall_iter)
 {
+  intializeRandom();
 
   optimization_method = opt_method;
   cf_model_select = cf_model;
