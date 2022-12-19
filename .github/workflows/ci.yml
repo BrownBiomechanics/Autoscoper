@@ -1,0 +1,46 @@
+# This pipe line will be triggered when a pull request is created and will validiate that the CUDA and OpenCL versions of Autoscoper can configure and build successfully.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+    - main
+
+
+env: 
+  BUILD_TYPE: Release
+  QT_VERSION: 5.15.2
+
+jobs:
+  
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rendering_backend: [CUDA, OpenCL]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version:      ${{ env.QT_VERSION }}
+        host:         linux
+        target:       desktop
+        arch:         gcc_64
+        dir:          /opt/qt
+        modules:      webassembly qtwebengine sources qtwebglplugin qtscript debug_info
+        setup-python: false
+    - name: Install Backend # cuda-tk provides the CUDA and OpenCL backends for Autoscooper
+      if: ${{ matrix.rendering_backend == 'CUDA' }}
+      uses: Jimver/cuda-toolkit@v0.2.8
+      if: ${{ matrix.rendering_backend == 'OpenCL' }}
+      run: sudo apt-get install ocl-icd-opencl-dev
+    - name: Configure CMake
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: cmake -S ${{github.workspace}} -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DAutoscoper_RENDERING_BACKEND=${{matrix.rendering_backend}} -DAutoscoper_SUPERBUILD=ON
+    - name: Build 
+      # Build your program with the given configuration
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
