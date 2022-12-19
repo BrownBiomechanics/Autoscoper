@@ -59,12 +59,10 @@
   #include "gpu/cuda/HDist_kernels.h"
   #include "gpu/cuda/Compositor_kernels.h"
   #include "gpu/cuda/Mult_kernels.h"
-  #include "gpu/cuda/PSO_kernel.h"
   #include <cuda_runtime_api.h>
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   #include "gpu/opencl/Ncc.hpp"
   #include "gpu/opencl/Mult.hpp"
-  #include "gpu/cuda/PSO_kernel.h"
 #endif
 
 #include "VolumeDescription.hpp"
@@ -74,6 +72,7 @@
 #include "SimulatedAnnealing.hpp"
 #include "Camera.hpp"
 #include "CoordFrame.hpp"
+#include "PSO.hpp"
 
 
 using namespace std;
