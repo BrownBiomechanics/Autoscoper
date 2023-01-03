@@ -32,20 +32,20 @@ classdef AutoscoperConnection
             data = fread(obj.socket_descriptor, obj.socket_descriptor.BytesAvailable);
         end
 
-        function loadTrackingData(obj,volume,tracking_data,save_as_matrix,save_as_rows,save_with_commas,convert_to_cm,convert_to_rad,interpolate)
+        function loadTrackingData(obj, volume, tracking_data, is_matrix, is_rows, is_with_commas, is_cm, is_rad, interpolate)
             % Loads a tracking data file for the given volume
             % only obj, volume, tracking_data are required
-            % save_as_matrix, save_as_rows, save_with_commas, convert_to_cm, convert_to_rad, interpolate are optional
+            % is_matrix, is_rows, is_with_commas, is_cm, is_rad, interpolate are optional
 
             % volume: the volume number to load
             % tracking_data: the tracking data to load
-            % save_as_matrix: 1 to save as a matrix, 0 to save as xyzypr format
-            % save_as_rows: 1 to save as rows, 0 to save as columns
-            % save_with_commas: 1 to save with commas, 0 to save with spaces
-            % convert_to_cm: 1 to convert to cm, 0 to leave in mm
-            % convert_to_rad: 1 to convert to radians, 0 to leave in degrees
+            % is_matrix: 1 if the tracking data is a matrix, 0 if it is in xyzypr format
+            % is_rows: 1 if the tracking data is in rows, 0 if it is in columns
+            % is_with_commas: 1 if the tracking data is with commas, 0 if it is with spaces
+            % is_cm: 1 if the tracking data is in cm, 0 if it is in mm
+            % is_rad: 1 if the tracking data is in radians, 0 if it is in degrees
             % interpolate: 1 to interpolate(Spline), 0 to leave as is
-
+            
             if nargin < 3
                 error('Not enough input arguments')
             end
@@ -257,7 +257,7 @@ classdef AutoscoperConnection
             % max_lim: the maximum limit
             % max_stall_itr: the maximum number of iterations to stall
             % dframe: The amount of frames to skip
-            % opt_method: The optimization method to use, 0 for Partical Swarm, 1 for Downhill Simplex
+            % opt_method: The optimization method to use, 0 for Particle Swarm, 1 for Downhill Simplex
             % cf_model: The cost function model to use, 0 for NCC (Bone Models), 1 for Sum of Absolute Differences (Implant Models)
 
             if nargin < 3
@@ -317,7 +317,7 @@ classdef AutoscoperConnection
             % max_lim: the maximum limit
             % max_stall_itr: the maximum number of iterations to stall
             % dframe: The amount of frames to skip
-            % opt_method: The optimization method to use, 0 for Partical Swarm, 1 for Downhill Simplex
+            % opt_method: The optimization method to use, 0 for Particle Swarm, 1 for Downhill Simplex
             % cf_model: The cost function model to use, 0 for NCC (Bone Models), 1 for Sum of Absolute Differences (Implant Models)
 
             if nargin < 3
