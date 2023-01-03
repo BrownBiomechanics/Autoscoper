@@ -45,6 +45,7 @@
 
 #include "Socket.h"
 #include <iostream>
+#include <fstream>
 #include <QTcpSocket>
 
 Socket::Socket(AutoscoperMainWindow* mainwindow, unsigned long long int listenPort) : m_mainwindow(mainwindow)
@@ -72,11 +73,17 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
     {
       //load trial
       std::string filename = std::string(&data[1],length-1);
+      std::ifstream test(filename.c_str());
+      if (!test) {
+          std::cerr << "Cannot find " << filename.c_str() << std::endl;
+          connection->write(QByteArray(1, 0));
+      }
+      else {
+          std::cerr << "load trial " << filename.c_str() << std::endl;
+          m_mainwindow->openTrial(QString(filename.c_str()));
 
-      std::cerr << "load trial " << filename.c_str() << std::endl;
-      m_mainwindow->openTrial(QString(filename.c_str()));
-
-      connection->write(QByteArray(1, 1));
+          connection->write(QByteArray(1, 1));
+      }
     }
     break;
   case 2:
@@ -90,12 +97,19 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       qint32* convert_to_rad = reinterpret_cast<qint32*>(&data[21]);
       qint32* interpolate = reinterpret_cast<qint32*>(&data[25]);
       std::string filename = std::string(&data[29], length - 29);
-      std::cerr << "load tracking data Volume " << *volume << " : " << filename.c_str() << std::endl;
-      std::cerr << "Save as matrix: " << *save_as_matrix << " save as rows: " << *save_as_rows << " save with commas: " << *save_with_commas << " convert to cm: " << *convert_to_cm << " convert to rad: " << *convert_to_rad << " interpolate: " << *interpolate << std::endl;
+      std::ifstream test(filename.c_str());
+      if (!test) {
+          std::cerr << "Cannot find " << filename.c_str() << std::endl;
+          connection->write(QByteArray(1, 0));
+      }
+      else {
+          std::cerr << "load tracking data Volume " << *volume << " : " << filename.c_str() << std::endl;
+          std::cerr << "Save as matrix: " << *save_as_matrix << " save as rows: " << *save_as_rows << " save with commas: " << *save_with_commas << " convert to cm: " << *convert_to_cm << " convert to rad: " << *convert_to_rad << " interpolate: " << *interpolate << std::endl;
 
-      m_mainwindow->load_tracking_results(QString(filename.c_str()), *save_as_matrix, *save_as_rows, *save_with_commas, *convert_to_cm, *convert_to_rad, *interpolate, *volume);
+          m_mainwindow->load_tracking_results(QString(filename.c_str()), *save_as_matrix, *save_as_rows, *save_with_commas, *convert_to_cm, *convert_to_rad, *interpolate, *volume);
 
-      connection->write(QByteArray(1, 2));
+          connection->write(QByteArray(1, 2));
+      }
     }
     break;
   case 3:
@@ -109,13 +123,20 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       qint32* convert_to_rad = reinterpret_cast<qint32*>(&data[21]);
       qint32* interpolate = reinterpret_cast<qint32*>(&data[25]);
       std::string filename = std::string(&data[29], length - 29);
+      std::ifstream test(filename.c_str());
+      if (!test) {
+          std::cerr << "Cannot find " << filename.c_str() << std::endl;
+          connection->write(QByteArray(1, 0));
+      }
+      else {
 
-      std::cerr << "save tracking data Volume " << *volume << " : " << filename.c_str() << std::endl;
-      std::cerr << "Save as matrix: " << *save_as_matrix << " save as rows: " << *save_as_rows << " save with commas: " << *save_with_commas << " convert to cm: " << *convert_to_cm << " convert to rad: " << *convert_to_rad << " interpolate: " << *interpolate << std::endl;
+          std::cerr << "save tracking data Volume " << *volume << " : " << filename.c_str() << std::endl;
+          std::cerr << "Save as matrix: " << *save_as_matrix << " save as rows: " << *save_as_rows << " save with commas: " << *save_with_commas << " convert to cm: " << *convert_to_cm << " convert to rad: " << *convert_to_rad << " interpolate: " << *interpolate << std::endl;
 
-      m_mainwindow->save_tracking_results(QString(filename.c_str()), *save_as_matrix, *save_as_rows, *save_with_commas, *convert_to_cm, *convert_to_rad, *interpolate, *volume);
+          m_mainwindow->save_tracking_results(QString(filename.c_str()), *save_as_matrix, *save_as_rows, *save_with_commas, *convert_to_cm, *convert_to_rad, *interpolate, *volume);
 
-      connection->write(QByteArray(1, 3));
+          connection->write(QByteArray(1, 3));
+      }
     }
     break;
   case 4:
@@ -123,11 +144,18 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
     {
       qint32* camera = reinterpret_cast<qint32*>(&data[1]);
       std::string filename = std::string(&data[5], length - 5);
+      std::ifstream test(filename.c_str());
+      if (!test) {
+          std::cerr << "Cannot find " << filename.c_str() << std::endl;
+          connection->write(QByteArray(1, 0));
+      }
+      else {
 
-      std::cerr << "load filter settings for camera " << *camera << " : " << filename.c_str() << std::endl;
-      m_mainwindow->loadFilterSettings(*camera, QString(filename.c_str()));
+          std::cerr << "load filter settings for camera " << *camera << " : " << filename.c_str() << std::endl;
+          m_mainwindow->loadFilterSettings(*camera, QString(filename.c_str()));
 
-      connection->write(QByteArray(1, 4));
+          connection->write(QByteArray(1, 4));
+      }
     }
     break;
   case 5:
@@ -240,16 +268,16 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       double* max_limit = reinterpret_cast<double*>(&data[25]);
       qint32* stall_iter = reinterpret_cast<qint32*>(&data[33]);
 
-      qint32 dframe = 1;// reinterpret_cast<qint32*>(&data[5]);
-      qint32 opt_method = 0;//reinterpret_cast<qint32*>(&data[25]);
-      qint32 cf_model = 0;//reinterpret_cast<qint32*>(&data[41]);
+      qint32* dframe = reinterpret_cast<qint32*>(&data[37]);
+      qint32* opt_method = reinterpret_cast<qint32*>(&data[41]);
+      qint32* cf_model = reinterpret_cast<qint32*>(&data[45]);
 
       std::cerr << "Running optimization from autoscoper for frame #" << *frame << std::endl;
 
-      m_mainwindow->optimizeFrame(*volumeID, *frame, dframe, *repeats,
-        opt_method,
+      m_mainwindow->optimizeFrame(*volumeID, *frame, *dframe, *repeats,
+        *opt_method,
         *max_iter, *min_limit, *max_limit,
-        cf_model, *stall_iter);
+        *cf_model, *stall_iter);
 
       connection->write(QByteArray(1, 11));
     }
@@ -269,7 +297,7 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
   case 13:
     // close connection
     {
-      std::cerr << "Closing connection to Matlab Client..." << std::endl;
+      std::cerr << "Closing connection to Client..." << std::endl;
       connection->write(QByteArray(1, 13));
       deleteConnection();
     }

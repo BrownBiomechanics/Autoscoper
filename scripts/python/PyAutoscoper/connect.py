@@ -357,7 +357,17 @@ class AutoscoperConnection:
         return [width, height, img_data]
 
     def optimizeFrame(
-        self, volume, frame, repeats, max_itr, min_lim, max_lim, max_stall_itr
+        self,
+        volume,
+        frame,
+        repeats,
+        max_itr,
+        min_lim,
+        max_lim,
+        max_stall_itr,
+        dframe,
+        opt_method,
+        cf_model,
     ):
         """
         Optimize the pose of the volume at the specified frame.
@@ -376,8 +386,18 @@ class AutoscoperConnection:
         :type max_lim: float
         :param max_stall_itr: The maximum number of iterations to stall
         :type max_stall_itr: int
+        :param dframe: The amount of frames to skip
+        :type dframe: int
+        :param opt_method: The optimization method to use, 0 for Particle Swarm, 1 for Downhill Simplex
+        :type opt_method: int
+        :param cf_model: The cost function model to use, 0 for NCC (Bone Models), 1 for Sum of Absolute Differences (Implant Models)
+        :type cf_model: int
         :raises Exception: If the server fails to optimize the frame
         """
+        if opt_method not in [0, 1]:
+            raise Exception("Invalid optimization method")
+        if cf_model not in [0, 1]:
+            raise Exception("Invalid cost function model")
         if self.verbose:
             print(f"Optimizing volume {volume} on frame {frame}")
         b = bytearray()
@@ -389,6 +409,9 @@ class AutoscoperConnection:
         b.extend(struct.pack("d", min_lim))
         b.extend(struct.pack("d", max_lim))
         b.extend(max_stall_itr.to_bytes(4, byteorder="little", signed=False))
+        b.extend(dframe.to_bytes(4, byteorder="little", signed=False))
+        b.extend(opt_method.to_bytes(4, byteorder="little", signed=False))
+        b.extend(cf_model.to_bytes(4, byteorder="little", signed=False))
         self.socket.sendall(b)
         res = self.wait_for_server()
         if int.from_bytes(res, byteorder="little", signed=False) != 0x0B:
@@ -415,10 +438,11 @@ class AutoscoperConnection:
 
         """
         b = bytearray()
-        b.append(0xFF)
+        # convert 13 to bytes
+        b.append(0x0D)
         self.socket.sendall(b)
         res = self.wait_for_server()
-        if int.from_bytes(res, byteorder="little", signed=False) != 0xFF:
+        if int.from_bytes(res, byteorder="little", signed=False) != 0x0D:
             raise Exception("Server Error closing connection")
 
     def trackingDialog(
@@ -432,6 +456,8 @@ class AutoscoperConnection:
         min_lim=-3,
         max_lim=3,
         max_stall_itr=25,
+        opt_method=0,
+        cf_model=0,
     ):
         """
         Automatically tracks the volume accross the given frames.
@@ -461,7 +487,7 @@ class AutoscoperConnection:
             print(
                 f"Automated tracking of volume {volume} from frame {start_frame} to {end_frame}.\n"
             )
-        for frame in range(start_frame, end_frame, frame_skip):
+        for frame in range(start_frame, end_frame):
             self.setFrame(frame=frame)
             if frame != 0:
                 pose = self.getPose(volume=volume, frame=(frame - 1))
@@ -474,4 +500,7 @@ class AutoscoperConnection:
                 min_lim=min_lim,
                 max_lim=max_lim,
                 max_stall_itr=max_stall_itr,
+                opt_method=opt_method,
+                cf_model=cf_model,
+                dframe=frame_skip,
             )
