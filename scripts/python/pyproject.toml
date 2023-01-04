@@ -19,6 +19,7 @@ repository = "https://github.com/BrownBiomechanics/Autoscoper/tree/main/scripts/
 
 [build-system]
 requires = ["setuptools>=65", "setuptools_scm[toml]>=7"]
+build-backend = "setuptools.build_meta"
 
 [project.optional-dependencies]
 dev = [
@@ -29,3 +30,15 @@ dev = [
 line-length = 88
 target_version = ['py36']
 include = '\.pyi?$'
+
+[tool.setuptools_scm]
+root = "../.."
+git_describe_command = [
+    'git',
+    'describe',
+    '--dirty',
+    '--tags',
+    '--long',
+    '--match',
+    'python-client-v*'
+]
