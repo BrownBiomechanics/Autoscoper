@@ -56,11 +56,11 @@ class AutoscoperConnection:
         self,
         volume,
         tracking_data,
-        save_as_matrix=True,
-        save_as_rows=True,
-        save_with_commas=True,
-        convert_to_cm=False,
-        convert_to_rad=False,
+        is_matrix=True,
+        is_rows=True,
+        is_with_commas=True,
+        is_cm=False,
+        is_rad=False,
         interpolate=False,
     ):
         """
@@ -70,16 +70,16 @@ class AutoscoperConnection:
         :type volume: int
         :param tracking_data: The path to the tracking data to load
         :type tracking_data: str
-        :param save_as_matrix: Optional - If true, the tracking data will be saved as a 4 by 4 matrix. If false, the tracking data will be saved in xyz roll pitch yaw format. Defaults to true.
-        :type save_as_matrix: bool
-        :param save_as_rows: Optional - If true, the tracking data will be saved as rows. If false, the tracking data will be saved as columns. Defaults to true.
-        :type save_as_rows: bool
-        :param save_with_commas: Optional - If true, the tracking data will be saved with commas. If false, the tracking data will be saved with spaces. Defaults to true.
-        :type save_with_commas: bool
-        :param convert_to_cm: Optional - If true, the tracking data will be converted to cm. If false, the tracking data will be saved in mm. Defaults to false.
-        :type convert_to_cm: bool
-        :param convert_to_rad: Optional - If true, the tracking data will be converted to radians. If false, the tracking data will be saved in degrees. Defaults to false.
-        :type convert_to_rad: bool
+        :param is_matrix: Optional - If true, the tracking data will be loaded as a 4 by 4 matrix. If false, the tracking data will be loaded in xyz roll pitch yaw format. Defaults to true.
+        :type is_matrix: bool
+        :param is_rows: Optional - If true, the tracking data will be loaded as rows. If false, the tracking data will be loaded as columns. Defaults to true.
+        :type is_rows: bool
+        :param is_with_commas: Optional - If true, the tracking data will be loaded with commas. If false, the tracking data will be loaded with spaces. Defaults to true.
+        :type is_with_commas: bool
+        :param is_cm: Optional - If true, the tracking data will be loaded in cm. If false, the tracking data will be loaded in mm. Defaults to false.
+        :type is_cm: bool
+        :param is_rad: Optional - If true, the tracking data will be loaded in radians. If false, the tracking data will be loaded in degrees. Defaults to false.
+        :type is_rad: bool
         :param interpolate: Optional - If true, the tracking data will be interpolated using the spline method. If false, the tracking data will be saved as is (with NaN values). Defaults to false.
         :type interpolate: bool
         :raises Exception: If the tracking data file is not found, or If the server fails to load the tracking data
@@ -92,11 +92,11 @@ class AutoscoperConnection:
         b = bytearray()
         b.append(0x02)
         b.extend(volume.to_bytes(4, byteorder="little", signed=False))
-        b.extend((int(save_as_matrix)).to_bytes(4, byteorder="little", signed=False))
-        b.extend((int(save_as_rows)).to_bytes(4, byteorder="little", signed=False))
-        b.extend((int(save_with_commas)).to_bytes(4, byteorder="little", signed=False))
-        b.extend((int(convert_to_cm)).to_bytes(4, byteorder="little", signed=False))
-        b.extend((int(convert_to_rad)).to_bytes(4, byteorder="little", signed=False))
+        b.extend((int(is_matrix)).to_bytes(4, byteorder="little", signed=False))
+        b.extend((int(is_rows)).to_bytes(4, byteorder="little", signed=False))
+        b.extend((int(is_with_commas)).to_bytes(4, byteorder="little", signed=False))
+        b.extend((int(is_cm)).to_bytes(4, byteorder="little", signed=False))
+        b.extend((int(is_rad)).to_bytes(4, byteorder="little", signed=False))
         b.extend((int(interpolate)).to_bytes(4, byteorder="little", signed=False))
         b.extend(tracking_data.encode("utf-8"))
         self.socket.sendall(b)
