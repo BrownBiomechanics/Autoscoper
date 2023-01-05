@@ -6,6 +6,7 @@ class AutoscoperConnection:
         self.address = address
         self.verbose = verbose
         self.socket = self.openConnection()
+        self.is_connected = self.test_connection()
 
     def wait_for_server(self):
         """
@@ -17,6 +18,24 @@ class AutoscoperConnection:
             data = self.socket.recv(1024)
             if data:
                 return data
+
+    def test_connection(self):
+        """
+        Test the connection to the PyAutoscoper server.
+
+        :rtype: Boolean
+        :raises Exception: If the connection is not successful
+        """
+        if self.verbose:
+            print("Testing connection")
+        b = bytearray()
+        b.append(0x00)
+        self.socket.sendall(b)
+        res = self.wait_for_server()
+        if int.from_bytes(res, byteorder="little", signed=False) != 0x00:
+            self.closeConnection()
+            raise Exception("Server Error testing connection")
+        return True
 
     def openConnection(self):
         """
@@ -444,6 +463,8 @@ class AutoscoperConnection:
         res = self.wait_for_server()
         if int.from_bytes(res, byteorder="little", signed=False) != 0x0D:
             raise Exception("Server Error closing connection")
+        self.socket.close()
+        self.is_connected = False
 
     def trackingDialog(
         self,
