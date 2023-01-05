@@ -69,6 +69,12 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 
   switch (message_type)
   {
+  case 0:
+  {
+      // Used for testing socket connection
+      connection->write(QByteArray(1, 0));
+  }
+  break;
   case 1:
     {
       //load trial
