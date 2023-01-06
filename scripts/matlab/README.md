@@ -12,6 +12,29 @@ Before these changes were made, the MATLAB TCP client was a collection of functi
 
 ## Usage:
 
+#Sample Worflow:
+*launch Autoscoper
+*pseudocode variables:  cfgFileName myVolumeList filterFileName trackDataInFileName  saveDataFileName sumberOfFrames
+```matlab
+
+autoscoper_socket_object = AutoscoperConnection();
+aobj = autoscoper_socket_object; %short name
+loadTrial(aobj, cfgFileName);
+loadFilters(aobj, -1, filterFileName);
+
+%if seeding poses available
+for vNum = 0: length(myVolumeList)-1
+	loadTrackingData(aobj, vNum, [trackDataInFileName,myVolumeList{vNum}]); 
+
+	trackingDialog(vNum, tf, numberOfFrames);
+	
+	saveTrackingData(vNum, [saveDataFileName,myVolumeList{vNum}]);
+end	
+closeConnection(aobj);
+```
+
+
+
 ### Connect to the server & Object creation
 
 ```matlab
@@ -28,89 +51,103 @@ This function has the following parameter:
 
 ```matlab
 connection.loadTrial(path_to_cfg_file);
+OR
+loadTrial(connection, path_to_cfg_file);
 ```
 
 This will load a trial from the specified configuration file. The configuration file is a cfg file that contains all the information about the trial.
 
 This function has the following parameter:
 
-* trial: The path to the configuration file.
+* path_to_cfg_file: The path to the configuration file.
 
 ### Load Tracking Data
   
 ```matlab
-connection.loadTrackingData(volume, tracking_data, is_matrix, is_rows, is_with_commas, is_cm, is_rad, interpolate);
+connection.loadTrackingData(volNum, tra_fileName, is_matrix, is_rows, is_csv, is_cm, is_rad);
+OR
+loadTrackingData(connection, volNum, tra_fileName, is_matrix, is_rows, is_csv, is_cm, is_rad);
 ```
 
 This will load tracking data from the specified file. The tracking data file is a tra file that contains the tracking data.
 
 This function has the following parameters:
 
-* volume: The volume to load the tracking data for.
-* tracking_data: The path to the tracking data file.
-* is_matrix: Optional. Whether to save the tracking data as a matrix. Default: true
-* is_rows: Optional. Whether to save the tracking data as rows. Default: true
-* is_with_commas: Optional. Whether to save the tracking data with commas. Default: true
-* is_cm: Optional. Whether to convert the tracking data to cm. Default: false
-* is_rad: Optional. Whether to convert the tracking data to radians. Default: false
-* interpolate: Optional. Whether to interpolate the tracking data. Default: false
+* volNum: The volume( numeric, index 0, set by cfg order)  to load the tracking data for.
+* tra_fileName: The path to the tracking data file.
+* is_matrix: Optional. Whether input tracking data is matrix form. Default: true (1)  false if in xyarpy form (0)
+* is_rows: Optional. Whether input tracking data is row format. Default: true (1) verified within. false(0) if in column format
+* is_csv: Optional. Whether input tracking data is comma separated values. Default: true(1) false (0) if whitespace format
+* is_cm: Optional. Whether input tracking data express in cm. Default: false, (interpreted as mm)
+* is_rad: Optional. Whether input tracking data expressed in radians. Default: false (inter as degrees)
+
 
   ### Save Tracking Data
   
 ```matlab
-connection.saveTrackingData(volume, tracking_data, save_as_matrix, save_as_rows, save_with_commas, convert_to_cm, convert_to_rad, interpolate);
+connection.saveTrackingData(volNum, tra_fileName, save_as_matrix, save_as_rows, save_with_commas, convert_mm_to_cm, convert_deg_to_rad, interpY);
+OR
+saveTrackingData(connection, volNum, tra_fileName, save_as_matrix, save_as_rows, save_with_commas, convert_mm_to_cm, convert_deg_to_rad, interpY);
 ```
 
 This will save the tracking data for the specified volume to the specified file. The tracking data file is a tra file that contains the tracking data.
 
-This function has the following parameters:
+This function has the following optional parameters:
 
-* volume: The volume to save the tracking data for.
-* tracking_data: The path to the tracking data file.
+* volNum: The volume( numeric, index 0, set by cfg order) to save the tracking data for.
+* tra_fileName: The path and file name (.tra) to where tracking data will be saved
 * save_as_matrix: Optional. Whether to save the tracking data as a matrix. Default: true
 * save_as_rows: Optional. Whether to save the tracking data as rows. Default: true
 * save_with_commas: Optional. Whether to save the tracking data with commas. Default: true
-* convert_to_cm: Optional. Whether to convert the tracking data to cm. Default: false
-* convert_to_rad: Optional. Whether to convert the tracking data to radians. Default: false
-* interpolate: Optional. Whether to interpolate the tracking data. Default: false
+* convert_mm_to_cm: Optional. Whether to convert the tracking data to cm. Default: false
+* convert_deg_to_rad: Optional. Whether to convert the tracking data to radians. Default: false
+* interpY: Optional. Whether to interpolate the tracking data. Default: false
+
+
 
 ### Load Filters
   
 ```matlab
 connection.loadFilters(camera, filter_file);
+OR
+loadFilters(connection, camera, filter_file);
 ```
 
 This will load filters from the specified file. The filters file is a `.vie` file that contains the filter information.
 
 This function has the following parameters:
 
-* camera: The camera to load the filters for.
-* filter_file: The path to the filters file.
+* camera: The camera index to load the filters for. (index base 0)  -1 for all
+* filter_file: The path anf fielname to the filters file. 
 
 ### Set Frame
   
 ```matlab
-connection.setFrame(frame);
+connection.setFrame(frameNum);
+OR
+setFrame(connection, frameNum);
 ```
 
 This will set the frame to the specified frame.
 
 This function has the following parameter:
 
-* frame: The frame to set.
+* frameNum: The frame to set.
 
 ### Get Pose
     
 ```matlab
-pose = connection.getPose(volume, frame);
+pose = connection.getPose(volNum, frameNum);
+OR
+pose = getPose(connection, volNum, frameNum);
 ```
 
 This will get the pose for the specified volume at the specified frame.
 
 This function has the following parameters:
 
-* volume: The volume to get the pose for.
-* frame: The frame to get the pose at.
+* volNum: The volume to get the pose for.
+* frameNum: The frame to get the pose at.
 
 This function returns the following:
 
@@ -120,6 +157,8 @@ This function returns the following:
     
 ```matlab
 connection.setPose(volume, frame, pose);
+OR
+setPose(connection, volume, frame, pose);
 ```
 
 This will set the pose for the specified volume at the specified frame.
@@ -133,15 +172,17 @@ This function has the following parameters:
 ### Get NCC
     
 ```matlab
-ncc = connection.getNCC(volume, frame);
+ncc = connection.getNCC(voNum, pose);
+OR
+ncc = getNCC(connection, volNum, pose);
 ```
 
 This will get the NCC for the specified volume at the specified frame.
 
 This function has the following parameters:
 
-* volume: The volume to get the NCC for.
-* frame: The frame to get the NCC at.
+* volNum: The volume to get the NCC for.
+* pose: The pose to get the NCC at. (see getPose xyzrpy)
 
 This function returns the following:
   
@@ -151,6 +192,8 @@ This function returns the following:
     
 ```matlab
 connection.setBackground(threshold);
+OR
+setBackground(connection, threshold);
 ```
 
 This will set the background threshold.
@@ -178,15 +221,17 @@ This function has the following parameters:
 ### Optimize Frame
 
 ```matlab
-connection.optimizeFrame(volume, frame, repeats, max_itr, min_lim, max_lim, max_stall_itr, dframe, opt_method, cf_model);
+connection.optimizeFrame(volNum, frameNum, repeats, max_itr, min_lim, max_lim, max_stall_itr, dframe, opt_method, cf_model);
+OR
+optimizeFrame(connection, volNum, frameNum, repeats, max_itr, min_lim, max_lim, max_stall_itr, dframe, opt_method, cf_model);
 ```
 
 This will optimize the frame for the specified volume.
 
 This function has the following parameters:
 
-* volume: The volume to optimize the frame for.
-* frame: The frame to optimize.
+* volNum: The volume to optimize the frame for.
+* frameNum: The frame to optimize.
 * repeats: Optional. The number of times to repeat the optimization. Default: 1
 * max_itr: Optional. The maximum number of iterations. Default: 1000
 * min_lim: Optional. The minimum limit. Default: -3.0
@@ -199,14 +244,16 @@ This function has the following parameters:
 ### Tracking Dialog
   
 ```matlab
-connection.trackingDialog(volume, startframe, endframe, repeats, max_itr, min_lim, max_lim, max_stall_itr, dframe, opt_method, cf_model);
+connection.trackingDialog(volNum, startframe, endframe, repeats, max_itr, min_lim, max_lim, max_stall_itr, dframe, opt_method, cf_model);
+OR
+trackingDialog(connection, volNum, startframe, endframe, repeats, max_itr, min_lim, max_lim, max_stall_itr, dframe, opt_method, cf_model);
 ```
 
-This will perform optimization for the specified volume over the specified frames.
+This will perform optimization for the specified volume over the specified frames. =(uses optimizeFrame)
 
 This function has the following parameters:
 
-* volume: The volume to optimize the frame for.
+* volNum: The volume to optimize the frame for.
 * startframe: The start frame to optimize.
 * endframe: The end frame to optimize.
 * repeats: Optional. The number of times to repeat the optimization. Default: 1
@@ -221,28 +268,32 @@ This function has the following parameters:
 ### Get NCC Sum
     
 ```matlab
-ncc_sum = connection.getNCCSum(volume, frame);
+ncc_sum = connection.getNCCSum(volNum, pose);
+OR
+ncc_sum = getNCCSum(connection, volNum, pose);
 ```
 
-This will get the NCC sum for the specified volume at the specified frame.
+This will get the NCC sum for the specified volume in the specified pose (set getPose, uses getNCC)
 
 This function has the following parameters:
 
-* volume: The volume to get the NCC sum for.
-* frame: The frame to get the NCC sum at.
+* volNum: The volume to get the NCC sum for.
+* pose: The pose to get the NCC sum at. 
 
 ### Get NCC This Frame
 
 ```matlab
-ncc_this_frame = connection.getNCCThisFrame(volume, frame);
+ncc_this_frame = connection.getNCCThisFrame(volNum, frameNum); (uses getPose, getNCC)
+OR
+ncc_this_frame = getNCCThisFrame(connection, volNum, frameNum); (uses getPose, getNCC)
 ```
 
-This will get the NCC this frame for the specified volume at the specified frame.
+This will get the NCC this frame for the specified volume at the specified frame. (uses the current pose)
 
 This function has the following parameters:
 
-* volume: The volume to get the NCC this frame for.
-* frame: The frame to get the NCC this frame at.
+* volNum: The volume to get the NCC this frame for.
+* frameNum: The frame to get the NCC this frame at.
 
 ### Close Connection
   
