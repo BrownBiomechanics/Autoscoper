@@ -6,8 +6,10 @@ classdef AutoscoperConnection
     end
     methods
         function obj = AutoscoperConnection(address)
-            % Creates a connection to the Autoscoper server
-            obj.socket_descriptor = tcpclient(obj.address, obj.port);
+            % Creates a connection to the Autoscoper 
+            % supports single instance connection only
+            
+            obj.socket_descriptor = tcpip(obj.address, obj.port, 'NetworkRole', 'client');
             fopen(obj.socket_descriptor);
             if nargin == 1
                 obj.address = address;
@@ -16,77 +18,88 @@ classdef AutoscoperConnection
 
         function closeConnection(obj)
             % Closes the connection
+            % if terminal is closed for any reason- this will catch in an
+            % infinite loop
+            %TO DO - predetermined time attempt before exiting while
+%             fclose(obj.socket_descriptor); % 
             fwrite(autoscoper_socket,[13]);
-            while autoscoper_socket.BytesAvailable == 0
+%             delete(obj.socket_descriptor);
+            while obj.socket_descriptor.BytesAvailable == 0
                 pause(1)
             end
-            data = fread(autoscoper_socket, autoscoper_socket.BytesAvailable);
+            data = fread(obj, autoscoper_socket.BytesAvailable);
         end
 
-        function loadTrial(obj, trial)
+        function loadTrial(obj, path_to_cfg_file)
             % Loads a trial
-            fwrite(obj.socket_descriptor, [1 trial]);
+            % path_to_cfg_file : full path to config (.cfg) file
+            %   fail if incorrect filepath/ no file found
+            
+            fwrite(obj.socket_descriptor, [1 path_to_cfg_file]);
             while obj.socket_descriptor.BytesAvailable == 0
                 pause(1)
             end
             data = fread(obj.socket_descriptor, obj.socket_descriptor.BytesAvailable);
         end
 
-        function loadTrackingData(obj, volume, tracking_data, is_matrix, is_rows, is_with_commas, is_cm, is_rad, interpolate)
+        function loadTrackingData(obj, volNum, tra_fileName, is_matrix, is_rows, is_csv, is_cm, is_rad, interpY)
             % Loads a tracking data file for the given volume
-            % only obj, volume, tracking_data are required
+            % only obj, volume, tra_fileName are required
             % is_matrix, is_rows, is_with_commas, is_cm, is_rad, interpolate are optional
 
-            % volume: the volume number to load
-            % tracking_data: the tracking data to load
+            % volN: the volume number to load
+            % tra_fileName: the path to tracking data to load
             % is_matrix: 1 if the tracking data is a matrix, 0 if it is in xyzypr format
             % is_rows: 1 if the tracking data is in rows, 0 if it is in columns
-            % is_with_commas: 1 if the tracking data is with commas, 0 if it is with spaces
+            % is_csv: 1 if the tracking data is with commas, 0 if it is with spaces
             % is_cm: 1 if the tracking data is in cm, 0 if it is in mm
             % is_rad: 1 if the tracking data is in radians, 0 if it is in degrees
-            % interpolate: 1 to interpolate(Spline), 0 to leave as is
+            % interpY: 1 to interpolate(Spline), 0 to leave as is
             
             if nargin < 3
                 error('Not enough input arguments')
             end
             if nargin < 4
-                save_as_matrix = 1;
+                is_matrix = 1;
             end
             if nargin < 5
-                save_as_rows = 1;
+                is_rows = 1;
             end
             if nargin < 6
-                save_with_commas = 1;
+                is_csv = 1;
             end
             if nargin < 7
-                convert_to_cm = 0;
+                is_cm = 0;
             end
             if nargin < 8
-                convert_to_rad = 0;
+                is_rad = 0;
             end
             if nargin < 9
-                interpolate = 0;
+                interpY = 0;
             end
-            fwrite(obj.socket_descriptor, [2 typecast(int32(volume),'uint8') typecast(int32(save_as_matrix),'uint8') typecast(int32(save_as_rows),'uint8') typecast(int32(save_with_commas),'uint8') typecast(int32(convert_to_cm),'uint8') typecast(int32(convert_to_rad),'uint8') typecast(int32(interpolate),'uint8') tracking_data]);
+            fwrite(obj.socket_descriptor, [2 typecast(int32(volNum),'uint8') typecast(int32(is_matrix),'uint8'),...
+                typecast(int32(is_rows),'uint8') typecast(int32(is_csv),'uint8') typecast(int32(is_cm),'uint8'),...
+                typecast(int32(is_rad),'uint8') typecast(int32(interpY),'uint8') tra_fileName]);
+            
             while obj.socket_descriptor.BytesAvailable == 0
                 pause(1)
             end
             data = fread(obj.socket_descriptor, obj.socket_descriptor.BytesAvailable);
         end
 
-        function saveTrackingData(obj,volume,tracking_data,save_as_matrix,save_as_rows,save_with_commas,convert_to_cm,convert_to_rad,interpolate)
+        function saveTrackingData(obj,volNum,tra_fileName,save_as_matrix,save_as_rows,save_csv,convert_mm_to_cm,convert_deg_to_rad,interpY)
             % Saves a tracking data file for the given volume
-            % only obj, volume, tracking_data are required
+            % only obj, volume, tra_fileName are required
             % save_as_matrix, save_as_rows, save_with_commas, convert_to_cm, convert_to_rad, interpolate are optional
 
-            % volume: the volume number to save
-            % tracking_data: the tracking data to save
+            % volNum: The volume( numeric, index 0, set by cfg order) to save the tracking data for.
+            % tra_fileName: The path and file name (.tra) to where tracking data will be saved
             % save_as_matrix: 1 to save as a matrix, 0 to save as xyzypr format
             % save_as_rows: 1 to save as rows, 0 to save as columns
-            % save_with_commas: 1 to save with commas, 0 to save with spaces
-            % convert_to_cm: 1 to convert to cm, 0 to leave in mm
-            % convert_to_rad: 1 to convert to radians, 0 to leave in degrees
-            % interpolate: 1 to interpolate(Spline), 0 to leave as is
+            % save_csv: 1 to save with commas, 0 to save with spaces
+            % convert_mm_to_cm: 1 to convert to cm, 0 to leave in mm
+            % convert_deg_to_rad: 1 to convert to radians, 0 to leave in degrees
+            % interpY: 1 to interpolate(Spline), 0 to leave as is
 
             if nargin < 3
                 error('Not enough input arguments')
@@ -98,18 +111,20 @@ classdef AutoscoperConnection
                 save_as_rows = 1;
             end
             if nargin < 6
-                save_with_commas = 1;
+                save_csv = 1;
             end
             if nargin < 7
-                convert_to_cm = 0;
+                convert_mm_to_cm = 0;
             end
             if nargin < 8
-                convert_to_rad = 0;
+                convert_deg_to_rad = 0;
             end
             if nargin < 9
-                interpolate = 0;
+                interpY = 0;
             end
-            fwrite(obj.socket_descriptor, [3 typecast(int32(volume),'uint8') typecast(int32(save_as_matrix),'uint8') typecast(int32(save_as_rows),'uint8') typecast(int32(save_with_commas),'uint8') typecast(int32(convert_to_cm),'uint8') typecast(int32(convert_to_rad),'uint8') typecast(int32(interpolate),'uint8') tracking_data]);
+            fwrite(obj.socket_descriptor, [3 typecast(int32(volNum),'uint8') typecast(int32(save_as_matrix),'uint8') typecast(int32(save_as_rows),'uint8'),...
+                typecast(int32(save_csv),'uint8') typecast(int32(convert_mm_to_cm),'uint8') typecast(int32(convert_deg_to_rad),'uint8'),...
+                typecast(int32(interpY),'uint8') tra_fileName]);
             while obj.socket_descriptor.BytesAvailable == 0
                 pause(1)
             end
@@ -119,8 +134,8 @@ classdef AutoscoperConnection
         function loadFilters(obj, camera, filter_file)
             % Loads a filter file for the given camera
 
-            % camera: the camera number to load
-            % filter_file: the filter file to load
+            % camera: the camera number to load . (index base 0)  -1 for all
+            % filter_file: the filter file to load (.vie)
 
             if nargin < 3
                 error('Not enough input arguments')
@@ -132,31 +147,31 @@ classdef AutoscoperConnection
             data = fread(obj.socket_descriptor, obj.socket_descriptor.BytesAvailable);
         end
 
-        function setFrame(obj,frame)
+        function setFrame(obj,frameNum)
             % Sets the frame number
 
-            % frame: the frame number to set
+            % frameNum: the frame number to set (index 0)
 
             if nargin < 2
                 error('Not enough input arguments')
             end
-            fwrite(obj.socket_descriptor, [5 typecast(int32(frame),'uint8')]);
+            fwrite(obj.socket_descriptor, [5 typecast(int32(frameNum),'uint8')]);
             while obj.socket_descriptor.BytesAvailable == 0
                 pause(1)
             end
             data = fread(obj.socket_descriptor, obj.socket_descriptor.BytesAvailable);
         end
 
-        function pose = getPose(obj,volume,frame)
+        function pose = getPose(obj,volNum,frame)
             % Gets the pose for the given volume and frame
 
-            % volume: the volume number to get the pose for
+            % volNum: the volume number to get the pose for
             % frame: the frame number to get the pose for
 
             if nargin < 3
                 error('Not enough input arguments')
             end
-            fwrite(obj.socket_descriptor, [6 typecast(int32(volume),'uint8') typecast(int32(frame),'uint8')]);
+            fwrite(obj.socket_descriptor, [6 typecast(int32(volNum),'uint8') typecast(int32(frame),'uint8')]);
             while obj.socket_descriptor.BytesAvailable == 0
                 pause(1)
             end
@@ -170,33 +185,33 @@ classdef AutoscoperConnection
                 typecast(uint8(data(42:49)),'double') ];
         end
 
-        function setPose(obj,volume,frame,pose)
+        function setPose(obj,volNum,frame,pose)
             % Sets the pose for the given volume and frame
 
-            % volume: the volume number to set the pose for
+            % volNum: the volume number to set the pose for
             % frame: the frame number to set the pose for
-            % pose: the pose to set
+            % pose: the pose to set (set getPose)
 
             if nargin < 4
                 error('Not enough input arguments')
             end
-            fwrite(obj.socket_descriptor, [7 typecast(int32(volume),'uint8') typecast(int32(frame),'uint8') typecast(double(pose),'uint8')]);
+            fwrite(obj.socket_descriptor, [7 typecast(int32(volNum),'uint8') typecast(int32(frame),'uint8') typecast(double(pose),'uint8')]);
             while obj.socket_descriptor.BytesAvailable == 0
                 pause(1)
             end
             data = fread(obj.socket_descriptor, obj.socket_descriptor.BytesAvailable);
         end
 
-        function ncc = getNCC(obj, volume, pose)
+        function ncc = getNCC(obj, volNum, pose)
             % Gets the NCC for the given volume and pose
 
-            % volume: the volume number to get the NCC for
-            % pose: the pose to get the NCC for
+            % volNum: the volume number to get the NCC for
+            % frameNum: the frame to get the NCC for
 
             if nargin < 3
                 error('Not enough input arguments')
             end
-            fwrite(obj.socket_descriptor, [8 typecast(int32(volume),'uint8') typecast(double(pose),'uint8')]);
+            fwrite(obj.socket_descriptor, [8 typecast(int32(volNum),'uint8') typecast(double(pose),'uint8')]);
             while obj.socket_descriptor.BytesAvailable == 0
                 pause(1)
             end
@@ -226,31 +241,32 @@ classdef AutoscoperConnection
             data = fread(obj.socket_descriptor, obj.socket_descriptor.BytesAvailable);
         end
 
-        function getImageCropped(obj, volume, camera, pose)
+        function getImageCropped(obj, volNum, camera, frameNum)
+
             % not yet implemented
 
-            % volume: the volume number to get the image for
+            % volNum: the volume number to get the image for
             % camera: the camera number to get the image for
-            % pose: the pose to get the image for
+            % frameNum: the frame number to get the image for
 
             if nargin < 4
                 error('Not enough input arguments')
             end
 
-            fwrite(obj.socket_descriptor, [10 typecast(int32(volume),'uint8') typecast(int32(camera),'uint8') typecast(double(pose),'uint8')]);
+            fwrite(obj.socket_descriptor, [10 typecast(int32(volNum),'uint8') typecast(int32(camera),'uint8') typecast(double(frameNum),'uint8')]);
             while obj.socket_descriptor.BytesAvailable == 0
                 pause(1)
             end
             data = fread(obj.socket_descriptor, obj.socket_descriptor.BytesAvailable);
         end
 
-        function optimizeFrame(obj, volume, frame, repeats,max_itr,min_lim,max_lim,max_stall_itr,dframe,opt_method,cf_model)
+        function optimizeFrame(obj, volNum, frameNum, repeats,max_itr,min_lim,max_lim,max_stall_itr,dframe,opt_method,cf_model)
             % Optimizes the given frame
-            % only obj, volume, and frame are required
+            % only obj, volNum, and frame are required
             % all other parameters are optional
 
-            % volume: the volume number to optimize
-            % frame: the frame number to optimize
+            % volNum: the volume number to optimize
+            % frameNum: the frame number to optimize
             % repeats: the number of times to repeat the optimization
             % max_itr: the maximum number of iterations
             % min_lim: the minimum limit
@@ -287,7 +303,7 @@ classdef AutoscoperConnection
             if nargin < 11
                 cf_model = 0;
             end
-            fwrite(obj.socket_descriptor, [11 typecast(int32(volume),'uint8') typecast(int32(frame),'uint8') typecast(int32(repeats),'uint8') typecast(int32(max_itr),'uint8') typecast(double(min_lim),'uint8') typecast(double(max_lim),'uint8') typecast(int32(max_stall_itr),'uint8') typecast(int32(dframe),'uint8') typecast(int32(opt_method),'uint8') typecast(int32(cf_model),'uint8')]);    
+            fwrite(obj.socket_descriptor, [11 typecast(int32(volNum),'uint8') typecast(int32(frameNum),'uint8') typecast(int32(repeats),'uint8') typecast(int32(max_itr),'uint8') typecast(double(min_lim),'uint8') typecast(double(max_lim),'uint8') typecast(int32(max_stall_itr),'uint8') typecast(int32(dframe),'uint8') typecast(int32(opt_method),'uint8') typecast(int32(cf_model),'uint8')]);    
             while obj.socket_descriptor.BytesAvailable == 0
                 pause(1)
             end
@@ -304,11 +320,12 @@ classdef AutoscoperConnection
             data = fread(obj.socket_descriptor, obj.socket_descriptor.BytesAvailable);
         end
 
-        function trackingDialog(obj,startframe,endframe,repeats,max_itr,min_lim,max_lim,max_stall_itr,dframe,opt_method,cf_model)
+        function trackingDialog(obj,volNum, startframe,endframe,repeats,max_itr,min_lim,max_lim,max_stall_itr,dframe,opt_method,cf_model)
             % Performs optimization on a range of frames
-            % Only obj, startframe, and endframe are required
+            % Only obj, volNum, startframe, and endframe are required
             % all other parameters are optional
-
+            
+            %volNum: volume to be optimized over the designated range
             % startframe: the first frame to optimize
             % endframe: the last frame to optimize
             % repeats: the number of times to repeat the optimization
@@ -320,54 +337,54 @@ classdef AutoscoperConnection
             % opt_method: The optimization method to use, 0 for Particle Swarm, 1 for Downhill Simplex
             % cf_model: The cost function model to use, 0 for NCC (Bone Models), 1 for Sum of Absolute Differences (Implant Models)
 
-            if nargin < 3
+            if nargin < 4
                 error('Not enough input arguments')
             end
-            if nargin < 4
+            if nargin < 5
                 repeats = 1;
             end
-            if nargin < 5
+            if nargin < 6
                 max_itr = 1000;
             end
-            if nargin < 6
+            if nargin < 7
                 min_lim = -3.0;
             end
-            if nargin < 7
+            if nargin < 8
                 max_lim = 3.0;
             end
-            if nargin < 8
+            if nargin < 9
                 max_stall_itr = 25;
             end
-            if nargin < 9
+            if nargin < 10
                 dframe = 1;
             end
-            if nargin < 10
+            if nargin < 11
                 opt_method = 0;
             end
-            if nargin < 11
+            if nargin < 12
                 cf_model = 0;
             end
 
             for i = startframe:endframe
                 obj.setFrame(i);
                 if i ~= 0
-                    pose = obj.getPose(0,i-1);
-                    obj.setPose(0,i,pose);
+                    pose = obj.getPose(volNum,i-1);
+                    obj.setPose(volNum,i,pose);
                 end
-                obj.optimizeFrame(0,i,repeats,max_itr,min_lim,max_lim,max_stall_itr,dframe,opt_method,cf_model);
+                obj.optimizeFrame(volNum,i,repeats,max_itr,min_lim,max_lim,max_stall_itr,dframe,opt_method,cf_model);
             end
         end
 
-        function ncc_out = getNCC_Sum(obj,volume,pose)
-            % Gets the sum of the NCC for the given volume and pose
+        function ncc_out = getNCC_Sum(obj,volNum,pose)
+            % Gets the sum of the NCC for the given volNum and pose
 
-            % volume: the volume number to get the NCC for 
+            % volNum: the volume number to get the NCC for 
             % pose: the pose to get the NCC for
 
             if nargin < 3
                 error('Not enough input arguments')
             end
-            data = obj.getNCC(volume,pose);
+            data = obj.getNCC(volNum,pose);
             ncc = zeros(1,data(2));
             for i = 1:data(2)
                 val = typecast(uint8(data(3 + (i-1)*8: 10+(i-1)*8)),'double') ;
@@ -380,17 +397,17 @@ classdef AutoscoperConnection
             ncc_out  = ncc(1) + ncc(2);
         end
 
-        function ncc_out = getNCC_This_Frame(obj,volume,frame)
-            % Gets the NCC for the given volume and frame
+        function ncc_out = getNCC_This_Frame(obj,volNum,frameNum)
+            % Gets the NCC for the given volNum and frame
 
-            % volume: the volume number to get the NCC for 
+            % volNum: the volume number to get the NCC for 
             % frame: the frame to get the NCC for
 
             if nargin < 3
                 error('Not enough input arguments')
             end
-            pose = obj.getPose(volume,frame);
-            data = obj.getNCC(volume,pose);
+            pose = obj.getPose(volNum,frameNum);
+            data = obj.getNCC(volNum,pose);
             ncc = zeros(1,data(2));
             for i = 1:data(2)
                 val = typecast(uint8(data(3 + (i-1)*8: 10+(i-1)*8)),'double') ;
