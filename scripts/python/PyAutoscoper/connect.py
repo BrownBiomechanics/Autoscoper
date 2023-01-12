@@ -460,9 +460,6 @@ class AutoscoperConnection:
         # convert 13 to bytes
         b.append(0x0D)
         self.socket.sendall(b)
-        res = self.wait_for_server()
-        if int.from_bytes(res, byteorder="little", signed=False) != 0x0D:
-            raise Exception("Server Error closing connection")
         self.socket.close()
         self.is_connected = False
 
