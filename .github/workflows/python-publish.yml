@@ -32,9 +32,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install build
     - name: Build package
-      run: python -m build
+      run: |
+        cd scripts/python
+        python -m build
     - name: Publish package
-      uses: pypa/gh-action-pypi-publish@release/v1.5.1
+      uses: pypa/gh-action-pypi-publish@v1.6.4
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
+        packages_dir: scripts/python/dist
