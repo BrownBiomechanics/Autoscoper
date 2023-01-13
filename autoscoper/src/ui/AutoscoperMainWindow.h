@@ -288,6 +288,9 @@ class AutoscoperMainWindow : public QMainWindow{
     void key_equal_pressed();
     void key_minus_pressed();
 
+    //Socket info
+    int getNumVolumes();
+    int getNumFrames();
 };
 
 #endif  // UAUTOSCOPERMAINWINDOW_H
