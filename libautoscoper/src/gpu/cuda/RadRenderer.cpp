@@ -43,6 +43,7 @@
 #include <sstream>
 
 #include <cuda.h>
+#include <cutil_create_tex_obj.h>
 #include <cutil_inline.h>
 #include <cutil_math.h>
 
@@ -125,8 +126,9 @@ RadRenderer::set_viewport(float x, float y, float width, float height)
 void
 RadRenderer::render(float* buffer, size_t width, size_t height) const
 {
-    video_bind_array(array_);
-    video_render(buffer,
+    cudaTextureObject_t tex = createTexureObjectFromArray(array_, cudaReadModeNormalizedFloat);
+
+    video_render(tex,buffer,
                  (int)width,
                  (int)height,
                  image_plane_[0],
@@ -137,6 +139,8 @@ RadRenderer::render(float* buffer, size_t width, size_t height) const
                  viewport_[1],
                  viewport_[2],
                  viewport_[3]);
+
+    cudaDestroyTextureObject(tex);
 }
 
 } } // namespace xromm::cuda

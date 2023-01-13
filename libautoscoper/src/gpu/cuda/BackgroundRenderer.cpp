@@ -43,6 +43,7 @@
 #include <sstream>
 
 #include <cuda.h>
+#include <cutil_create_tex_obj.h>
 #include <cutil_inline.h>
 #include <cutil_math.h>
 
@@ -111,8 +112,9 @@ BackgroundRenderer::set_viewport(float x, float y, float width, float height)
 void
 BackgroundRenderer::render(float* buffer, size_t width, size_t height, float threshold) const
 {
-    background_bind_array(array_);
-    background_render(buffer,
+    cudaTextureObject_t tex = createTexureObjectFromArray(array_, cudaReadModeElementType);
+
+    background_render(tex,buffer,
                  (int)width,
                  (int)height,
                  image_plane_[0],
@@ -124,6 +126,8 @@ BackgroundRenderer::render(float* buffer, size_t width, size_t height, float thr
                  viewport_[2],
                  viewport_[3],
                  threshold);
+
+    cudaDestroyTextureObject(tex);
 }
 
 } } // namespace xromm::cuda
