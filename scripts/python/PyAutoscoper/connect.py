@@ -527,3 +527,39 @@ class AutoscoperConnection:
                 cf_model=cf_model,
                 dframe=frame_skip,
             )
+
+    def getNumVolumes(self):
+        """
+        Get the number of volumes in the scene.
+
+        :return: The number of volumes in the scene
+        :rtype: int
+        :raises Exception: If the server fails to get the number of volumes
+        """
+        b = bytearray()
+        # convert 14 to bytes
+        b.append(0x0E)
+        self.socket.sendall(b)
+        res = self._wait_for_server()
+        if res[0] != 0x0E:
+            self.closeConnection()
+            raise Exception("Server Error getting number of volumes")
+        return int.from_bytes(res[1:], byteorder="little", signed=False)
+
+    def getNumFrames(self):
+        """
+        Get the number of frames in the scene.
+
+        :return: The number of frames in the scene
+        :rtype: int
+        :raises Exception: If the server fails to get the number of frames
+        """
+        b = bytearray()
+        # convert 15 to bytes
+        b.append(0x0F)
+        self.socket.sendall(b)
+        res = self._wait_for_server()
+        if res[0] != 0x0F:
+            self.closeConnection()
+            raise Exception("Server Error getting number of frames")
+        return int.from_bytes(res[1:], byteorder="little", signed=False)
