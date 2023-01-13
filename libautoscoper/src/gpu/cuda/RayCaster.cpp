@@ -43,6 +43,10 @@
 #include <iostream>
 #include <sstream>
 
+#include <cuda.h>
+#include <cutil_inline.h>
+#include <cutil_math.h>
+
 #include "RayCaster.hpp"
 #include "RayCaster_kernels.h"
 #include "VolumeDescription.hpp"
@@ -138,16 +142,33 @@ RayCaster::render(float* buffer, size_t width, size_t height)
         return;
     }
 
-    //float aspectRatio = (float)width/(float)height;
-    volume_bind_array(volumeDescription_->image());
+    // create texture object
+    cudaResourceDesc resDesc;
+    memset(&resDesc, 0, sizeof(resDesc));
+    resDesc.resType = cudaResourceTypeArray;
+    resDesc.res.array.array = (cudaArray_t)volumeDescription_->image();
+
+    cudaTextureDesc texDesc;
+    memset(&texDesc, 0, sizeof(texDesc));
+    texDesc.normalizedCoords = true;
+    texDesc.filterMode = cudaFilterModeLinear;
+    texDesc.addressMode[0] = cudaAddressModeClamp;
+    texDesc.addressMode[1] = cudaAddressModeClamp;
+    texDesc.readMode = cudaReadModeNormalizedFloat;
+
+    cudaTextureObject_t tex = 0;
+    cudaCreateTextureObject(&tex, &resDesc, &texDesc, NULL);
+
     volume_viewport(viewport_[0], viewport_[1], viewport_[2], viewport_[3]);
-    volume_render(buffer,
+    volume_render(tex,buffer,
                   width,
                   height,
                   invModelView_,
                   sampleDistance_,
                   rayIntensity_,
                   cutoff_);
+
+    cudaDestroyTextureObject(tex);
 }
 
 /*
