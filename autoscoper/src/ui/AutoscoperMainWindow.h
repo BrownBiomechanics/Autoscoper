@@ -126,6 +126,8 @@ class AutoscoperMainWindow : public QMainWindow{
     void saveFullDRR();
     std::vector <unsigned char> getImageData(unsigned int volumeID, unsigned int camera, double* xyzpr, unsigned int &width, unsigned int &height);
     void optimizeFrame(int volumeID, int frame, int dframe, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int stall_iter);
+    int getNumVolumes();
+    int getNumFrames();
 
 
     // Backup Save
@@ -204,6 +206,7 @@ class AutoscoperMainWindow : public QMainWindow{
     double rand_gen_main(double fMin, double fMax);
 
     void load_tracking_results(QString filename);
+
     protected:
     void closeEvent(QCloseEvent *event);
   public slots:
@@ -287,7 +290,6 @@ class AutoscoperMainWindow : public QMainWindow{
     void key_plus_pressed();
     void key_equal_pressed();
     void key_minus_pressed();
-
 };
 
 #endif  // UAUTOSCOPERMAINWINDOW_H
