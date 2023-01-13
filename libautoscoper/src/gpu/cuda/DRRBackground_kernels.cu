@@ -58,8 +58,8 @@ namespace xromm {
 {
     // Calculate the block and grid sizes.
     dim3 blockDim(32, 32);
-    dim3 gridDim((width+blockDim.x-1)/blockDim.x,
-                 (height+blockDim.y-1)/blockDim.y);
+    dim3 gridDim(((unsigned int)width+blockDim.x-1)/blockDim.x,
+                 ((unsigned int)height+blockDim.y-1)/blockDim.y);
 
     // Call the kernel
   drr_background_kernel << <gridDim, blockDim >> >(src1, dest, width, height);
