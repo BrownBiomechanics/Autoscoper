@@ -43,14 +43,11 @@
 
 #include <cutil_inline.h>
 
-/////// Global Variables ////////
-
-static texture<unsigned char, 2, cudaReadModeNormalizedFloat> tex;
 
 //////// Image Rendering Kernel ////////
 
 __global__
-void image_render_kernel(float* output, int width, int height, float u0,
+void image_render_kernel(cudaTextureObject_t tex,float* output, int width, int height, float u0,
                          float v0, float u1, float v1, float u2, float v2,
                          float u3, float v3);
 
@@ -60,27 +57,7 @@ namespace xromm
 namespace gpu
 {
 
-void video_bind_array(const cudaArray* array)
-{
-    // Setup 2D texture.
-    tex.normalized = true;
-    tex.filterMode = cudaFilterModeLinear;
-    tex.addressMode[0] = cudaAddressModeClamp;
-    tex.addressMode[1] = cudaAddressModeClamp;
-
-    // Bind array to 3D texture.
-    cutilSafeCall(cudaBindTextureToArray(tex, array));
-}
-
-/*
-void image_deinit()
-{
-    cutilSafeCall(cudaUnbindTexture(tex));
-    cutilSafeCall(cudaFreeArray(array));
-}
-*/
-
-void video_render(float* output, int width, int height, float u0,
+void video_render(cudaTextureObject_t tex,float* output, int width, int height, float u0,
                   float v0, float u1, float v1, float u2, float v2,
                   float u3, float v3)
 {
@@ -89,7 +66,7 @@ void video_render(float* output, int width, int height, float u0,
     dim3 gridDim((width+blockDim.x-1)/blockDim.x,
                  (height+blockDim.y-1)/blockDim.y);
 
-    image_render_kernel<<<gridDim, blockDim>>>(output, width, height,
+    image_render_kernel<<<gridDim, blockDim>>>(tex,output, width, height,
                                                u0, v0, u1, v1, u2, v2,
                                                u3, v3);
 }
@@ -99,7 +76,7 @@ void video_render(float* output, int width, int height, float u0,
 } // namespace xromm
 
 __global__
-void image_render_kernel(float* output, int width, int height, float u0,
+void image_render_kernel(cudaTextureObject_t tex,float* output, int width, int height, float u0,
                          float v0, float u1, float v1, float u2, float v2,
                          float u3, float v3)
 {
@@ -120,7 +97,7 @@ void image_render_kernel(float* output, int width, int height, float u0,
         output[width*y+x] = 0.0f;
     }
     else {
-        output[width*y+x] = 1.0f-tex2D(tex, s, t);
+        output[width*y+x] = 1.0f-tex2D<float>(tex, s, t);
     }
 }
 
