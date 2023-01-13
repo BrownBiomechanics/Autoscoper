@@ -2423,3 +2423,11 @@ void AutoscoperMainWindow::setupShortcuts(){
   ui->actionQuit->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
   ui->actionInsert_Key->setShortcut(QKeySequence(Qt::Key_S));
 }
+
+int AutoscoperMainWindow::getNumVolumes() {
+    return tracker->trial()->num_volumes;
+}
+
+int AutoscoperMainWindow::getNumFrames() {
+    return tracker->trial()->num_frames;
+}
