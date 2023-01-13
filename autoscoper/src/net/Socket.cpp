@@ -308,7 +308,26 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       deleteConnection();
     }
     break;
-  
+
+  case 14:
+    // get number of volumes
+    {
+      int nvol = m_mainwindow->getNumVolumes();
+      QByteArray array = QByteArray(1, 14);
+      array.append((char*)&nvol, sizeof(int));
+      connection->write(array);
+    }
+    break;
+
+  case 15:
+    {
+      // get number of frames
+      int nframe = m_mainwindow->getNumFrames();
+      QByteArray array = QByteArray(1, 15);
+      array.append((char*)&nframe, sizeof(int));
+      connection->write(array);
+    }
+    break;
   default:
     std::cerr << "Cannot handle message" << std::endl;
     connection->write(QByteArray(1,0));
