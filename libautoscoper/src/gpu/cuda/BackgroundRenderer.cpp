@@ -113,25 +113,8 @@ BackgroundRenderer::set_viewport(float x, float y, float width, float height)
 void
 BackgroundRenderer::render(float* buffer, size_t width, size_t height, float threshold) const
 {
-
-    // create texture object
-    cudaResourceDesc resDesc;
-    memset(&resDesc, 0, sizeof(resDesc));
-    resDesc.resType = cudaResourceTypeArray;
-    resDesc.res.array.array = array_;
-
-    cudaTextureDesc texDesc;
-    memset(&texDesc, 0, sizeof(texDesc));
-    texDesc.normalizedCoords = true;
-    texDesc.filterMode = cudaFilterModeLinear;
-    texDesc.addressMode[0] = cudaAddressModeClamp;
-    texDesc.addressMode[1] = cudaAddressModeClamp;
-    //texDesc.readMode = cudaReadModeNormalizedFloat;
-
-    cudaTextureObject_t tex = 0;
-    cudaCreateTextureObject(&tex, &resDesc, &texDesc, NULL);
-
-    background_render(tex,buffer,
+    background_bind_array(array_);
+    background_render(buffer,
                  (int)width,
                  (int)height,
                  image_plane_[0],

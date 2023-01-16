@@ -45,12 +45,12 @@
 
 /////// Global Variables ////////
 
-//static texture<float,2> tex;
+static texture<float,2> tex;
 
 //////// Image Rendering Kernel ////////
 
 __global__
-void background_render_kernel(cudaTextureObject_t tex,float* output, int width, int height, float u0,
+void background_render_kernel(float* output, int width, int height, float u0,
                          float v0, float u1, float v1, float u2, float v2,
              float u3, float v3, float threshold);
 
@@ -60,8 +60,20 @@ namespace xromm
 namespace gpu
 {
 
+void background_bind_array(const cudaArray* array)
+{
+    // Setup 2D texture.
+    tex.normalized = true;
+    tex.filterMode = cudaFilterModeLinear;
+    tex.addressMode[0] = cudaAddressModeClamp;
+    tex.addressMode[1] = cudaAddressModeClamp;
 
-void background_render(cudaTextureObject_t tex,float* output, int width, int height, float u0,
+    // Bind array to 3D texture.
+    cutilSafeCall(cudaBindTextureToArray(tex, array));
+}
+
+
+void background_render(float* output, int width, int height, float u0,
                   float v0, float u1, float v1, float u2, float v2,
                   float u3, float v3, float threshold)
 {
@@ -70,7 +82,7 @@ void background_render(cudaTextureObject_t tex,float* output, int width, int hei
     dim3 gridDim((width+blockDim.x-1)/blockDim.x,
                  (height+blockDim.y-1)/blockDim.y);
 
-  background_render_kernel << <gridDim, blockDim >> >(tex,output, width, height,
+  background_render_kernel << <gridDim, blockDim >> >(output, width, height,
                                                u0, v0, u1, v1, u2, v2,
                                                u3, v3, threshold);
 }
@@ -80,7 +92,7 @@ void background_render(cudaTextureObject_t tex,float* output, int width, int hei
 } // namespace xromm
 
 __global__
-void background_render_kernel(cudaTextureObject_t tex,float* output, int width, int height, float u0,
+void background_render_kernel(float* output, int width, int height, float u0,
                          float v0, float u1, float v1, float u2, float v2,
              float u3, float v3, float threshold)
 {
@@ -101,7 +113,7 @@ void background_render_kernel(cudaTextureObject_t tex,float* output, int width, 
         output[width*y+x] = 0.0f;
     }
     else {
-    output[width*y + x] = (threshold <= tex2D<float>(tex, s, t)) ? 1.0f : 0.0f;
+    output[width*y + x] = (threshold <= tex2D(tex, s, t)) ? 1.0f : 0.0f;
     }
 }
 

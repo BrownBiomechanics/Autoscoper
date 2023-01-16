@@ -58,10 +58,12 @@ struct float3x4
 // Forward declarations
 
 __global__
-void cuda_volume_render_kernel(cudaTextureObject_t tex,float* output, size_t width, size_t height,
+void cuda_volume_render_kernel(float* output, size_t width, size_t height,
                                float step, float intensity, float cutoff);
 
 // Global variables
+
+static texture<unsigned short, 3, cudaReadModeNormalizedFloat> tex;
 
 static __constant__ float4 d_viewport;
 static __constant__ float3x4 d_invModelView;
@@ -72,13 +74,25 @@ namespace xromm
 namespace gpu
 {
 
+void volume_bind_array(const cudaArray* array)
+{
+    // Setup 3D texture.
+    tex.normalized = true;
+    tex.filterMode = cudaFilterModeLinear;
+    tex.addressMode[0] = cudaAddressModeClamp;
+    tex.addressMode[1] = cudaAddressModeClamp;
+
+    // Bind array to 3D texture.
+    cutilSafeCall(cudaBindTextureToArray(tex, array));
+}
+
 void volume_viewport(float x, float y, float width, float height)
 {
     float4 viewport = make_float4(x, y, width, height);
     cutilSafeCall(cudaMemcpyToSymbol(d_viewport, &viewport, sizeof(float4)));
 }
 
-void volume_render(cudaTextureObject_t tex,float* buffer, size_t width, size_t height,
+void volume_render(float* buffer, size_t width, size_t height,
                    const float* invModelView, float step, float intensity,
                    float cutoff)
 {
@@ -93,7 +107,7 @@ void volume_render(cudaTextureObject_t tex,float* buffer, size_t width, size_t h
                  (height+blockDim.y-1)/blockDim.y);
 
     // Call the kernel
-    cuda_volume_render_kernel<<<gridDim, blockDim>>>(tex,buffer, width, height,
+    cuda_volume_render_kernel<<<gridDim, blockDim>>>(buffer, width, height,
                                                 step, intensity, cutoff);
 
     //This crashes it under windows
@@ -154,7 +168,7 @@ float4 mul(const float3x4 &M, const float4 &v)
 
 // Render the volume using ray marching.
 __global__
-void cuda_volume_render_kernel(cudaTextureObject_t tex,float* buffer, size_t width, size_t height,
+void cuda_volume_render_kernel(float* buffer, size_t width, size_t height,
                                float step, float intensity, float cutoff)
 {
   uint x = blockIdx.x*blockDim.x+threadIdx.x;
@@ -194,7 +208,7 @@ void cuda_volume_render_kernel(cudaTextureObject_t tex,float* buffer, size_t wid
     float density = 0.0f;
     while (t > _near) {
         float3 point = ray.origin+t*ray.direction;
-        float sample = tex3D<float>(tex, point.x, 1.0f-point.y, -point.z);
+        float sample = tex3D(tex, point.x, 1.0f-point.y, -point.z);
         density += sample > cutoff? step*sample: 0.0f;
         t -= 1.0f;
     }
