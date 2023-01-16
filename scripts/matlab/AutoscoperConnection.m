@@ -8,8 +8,14 @@ classdef AutoscoperConnection
         function obj = AutoscoperConnection(address)
             % Creates a connection to the Autoscoper 
             % supports single instance connection only
-            
-            obj.socket_descriptor = tcpip(obj.address, obj.port, 'NetworkRole', 'client');
+           
+            v_old = isMATLABReleaseOlderThan("R2022a");
+            if v_old
+                obj.socket_descriptor = tcpip(obj.address, obj.port, 'NetworkRole', 'client');
+            else
+                obj.socket_descriptor = tcpclient(obj.address, obj.port);
+            end
+
             fopen(obj.socket_descriptor);
             if nargin == 1
                 obj.address = address;
@@ -22,12 +28,12 @@ classdef AutoscoperConnection
             % infinite loop
             %TO DO - predetermined time attempt before exiting while
 %             fclose(obj.socket_descriptor); % 
-            fwrite(autoscoper_socket,[13]);
+            fwrite(obj.socket_descriptor,[13]);
 %             delete(obj.socket_descriptor);
             while obj.socket_descriptor.BytesAvailable == 0
                 pause(1)
             end
-            data = fread(obj, autoscoper_socket.BytesAvailable);
+            data = fread(obj.socket_descriptor, obj.socket_descriptor.BytesAvailable);
         end
 
         function loadTrial(obj, path_to_cfg_file)
