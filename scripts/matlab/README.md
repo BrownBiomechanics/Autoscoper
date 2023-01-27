@@ -268,9 +268,9 @@ This function has the following parameters:
 ### Get NCC Sum
     
 ```matlab
-ncc_sum = connection.getNCCSum(volNum, pose);
+ncc_sum = connection.getNCC_Sum(volNum, pose);
 OR
-ncc_sum = getNCCSum(connection, volNum, pose);
+ncc_sum = getNCC_Sum(connection, volNum, pose);
 ```
 
 This will get the NCC sum for the specified volume in the specified pose (set getPose, uses getNCC)
@@ -283,9 +283,9 @@ This function has the following parameters:
 ### Get NCC This Frame
 
 ```matlab
-ncc_this_frame = connection.getNCCThisFrame(volNum, frameNum); (uses getPose, getNCC)
+ncc_this_frame = connection.getNCC_This_Frame(volNum, frameNum); (uses getPose, getNCC)
 OR
-ncc_this_frame = getNCCThisFrame(connection, volNum, frameNum); (uses getPose, getNCC)
+ncc_this_frame = getNCC_This_Frame(connection, volNum, frameNum); (uses getPose, getNCC)
 ```
 
 This will get the NCC this frame for the specified volume at the specified frame. (uses the current pose)
@@ -294,6 +294,8 @@ This function has the following parameters:
 
 * volNum: The volume to get the NCC this frame for.
 * frameNum: The frame to get the NCC this frame at.
+
+*returns a three element double- the ncc values returned from getNCC  , and thier product
 
 ### Close Connection
   
