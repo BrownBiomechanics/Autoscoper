@@ -222,13 +222,13 @@ classdef AutoscoperConnection
                 pause(1)
             end
             data = fread(obj.socket_descriptor, obj.socket_descriptor.BytesAvailable);
-            ncc = {};
+            ncc =nan(1,data(2));
             for i = 1:data(2)
-                val = typecast(uint8(data(3 + (i-1)*8: 10+(i-1)*8)),'double')
+                val = typecast(uint8(data(3 + (i-1)*8: 10+(i-1)*8)),'double');
                 if(val == -99999)
                     val = NaN;
                 end
-                ncc = [ncc val];
+                ncc(i) = val;
             end
         end
 
@@ -390,15 +390,15 @@ classdef AutoscoperConnection
             if nargin < 3
                 error('Not enough input arguments')
             end
-            data = obj.getNCC(volNum,pose);
-            ncc = zeros(1,data(2));
-            for i = 1:data(2)
-                val = typecast(uint8(data(3 + (i-1)*8: 10+(i-1)*8)),'double') ;
-                if(val < 0)
-                    val = 1e3;
-                end
-                ncc(i) = val;
-            end
+            ncc = obj.getNCC(volNum,pose);
+%             ncc = zeros(1,data(2));
+%             for i = 1:data(2)
+%                 val = typecast(uint8(data(3 + (i-1)*8: 10+(i-1)*8)),'double') ;
+%                 if(val < 0)
+%                     val = 1e3;
+%                 end
+%                 ncc(i) = val;
+%             end
 
             ncc_out  = ncc(1) + ncc(2);
         end
@@ -413,15 +413,15 @@ classdef AutoscoperConnection
                 error('Not enough input arguments')
             end
             pose = obj.getPose(volNum,frameNum);
-            data = obj.getNCC(volNum,pose);
-            ncc = zeros(1,data(2));
-            for i = 1:data(2)
-                val = typecast(uint8(data(3 + (i-1)*8: 10+(i-1)*8)),'double') ;
-                if(val == -99999)
-                    val = NaN;
-                end
-                ncc(i) = val;
-            end
+            ncc = obj.getNCC(volNum,pose);
+%             ncc = nan(1,length(data));
+%             for i = 1:length(data)
+%                 val = typecast(uint8(data(3 + (i-1)*8: 10+(i-1)*8)),'double') ;
+%                 if(val == -99999)
+%                     val = NaN;
+%                 end
+%                 ncc(i) = val;
+%             end
 
             ncc_out  = [ncc(1),ncc(2),ncc(1)*ncc(2)];
         end
