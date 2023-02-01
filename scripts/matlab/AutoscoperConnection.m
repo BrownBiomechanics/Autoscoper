@@ -30,10 +30,10 @@ classdef AutoscoperConnection
 %             fclose(obj.socket_descriptor); % 
             fwrite(obj.socket_descriptor,[13]);
 %             delete(obj.socket_descriptor);
-            while obj.socket_descriptor.BytesAvailable == 0
-                pause(1)
-            end
-            data = fread(obj.socket_descriptor, obj.socket_descriptor.BytesAvailable);
+%             while obj.socket_descriptor.BytesAvailable == 0
+%                 pause(1)
+%             end
+%             data = fread(obj.socket_descriptor, obj.socket_descriptor.BytesAvailable);
         end
 
         function loadTrial(obj, path_to_cfg_file)
