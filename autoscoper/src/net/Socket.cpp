@@ -130,13 +130,46 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       qint32* convert_to_rad = reinterpret_cast<qint32*>(&data[21]);
       qint32* interpolate = reinterpret_cast<qint32*>(&data[25]);
       std::string filename = std::string(&data[29], length - 29);
-      std::ifstream test(filename.c_str());
-      if (!test) {
-          std::cerr << "Cannot find " << filename.c_str() << std::endl;
+
+      // If needed, create parent directory
+      bool parent_directory_exists = false;
+      if (!std::filesystem::is_directory(filename)) {
+          auto parent_directory = std::filesystem::path(filename).parent_path();
+          parent_directory_exists = std::filesystem::exists(parent_directory);
+          if (!parent_directory_exists){
+              std::error_code ec;
+              if (std::filesystem::create_directories(parent_directory, ec)) {
+                  parent_directory_exists = true;
+              }
+              else {
+                  std::cerr << "save tracking data: failed to create directory " << parent_directory << ": " << ec.message() << std::endl;
+              }
+          }
+      }
+      else {
+          std::cerr << "save tracking data: failed because filename " << filename << " is a directory" << std::endl;
+      }
+
+      // Check permissions
+      bool parent_directory_writable = false;
+      if (parent_directory_exists){
+          auto parent_directory = std::filesystem::path(filename).parent_path();
+          std::filesystem::file_status status = std::filesystem::status(parent_directory);
+          std::filesystem::perms permissions = status.permissions();
+          if ((permissions & (std::filesystem::perms::owner_write
+                              | std::filesystem::perms::group_write
+                              | std::filesystem::perms::others_write)) != std::filesystem::perms::none) {
+              parent_directory_writable = true;
+          }
+          else {
+              std::cerr << "save tracking data: failed because directory " << parent_directory << " is not writable" << std::endl;
+          }
+      }
+
+      if (!parent_directory_exists || !parent_directory_writable) {
           connection->write(QByteArray(1, 0));
       }
       else {
-
           std::cerr << "save tracking data Volume " << *volume << " : " << filename.c_str() << std::endl;
           std::cerr << "Save as matrix: " << *save_as_matrix << " save as rows: " << *save_as_rows << " save with commas: " << *save_with_commas << " convert to cm: " << *convert_to_cm << " convert to rad: " << *convert_to_rad << " interpolate: " << *interpolate << std::endl;
 
