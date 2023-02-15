@@ -43,10 +43,33 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
+#ifdef WIN32
+#define OS_SEP "\\"
+#else
+#define OS_SEP "/"
+#endif
+
 #include "Socket.h"
 #include <iostream>
 #include <fstream>
 #include <QTcpSocket>
+#include <filesystem>
+
+//lambda function to check if a files directory exists and create it if not
+auto check_dir = [](const std::string& filename) {
+	// find last slash
+    std::size_t last_slash_idx = filename.rfind(OS_SEP);
+    if (std::string::npos != last_slash_idx)
+    {
+		std::string dir = filename.substr(0, last_slash_idx);
+        if (!std::filesystem::exists(dir))
+        {
+			std::filesystem::create_directories(dir);
+		}
+	}
+
+};
+
 
 Socket::Socket(AutoscoperMainWindow* mainwindow, unsigned long long int listenPort) : m_mainwindow(mainwindow)
 {
@@ -103,18 +126,18 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       qint32* convert_to_rad = reinterpret_cast<qint32*>(&data[21]);
       qint32* interpolate = reinterpret_cast<qint32*>(&data[25]);
       std::string filename = std::string(&data[29], length - 29);
-      std::ifstream test(filename.c_str());
-      if (!test) {
-          std::cerr << "Cannot find " << filename.c_str() << std::endl;
-          connection->write(QByteArray(1, 0));
-      }
-      else {
+
+      if (std::filesystem::exists(filename)) {
           std::cerr << "load tracking data Volume " << *volume << " : " << filename.c_str() << std::endl;
           std::cerr << "Save as matrix: " << *save_as_matrix << " save as rows: " << *save_as_rows << " save with commas: " << *save_with_commas << " convert to cm: " << *convert_to_cm << " convert to rad: " << *convert_to_rad << " interpolate: " << *interpolate << std::endl;
 
           m_mainwindow->load_tracking_results(QString(filename.c_str()), *save_as_matrix, *save_as_rows, *save_with_commas, *convert_to_cm, *convert_to_rad, *interpolate, *volume);
 
           connection->write(QByteArray(1, 2));
+      }
+      else {
+          std::cerr << "Cannot find " << filename.c_str() << std::endl;
+          connection->write(QByteArray(1, 0));
       }
     }
     break;
@@ -129,20 +152,9 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       qint32* convert_to_rad = reinterpret_cast<qint32*>(&data[21]);
       qint32* interpolate = reinterpret_cast<qint32*>(&data[25]);
       std::string filename = std::string(&data[29], length - 29);
-      std::ifstream test(filename.c_str());
-      if (!test) {
-          std::cerr << "Cannot find " << filename.c_str() << std::endl;
-          connection->write(QByteArray(1, 0));
-      }
-      else {
-
-          std::cerr << "save tracking data Volume " << *volume << " : " << filename.c_str() << std::endl;
-          std::cerr << "Save as matrix: " << *save_as_matrix << " save as rows: " << *save_as_rows << " save with commas: " << *save_with_commas << " convert to cm: " << *convert_to_cm << " convert to rad: " << *convert_to_rad << " interpolate: " << *interpolate << std::endl;
-
-          m_mainwindow->save_tracking_results(QString(filename.c_str()), *save_as_matrix, *save_as_rows, *save_with_commas, *convert_to_cm, *convert_to_rad, *interpolate, *volume);
-
-          connection->write(QByteArray(1, 3));
-      }
+      check_dir(filename);
+      m_mainwindow->save_tracking_results(QString(filename.c_str()), *save_as_matrix, *save_as_rows, *save_with_commas, *convert_to_cm, *convert_to_rad, *interpolate, *volume);
+      connection->write(QByteArray(1, 3));
     }
     break;
   case 4:
