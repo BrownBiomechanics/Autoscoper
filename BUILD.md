@@ -10,7 +10,7 @@ Prerequisites
 - [QT 5.10 or later](https://www.qt.io/download)
 - Update your graphics card driver
 
-GUI-Build
+### GUI-Build
 
 1. Clone the [GitHub repository](https://github.com/BrownBiomechanics/Autoscoper).
 2. Run CMake and choose a source and the build folder for Autoscoper and click configure.
@@ -25,14 +25,17 @@ GUI-Build
 
 NOTE: Debugging a CUDA program is not straightforward in Visual Studio, so you cannot do the debugging similar to other applications.
 
-Cli-Build (Using Powershell)
+### Cli-Build (Using Powershell)
 
 1. Clone the [GitHub repository](https://github.com/BrownBiomechanics/Autoscoper).
 2. Enter the repos directory
 3. Make and enter a build directory `mkdir build` and `cd build`
-4. Configure project `cmake .. `
-5. Build external dependencies `cmake --build . --config Release`
-6. Install project `cmake --build Autoscoper-build --target install --config Release`
+4. Configure project `cmake .. -DAutoscoper_SUPERBUILD=ON -DAutoscoper_RENDERING_BACKEND="CUDA"/"OpenCL" -DQt5_DIR="path/to/Qt5Config.cmake"`
+5. Build external dependencies `cmake --build . --config Release/Debug`
+
+Optionally Install the project:
+
+6. Install project `cmake --build Autoscoper-build --target install --config Release/Debug`
 7. The autoscoper.exe will be in the folder build/install/bin/Debug or build/nstall/bin/Release depending on which build was performed.
 
 ## LINUX / HPC SERVER
@@ -54,3 +57,14 @@ NOTE 2 for HPC SERVERs: You need to use VNC or another application that gives yo
   2. CMAKE_OSX_DEPLOYMENT_TARGET to 10.15 (or your mac_os version)
   3. If recieved an error for Qt5_DIR, search for (Qt5Config.cmake) on your hard drive and write its location in the field.
 4. After generating the configured file, open XCode and compile the application
+
+## Docker Image
+
+1. Clone the [GitHub repository](https://github.com/BrownBiomechanics/Autoscoper)
+2. Install [Docker](https://www.docker.com/products/docker-desktop)
+3. If running Windows Subsystem for Linux (WSL), install [VcXsrv Windows X Server](https://sourceforge.net/projects/vcxsrv/) for GUI passthrough. 
+4. Open a terminal and navigate to the docker subfolder of the repository
+5. Run `docker build -t "autoscoper_dev_ubuntu:latest" -f ./UbuntuDockerFile .`
+6. Find your IP address (using `ipconfig` on Windows or `ifconfig` on Unix)
+7. Run `docker run --rm -it --gpus all -e DISPLAY=<IP>:0.0 --name autoscoper_ubuntu autoscoper_dev_ubuntu:latest`
+
