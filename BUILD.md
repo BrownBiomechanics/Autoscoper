@@ -40,7 +40,7 @@ Optionally Install the project:
 
 ## LINUX / HPC SERVER
 
-1. Clone the [bitbucket repository](https://bitbucket.org/xromm/autoscoper-v2/src/BA_Playground/).
+1. Clone the [GitHub repository](https://github.com/BrownBiomechanics/Autoscoper).
 2. Create a build folder in the autoscoper folder and run 'ccmake ../.' from the build folder (configure and generate)
 3. Build using 'make' in the build folder.
 
@@ -50,7 +50,7 @@ NOTE 2 for HPC SERVERs: You need to use VNC or another application that gives yo
 
 ## MAC OS - CUDA Only
 
-1. Clone the [bitbucket repository](https://bitbucket.org/xromm/autoscoper-v2/src/BA_Playground/).
+1. Clone the [GitHub repository](https://github.com/BrownBiomechanics/Autoscoper).
 2. Create a build folder in the autoscoper folder, open CMake and use XCode as compiler.
 3. When recieve an error, modify the fields:
   1. CMAKE_OSX_ARCHITECTURES recommended to set to x86_64
