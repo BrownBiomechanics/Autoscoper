@@ -51,6 +51,7 @@
 #include "Video.hpp"
 #include "Volume.hpp"
 #include "VolumeTransform.hpp"
+#include "Mesh.hpp"
 
 namespace xromm
 {
@@ -72,13 +73,14 @@ public:
     std::vector<Camera> cameras;
     std::vector<Video>  videos;
     std::vector<Volume> volumes;
-  std::vector<VolumeTransform> volumestransform;
+    std::vector<VolumeTransform> volumestransform;
+    std::vector<Mesh> meshes;
 
     // State information
     int frame;
     int num_frames;
-  int current_volume;
-  int num_volumes;
+    int current_volume;
+    int num_volumes;
 
     //Controls for the optimization process
     int guess;

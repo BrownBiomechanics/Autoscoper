@@ -77,6 +77,7 @@ namespace xromm
     vector<string> volumeFlips;
     vector<string> renderResolution;
     vector<string> optimizationOffsets;
+    vector<string> meshFiles;
 
     string line, key, value;
     while (getline(file, line)) {
@@ -116,6 +117,10 @@ namespace xromm
         getline(lineStream, value);
         optimizationOffsets.push_back(value);
       }
+      else if (key.compare("Mesh") == 0) {
+		getline(lineStream, value);
+        meshFiles.push_back(value);
+      }
     }
 
     // Close the file.
@@ -134,6 +139,9 @@ namespace xromm
     if (volumeFiles.size() != voxelSizes.size()) {
       throw runtime_error("You must sepcify a voxels size for each volume.");
     }
+    if (meshFiles.size() != 0 && meshFiles.size() != volumeFiles.size()) {
+	  throw runtime_error("You must specify a mesh file for each volume or non at all.");
+	}
 
     cameras.clear();
     for (unsigned int i = 0; i < mayaCams.size(); ++i) {
@@ -180,6 +188,17 @@ namespace xromm
         throw e;
       }
     }
+
+    meshes.clear();
+    for (unsigned int i = 0; i < meshFiles.size(); ++i) {
+        try {
+		    Mesh mesh(meshFiles[i]);
+		    meshes.push_back(mesh);
+	    }
+        catch (exception& e) {
+		    cerr << e.what() << endl;
+	    }
+	}
 
     int maxVideoFrames = 0;
     videos.clear();

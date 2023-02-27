@@ -5,6 +5,7 @@ set(libautoscoper_HEADERS
   src/DownhillSimplex.hpp
   src/Filter.hpp
   src/KeyCurve.hpp
+  src/Mesh.hpp
   src/PSO.hpp
   src/TiffImage.h
   src/Tracker.hpp
@@ -21,8 +22,9 @@ set(libautoscoper_SOURCES
   src/Camera.cpp
   src/CoordFrame.cpp
   src/DownhillSimplex.cpp
-  src/PSO.cpp
   src/KeyCurve.cpp
+  src/Mesh.cpp
+  src/PSO.cpp
   src/TiffImage.cpp
   src/Tracker.cpp
   src/Trial.cpp
