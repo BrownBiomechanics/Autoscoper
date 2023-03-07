@@ -238,7 +238,6 @@ class AutoscoperConnection:
         b.extend(frame.to_bytes(4, byteorder="little", signed=False))
         self.socket.sendall(b)
         data = self.wait_for_server()
-        print(data[0])
         if data[0] != 0x06:
             self.closeConnection()
             raise Exception("Server Error getting pose")
