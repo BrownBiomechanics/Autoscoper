@@ -304,8 +304,7 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
     // close connection
     {
       std::cerr << "Closing connection to Client..." << std::endl;
-      connection->write(QByteArray(1, 13));
-      deleteConnection();
+      connection->disconnectFromHost();
     }
     break;
   
