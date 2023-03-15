@@ -24,16 +24,10 @@ classdef AutoscoperConnection
 
         function closeConnection(obj)
             % Closes the connection
-            % if terminal is closed for any reason- this will catch in an
-            % infinite loop
-            %TO DO - predetermined time attempt before exiting while
-%             fclose(obj.socket_descriptor); % 
+
+            % Since the server is explicitly asked to terminate the connection, no
+            % reply from the server are expected.
             fwrite(obj.socket_descriptor,[13]);
-%             delete(obj.socket_descriptor);
-%             while obj.socket_descriptor.BytesAvailable == 0
-%                 pause(1)
-%             end
-%             data = fread(obj.socket_descriptor, obj.socket_descriptor.BytesAvailable);
         end
 
         function loadTrial(obj, path_to_cfg_file)
