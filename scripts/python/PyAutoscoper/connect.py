@@ -8,6 +8,12 @@ class AutoscoperConnection:
         self.socket = self._openConnection()
         self.is_connected = self.test_connection()
 
+    def __str__(self):
+        return f"Autoscoper connection to {self.address}"
+
+    def __repr__(self):
+        return f"AutoscoperConnection('{self.address}', verbose={self.verbose})"
+
     def _wait_for_server(self):
         """
         Internal function, should not be called by a user.
