@@ -66,8 +66,8 @@ private:
   AutoscoperMainWindow* m_mainwindow;
 
 private slots:
-  void createNewConnection();
-  void deleteConnection();
+  void onNewConnectionEstablished();
+  void onClientDisconnected();
   void reading();
 };
 

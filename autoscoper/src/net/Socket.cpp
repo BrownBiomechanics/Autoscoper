@@ -52,7 +52,7 @@ Socket::Socket(AutoscoperMainWindow* mainwindow, unsigned long long int listenPo
 {
   tcpServer = new QTcpServer();
 
-  connect(tcpServer, &QTcpServer::newConnection, this, &Socket::createNewConnection);
+  connect(tcpServer, &QTcpServer::newConnection, this, &Socket::onNewConnectionEstablished);
   tcpServer->listen(QHostAddress::LocalHost, listenPort);
 }
 
@@ -315,17 +315,17 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
   }
 }
 
-void Socket::createNewConnection()
+void Socket::onNewConnectionEstablished()
 {
   std::cerr << "New Client is Connected..." << std::endl;
   QTcpSocket *clientConnection = tcpServer->nextPendingConnection();
-  connect(clientConnection, &QAbstractSocket::disconnected, this, &Socket::deleteConnection);
+  connect(clientConnection, &QAbstractSocket::disconnected, this, &Socket::onClientDisconnected);
   connect(clientConnection, &QIODevice::readyRead, this, &Socket::reading);
 
   clientConnections.push_back(clientConnection);
 }
 
-void Socket::deleteConnection()
+void Socket::onClientDisconnected()
 {
   //std::cerr << "client disconnected" << std::endl;
   QTcpSocket * obj = dynamic_cast<QTcpSocket *>(sender());
