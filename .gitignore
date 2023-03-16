@@ -1,12 +1,24 @@
+# Autoscoper
 build*/*
 external/*
+
+# macOS
 /.project
 .DS_Store
+
 _make_installer/*
+
+# Visual Studio
 .vs/
+
+# PyCharm
 out/
+
+# Python
 __pycache__/
 PyAutoscoper.egg-info/
 build/
 dist/
+
+# MATLAB
 *.asv
