@@ -46,6 +46,7 @@
 #include "Socket.h"
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 #include <QTcpSocket>
 
 Socket::Socket(AutoscoperMainWindow* mainwindow, unsigned long long int listenPort) : m_mainwindow(mainwindow)
@@ -103,8 +104,8 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       qint32* convert_to_rad = reinterpret_cast<qint32*>(&data[21]);
       qint32* interpolate = reinterpret_cast<qint32*>(&data[25]);
       std::string filename = std::string(&data[29], length - 29);
-      std::ifstream test(filename.c_str());
-      if (!test) {
+
+      if (!std::filesystem::exists(filename)) {
           std::cerr << "Cannot find " << filename.c_str() << std::endl;
           connection->write(QByteArray(1, 0));
       }
@@ -150,8 +151,7 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
     {
       qint32* camera = reinterpret_cast<qint32*>(&data[1]);
       std::string filename = std::string(&data[5], length - 5);
-      std::ifstream test(filename.c_str());
-      if (!test) {
+      if (!std::filesystem::exists(filename)) {
           std::cerr << "Cannot find " << filename.c_str() << std::endl;
           connection->write(QByteArray(1, 0));
       }
