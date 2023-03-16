@@ -10,15 +10,19 @@ _make_installer/*
 
 # Visual Studio
 .vs/
+CMakeSettings.json
 
 # PyCharm
 out/
 
 # Python
 __pycache__/
-PyAutoscoper.egg-info/
+*.egg-info/
 build/
 dist/
+
+# Qt Creator
+CMakeLists.txt.user
 
 # MATLAB
 *.asv
