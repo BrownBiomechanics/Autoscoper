@@ -73,7 +73,7 @@ class AutoscoperConnection:
         b.extend(trial_file.encode("utf-8"))
         self.socket.sendall(b)
         response = self._wait_for_server()
-        if int.from_bytes(response, byteorder="little", signed=False) != 0x01:
+        if response[0] != 0x01:
             self.closeConnection()
             raise Exception("Server Error loading trial file")
 
@@ -126,7 +126,7 @@ class AutoscoperConnection:
         b.extend(tracking_data.encode("utf-8"))
         self.socket.sendall(b)
         response = self._wait_for_server()
-        if int.from_bytes(response, byteorder="little", signed=False) != 0x02:
+        if response[0] != 0x02:
             self.closeConnection()
             raise Exception("Server Error loading tracking data")
 
@@ -176,7 +176,7 @@ class AutoscoperConnection:
         b.extend(tracking_file.encode("utf-8"))
         self.socket.sendall(b)
         response = self._wait_for_server()
-        if int.from_bytes(response, byteorder="little", signed=False) != 0x03:
+        if response[0] != 0x03:
             self.closeConnection()
             raise Exception("Server Error saving tracking data")
 
@@ -201,7 +201,7 @@ class AutoscoperConnection:
         b.extend(settings_file.encode("utf-8"))
         self.socket.sendall(b)
         response = self._wait_for_server()
-        if int.from_bytes(response, byteorder="little", signed=False) != 0x04:
+        if response[0] != 0x04:
             self.closeConnection()
             raise Exception("Server Error loading filter settings")
 
@@ -220,7 +220,7 @@ class AutoscoperConnection:
         b.extend(frame.to_bytes(4, byteorder="little", signed=False))
         self.socket.sendall(b)
         response = self._wait_for_server()
-        if int.from_bytes(response, byteorder="little", signed=False) != 0x05:
+        if response[0] != 0x05:
             self.closeConnection()
             raise Exception("Server Error setting frame")
 
@@ -283,7 +283,7 @@ class AutoscoperConnection:
         b.extend(struct.pack("d", pose[5]))
         self.socket.sendall(b)
         response = self._wait_for_server()
-        if int.from_bytes(response, byteorder="little", signed=False) != 0x07:
+        if response[0] != 0x07:
             self.closeConnection()
             raise Exception("Server Error setting pose")
 
@@ -337,7 +337,7 @@ class AutoscoperConnection:
         b.extend(struct.pack("d", threshold))
         self.socket.sendall(b)
         response = self._wait_for_server()
-        if int.from_bytes(response, byteorder="little", signed=False) != 0x09:
+        if response[0] != 0x09:
             self.closeConnection()
             raise Exception("Server Error setting background threshold")
 
@@ -438,7 +438,7 @@ class AutoscoperConnection:
         b.extend(cf_model.to_bytes(4, byteorder="little", signed=False))
         self.socket.sendall(b)
         response = self._wait_for_server()
-        if int.from_bytes(response, byteorder="little", signed=False) != 0x0B:
+        if response[0] != 0x0B:
             self.closeConnection()
             raise Exception("Server Error optimizing frame")
 
@@ -452,7 +452,7 @@ class AutoscoperConnection:
         b.append(0x0C)
         self.socket.sendall(b)
         response = self._wait_for_server()
-        if int.from_bytes(response, byteorder="little", signed=False) != 0x0C:
+        if response[0] != 0x0C:
             self.closeConnection()
             raise Exception("Server Error saving full DRR")
 
