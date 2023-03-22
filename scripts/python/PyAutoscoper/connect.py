@@ -25,6 +25,42 @@ class AutoscoperConnection:
             if data:
                 return data
 
+    def _pack_data(self, *args):
+        packed_data = bytearray()
+        for arg in args:
+            if isinstance(arg, int):
+                packed_data.extend(arg.to_bytes(4, byteorder="little", signed=False))
+            elif isinstance(arg, float):
+                packed_data.extend(struct.pack("d", arg))
+            elif isinstance(arg, str):
+                packed_data.extend(arg.encode("utf-8"))
+            else:
+                raise Exception(f"Invalid argument type: {type(arg)}")
+        return packed_data
+
+    def _send_command(self, command, *args):
+        """
+        Send a command to the server and wait for the response.
+
+        :param command: The command byte to send
+        :type command: int
+        :param args: The arguments to send with the command
+        :type args: tuple
+        :return: The response from the server
+        :rtype: bytes
+        :raises Exception: If the server response is invalid
+        """
+        packed_data = self._pack_data(*args)
+        b = bytearray()
+        b.append(command)
+        b.extend(packed_data)
+        self.socket.sendall(b)
+        response = self._wait_for_server()
+        if response[0] != command:
+            self.closeConnection()
+            raise Exception(f"Server error: received {response[0]}, expected {command}")
+        return response
+
     def test_connection(self):
         """
         Test the connection to the PyAutoscoper server.
@@ -34,13 +70,7 @@ class AutoscoperConnection:
         """
         if self.verbose:
             print("Testing connection")
-        b = bytearray()
-        b.append(0x00)
-        self.socket.sendall(b)
-        response = self._wait_for_server()
-        if int.from_bytes(response, byteorder="little", signed=False) != 0x00:
-            self.closeConnection()
-            raise Exception("Server Error testing connection")
+        self._send_command(0x00)
         return True
 
     def _openConnection(self):
@@ -68,14 +98,7 @@ class AutoscoperConnection:
         if not os.path.exists(trial_file):
             self.closeConnection()
             raise Exception("Trial file not found")
-        b = bytearray()
-        b.append(0x01)
-        b.extend(trial_file.encode("utf-8"))
-        self.socket.sendall(b)
-        response = self._wait_for_server()
-        if response[0] != 0x01:
-            self.closeConnection()
-            raise Exception("Server Error loading trial file")
+        self._send_command(0x01, trial_file)
 
     def loadTrackingData(
         self,
@@ -114,21 +137,17 @@ class AutoscoperConnection:
         if not os.path.exists(tracking_data):
             self.closeConnection()
             raise Exception("Tracking data file not found")
-        b = bytearray()
-        b.append(0x02)
-        b.extend(volume.to_bytes(4, byteorder="little", signed=False))
-        b.extend((int(is_matrix)).to_bytes(4, byteorder="little", signed=False))
-        b.extend((int(is_rows)).to_bytes(4, byteorder="little", signed=False))
-        b.extend((int(is_with_commas)).to_bytes(4, byteorder="little", signed=False))
-        b.extend((int(is_cm)).to_bytes(4, byteorder="little", signed=False))
-        b.extend((int(is_rad)).to_bytes(4, byteorder="little", signed=False))
-        b.extend((int(interpolate)).to_bytes(4, byteorder="little", signed=False))
-        b.extend(tracking_data.encode("utf-8"))
-        self.socket.sendall(b)
-        response = self._wait_for_server()
-        if response[0] != 0x02:
-            self.closeConnection()
-            raise Exception("Server Error loading tracking data")
+        self._send_command(
+            0x02,
+            volume,
+            int(is_matrix),
+            int(is_rows),
+            int(is_with_commas),
+            int(is_cm),
+            int(is_rad),
+            int(interpolate),
+            tracking_data,
+        )
 
     def saveTracking(
         self,
@@ -164,21 +183,18 @@ class AutoscoperConnection:
         """
         if self.verbose:
             print(f"Saving tracking data: {tracking_file}")
-        b = bytearray()
-        b.append(0x03)
-        b.extend(volume.to_bytes(4, byteorder="little", signed=False))
-        b.extend((int(save_as_matrix)).to_bytes(4, byteorder="little", signed=False))
-        b.extend((int(save_as_rows)).to_bytes(4, byteorder="little", signed=False))
-        b.extend((int(save_with_commas)).to_bytes(4, byteorder="little", signed=False))
-        b.extend((int(convert_to_cm)).to_bytes(4, byteorder="little", signed=False))
-        b.extend((int(convert_to_rad)).to_bytes(4, byteorder="little", signed=False))
-        b.extend((int(interpolate)).to_bytes(4, byteorder="little", signed=False))
-        b.extend(tracking_file.encode("utf-8"))
-        self.socket.sendall(b)
-        response = self._wait_for_server()
-        if response[0] != 0x03:
-            self.closeConnection()
-            raise Exception("Server Error saving tracking data")
+
+        self._send_command(
+            0x03,
+            volume,
+            int(save_as_matrix),
+            int(save_as_rows),
+            int(save_with_commas),
+            int(convert_to_cm),
+            int(convert_to_rad),
+            int(interpolate),
+            tracking_file,
+        )
 
     def loadFilters(self, camera, settings_file):
         """
@@ -195,15 +211,7 @@ class AutoscoperConnection:
         if not os.path.exists(settings_file):
             self.closeConnection()
             raise Exception("Filter settings file not found")
-        b = bytearray()
-        b.append(0x04)
-        b.extend(camera.to_bytes(4, byteorder="little", signed=False))
-        b.extend(settings_file.encode("utf-8"))
-        self.socket.sendall(b)
-        response = self._wait_for_server()
-        if response[0] != 0x04:
-            self.closeConnection()
-            raise Exception("Server Error loading filter settings")
+        self._send_command(0x04, camera, settings_file)
 
     def setFrame(self, frame):
         """
@@ -215,14 +223,7 @@ class AutoscoperConnection:
         """
         if self.verbose:
             print(f"Setting frame: {frame}")
-        b = bytearray()
-        b.append(0x05)
-        b.extend(frame.to_bytes(4, byteorder="little", signed=False))
-        self.socket.sendall(b)
-        response = self._wait_for_server()
-        if response[0] != 0x05:
-            self.closeConnection()
-            raise Exception("Server Error setting frame")
+        self._send_command(0x05, frame)
 
     def getPose(self, volume, frame):
         """
@@ -238,15 +239,7 @@ class AutoscoperConnection:
         """
         if self.verbose:
             print(f"Getting pose for volume {volume} on frame {frame}")
-        b = bytearray()
-        b.append(0x06)
-        b.extend(volume.to_bytes(4, byteorder="little", signed=False))
-        b.extend(frame.to_bytes(4, byteorder="little", signed=False))
-        self.socket.sendall(b)
-        response = self._wait_for_server()
-        if response[0] != 0x06:
-            self.closeConnection()
-            raise Exception("Server Error getting pose")
+        response = self._send_command(0x06, volume, frame)
         return [
             struct.unpack("d", response[1:9])[0],
             struct.unpack("d", response[9:17])[0],
@@ -270,21 +263,7 @@ class AutoscoperConnection:
         """
         if self.verbose:
             print(f"Setting pose {pose} for volume {volume} on frame {frame}")
-        b = bytearray()
-        b.append(0x07)
-        b.extend(volume.to_bytes(4, byteorder="little", signed=False))
-        b.extend(frame.to_bytes(4, byteorder="little", signed=False))
-        b.extend(struct.pack("d", pose[0]))
-        b.extend(struct.pack("d", pose[1]))
-        b.extend(struct.pack("d", pose[2]))
-        b.extend(struct.pack("d", pose[3]))
-        b.extend(struct.pack("d", pose[4]))
-        b.extend(struct.pack("d", pose[5]))
-        self.socket.sendall(b)
-        response = self._wait_for_server()
-        if response[0] != 0x07:
-            self.closeConnection()
-            raise Exception("Server Error setting pose")
+        self._send_command(0x07, volume, frame, *pose)
 
     def getNCC(self, volume, pose):
         """
@@ -300,20 +279,7 @@ class AutoscoperConnection:
         """
         if self.verbose:
             print(f"Getting NCC for volume {volume} on pose {pose}")
-        b = bytearray()
-        b.append(0x08)
-        b.extend(volume.to_bytes(4, byteorder="little", signed=False))
-        b.extend(struct.pack("d", pose[0]))
-        b.extend(struct.pack("d", pose[1]))
-        b.extend(struct.pack("d", pose[2]))
-        b.extend(struct.pack("d", pose[3]))
-        b.extend(struct.pack("d", pose[4]))
-        b.extend(struct.pack("d", pose[5]))
-        self.socket.sendall(b)
-        response = self._wait_for_server()
-        if response[0] != 0x08:
-            self.closeConnection()
-            raise Exception("Server Error getting NCC")
+        response = self._send_command(0x08, volume, *pose)
         ncc = []
         for i in range(0, 2):
             val = response[2 + (i) * 8 : 10 + (i) * 8]
@@ -330,14 +296,7 @@ class AutoscoperConnection:
         """
         if self.verbose:
             print(f"Setting background threshold: {threshold}")
-        b = bytearray()
-        b.append(0x09)
-        b.extend(struct.pack("d", threshold))
-        self.socket.sendall(b)
-        response = self._wait_for_server()
-        if response[0] != 0x09:
-            self.closeConnection()
-            raise Exception("Server Error setting background threshold")
+        self._send_command(0x09, threshold)
 
     def getImageCropped(self, volume, camera, pose):
         """
@@ -357,21 +316,7 @@ class AutoscoperConnection:
             print(
                 f"Getting image for volume {volume} on pose {pose} from camera {camera}"
             )
-        b = bytearray()
-        b.append(0x0A)
-        b.extend(volume.to_bytes(4, byteorder="little", signed=False))
-        b.extend(camera.to_bytes(4, byteorder="little", signed=False))
-        b.extend(struct.pack("d", pose[0]))
-        b.extend(struct.pack("d", pose[1]))
-        b.extend(struct.pack("d", pose[2]))
-        b.extend(struct.pack("d", pose[3]))
-        b.extend(struct.pack("d", pose[4]))
-        b.extend(struct.pack("d", pose[5]))
-        self.socket.sendall(b)
-        response = self._wait_for_server()
-        if response[0] != 0x0A:
-            self.closeConnection()
-            raise Exception("Server Error getting image")
+        response = self._send_command(0x0A, volume, camera, *pose)  # 10
         width = struct.unpack("i", response[1:5])[0]
         height = struct.unpack("i", response[5:9])[0]
         img_data = response[9:]
@@ -421,23 +366,19 @@ class AutoscoperConnection:
             raise Exception("Invalid cost function model")
         if self.verbose:
             print(f"Optimizing volume {volume} on frame {frame}")
-        b = bytearray()
-        b.append(0x0B)
-        b.extend(volume.to_bytes(4, byteorder="little", signed=False))
-        b.extend(frame.to_bytes(4, byteorder="little", signed=False))
-        b.extend(repeats.to_bytes(4, byteorder="little", signed=False))
-        b.extend(max_itr.to_bytes(4, byteorder="little", signed=False))
-        b.extend(struct.pack("d", min_lim))
-        b.extend(struct.pack("d", max_lim))
-        b.extend(max_stall_itr.to_bytes(4, byteorder="little", signed=False))
-        b.extend(dframe.to_bytes(4, byteorder="little", signed=False))
-        b.extend(opt_method.to_bytes(4, byteorder="little", signed=False))
-        b.extend(cf_model.to_bytes(4, byteorder="little", signed=False))
-        self.socket.sendall(b)
-        response = self._wait_for_server()
-        if response[0] != 0x0B:
-            self.closeConnection()
-            raise Exception("Server Error optimizing frame")
+        self._send_command(
+            0x0B,  # 11
+            volume,
+            frame,
+            repeats,
+            max_itr,
+            min_lim,
+            max_lim,
+            max_stall_itr,
+            dframe,
+            opt_method,
+            cf_model,
+        )
 
     def saveFullDRR(self):
         """
@@ -445,13 +386,7 @@ class AutoscoperConnection:
 
         :raises Exception: If the server fails to save the full DRR
         """
-        b = bytearray()
-        b.append(0x0C)
-        self.socket.sendall(b)
-        response = self._wait_for_server()
-        if response[0] != 0x0C:
-            self.closeConnection()
-            raise Exception("Server Error saving full DRR")
+        self._send_command(0x0C)  # 12
 
     def closeConnection(self):
         """
@@ -533,15 +468,9 @@ class AutoscoperConnection:
         :rtype: int
         :raises Exception: If the server fails to get the number of volumes
         """
-        b = bytearray()
-        # convert 14 to bytes
-        b.append(0x0E)
-        self.socket.sendall(b)
-        response = self._wait_for_server()
-        if response[0] != 0x0E:
-            self.closeConnection()
-            raise Exception("Server Error getting number of volumes")
-        return int.from_bytes(response[1:], byteorder="little", signed=False)
+        response = self._send_command(0x0E)  # 14
+        num_volume = struct.unpack("i", response[1:])[0]
+        return num_volume
 
     def getNumFrames(self):
         """
@@ -551,12 +480,6 @@ class AutoscoperConnection:
         :rtype: int
         :raises Exception: If the server fails to get the number of frames
         """
-        b = bytearray()
-        # convert 15 to bytes
-        b.append(0x0F)
-        self.socket.sendall(b)
-        response = self._wait_for_server()
-        if response[0] != 0x0F:
-            self.closeConnection()
-            raise Exception("Server Error getting number of frames")
-        return int.from_bytes(response[1:], byteorder="little", signed=False)
+        response = self._send_command(0x0F)  # 15
+        num_frames = struct.unpack("i", response[1:])[0]
+        return num_frames
