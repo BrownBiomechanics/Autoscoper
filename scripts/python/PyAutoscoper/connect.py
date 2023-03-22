@@ -247,14 +247,13 @@ class AutoscoperConnection:
         if response[0] != 0x06:
             self.closeConnection()
             raise Exception("Server Error getting pose")
-        data = bytearray(response)
         return [
-            struct.unpack("d", data[1:9])[0],
-            struct.unpack("d", data[9:17])[0],
-            struct.unpack("d", data[17:25])[0],
-            struct.unpack("d", data[25:33])[0],
-            struct.unpack("d", data[33:41])[0],
-            struct.unpack("d", data[41:49])[0],
+            struct.unpack("d", response[1:9])[0],
+            struct.unpack("d", response[9:17])[0],
+            struct.unpack("d", response[17:25])[0],
+            struct.unpack("d", response[25:33])[0],
+            struct.unpack("d", response[33:41])[0],
+            struct.unpack("d", response[41:49])[0],
         ]
 
     def setPose(self, volume, frame, pose):
@@ -315,10 +314,9 @@ class AutoscoperConnection:
         if response[0] != 0x08:
             self.closeConnection()
             raise Exception("Server Error getting NCC")
-        data = bytearray(response)
         ncc = []
         for i in range(0, 2):
-            val = data[2 + (i) * 8 : 10 + (i) * 8]
+            val = response[2 + (i) * 8 : 10 + (i) * 8]
             ncc.append(struct.unpack("d", val)[0])
         return ncc
 
@@ -374,10 +372,9 @@ class AutoscoperConnection:
         if response[0] != 0x0A:
             self.closeConnection()
             raise Exception("Server Error getting image")
-        data = bytearray(response)
-        width = struct.unpack("i", data[1:5])[0]
-        height = struct.unpack("i", data[5:9])[0]
-        img_data = data[9:]
+        width = struct.unpack("i", response[1:5])[0]
+        height = struct.unpack("i", response[5:9])[0]
+        img_data = response[9:]
         return [width, height, img_data]
 
     def optimizeFrame(
