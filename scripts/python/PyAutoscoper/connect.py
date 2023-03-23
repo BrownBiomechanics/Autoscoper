@@ -1,4 +1,20 @@
-import socket, struct, os
+import os
+import socket
+import struct
+
+
+class AutoscoperServerError(Exception):
+    """Exception raised when the server reports an error."""
+
+    def __str__(self):
+        return f"Autoscoper Server error: {super().__str__()}"
+
+
+class AutoscoperConnectionError(Exception):
+    """Exception raised when the connection to the server is lost."""
+
+    def __str__(self):
+        return f"Error communicating with Autoscoper server: {super().__str__()}"
 
 
 class AutoscoperConnection:
@@ -6,7 +22,6 @@ class AutoscoperConnection:
         self.address = address
         self.verbose = verbose
         self.socket = self._openConnection()
-        self.is_connected = self.test_connection()
 
     def __str__(self):
         return f"Autoscoper connection to {self.address}"
@@ -54,14 +69,17 @@ class AutoscoperConnection:
         b = bytearray()
         b.append(command)
         b.extend(packed_data)
-        self.socket.sendall(b)
-        response = self._wait_for_server()
+        try:
+            self.socket.sendall(b)
+            response = self._wait_for_server()
+        except socket.error as e:
+            raise AutoscoperConnectionError(e)
         if response[0] != command:
             self.closeConnection()
-            raise Exception(f"Server error: received {response[0]}, expected {command}")
+            raise AutoscoperServerError(f"received {response[0]}, expected {command}")
         return response
 
-    def test_connection(self):
+    def _test_connection(self):
         """
         Test the connection to the PyAutoscoper server.
 
@@ -85,19 +103,33 @@ class AutoscoperConnection:
         s.connect((self.address, 30007))
         return s
 
+    @property
+    def is_connected(self):
+        """
+        Returns the status of the connection to the PyAutoscoper server.
+
+        :rtype: Boolean
+        """
+        try:
+            self._test_connection()
+            return True
+        except (AutoscoperServerError, AutoscoperConnectionError):
+            return False
+
     def loadTrial(self, trial_file):
         """
         Load a trial file into the PyAutoscoper server.
 
         :param trial_file: The path to the trial file to load
         :type trial_file: str
-        :raises Exception: If the trial file is not found, or If the server fails to load the trial file
+        :raises AutoScoperServerError: If the server fails to load the trial file
+        :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
             print(f"Loading trial file: {trial_file}")
         if not os.path.exists(trial_file):
             self.closeConnection()
-            raise Exception("Trial file not found")
+            raise AutoscoperServerError(f"File not found: {trial_file}")
         self._send_command(0x01, trial_file)
 
     def loadTrackingData(
@@ -130,13 +162,14 @@ class AutoscoperConnection:
         :type is_rad: bool
         :param interpolate: Optional - If true, the tracking data will be interpolated using the spline method. If false, the tracking data will be saved as is (with NaN values). Defaults to false.
         :type interpolate: bool
-        :raises Exception: If the tracking data file is not found, or If the server fails to load the tracking data
+        :raises AutoScoperServerError: If the server fails to load the tracking data
+        :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
             print(f"Loading tracking data: {tracking_data}")
         if not os.path.exists(tracking_data):
             self.closeConnection()
-            raise Exception("Tracking data file not found")
+            raise AutoscoperServerError(f"Tracking data not found: {tracking_data}")
         self._send_command(
             0x02,
             volume,
@@ -179,7 +212,8 @@ class AutoscoperConnection:
         :type convert_to_rad: bool
         :param interpolate: Optional - If true, the tracking data will be interpolated using the spline method. If false, the tracking data will be saved as is (with NaN values). Defaults to false.
         :type interpolate: bool
-        :raises Exception: If the server fails to save the tracking data
+        :raises AutoScoperServerError: If the server fails to save the tracking data
+        :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
             print(f"Saving tracking data: {tracking_file}")
@@ -204,13 +238,14 @@ class AutoscoperConnection:
         :type camera: int
         :param settings_file: The path to the filter settings to load
         :type settings_file: str
-        :raises Exception: If the filter settings file is not found, or If the server fails to load the filter settings
+        :raises AutoScoperServerError: If the server fails to load the filter settings
+        :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
             print(f"Loading filter settings: {settings_file}")
         if not os.path.exists(settings_file):
             self.closeConnection()
-            raise Exception("Filter settings file not found")
+            raise AutoscoperServerError(f"Filter settings not found: {settings_file}")
         self._send_command(0x04, camera, settings_file)
 
     def setFrame(self, frame):
@@ -219,7 +254,8 @@ class AutoscoperConnection:
 
         :param frame: The frame to be used for the next acquisition
         :type frame: int
-        :raises Exception: If the server fails to set the frame
+        :raises AutoScoperServerError: If the server fails to set the frame
+        :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
             print(f"Setting frame: {frame}")
@@ -235,7 +271,8 @@ class AutoscoperConnection:
         :type frame: int
         :return: The pose of the volume at the specified frame
         :rtype: list[float]
-        :raises Exception: If the server fails to get the pose
+        :raises AutoScoperServerError: If the server fails to get the pose
+        :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
             print(f"Getting pose for volume {volume} on frame {frame}")
@@ -259,7 +296,8 @@ class AutoscoperConnection:
         :type frame: int
         :param pose: The pose to set the volume to
         :type pose: list[float]
-        :raises Exception: If the server fails to set the pose
+        :raises AutoScoperServerError: If the server fails to set the pose
+        :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
             print(f"Setting pose {pose} for volume {volume} on frame {frame}")
@@ -275,7 +313,8 @@ class AutoscoperConnection:
         :type pose: list[float]
         :return: The NCC of the volume at the specified pose
         :rtype: list[float]
-        :raises Exception: If the server fails to get the NCC
+        :raises AutoScoperServerError: If the server fails to get the NCC
+        :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
             print(f"Getting NCC for volume {volume} on pose {pose}")
@@ -292,7 +331,8 @@ class AutoscoperConnection:
 
         :param threshold: The background threshold
         :type threshold: float
-        :raises Exception: If the server fails to set the background threshold
+        :raises AutoScoperServerError: If the server fails to set the background threshold
+        :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
             print(f"Setting background threshold: {threshold}")
@@ -358,7 +398,8 @@ class AutoscoperConnection:
         :type opt_method: int
         :param cf_model: The cost function model to use, 0 for NCC (Bone Models), 1 for Sum of Absolute Differences (Implant Models)
         :type cf_model: int
-        :raises Exception: If the server fails to optimize the frame
+        :raises AutoscoperServerError: If the server fails to optimize the frame
+        :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if opt_method not in [0, 1]:
             raise Exception("Invalid optimization method")
@@ -384,7 +425,8 @@ class AutoscoperConnection:
         """
         Save the full DRR.
 
-        :raises Exception: If the server fails to save the full DRR
+        :raises AutoscoperServerError: If the server fails to save the full DRR
+        :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         self._send_command(0x0C)  # 12
 
@@ -392,13 +434,16 @@ class AutoscoperConnection:
         """
         Close the connection to the server.
 
+        :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         b = bytearray()
         # convert 13 to bytes
         b.append(0x0D)
-        self.socket.sendall(b)
+        try:
+            self.socket.sendall(b)
+        except socket.error as e:
+            raise AutoscoperConnectionError("Connection to server lost") from e
         self.socket.close()
-        self.is_connected = False
 
     def trackingDialog(
         self,
@@ -437,6 +482,12 @@ class AutoscoperConnection:
         :type max_lim: float
         :param max_stall_itr: The maximum number of iterations to stall
         :type max_stall_itr: int
+        :param opt_method: The optimization method to use, 0 for Particle Swarm, 1 for Downhill Simplex
+        :type opt_method: int
+        :param cf_model: The cost function model to use, 0 for NCC (Bone Models), 1 for Sum of Absolute Differences (Implant Models)
+        :type cf_model: int
+        :raises AutoscoperServerError: If the server fails to track the volume
+        :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
             print(
@@ -466,7 +517,8 @@ class AutoscoperConnection:
 
         :return: The number of volumes in the scene
         :rtype: int
-        :raises Exception: If the server fails to get the number of volumes
+        :raises AutoscoperServerError: If the server fails to get the number of volumes
+        :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         response = self._send_command(0x0E)  # 14
         num_volume = struct.unpack("i", response[1:])[0]
@@ -478,7 +530,8 @@ class AutoscoperConnection:
 
         :return: The number of frames in the scene
         :rtype: int
-        :raises Exception: If the server fails to get the number of frames
+        :raises AutoscoperServerError: If the server fails to get the number of frames
+        :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         response = self._send_command(0x0F)  # 15
         num_frames = struct.unpack("i", response[1:])[0]
