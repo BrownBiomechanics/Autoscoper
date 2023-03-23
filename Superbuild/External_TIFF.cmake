@@ -35,8 +35,8 @@ if((NOT DEFINED TIFF_INCLUDE_DIR
 
   ExternalProject_Add(${proj}
     ${${proj}_EP_ARGS}
-    GIT_REPOSITORY https://gitlab.com/libtiff/libtiff.git
-    GIT_TAG b6a17e567f143fab49734a9e09e5bafeb6f97354
+    GIT_REPOSITORY https://github.com/BrownBiomechanics/libtiff.git
+    GIT_TAG b6a17e567f143fab49734a9e09e5bafeb6f97354 # autoscoper-v4.4.0-2022-05-20-b6a17e56
     SOURCE_DIR ${EP_SOURCE_DIR}
     BINARY_DIR ${EP_BINARY_DIR}
     INSTALL_DIR ${EP_INSTALL_DIR}
