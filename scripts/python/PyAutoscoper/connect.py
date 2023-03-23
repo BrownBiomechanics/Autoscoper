@@ -128,7 +128,6 @@ class AutoscoperConnection:
         if self.verbose:
             print(f"Loading trial file: {trial_file}")
         if not os.path.exists(trial_file):
-            self.closeConnection()
             raise AutoscoperServerError(f"File not found: {trial_file}")
         self._send_command(0x01, trial_file)
 
@@ -168,7 +167,6 @@ class AutoscoperConnection:
         if self.verbose:
             print(f"Loading tracking data: {tracking_data}")
         if not os.path.exists(tracking_data):
-            self.closeConnection()
             raise AutoscoperServerError(f"Tracking data not found: {tracking_data}")
         self._send_command(
             0x02,
@@ -244,7 +242,6 @@ class AutoscoperConnection:
         if self.verbose:
             print(f"Loading filter settings: {settings_file}")
         if not os.path.exists(settings_file):
-            self.closeConnection()
             raise AutoscoperServerError(f"Filter settings not found: {settings_file}")
         self._send_command(0x04, camera, settings_file)
 
