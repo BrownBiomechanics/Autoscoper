@@ -31,8 +31,8 @@ if(NOT DEFINED GLEW_DIR AND NOT Autoscoper_USE_SYSTEM_${proj})
 
   ExternalProject_Add(${proj}
     ${${proj}_EP_ARGS}
-    URL https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0.zip
-    URL_MD5 970535b75b1b69ebd018a0fa05af63d1
+    GIT_REPOSITORY https://github.com/BrownBiomechanics/glew.git
+    GIT_TAG 7cffe085f72ad57a535eb0812b7f3363f02d492b # autoscoper-2.2.0-2020-03-15-9fb23c3e6
     SOURCE_DIR ${EP_SOURCE_DIR}
     SOURCE_SUBDIR build/cmake
     BINARY_DIR ${EP_BINARY_DIR}
