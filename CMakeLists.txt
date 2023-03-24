@@ -231,5 +231,5 @@ if(Autoscoper_INSTALL_SAMPLE_DATA)
     )
 
   # Install sample_data
-  install(DIRECTORY sample_data DESTINATION "${Autoscoper_INSTALL_SAMPLE_DATA_DIR}/${_copy_subdir}" COMPONENT Runtime)
+  install(DIRECTORY sample_data DESTINATION "${Autoscoper_INSTALL_SAMPLE_DATA_DIR}" COMPONENT Runtime)
 endif()
