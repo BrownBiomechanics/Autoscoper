@@ -124,12 +124,11 @@ endif()
 add_subdirectory(libautoscoper)
 add_subdirectory(autoscoper)
 
+# Autoscoper_DEPENDENCIES and Autoscoper_SUPERBUILD_DIR CMake variables are set
+# in SuperBuild.cmake.
+
 if(WIN32)
-  # Autoscoper_DEPENDENCIES and Autoscoper_SUPERBUILD_DIR CMake variables are set
-  # in SuperBuild.cmake.
-  set(PATHS_CONFIG "@set Path=${_qt5Core_install_prefix}/bin")
   foreach(dependency IN LISTS Autoscoper_DEPENDENCIES)
-    set(PATHS_CONFIG "${PATHS_CONFIG};${Autoscoper_SUPERBUILD_DIR}/${dependency}-install/bin/")
     file(GLOB external_dlls "${Autoscoper_SUPERBUILD_DIR}/${dependency}-install/bin/*.dll")
     file(GLOB external_dllsd "${Autoscoper_SUPERBUILD_DIR}/${dependency}-install/bin/*d.dll")
     list(REMOVE_ITEM external_dlls ${external_dllsd})
@@ -137,27 +136,51 @@ if(WIN32)
     install(FILES ${external_dlls} DESTINATION ${Autoscoper_BIN_DIR}/Release CONFIGURATIONS Release COMPONENT Runtime)
     install(FILES ${external_dllsd} DESTINATION ${Autoscoper_BIN_DIR}/Debug CONFIGURATIONS Debug COMPONENT Runtime)
   endforeach()
+endif()
 
-  set(pathsep ":")
+#-----------------------------------------------------------------------------
+# Launcher script
+#-----------------------------------------------------------------------------
+set(Autoscoper_CONFIGURE_LAUCHER_SCRIPT ON)
+if(Autoscoper_CONFIGURE_LAUCHER_SCRIPT)
   if(WIN32)
-    set(pathsep "\;")
+    set(PATHVAR_CONFIG "Path")
+    set(_pathsep ";")
+    set(_launcher_script "autoscoper_set_env.bat")
+    set(_libdir "bin")
+  elseif(APPLE)
+    set(PATHVAR_CONFIG "DYLD_LIBRARY_PATH")
+    set(_pathsep ":")
+    set(_launcher_script "autoscoper_set_env.sh")
+    set(_libdir "lib")
+  else(UNIX)
+    set(PATHVAR_CONFIG "LD_LIBRARY_PATH")
+    set(_pathsep ":")
+    set(_launcher_script "autoscoper_set_env.sh")
+    set(_libdir "lib")
   endif()
 
-  set(PATHS_CONFIG "${PATHS_CONFIG}${pathsep}%Path%")
-  if(WIN32)
-    configure_file(
-      CMake/autoscoper_set_env.bat.in
-      ${Autoscoper_BINARY_DIR}/${Autoscoper_BIN_DIR}/autoscoper_set_env.bat
-      @ONLY
+  message(STATUS "Configuring '${_launcher_script}' with '${PATHVAR_CONFIG}' and '${_pathsep}'")
+
+  set(_library_paths)
+
+  # Qt
+  get_property(_filepath TARGET "Qt5::Core" PROPERTY LOCATION_RELEASE)
+  get_filename_component(_qt5Core_library_dir ${_filepath} PATH)
+  list(APPEND _library_paths "${_qt5Core_library_dir}")
+
+  # Dependencies
+  foreach(dependency IN LISTS Autoscoper_DEPENDENCIES)
+    list(APPEND _library_paths "${Autoscoper_SUPERBUILD_DIR}/${dependency}-install/${_libdir}/")
+  endforeach()
+
+  string(REPLACE ";" "${_pathsep}" PATHS_CONFIG "${_library_paths}")
+
+  configure_file(
+    CMake/${_launcher_script}.in
+    ${Autoscoper_BINARY_DIR}/${Autoscoper_BIN_DIR}/${_launcher_script}
+    @ONLY
     )
-  else()
-    configure_file(
-      CMake/autoscoper_set_env.sh.in
-      ${Autoscoper_BINARY_DIR}/${Autoscoper_BIN_DIR}/autoscoper_set_env.sh
-      @ONLY
-    )
-  endif()
-  
 endif()
 
 #-----------------------------------------------------------------------------
