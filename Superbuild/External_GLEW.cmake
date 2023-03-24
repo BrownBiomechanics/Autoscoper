@@ -26,7 +26,7 @@ if(NOT DEFINED GLEW_DIR AND NOT Autoscoper_USE_SYSTEM_${proj})
   ExternalProject_Add(${proj}
     ${${proj}_EP_ARGS}
     GIT_REPOSITORY https://github.com/BrownBiomechanics/glew.git
-    GIT_TAG 62d671ff5c6e24ec590026810cbea619c549d5e4 # autoscoper-2.2.0-2020-03-15-9fb23c3e6
+    GIT_TAG 8248234b584a17528a499610c9dec13db8c9acba # autoscoper-2.2.0-2020-03-15-9fb23c3e6
     SOURCE_DIR ${EP_SOURCE_DIR}
     SOURCE_SUBDIR build/cmake
     BINARY_DIR ${EP_BINARY_DIR}
