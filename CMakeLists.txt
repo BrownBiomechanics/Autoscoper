@@ -67,6 +67,13 @@ mark_as_superbuild(Autoscoper_RENDERING_BACKEND)
 set(Autoscoper_RENDERING_USE_${Autoscoper_RENDERING_BACKEND}_BACKEND 1)
 message(STATUS "Configuring with rendering backend '${Autoscoper_RENDERING_BACKEND}'")
 
+set(_default OFF)
+if(WIN32)
+  set(_default ON)
+endif()
+option(Autoscoper_INSTALL_Qt_LIBRARIES "Install Qt libraries" ${_default})
+mark_as_superbuild(Autoscoper_INSTALL_Qt_LIBRARIES)
+
 option(Autoscoper_INSTALL_SAMPLE_DATA "Copy/Install the sample data to the build/install directory" ON)
 mark_as_superbuild(Autoscoper_INSTALL_SAMPLE_DATA)
 
