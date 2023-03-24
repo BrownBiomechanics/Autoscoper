@@ -31,4 +31,6 @@ if(WIN32)
     DESTINATION ${Autoscoper_BIN_DIR}/Debug/platforms CONFIGURATIONS Debug
     COMPONENT Runtime
   )
+else()
+  message(AUTHOR_WARNING "Installing Qt libraries is only supported on Windows")
 endif()

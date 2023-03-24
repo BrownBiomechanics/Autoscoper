@@ -129,4 +129,7 @@ target_compile_definitions(autoscoper PUBLIC -DUSE_GLEW)
 
 install(TARGETS autoscoper DESTINATION ${Autoscoper_BIN_DIR}/Debug CONFIGURATIONS Debug COMPONENT Runtime)
 install(TARGETS autoscoper DESTINATION ${Autoscoper_BIN_DIR}/Release CONFIGURATIONS Release COMPONENT Runtime)
-include("${Autoscoper_SOURCE_DIR}/CMake/AutoscoperInstallQt.cmake")
+
+if(Autoscoper_INSTALL_Qt_LIBRARIES)
+  include("${Autoscoper_SOURCE_DIR}/CMake/AutoscoperInstallQt.cmake")
+endif()
