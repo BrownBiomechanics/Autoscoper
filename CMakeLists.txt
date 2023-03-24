@@ -146,16 +146,19 @@ if(Autoscoper_CONFIGURE_LAUCHER_SCRIPT)
   if(WIN32)
     set(PATHVAR_CONFIG "Path")
     set(_pathsep ";")
-    set(_launcher_script "autoscoper_set_env.bat")
+    set(_input_script "autoscoper_set_env.bat.in")
+    set(_launcher_script "autoscoper_set_env-$<CONFIG>.bat")
     set(_libdir "bin")
   elseif(APPLE)
     set(PATHVAR_CONFIG "DYLD_LIBRARY_PATH")
     set(_pathsep ":")
+    set(_input_script "autoscoper_set_env.sh.in")
     set(_launcher_script "autoscoper_set_env.sh")
     set(_libdir "lib")
   else(UNIX)
     set(PATHVAR_CONFIG "LD_LIBRARY_PATH")
     set(_pathsep ":")
+    set(_input_script "autoscoper_set_env.sh.in")
     set(_launcher_script "autoscoper_set_env.sh")
     set(_libdir "lib")
   endif()
@@ -176,11 +179,14 @@ if(Autoscoper_CONFIGURE_LAUCHER_SCRIPT)
 
   string(REPLACE ";" "${_pathsep}" PATHS_CONFIG "${_library_paths}")
 
-  configure_file(
-    CMake/${_launcher_script}.in
-    ${Autoscoper_BINARY_DIR}/${Autoscoper_BIN_DIR}/${_launcher_script}
-    @ONLY
-    )
+  file(READ CMake/${_input_script} contents)
+  # Substitute @VAR@ with corresponding variable
+  string(CONFIGURE "${contents}" contents @ONLY)
+  # If it applies, substitute $<CONFIG> and generate one file per config
+  file(GENERATE
+    OUTPUT ${Autoscoper_BINARY_DIR}/${Autoscoper_BIN_DIR}/${_launcher_script}
+    CONTENT "${contents}"
+  )
 endif()
 
 #-----------------------------------------------------------------------------
