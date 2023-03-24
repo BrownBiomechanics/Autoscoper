@@ -6,7 +6,7 @@ if(WIN32)
       ${_qt5Core_install_prefix}/bin/Qt5Gui.dll
       ${_qt5Core_install_prefix}/bin/Qt5Core.dll
       ${_qt5Core_install_prefix}/bin/Qt5Network.dll
-    DESTINATION ${Autoscoper_BIN_DIR}/Release CONFIGURATIONS Release
+    DESTINATION ${Autoscoper_BIN_DIR} CONFIGURATIONS Release
     COMPONENT Runtime
   )
   install(
@@ -16,19 +16,19 @@ if(WIN32)
       ${_qt5Core_install_prefix}/bin/Qt5Guid.dll
       ${_qt5Core_install_prefix}/bin/Qt5Cored.dll
       ${_qt5Core_install_prefix}/bin/Qt5Networkd.dll
-    DESTINATION ${Autoscoper_BIN_DIR}/Debug CONFIGURATIONS Debug
+    DESTINATION ${Autoscoper_BIN_DIR} CONFIGURATIONS Debug
     COMPONENT Runtime
   )
   install(
     FILES
       ${_qt5Core_install_prefix}/plugins/platforms/qwindows.dll
-    DESTINATION ${Autoscoper_BIN_DIR}/Release/platforms CONFIGURATIONS Release
+    DESTINATION ${Autoscoper_BIN_DIR}/platforms CONFIGURATIONS Release
     COMPONENT Runtime
   )
   install(
     FILES
       ${_qt5Core_install_prefix}/plugins/platforms/qwindowsd.dll
-    DESTINATION ${Autoscoper_BIN_DIR}/Debug/platforms CONFIGURATIONS Debug
+    DESTINATION ${Autoscoper_BIN_DIR}/platforms CONFIGURATIONS Debug
     COMPONENT Runtime
   )
 else()
