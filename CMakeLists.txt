@@ -138,8 +138,6 @@ if(WIN32)
     install(FILES ${external_dllsd} DESTINATION ${Autoscoper_BIN_DIR}/Debug CONFIGURATIONS Debug COMPONENT Runtime)
   endforeach()
 
-  file(COPY sample_data DESTINATION ${CMAKE_INSTALL_PREFIX}/${Autoscoper_BIN_DIR}/Release)
-
   set(pathsep ":")
   if(WIN32)
     set(pathsep "\;")
