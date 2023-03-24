@@ -5,7 +5,7 @@ for %%x in (%*) do (
   set /A argCount+=1
 )
 
-@PATHS_CONFIG@
+@set @PATHVAR_CONFIG@=@PATHS_CONFIG@;%@PATHVAR_CONFIG@%
 
 if %argCount% gtr 0 (
   echo Starting %1
