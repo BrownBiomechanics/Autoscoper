@@ -27,12 +27,6 @@ if((NOT DEFINED TIFF_INCLUDE_DIR
 
   set(EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS)
 
-  if(NOT CMAKE_CONFIGURATION_TYPES)
-    list(APPEND EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS
-      -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-      )
-  endif()
-
   ExternalProject_Add(${proj}
     ${${proj}_EP_ARGS}
     GIT_REPOSITORY https://github.com/BrownBiomechanics/libtiff.git
