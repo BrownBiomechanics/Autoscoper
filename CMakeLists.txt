@@ -74,6 +74,9 @@ endif()
 option(Autoscoper_INSTALL_Qt_LIBRARIES "Install Qt libraries" ${_default})
 mark_as_superbuild(Autoscoper_INSTALL_Qt_LIBRARIES)
 
+option(Autoscoper_INSTALL_DEPENDENCIES "Install dependencies" ON)
+mark_as_superbuild(Autoscoper_INSTALL_DEPENDENCIES)
+
 option(Autoscoper_INSTALL_SAMPLE_DATA "Copy/Install the sample data to the build/install directory" ON)
 mark_as_superbuild(Autoscoper_INSTALL_SAMPLE_DATA)
 
@@ -134,17 +137,6 @@ add_subdirectory(autoscoper)
 # Autoscoper_DEPENDENCIES and Autoscoper_SUPERBUILD_DIR CMake variables are set
 # in SuperBuild.cmake.
 
-if(WIN32)
-  foreach(dependency IN LISTS Autoscoper_DEPENDENCIES)
-    file(GLOB external_dlls "${Autoscoper_SUPERBUILD_DIR}/${dependency}-install/bin/*.dll")
-    file(GLOB external_dllsd "${Autoscoper_SUPERBUILD_DIR}/${dependency}-install/bin/*d.dll")
-    list(REMOVE_ITEM external_dlls ${external_dllsd})
-
-    install(FILES ${external_dlls} DESTINATION ${Autoscoper_BIN_DIR}/Release CONFIGURATIONS Release COMPONENT Runtime)
-    install(FILES ${external_dllsd} DESTINATION ${Autoscoper_BIN_DIR}/Debug CONFIGURATIONS Debug COMPONENT Runtime)
-  endforeach()
-endif()
-
 #-----------------------------------------------------------------------------
 # Launcher script
 #-----------------------------------------------------------------------------
@@ -194,6 +186,15 @@ if(Autoscoper_CONFIGURE_LAUCHER_SCRIPT)
     OUTPUT ${Autoscoper_BINARY_DIR}/${Autoscoper_BIN_DIR}/${_launcher_script}
     CONTENT "${contents}"
   )
+endif()
+
+#-----------------------------------------------------------------------------
+# Install
+#-----------------------------------------------------------------------------
+if(Autoscoper_INSTALL_DEPENDENCIES)
+  foreach(dependency IN LISTS Autoscoper_DEPENDENCIES)
+    install(SCRIPT "${Autoscoper_SUPERBUILD_DIR}/${dependency}-build/cmake_install.cmake")
+  endforeach()
 endif()
 
 #-----------------------------------------------------------------------------
