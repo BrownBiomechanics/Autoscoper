@@ -46,7 +46,7 @@
 #include "Socket.h"
 #include <iostream>
 #include <fstream>
-#include <filesystem>
+#include "filesystem_compat.hpp"
 #include <QTcpSocket>
 
 Socket::Socket(AutoscoperMainWindow* mainwindow, unsigned long long int listenPort) : m_mainwindow(mainwindow)
