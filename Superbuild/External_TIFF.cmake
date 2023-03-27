@@ -51,6 +51,8 @@ if((NOT DEFINED TIFF_INCLUDE_DIR
       -Dtiff_BUILD_HTMLDOC:BOOL=OFF
       # Install directories
       -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      -DCMAKE_INSTALL_BINDIR:STRING=${Autoscoper_BIN_DIR}
+      -DCMAKE_INSTALL_LIBDIR:STRING=${Autoscoper_LIB_DIR}
       ${EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS}
     DEPENDS
       ${${proj}_DEPENDENCIES}
@@ -59,11 +61,11 @@ if((NOT DEFINED TIFF_INCLUDE_DIR
   set(TIFF_ROOT ${tiff_DIR})
   set(TIFF_INCLUDE_DIR ${tiff_DIR}/include)
   if(WIN32)
-    set(TIFF_LIBRARY $<IF:$<CONFIG:Debug>, ${tiff_DIR}/lib/tiffd.lib, ${tiff_DIR}/lib/tiff.lib>)
+    set(TIFF_LIBRARY $<IF:$<CONFIG:Debug>, ${tiff_DIR}/${Autoscoper_LIB_DIR}/tiffd.lib, ${tiff_DIR}/${Autoscoper_LIB_DIR}/tiff.lib>)
   elseif(APPLE)
-    set(TIFF_LIBRARY ${tiff_DIR}/lib/libtiff.dylib)
+    set(TIFF_LIBRARY ${tiff_DIR}/${Autoscoper_LIB_DIR}/libtiff.dylib)
   else()
-    set(TIFF_LIBRARY ${tiff_DIR}/lib/libtiff.so)
+    set(TIFF_LIBRARY ${tiff_DIR}/${Autoscoper_LIB_DIR}/libtiff.so)
   endif()
 
   mark_as_superbuild(

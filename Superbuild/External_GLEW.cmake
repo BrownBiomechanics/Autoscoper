@@ -42,11 +42,13 @@ if(NOT DEFINED GLEW_DIR AND NOT Autoscoper_USE_SYSTEM_${proj})
       -DBUILD_UTILS:BOOL=OFF
       # Install directories
       -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      -DCMAKE_INSTALL_BINDIR:STRING=${Autoscoper_BIN_DIR}
+      -DCMAKE_INSTALL_LIBDIR:STRING=${Autoscoper_LIB_DIR}
       ${EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS}
     DEPENDS
       ${${proj}_DEPENDENCIES}
     )
-  set(GLEW_DIR ${EP_INSTALL_DIR}/lib/cmake/glew)
+  set(GLEW_DIR ${EP_INSTALL_DIR}/${Autoscoper_LIB_DIR}/cmake/glew)
   ExternalProject_Message(${proj} "GLEW_DIR:${GLEW_DIR}")
   mark_as_superbuild(GLEW_DIR:PATH)
 endif()
