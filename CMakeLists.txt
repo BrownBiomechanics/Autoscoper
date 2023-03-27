@@ -200,9 +200,20 @@ if(Autoscoper_CONFIGURE_LAUCHER_SCRIPT)
   # Substitute @VAR@ with corresponding variable
   string(CONFIGURE "${contents}" contents @ONLY)
   # If it applies, substitute $<CONFIG> and generate one file per config
+  set(file_permissions_option "")
+  if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")
+    # Since FILE_PERMISSIONS option was introduced in CMake 3.20, we conditionally
+    # specify it and use "add_custom_command()" in autoscoper/CMakeLists.txt
+    set(file_permissions_option FILE_PERMISSIONS
+      OWNER_READ OWNER_WRITE OWNER_EXECUTE
+      GROUP_READ GROUP_WRITE GROUP_EXECUTE
+      WORLD_READ
+      )
+  endif()
   file(GENERATE
     OUTPUT ${Autoscoper_BINARY_DIR}/${Autoscoper_BIN_DIR}/${_launcher_script}
     CONTENT "${contents}"
+    ${file_permissions_option}
   )
 endif()
 

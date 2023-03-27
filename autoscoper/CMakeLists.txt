@@ -102,6 +102,15 @@ add_executable(autoscoper  ${GUI_TYPE} ${autoscoper_SOURCES} ${autoscoper_HEADER
   src/ui/autoscoper_resource.qrc
 )
 
+if(CMAKE_VERSION VERSION_LESS "3.20" AND UNIX)
+  set(_launcher_script "autoscoper_set_env.sh")
+  add_custom_command(TARGET autoscoper POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E echo "Changing '${_launcher_script}' permissions"
+    COMMAND chmod 775
+      ${Autoscoper_BINARY_DIR}/${Autoscoper_BIN_DIR}/${_launcher_script}
+    )
+endif()
+
 set_target_properties(autoscoper PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_BIN_DIR}"
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_BIN_DIR}"
