@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-declare -x @PATHVAR_CONFIG@="@PATHS_CONFIG@:$@PATHVAR_CONFIG@"
+declare -x @PATHVAR_CONFIG@="@PATHS_CONFIG@:${@PATHVAR_CONFIG@-}"
 
 if [[ $# -gt 0 ]]; then
   echo "Starting $1"
