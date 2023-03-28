@@ -1,0 +1,13 @@
+#cmakedefine01 Autoscoper_HAS_EXPERIMENTAL_FILESYSTEM
+#cmakedefine01 Autoscoper_HAS_FILESYSTEM
+
+#if Autoscoper_HAS_EXPERIMENTAL_FILESYSTEM
+#    include <experimental/filesystem>
+namespace std {
+    namespace filesystem = experimental::filesystem;
+}
+#elif Autoscoper_HAS_FILESYSTEM
+#    include <filesystem>
+#else
+#    error Could not find system header "<filesystem>" or "<experimental/filesystem>"
+#endif
