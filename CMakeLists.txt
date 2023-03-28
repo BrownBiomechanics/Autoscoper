@@ -84,6 +84,16 @@ option(Autoscoper_SUPERBUILD "Build ${PROJECT_NAME} and the projects it depends 
 mark_as_advanced(Autoscoper_SUPERBUILD)
 set(Autoscoper_BINARY_INNER_SUBDIR Autoscoper-build)
 
+if(UNIX AND NOT APPLE)
+  if(NOT DEFINED OpenGL_GL_PREFERENCE)
+    set(OpenGL_GL_PREFERENCE "LEGACY")
+  endif()
+  if(NOT "${OpenGL_GL_PREFERENCE}" MATCHES "^(LEGACY|GLVND)$")
+    message(FATAL_ERROR "OpenGL_GL_PREFERENCE variable is expected to be set to LEGACY or GLVND")
+  endif()
+  mark_as_superbuild(OpenGL_GL_PREFERENCE:STRING)
+  message(STATUS "Setting OpenGL_GL_PREFERENCE to ${OpenGL_GL_PREFERENCE}")
+endif()
 
 if(Autoscoper_RENDERING_BACKEND STREQUAL "OpenCL")
   set(Autoscoper_OpenCL_MINIMUM_REQUIRED_VERSION "1.2.0")
