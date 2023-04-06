@@ -789,6 +789,19 @@ void Kernel::grid2d(size_t X, size_t Y)
   grid_[1] = Y * block_[1];
 }
 
+void Kernel::grid3d(size_t X, size_t Y, size_t Z) {
+  if (grid_dim_ && (grid_dim_ != 3)) {
+    ERROR("Grid dimension was already set and is not 3");
+  } else if (!block_dim_) {
+    ERROR("Must set block dimension before grid");
+  } else {
+    grid_dim_ = 3;
+  }
+  grid_[0] = X * block_[0];
+  grid_[1] = Y * block_[1];
+  grid_[2] = Z * block_[2];
+}
+
 void Kernel::block1d(size_t X)
 {
   if (block_dim_ && (block_dim_ != 1)) {
@@ -808,6 +821,18 @@ void Kernel::block2d(size_t X, size_t Y)
   }
   block_[0] = X;
   block_[1] = Y;
+}
+
+void Kernel::block3d(size_t X, size_t Y, size_t Z)
+{
+  if (block_dim_ && (block_dim_ != 3)) {
+    ERROR("Block dimension was already set and is not 3");
+  } else {
+    block_dim_ = 3;
+  }
+  block_[0] = X;
+  block_[1] = Y;
+  block_[2] = Z;
 }
 
 void Kernel::addBufferArg(const Buffer* buf)

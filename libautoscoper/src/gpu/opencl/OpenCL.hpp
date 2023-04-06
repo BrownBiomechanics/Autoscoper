@@ -86,6 +86,8 @@ public:
   void block1d(size_t X);
   void grid2d(size_t X, size_t Y);
   void block2d(size_t X, size_t Y);
+  void grid3d(size_t X, size_t Y, size_t Z);
+  void block3d(size_t X, size_t Y, size_t Z);
   void launch();
 
   void addBufferArg(const Buffer* buf);
