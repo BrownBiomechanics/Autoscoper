@@ -826,7 +826,7 @@ void Kernel::block2d(size_t X, size_t Y)
 void Kernel::block3d(size_t X, size_t Y, size_t Z)
 {
   if (block_dim_ && (block_dim_ != 3)) {
-	ERROR("Block dimension was already set and is not 3");
+    ERROR("Block dimension was already set and is not 3");
   } else {
 	block_dim_ = 3;
   }
