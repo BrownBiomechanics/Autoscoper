@@ -795,7 +795,7 @@ void Kernel::grid3d(size_t X, size_t Y, size_t Z) {
   } else if (!block_dim_) {
     ERROR("Must set block dimension before grid");
   } else {
-	grid_dim_ = 3;
+    grid_dim_ = 3;
   }
   grid_[0] = X * block_[0];
   grid_[1] = Y * block_[1];
