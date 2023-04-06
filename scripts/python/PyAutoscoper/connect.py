@@ -350,9 +350,7 @@ class AutoscoperConnection:
         :raises Exception: If the server fails to get the image
         """
         if self.verbose:
-            print(
-                f"Getting image for volume {volume} on pose {pose} from camera {camera}"
-            )
+            print(f"Getting image for volume {volume} on pose {pose} from camera {camera}")
         response = self._send_command(0x0A, volume, camera, *pose)  # 10
         width = struct.unpack("i", response[1:5])[0]
         height = struct.unpack("i", response[5:9])[0]
@@ -487,9 +485,7 @@ class AutoscoperConnection:
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
-            print(
-                f"Automated tracking of volume {volume} from frame {start_frame} to {end_frame}.\n"
-            )
+            print(f"Automated tracking of volume {volume} from frame {start_frame} to {end_frame}.\n")
         for frame in range(start_frame, end_frame):
             self.setFrame(frame=frame)
             if frame != 0:
