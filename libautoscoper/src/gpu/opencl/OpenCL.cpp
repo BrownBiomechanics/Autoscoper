@@ -793,7 +793,7 @@ void Kernel::grid3d(size_t X, size_t Y, size_t Z) {
   if (grid_dim_ && (grid_dim_ != 3)) {
     ERROR("Grid dimension was already set and is not 3");
   } else if (!block_dim_) {
-	ERROR("Must set block dimension before grid");
+    ERROR("Must set block dimension before grid");
   } else {
 	grid_dim_ = 3;
   }
