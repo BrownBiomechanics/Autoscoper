@@ -1,0 +1,9 @@
+linkify-it-py
+myst-parser
+sphinx
+sphinx-issues
+sphinx-notfound-page
+sphinx-rtd-theme
+sphinxcontrib-autoprogram
+sphinxcontrib-bibtex
+PyAutoscoper

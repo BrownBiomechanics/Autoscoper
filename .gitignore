@@ -26,3 +26,6 @@ CMakeLists.txt.user
 
 # MATLAB
 *.asv
+
+# Documentation
+Documentation/_build
