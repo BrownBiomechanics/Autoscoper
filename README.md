@@ -10,6 +10,14 @@ The installer for Autoscoper 2.7.1 are available [on the SimTk website](https://
 
 You need to install the [CUDA toolkit](https://developer.nvidia.com/cuda-downloads?), and update your graphics card driver to run the application.
 
+## License
+
+The Autoscoper software is distributed under a BSD-style open source license that is broadly compatible with the Open Source Definition by [The Open Source Initiative](https://opensource.org/) and contains no restrictions on legal uses of the software.
+
+### Historical notes about the license
+
+The Autoscoper license is an adaptation of the BSD-3 license with customized additions to the Disclaimer of Warranty and Limitation of Liability that were drafted by Brown University lawyers in 2011. These additional clauses go beyond the standard BSD-3 disclaimer by explicitly stating that Brown University provides no warranties or representations of any kind, including those for design, merchantability, and fitness for purpose, and disclaims any errors or infringement on third-party proprietary rights. The Autoscoper license also limits Brown University's liability for damages arising out of the use of the software, including direct and indirect damages, as well as any loss of data or profits.
+
 ## History
 
 In November 2020, the development was transitioned from bitbucket to GitHub. See https://github.com/BrownBiomechanics/Autoscoper/
