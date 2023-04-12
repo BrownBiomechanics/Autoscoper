@@ -48,8 +48,9 @@
 #include <fstream>
 #include "filesystem_compat.hpp"
 #include <QTcpSocket>
+#include <Tracker.hpp>
 
-#define AUTOSCOPER_SOCKET_VERSION 1
+#define AUTOSCOPER_SOCKET_VERSION 2
 
 Socket::Socket(AutoscoperMainWindow* mainwindow, unsigned long long int listenPort) : m_mainwindow(mainwindow)
 {
@@ -354,8 +355,11 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       SocketReadValuePointerMacro(dframe, qint32);
       SocketReadValuePointerMacro(opt_method, qint32);
       SocketReadValuePointerMacro(cf_model, qint32);
+      SocketReadValuePointerMacro(opt_init_heuristic, qint32);
 
       std::cerr << "Running optimization from autoscoper for frame #" << *frame << std::endl;
+
+      m_mainwindow->getTracker()->trial()->guess = *opt_init_heuristic;
 
       m_mainwindow->optimizeFrame(*volumeID, *frame, *dframe, *repeats,
         *opt_method,

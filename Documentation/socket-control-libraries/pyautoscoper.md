@@ -115,7 +115,7 @@ There are two methods for optimizing the tracking data:
 * `optimizeFrame`: Optimizes the tracking data for a single frame.
 * `trackingDialog`: Automatically optimizes the tracking data for all given frames.
 
-The `optimizeFrame` method takes ten arguments:
+The `optimizeFrame` method takes eleven arguments:
 * `volume`: The volume index (0-indexed).
 * `frame`: The frame index (0-indexed).
 * `repeats`: The number of times to repeat the optimization.
@@ -126,6 +126,12 @@ The `optimizeFrame` method takes ten arguments:
 * `dframe`: The amount of frames to skip backwards for the initial guess.
 * `opt_method`: The {const}`~PyAutoscoper.connect.OptimizationMethod` to use.
 * `cf_model` : The {const}`~PyAutoscoper.connect.CostFunction` to use for evaluating the optimization.
+* `opt_init_heuristic`: The {const}`~PyAutoscoper.connect.OptimizationInitializationHeuristic`.
+
+:::{versionadded} 2
+
+The `opt_init_heuristic` parameter.
+:::
 
 ```{literalinclude} ../../scripts/python/examples/pyautoscoper-examples.py
 :language: python
@@ -146,6 +152,12 @@ The `trackingDialog` method takes at least three arguments:
 * `max_stall_itr`: The maximum number of iterations to stall the optimization. Defaults to 25.
 * `opt_method`: The {const}`~PyAutoscoper.connect.OptimizationMethod` to use. Defaults to {const}`~PyAutoscoper.connect.OptimizationMethod.PARTICLE_SWARM_OPTIMIZATION`.
 * `cf_model` : The {const}`~PyAutoscoper.connect.CostFunction` to use for evaluating the optimization. Defaults to {const}`~PyAutoscoper.connect.CostFunction.NORMALIZED_CROSS_CORRELATION`.
+* `opt_init_heuristic`: The {const}`~PyAutoscoper.connect.OptimizationInitializationHeuristic`. Default to {const}`~PyAutoscoper.connect.OptimizationInitializationHeuristic.PREVIOUS_FRAME`.
+
+:::{versionadded} 2
+
+The `opt_init_heuristic` parameter.
+:::
 
 ```{literalinclude} ../../scripts/python/examples/pyautoscoper-examples.py
 :language: python

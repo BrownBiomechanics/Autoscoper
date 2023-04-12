@@ -4,6 +4,7 @@ from PyAutoscoper.connect import (
     AutoscoperConnection,
     OptimizationMethod,
     CostFunction,
+    OptimizationInitializationHeuristic,
 )
 
 autoscoperSocket = AutoscoperConnection()
@@ -48,6 +49,7 @@ autoscoperSocket.optimizeFrame(
     dframe=1,
     opt_method=OptimizationMethod.PARTICLE_SWARM_OPTIMIZATION,
     cf_model=CostFunction.NORMALIZED_CROSS_CORRELATION,
+    opt_init_heuristic=OptimizationInitializationHeuristic.PREVIOUS_FRAME,
 )
 # [Example 5 - End]
 
@@ -61,6 +63,7 @@ from PyAutoscoper.connect import (
     AutoscoperConnection,
     OptimizationMethod,
     CostFunction,
+    OptimizationInitializationHeuristic,
 )
 
 # Create a socket connection to Autoscoper
@@ -97,6 +100,7 @@ for volume in range(3):
             dframe=1,
             opt_method=OptimizationMethod.PARTICLE_SWARM_OPTIMIZATION,
             cf_model=CostFunction.NORMALIZED_CROSS_CORRELATION,
+            opt_init_heuristic=OptimizationInitializationHeuristic.CURRENT_FRAME,
         )
 
     autoscoperSocket.saveTracking(volume, f"path/to/tracking_data_volume_{volume}_out.tra")

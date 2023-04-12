@@ -209,7 +209,8 @@ conn.optimizeFrame(
     max_stall_itr,
     dframe,
     opt_method,
-    cf_model
+    cf_model,
+    opt_init_heuristic
 )
 ```
 
@@ -225,6 +226,7 @@ All of these arguments are optional and have default values. The default values 
 | dframe | 1 | The amount of frames to skip over. |
 | opt_method | 0 | The optimization method to use. 0 is Partial Swarm Optimization and 1 is Downhill Simplex. |
 | cf_model | 0 | The cost function model to use. 0 is NCC and 1 is Sum of Absolute Differences. |
+| opt_init_heuristic | 1 | The heuristic used to initialize the optimization, 0 for current frame, 1 for previous frame, 2 linear extrapolation, 3 for spline interpolation. |
 
 ### Tracking Dialog
 

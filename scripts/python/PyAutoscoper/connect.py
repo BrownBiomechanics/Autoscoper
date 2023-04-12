@@ -3,7 +3,7 @@ import socket
 import struct
 from enum import Enum
 
-EXPECTED_SERVER_VERSION = 1
+EXPECTED_SERVER_VERSION = 2
 
 
 class CostFunction(Enum):
@@ -11,6 +11,15 @@ class CostFunction(Enum):
 
     NORMALIZED_CROSS_CORRELATION = 0
     SUM_OF_ABSOLUTE_DIFFERENCES = 1
+
+
+class OptimizationInitializationHeuristic(Enum):
+    """Enum for the different optimization initialization heuristics available in PyAutoscoper."""
+
+    CURRENT_FRAME = 0
+    PREVIOUS_FRAME = 1
+    LINEAR_EXTRAPOLATION = 2
+    SPLINE_INTERPOLATION = 3
 
 
 class OptimizationMethod(Enum):
@@ -421,6 +430,7 @@ class AutoscoperConnection:
         dframe,
         opt_method,
         cf_model,
+        opt_init_heuristic,
     ):
         """
         Optimize the pose of the volume at the specified frame.
@@ -445,11 +455,20 @@ class AutoscoperConnection:
         :type opt_method: int or :const:`~OptimizationMethod`
         :param cf_model: The cost function to use. :const:`~CostFunction.NORMALIZED_CROSS_CORRELATION` for Bone Models,  :const:`~CostFunction.SUM_OF_ABSOLUTE_DIFFERENCES` for Implant Models.
         :type cf_model: int or :const:`~CostFunction`
+        :param opt_init_heuristic: The heuristic to initialize the optimization. See :const:`~OptimizationInitializationHeuristic`.
+        :type opt_init_heuristic: int or :const:`~OptimizationInitializationHeuristic`
 
         :raises AutoscoperServerError: If the server fails to optimize the frame
         :raises AutoscoperConnectionError: If the connection to the server is lost
         :raises ValueError: If parameters accepting an enum value are incorrectly specified.
+
+        .. versionadded:: 2
+
+          The `opt_init_heuristic` parameter.
         """
+        if not isinstance(opt_init_heuristic, OptimizationInitializationHeuristic):
+            opt_init_heuristic = OptimizationInitializationHeuristic(opt_init_heuristic)
+
         if not isinstance(cf_model, CostFunction):
             cf_model = CostFunction(cf_model)
 
@@ -468,8 +487,9 @@ class AutoscoperConnection:
             max_lim,
             max_stall_itr,
             dframe,
-            opt_method,
-            cf_model,
+            opt_method.value,
+            cf_model.value,
+            opt_init_heuristic.value,
         )
 
     def saveFullDRR(self):
@@ -509,11 +529,10 @@ class AutoscoperConnection:
         max_stall_itr=25,
         opt_method=OptimizationMethod.PARTICLE_SWARM_OPTIMIZATION,
         cf_model=CostFunction.NORMALIZED_CROSS_CORRELATION,
+        opt_init_heuristic=OptimizationInitializationHeuristic.PREVIOUS_FRAME,
     ):
         """
-        Automatically tracks the volume accross the given frames.
-
-        Currently using previous frame for intial guess.
+        Automatically tracks the volume across the given frames.
 
         :param volume: The id of the volume to be tracked
         :type volume: int
@@ -537,18 +556,21 @@ class AutoscoperConnection:
         :type opt_method: int or :const:`~OptimizationMethod`
         :param cf_model: The cost function to use. :const:`~CostFunction.NORMALIZED_CROSS_CORRELATION` for Bone Models,  :const:`~CostFunction.SUM_OF_ABSOLUTE_DIFFERENCES` for Implant Models.
         :type cf_model: int or :const:`~CostFunction`
+        :param opt_init_heuristic: The heuristic to initialize the optimization. See :const:`~OptimizationInitializationHeuristic`.
+        :type opt_init_heuristic: int or :const:`~OptimizationInitializationHeuristic`
 
         :raises AutoscoperServerError: If the server fails to track the volume
         :raises AutoscoperConnectionError: If the connection to the server is lost
         :raises ValueError: If parameters accepting an enum value are incorrectly specified.
+
+        .. versionadded:: 2
+
+          The `opt_init_heuristic` parameter.
         """
         if self.verbose:
             print(f"Automated tracking of volume {volume} from frame {start_frame} to {end_frame}.\n")
         for frame in range(start_frame, end_frame):
             self.setFrame(frame=frame)
-            if frame != 0:
-                pose = self.getPose(volume=volume, frame=(frame - 1))
-                self.setPose(volume=volume, frame=frame, pose=pose)
             self.optimizeFrame(
                 volume=volume,
                 frame=frame,
@@ -560,6 +582,7 @@ class AutoscoperConnection:
                 dframe=frame_skip,
                 opt_method=opt_method,
                 cf_model=cf_model,
+                opt_init_heuristic=opt_init_heuristic,
             )
 
     def getNumVolumes(self):
