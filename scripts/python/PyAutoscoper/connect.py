@@ -122,7 +122,7 @@ class AutoscoperConnection:
 
         :param trial_file: The path to the trial file to load
         :type trial_file: str
-        :raises AutoScoperServerError: If the server fails to load the trial file
+        :raises AutoscoperServerError: If the server fails to load the trial file
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
@@ -161,7 +161,7 @@ class AutoscoperConnection:
         :type is_rad: bool
         :param interpolate: Optional - If true, the tracking data will be interpolated using the spline method. If false, the tracking data will be saved as is (with NaN values). Defaults to false.
         :type interpolate: bool
-        :raises AutoScoperServerError: If the server fails to load the tracking data
+        :raises AutoscoperServerError: If the server fails to load the tracking data
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
@@ -210,7 +210,7 @@ class AutoscoperConnection:
         :type convert_to_rad: bool
         :param interpolate: Optional - If true, the tracking data will be interpolated using the spline method. If false, the tracking data will be saved as is (with NaN values). Defaults to false.
         :type interpolate: bool
-        :raises AutoScoperServerError: If the server fails to save the tracking data
+        :raises AutoscoperServerError: If the server fails to save the tracking data
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
@@ -236,7 +236,7 @@ class AutoscoperConnection:
         :type camera: int
         :param settings_file: The path to the filter settings to load
         :type settings_file: str
-        :raises AutoScoperServerError: If the server fails to load the filter settings
+        :raises AutoscoperServerError: If the server fails to load the filter settings
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
@@ -251,7 +251,7 @@ class AutoscoperConnection:
 
         :param frame: The frame to be used for the next acquisition
         :type frame: int
-        :raises AutoScoperServerError: If the server fails to set the frame
+        :raises AutoscoperServerError: If the server fails to set the frame
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
@@ -268,7 +268,7 @@ class AutoscoperConnection:
         :type frame: int
         :return: The pose of the volume at the specified frame
         :rtype: list[float]
-        :raises AutoScoperServerError: If the server fails to get the pose
+        :raises AutoscoperServerError: If the server fails to get the pose
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
@@ -293,7 +293,7 @@ class AutoscoperConnection:
         :type frame: int
         :param pose: The pose to set the volume to
         :type pose: list[float]
-        :raises AutoScoperServerError: If the server fails to set the pose
+        :raises AutoscoperServerError: If the server fails to set the pose
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
@@ -310,7 +310,7 @@ class AutoscoperConnection:
         :type pose: list[float]
         :return: The NCC of the volume at the specified pose
         :rtype: list[float]
-        :raises AutoScoperServerError: If the server fails to get the NCC
+        :raises AutoscoperServerError: If the server fails to get the NCC
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
@@ -328,7 +328,7 @@ class AutoscoperConnection:
 
         :param threshold: The background threshold
         :type threshold: float
-        :raises AutoScoperServerError: If the server fails to set the background threshold
+        :raises AutoscoperServerError: If the server fails to set the background threshold
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
@@ -347,7 +347,8 @@ class AutoscoperConnection:
         :type pose: list[float]
         :return: The cropped image of the volume at the specified pose
         :rtype: list[float]
-        :raises Exception: If the server fails to get the image
+        :raises AutoscoperServerError: If the server fails to get the image
+        :raises AutoscoperConnectionError: If the connection to the server is lost
         """
         if self.verbose:
             print(f"Getting image for volume {volume} on pose {pose} from camera {camera}")
