@@ -48,6 +48,8 @@ It is recommended to post any questions, bug reports, or enhancement requests in
 :maxdepth: 2
 :caption: Contents
 
+getting-started.md
+user-interface.md
 socket-control-libraries/index.md
 ```
 
