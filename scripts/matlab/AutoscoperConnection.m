@@ -304,7 +304,7 @@ classdef AutoscoperConnection
             data = fread(obj.socket_descriptor, obj.socket_descriptor.BytesAvailable);
         end
 
-        function optimizeFrame(obj, volNum, frameNum, repeats, max_itr, min_lim, max_lim, max_stall_itr, dframe, opt_method, cf_model)
+        function optimizeFrame(obj, volNum, frameNum, repeats, max_itr, min_lim, max_lim, max_stall_itr, dframe, opt_method, cf_model, opt_init_heuristic)
             % Optimizes the given frame
             % only obj, volNum, and frame are required
             % all other parameters are optional
@@ -319,6 +319,7 @@ classdef AutoscoperConnection
             % dframe: The amount of frames to skip
             % opt_method: The optimization method to use, 0 for Particle Swarm, 1 for Downhill Simplex
             % cf_model: The cost function model to use, 0 for NCC (Bone Models), 1 for Sum of Absolute Differences (Implant Models)
+            % opt_init_heuristic: heuristic for setting the initial frame for the optimization. 0 for current frame, 1 for previous frame, 2 linear extrapolation, 3 for spline interpolation
 
             if nargin < 3
                 error('Not enough input arguments');
@@ -347,6 +348,9 @@ classdef AutoscoperConnection
             if nargin < 11
                 cf_model = 0;
             end
+            if nargin < 12
+                opt_init_heuristic = 0;
+            end
             fwrite(obj.socket_descriptor, [ ...
                                            11 ...
                                            typecast(int32(volNum), 'uint8') ...
@@ -359,6 +363,7 @@ classdef AutoscoperConnection
                                            typecast(int32(dframe), 'uint8') ...
                                            typecast(int32(opt_method), 'uint8') ...
                                            typecast(int32(cf_model), 'uint8') ...
+                                           typecast(int32(opt_init_heuristic), 'uint8') ...
                                           ]);
             while obj.socket_descriptor.BytesAvailable == 0
                 pause(1);
@@ -376,7 +381,7 @@ classdef AutoscoperConnection
             data = fread(obj.socket_descriptor, obj.socket_descriptor.BytesAvailable);
         end
 
-        function trackingDialog(obj, volNum, startframe, endframe, repeats, max_itr, min_lim, max_lim, max_stall_itr, dframe, opt_method, cf_model)
+        function trackingDialog(obj, volNum, startframe, endframe, repeats, max_itr, min_lim, max_lim, max_stall_itr, dframe, opt_method, cf_model, opt_init_heuristic)
             % Performs optimization on a range of frames
             % Only obj, volNum, startframe, and endframe are required
             % all other parameters are optional
@@ -392,6 +397,7 @@ classdef AutoscoperConnection
             % dframe: The amount of frames to skip
             % opt_method: The optimization method to use, 0 for Particle Swarm, 1 for Downhill Simplex
             % cf_model: The cost function model to use, 0 for NCC (Bone Models), 1 for Sum of Absolute Differences (Implant Models)
+            % opt_init_heuristic: heuristic for setting the initial frame for the optimization. 0 for current frame, 1 for previous frame, 2 linear extrapolation, 3 for spline interpolation
 
             if nargin < 4
                 error('Not enough input arguments');
@@ -420,13 +426,12 @@ classdef AutoscoperConnection
             if nargin < 12
                 cf_model = 0;
             end
+            if nargin < 13
+                opt_init_heuristic = 0;
+            end
 
             for i = startframe:endframe
                 obj.setFrame(i);
-                if i ~= 0
-                    pose = obj.getPose(volNum, i - 1);
-                    obj.setPose(volNum, i, pose);
-                end
                 obj.optimizeFrame( ...
                                   volNum, ...
                                   i, ...
@@ -437,7 +442,8 @@ classdef AutoscoperConnection
                                   max_stall_itr, ...
                                   dframe, ...
                                   opt_method, ...
-                                  cf_model ...
+                                  cf_model, ...
+                                  opt_init_heuristic ...
                                  );
             end
         end
