@@ -668,6 +668,25 @@ double Tracker::minimizationFunc(const double* values) const
 
   unsigned int idx = trial_.current_volume;
   xcframe.to_xyzypr(xyzypr);
+
+#ifdef Autoscoper_RENDERING_USE_OpenCL_BACKEND
+  // get the current pose of each volume fot the current frame
+  std::vector<std::vector<double>> poses;
+  for (unsigned int i = 0; i < trial_.dfields.size(); ++i) {
+    poses.push_back(std::vector<double>(6));
+	poses[i][0] = (*(const_cast<Trial&>(trial_)).getXCurve(i))(trial_.frame);
+	poses[i][1] = (*(const_cast<Trial&>(trial_)).getYCurve(i))(trial_.frame);
+	poses[i][2] = (*(const_cast<Trial&>(trial_)).getZCurve(i))(trial_.frame);
+	poses[i][3] = (*(const_cast<Trial&>(trial_)).getYawCurve(i))(trial_.frame);
+	poses[i][4] = (*(const_cast<Trial&>(trial_)).getPitchCurve(i))(trial_.frame);
+	poses[i][5] = (*(const_cast<Trial&>(trial_)).getRollCurve(i))(trial_.frame);
+  }
+  
+  // check for collisions
+  if (computeCollisions(trial_.dfields, trial_.current_volume, xyzypr, poses))
+      return 9999;
+#endif // Autoscoper_RENDERING_USE_OpenCL_BACKEND
+
   std::vector <double> correlations = trackFrame(idx, &xyzypr[0]);
 
   double correlation = correlations[0];
@@ -774,6 +793,14 @@ std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned cam
     get_image(drr_mask_, width, height, out_data);
 
     return out_data;
+}
+
+bool Tracker::computeCollisions(std::vector<gpu::DistanceField> dFields, unsigned int current_volume, double* xyzypr, std::vector<std::vector<double>> poses) const {
+    // dFields is a vector of distance fields, one for each volume
+    // current_volume is the index of the volume we are currently tracking
+    // xyzypr is the possible new pose of the current volume
+    // poses is a vector of poses for all volumes
+    return false;
 }
 
 void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) const

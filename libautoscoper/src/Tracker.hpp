@@ -56,6 +56,7 @@
 #include "gpu/opencl/RadRenderer.hpp"
 #include "gpu/opencl/BackgroundRenderer.hpp"
 #include "gpu/opencl/OpenCL.hpp"
+#include "gpu/opencl/DistanceField.hpp"
 #endif
 
 #include "Trial.hpp"
@@ -71,7 +72,9 @@ namespace xromm
     class Filter;
     class View;
     class VolumeDescription;
-
+#ifdef Autoscoper_RENDERING_USE_OpenCL_BACKEND
+    class DistanceField;
+#endif
   } // namespace gpu
 
 
@@ -94,6 +97,7 @@ namespace xromm
     void updateBackground();
     void setBackgroundThreshold(float threshold);
     std::vector<unsigned char> getImageData(unsigned volumeID, unsigned camera, double* xyzpr, unsigned& width, unsigned& height);
+    bool computeCollisions(std::vector<gpu::DistanceField> dFields, unsigned int current_volume, double* xyzypr, std::vector<std::vector<double>> poses) const;
 
 
     // Bardiya Cost Function for Implants
