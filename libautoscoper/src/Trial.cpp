@@ -57,148 +57,163 @@ using namespace std;
 namespace xromm
 {
 
-  Trial::Trial(const string& filename)
-    : cameras(), videos(), volumes(), frame(0), num_frames(0), guess(0), current_volume(0), num_volumes(0)
-  {
-    if (filename.compare("") == 0) {
-      return;
-    }
-
-    // Load the config file.
-    ifstream file(filename.c_str());
-    if (file.is_open() == false) {
-      throw runtime_error("File not found: " + filename);
-    }
-
-    vector<string> mayaCams;
-    vector<string> camRootDirs;
-    vector<string> volumeFiles;
-    vector<string> voxelSizes;
-    vector<string> volumeFlips;
-    vector<string> renderResolution;
-    vector<string> optimizationOffsets;
-    vector<string> meshFiles;
-
-    string line, key, value;
-    while (getline(file, line)) {
-
-      // Skip blank lines and commented lines.
-      if (line.size() == 0 || line[0] == '\n' || line[0] == '#') {
-        continue;
-      }
-
-      istringstream lineStream(line);
-      getline(lineStream, key, ' ');
-      if (key.compare("mayaCam_csv") == 0) {
-        getline(lineStream, value);
-        mayaCams.push_back(value);
-      }
-      else if (key.compare("CameraRootDir") == 0) {
-        getline(lineStream, value);
-        camRootDirs.push_back(value);
-      }
-      else if (key.compare("VolumeFile") == 0) {
-        getline(lineStream, value);
-        volumeFiles.push_back(value);
-      }
-      else if (key.compare("VolumeFlip") == 0) {
-        getline(lineStream, value);
-        volumeFlips.push_back(value);
-      }
-      else if (key.compare("VoxelSize") == 0) {
-        getline(lineStream, value);
-        voxelSizes.push_back(value);
-      }
-      else if (key.compare("RenderResolution") == 0) {
-        getline(lineStream, value);
-        renderResolution.push_back(value);
-      }
-      else if (key.compare("OptimizationOffsets") == 0) {
-        getline(lineStream, value);
-        optimizationOffsets.push_back(value);
-      }
-      else if (key.compare("Mesh") == 0) {
-		getline(lineStream, value);
-        meshFiles.push_back(value);
-      }
-    }
-
-    // Close the file.
-    file.close();
-
-    // Check that this is a valid trial
-    if (mayaCams.size() < 1) {
-      throw runtime_error("There must be at least one mayacam files.");
-    }
-    if (mayaCams.size() != camRootDirs.size()) {
-      throw runtime_error("The number of cameras and videos must match.");
-    }
-    if (volumeFiles.size() < 1) {
-      throw runtime_error("There must be at least one volume file.");
-    }
-    if (volumeFiles.size() != voxelSizes.size()) {
-      throw runtime_error("You must sepcify a voxels size for each volume.");
-    }
-    if (meshFiles.size() != 0 && meshFiles.size() != volumeFiles.size()) {
-	  throw runtime_error("You must specify a mesh file for each volume or non at all.");
-	}
-
-    cameras.clear();
-    for (unsigned int i = 0; i < mayaCams.size(); ++i) {
-      try {
-        Camera camera(mayaCams[i]);
-        cameras.push_back(camera);
-      }
-      catch (exception& e) {
-        cerr << e.what() << endl;
-      }
-    }
-
-    // First load the volumes as more continous memory is required than for the videos.
-    volumes.clear();
-    volumestransform.clear();
-    for (unsigned int i = 0; i < volumeFiles.size(); ++i) {
-
-      try {
-        Volume volume(volumeFiles[i]);
-
-        int flip_x = 0, flip_y = 0, flip_z = 0;
-        if (i < volumeFlips.size()) {
-          stringstream volume_flip(volumeFlips[i]);
-          volume_flip >> flip_x >> flip_y >> flip_z;
+    Trial::Trial(const string& filename)
+        : cameras(), videos(), volumes(), frame(0), num_frames(0), guess(0), current_volume(0), num_volumes(0)
+    {
+        if (filename.compare("") == 0) {
+            return;
         }
 
-        volume.flipX(flip_x);
-        volume.flipY(flip_y);
-        volume.flipZ(flip_z);
+        // Load the config file.
+        ifstream file(filename.c_str());
+        if (file.is_open() == false) {
+            throw runtime_error("File not found: " + filename);
+        }
 
-        float scaleX, scaleY, scaleZ;
-        stringstream voxelSize(voxelSizes[i]);
-        voxelSize >> scaleX >> scaleY >> scaleZ;
+        vector<string> mayaCams;
+        vector<string> camRootDirs;
+        vector<string> volumeFiles;
+        vector<string> voxelSizes;
+        vector<string> volumeFlips;
+        vector<string> renderResolution;
+        vector<string> optimizationOffsets;
+        vector<string> meshFiles;
 
-        volume.scaleX(scaleX);
-        volume.scaleY(scaleY);
-        volume.scaleZ(scaleZ);
+        string line, key, value;
+        while (getline(file, line)) {
 
-        volumes.push_back(volume);
-        volumestransform.push_back(VolumeTransform());
-        num_volumes++;
-      }
-      catch (exception& e) {
-        throw e;
-      }
-    }
+            // Skip blank lines and commented lines.
+            if (line.size() == 0 || line[0] == '\n' || line[0] == '#') {
+                continue;
+            }
 
-    meshes.clear();
-    for (unsigned int i = 0; i < meshFiles.size(); ++i) {
-        try {
-		    Mesh mesh(meshFiles[i]);
-		    meshes.push_back(mesh);
-	    }
-        catch (exception& e) {
-		    cerr << e.what() << endl;
-	    }
-	}
+            istringstream lineStream(line);
+            getline(lineStream, key, ' ');
+            if (key.compare("mayaCam_csv") == 0) {
+                getline(lineStream, value);
+                mayaCams.push_back(value);
+            }
+            else if (key.compare("CameraRootDir") == 0) {
+                getline(lineStream, value);
+                camRootDirs.push_back(value);
+            }
+            else if (key.compare("VolumeFile") == 0) {
+                getline(lineStream, value);
+                volumeFiles.push_back(value);
+            }
+            else if (key.compare("VolumeFlip") == 0) {
+                getline(lineStream, value);
+                volumeFlips.push_back(value);
+            }
+            else if (key.compare("VoxelSize") == 0) {
+                getline(lineStream, value);
+                voxelSizes.push_back(value);
+            }
+            else if (key.compare("RenderResolution") == 0) {
+                getline(lineStream, value);
+                renderResolution.push_back(value);
+            }
+            else if (key.compare("OptimizationOffsets") == 0) {
+                getline(lineStream, value);
+                optimizationOffsets.push_back(value);
+            }
+            else if (key.compare("Mesh") == 0) {
+                getline(lineStream, value);
+                meshFiles.push_back(value);
+            }
+        }
+
+        // Close the file.
+        file.close();
+
+        // Check that this is a valid trial
+        if (mayaCams.size() < 1) {
+            throw runtime_error("There must be at least one mayacam files.");
+        }
+        if (mayaCams.size() != camRootDirs.size()) {
+            throw runtime_error("The number of cameras and videos must match.");
+        }
+        if (volumeFiles.size() < 1) {
+            throw runtime_error("There must be at least one volume file.");
+        }
+        if (volumeFiles.size() != voxelSizes.size()) {
+            throw runtime_error("You must sepcify a voxels size for each volume.");
+        }
+        if (meshFiles.size() != 0 && meshFiles.size() != volumeFiles.size()) {
+            throw runtime_error("You must specify a mesh file for each volume or non at all.");
+        }
+
+        cameras.clear();
+        for (unsigned int i = 0; i < mayaCams.size(); ++i) {
+            try {
+                Camera camera(mayaCams[i]);
+                cameras.push_back(camera);
+            }
+            catch (exception& e) {
+                cerr << e.what() << endl;
+            }
+        }
+
+        // First load the volumes as more continous memory is required than for the videos.
+        volumes.clear();
+        volumestransform.clear();
+        for (unsigned int i = 0; i < volumeFiles.size(); ++i) {
+
+            try {
+                Volume volume(volumeFiles[i]);
+
+                int flip_x = 0, flip_y = 0, flip_z = 0;
+                if (i < volumeFlips.size()) {
+                    stringstream volume_flip(volumeFlips[i]);
+                    volume_flip >> flip_x >> flip_y >> flip_z;
+                }
+
+                volume.flipX(flip_x);
+                volume.flipY(flip_y);
+                volume.flipZ(flip_z);
+
+                float scaleX, scaleY, scaleZ;
+                stringstream voxelSize(voxelSizes[i]);
+                voxelSize >> scaleX >> scaleY >> scaleZ;
+
+                volume.scaleX(scaleX);
+                volume.scaleY(scaleY);
+                volume.scaleZ(scaleZ);
+
+                volumes.push_back(volume);
+                volumestransform.push_back(VolumeTransform());
+                num_volumes++;
+            }
+            catch (exception& e) {
+                throw e;
+            }
+        }
+
+        meshes.clear();
+        for (unsigned int i = 0; i < meshFiles.size(); ++i) {
+            try {
+                Mesh mesh(meshFiles[i]);
+                meshes.push_back(mesh);
+            }
+            catch (exception& e) {
+                cerr << e.what() << endl;
+            }
+        }
+#ifdef Autoscoper_RENDERING_USE_OpenCL_BACKEND
+        if (meshes.size() > 0) { // If there are meshes, we need to create the distance fields
+            dfields.clear();
+            for (Mesh mesh : meshes) {
+                try {
+                    gpu::DistanceField df(&mesh);
+                    dfields.push_back(df);
+                }
+                catch (exception& e) {
+					cerr << e.what() << endl;
+                }
+            }
+        }
+#endif // Autoscoper_RENDERING_USE_OpenCL_BACKEND
+
 
     int maxVideoFrames = 0;
     videos.clear();

@@ -53,6 +53,10 @@
 #include "VolumeTransform.hpp"
 #include "Mesh.hpp"
 
+#ifdef Autoscoper_RENDERING_USE_OpenCL_BACKEND
+#include "gpu/opencl/DistanceField.hpp"
+#endif
+
 namespace xromm
 {
 // The trial class contains all of the state information for an autoscoper run.
@@ -75,6 +79,9 @@ public:
     std::vector<Volume> volumes;
     std::vector<VolumeTransform> volumestransform;
     std::vector<Mesh> meshes;
+#ifdef Autoscoper_RENDERING_USE_OpenCL_BACKEND
+    std::vector<gpu::DistanceField> dfields;
+#endif
 
     // State information
     int frame;
