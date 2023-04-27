@@ -49,6 +49,7 @@ It is recommended to post any questions, bug reports, or enhancement requests in
 :caption: Contents
 
 getting-started.md
+adv-topics/index.md
 user-interface.md
 socket-control-libraries/index.md
 developer-guide/index.md
