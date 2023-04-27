@@ -13,7 +13,7 @@ Autoscoper has been used for tracking the shoulder, spine, wrist, hip, knee, and
 
 ## License
 
-Update once PR #116 is merged.
+The Autoscoper software is distributed under a BSD-style open source license that is broadly compatible with the Open Source Definition by [The Open Source Initiative](https://opensource.org/) and contains no restrictions on legal uses of the software. For more information, see the [Autoscoper License File](https://github.com/BrownBiomechanics/Autoscoper/blob/main/LICENSE)
 
 ## How to cite
 
