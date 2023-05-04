@@ -2101,38 +2101,65 @@ Autoscoper 1 was developed by Andy Loomis(original CUDA version) and Mark Howiso
   about_autoscoper->show();
 }
 
+bool AutoscoperMainWindow::isInstalled() const {
+    // check if autoscoper was downloaded from the slicer extension manager or if it was built from source
+    // If it is installed the executable should be in the SlicerAutoscoperM/bin folder
+
+    QString root_path = QCoreApplication::applicationDirPath();
+    QStringList path_list = root_path.split("/");
+    std::reverse(path_list.begin(), path_list.end());
+    return path_list.at(1) == "SlicerAutoscoperM";
+}
+
+QString AutoscoperMainWindow::get_sample_data_path(const QString& default_config_path, const QString& sample_type) {
+    if (!isInstalled()) // If the application is not installed (ie. it's built), use the root path (default value for default_config_path)
+        return default_config_path;
+    
+    // If the application is installed, use the Slicer cache folder
+#ifdef WIN32
+    QString slicer_cache_dir = QDir::homePath() + "/AppData/Local/slicer.org/Slicer/cache/SlicerIO/" + sample_type;
+#else
+    QString slicer_cache_dir = QDir::homePath() + "/.config/slicer.org/Slicer/cache/SlicerIO/" + sample_type;
+#endif
+
+    // Check if the sample data directory exists
+    QDir dir(slicer_cache_dir);
+    if (!dir.exists()) {
+        std::cout << "ERROR: Could not find the sample data directory: " 
+            << slicer_cache_dir.toStdString()
+            << "\nIf you are using SlicerAutoscoperM please download from the SampleData module." << std::endl;
+        return NULL;
+    }
+    
+   return slicer_cache_dir;
+}
+
 void AutoscoperMainWindow::on_actionOpen_Sample_Wrist_triggered(bool checked) {
 
     QString root_path = qApp->applicationDirPath() + "/";
     //"/Users/bardiya/autoscoper-v2";// QDir::currentPath(); //qApp->applicationDirPath();
 
-    QString default_config_path = root_path + "sample_data";
+    QString main_data_dir = get_sample_data_path(root_path + "sample_data", "Wrist");
+    QString default_config_path = main_data_dir;
+
     default_config_path += "/";
     default_config_path += "wrist.cfg";
 
     ifstream file(default_config_path.toStdString().c_str());
     if (file.is_open() == false) {
-        QString l_1 = "mayaCam_csv " + root_path +
-        "sample_data/Calibration/xr_calib_wrist_cam01.txt";
-        QString l_2 = "mayaCam_csv " + root_path +
-        "sample_data/Calibration/xr_calib_wrist_cam02.txt";
-        QString l_3 = "CameraRootDir " + root_path +
-        "sample_data/XMA_UND/xr_data_wrist_cam01";
-        QString l_4 = "CameraRootDir " + root_path +
-        "sample_data/XMA_UND/xr_data_wrist_cam02";
-        QString l_5 = "VolumeFile " + root_path +
-        "sample_data/Models/rad_dcm_cropped.tif";
+        QString l_1 = "mayaCam_csv " + main_data_dir + "/Calibration/xr_calib_wrist_cam01.txt";
+        QString l_2 = "mayaCam_csv " + main_data_dir + "/Calibration/xr_calib_wrist_cam02.txt";
+        QString l_3 = "CameraRootDir " + main_data_dir + "/XMA_UND/xr_data_wrist_cam01";
+        QString l_4 = "CameraRootDir " + main_data_dir + "/XMA_UND/xr_data_wrist_cam02";
+        QString l_5 = "VolumeFile " + main_data_dir + "/Models/rad_dcm_cropped.tif";
         QString l_6 = "VolumeFlip 0 0 0";
         QString l_7 = "VoxelSize 0.39625 0.39625 0.625";
         QString l_8 = "RenderResolution 512 512";
         QString l_9 = "OptimizationOffsets 0.1 0.1 0.1 0.1 0.1 0.1";
 
-    QString l_10 = "VolumeFile " + root_path +
-      "sample_data/Models/mc2_mc3_dcm_cropped.tif";
-    QString l_11 = "VolumeFile " + root_path +
-      "sample_data/Models/mc3_dcm_cropped.tif";
-    QString l_12 = "VolumeFile " + root_path +
-      "sample_data/Models/uln_dcm_cropped.tif";
+        QString l_10 = "VolumeFile " + main_data_dir + "/Models/mc2_mc3_dcm_cropped.tif";
+        QString l_11 = "VolumeFile " + main_data_dir + "/Models/mc3_dcm_cropped.tif";
+        QString l_12 = "VolumeFile " + main_data_dir + "/Models/uln_dcm_cropped.tif";
 
         ofstream cfg_file(default_config_path.toStdString().c_str());
         cfg_file.precision(12);
@@ -2170,29 +2197,25 @@ void AutoscoperMainWindow::on_actionOpen_Sample_Knee_triggered(bool checked) {
 
   QString root_path = qApp->applicationDirPath() + "/";
 
-  QString default_config_path = root_path + "sample_data";
+  QString main_data_dir = get_sample_data_path(root_path + "sample_data", "Knee");
+  QString default_config_path = main_data_dir;
+
   default_config_path += "/";
   default_config_path += "left_knee.cfg";
 
   ifstream file(default_config_path.toStdString().c_str());
   if (file.is_open() == false) {
-    QString l_1 = "mayaCam_csv " + root_path +
-      "sample_data/Calibration/xr_calib_left_knee_cam01.txt";
-    QString l_2 = "mayaCam_csv " + root_path +
-      "sample_data/Calibration/xr_calib_left_knee_cam02.txt";
-    QString l_3 = "CameraRootDir " + root_path +
-      "sample_data/XMA_UND/xr_data_left_knee_cam01";
-    QString l_4 = "CameraRootDir " + root_path +
-      "sample_data/XMA_UND/xr_data_left_knee_cam02";
-    QString l_5 = "VolumeFile " + root_path +
-      "sample_data/Models/left_knee_femur_cropped.tif";
+    QString l_1 = "mayaCam_csv " + main_data_dir + "/Calibration/xr_calib_left_knee_cam01.txt";
+    QString l_2 = "mayaCam_csv " + main_data_dir + "/Calibration/xr_calib_left_knee_cam02.txt";
+    QString l_3 = "CameraRootDir " + main_data_dir + "/XMA_UND/xr_data_left_knee_cam01";
+    QString l_4 = "CameraRootDir " + main_data_dir + "/XMA_UND/xr_data_left_knee_cam02";
+    QString l_5 = "VolumeFile " + main_data_dir + "/Models/left_knee_femur_cropped.tif";
     QString l_6 = "VolumeFlip 0 0 0";
     QString l_7 = "VoxelSize 0.421875 0.421875 0.625";
     QString l_8 = "RenderResolution 512 512";
     QString l_9 = "OptimizationOffsets 0.1 0.1 0.1 0.1 0.1 0.1";
 
-    QString l_10 = "VolumeFile " + root_path +
-      "sample_data/Models/left_knee_tibia_cropped.tif";
+    QString l_10 = "VolumeFile " + main_data_dir + "/Models/left_knee_tibia_cropped.tif";
 
     ofstream cfg_file(default_config_path.toStdString().c_str());
     cfg_file.precision(12);
@@ -2223,31 +2246,26 @@ void AutoscoperMainWindow::on_actionOpen_Sample_Ankle_triggered(bool checked) {
 
   QString root_path = qApp->applicationDirPath() + "/";
 
-  QString default_config_path = root_path + "sample_data";
+  QString main_data_dir = get_sample_data_path(root_path + "sample_data", "Ankle");
+  QString default_config_path = main_data_dir;
+
   default_config_path += "/";
   default_config_path += "right_ankle.cfg";
 
   ifstream file(default_config_path.toStdString().c_str());
   if (file.is_open() == false) {
-    QString l_1 = "mayaCam_csv " + root_path +
-      "sample_data/Calibration/xr_calib_right_ankle_cam01.txt";
-    QString l_2 = "mayaCam_csv " + root_path +
-      "sample_data/Calibration/xr_calib_right_ankle_cam02.txt";
-    QString l_3 = "CameraRootDir " + root_path +
-      "sample_data/XMA_UND/xr_data_right_ankle_cam01";
-    QString l_4 = "CameraRootDir " + root_path +
-      "sample_data/XMA_UND/xr_data_right_ankle_cam02";
-    QString l_5 = "VolumeFile " + root_path +
-      "sample_data/Models/right_ankle_calc.tif";
+    QString l_1 = "mayaCam_csv " + main_data_dir + "/Calibration/xr_calib_right_ankle_cam01.txt";
+    QString l_2 = "mayaCam_csv " + main_data_dir + "/Calibration/xr_calib_right_ankle_cam02.txt";
+    QString l_3 = "CameraRootDir " + main_data_dir + "/XMA_UND/xr_data_right_ankle_cam01";
+    QString l_4 = "CameraRootDir " + main_data_dir + "/XMA_UND/xr_data_right_ankle_cam02";
+    QString l_5 = "VolumeFile " + main_data_dir + "/Models/right_ankle_calc.tif";
     QString l_6 = "VolumeFlip 0 0 0";
     QString l_7 = "VoxelSize 0.4414 0.4414 0.625";
     QString l_8 = "RenderResolution 512 512";
     QString l_9 = "OptimizationOffsets 0.1 0.1 0.1 0.1 0.1 0.1";
 
-    QString l_10 = "VolumeFile " + root_path +
-      "sample_data/Models/right_ankle_talus.tif";
-        QString l_11 = "VolumeFile " + root_path +
-      "sample_data/Models/right_ankle_tibia.tif";
+    QString l_10 = "VolumeFile " + main_data_dir + "/Models/right_ankle_talus.tif";
+        QString l_11 = "VolumeFile " + main_data_dir + "/Models/right_ankle_tibia.tif";
 
 
     ofstream cfg_file(default_config_path.toStdString().c_str());

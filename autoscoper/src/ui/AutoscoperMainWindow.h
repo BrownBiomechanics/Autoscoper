@@ -255,8 +255,12 @@ class AutoscoperMainWindow : public QMainWindow{
     // About Us Window
     void on_actionAboutAutoscoper_triggered(bool checked);
 
+    // Helper methods for opening the sample data
+    bool isInstalled() const;
+    QString get_sample_data_path(const QString& default_config_path, const QString& sample_type);
+
         // Open Sample Data
-        void on_actionOpen_Sample_Wrist_triggered(bool checked);
+    void on_actionOpen_Sample_Wrist_triggered(bool checked);
     void on_actionOpen_Sample_Knee_triggered(bool checked);
     void on_actionOpen_Sample_Ankle_triggered(bool checked);
 
