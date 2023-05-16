@@ -51,6 +51,7 @@ It is recommended to post any questions, bug reports, or enhancement requests in
 getting-started.md
 adv-topics/index.md
 user-interface.md
+tutorials/index.md
 socket-control-libraries/index.md
 developer-guide/index.md
 ```
