@@ -1,6 +1,13 @@
 import os
 import socket
 import struct
+from packaging.version import Version, parse
+
+CLIENT_VERSION_MAJOR = 1
+CLIENT_VERSION_MINOR = 0
+CLIENT_VERSION_PATCH = 0
+
+CLIENT_VERSION = Version(f"{CLIENT_VERSION_MAJOR}.{CLIENT_VERSION_MINOR}.{CLIENT_VERSION_PATCH}")
 
 
 class AutoscoperServerError(Exception):
@@ -22,6 +29,7 @@ class AutoscoperConnection:
         self.address = address
         self.verbose = verbose
         self.socket = self._openConnection()
+        self._checkVersion()
 
     def __str__(self):
         return f"Autoscoper connection to {self.address}"
@@ -102,6 +110,29 @@ class AutoscoperConnection:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((self.address, 30007))
         return s
+
+    def _checkVersion(self):
+        """
+        Internal function, should not be called by a user.
+
+        Checks that the server version is compatible with the client version.
+
+        Called automatically upon init.
+
+        :raises AutoscoperServerError: If the server version is not compatible with the client version
+        """
+        response = self._send_command(0x10)  # 16
+        server_version = parse(response[1:].decode("utf-8"))  # version string formatted as "MAJOR.MINOR.PATCH"
+
+        if self.verbose:
+            print(f"Server version: {server_version}")
+            print(f"Client version: {CLIENT_VERSION}")
+
+        if server_version != CLIENT_VERSION:
+            msg = f"Server version {server_version} is not compatible with client version {CLIENT_VERSION_MAJOR}.{CLIENT_VERSION_MINOR}.{CLIENT_VERSION_PATCH}"
+            raise AutoscoperServerError(msg)
+
+        return
 
     @property
     def is_connected(self):
