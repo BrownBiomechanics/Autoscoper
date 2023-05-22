@@ -14,6 +14,7 @@ repos:
   rev: "23.3.0" # Keep in sync with blacken-docs
   hooks:
   - id: black
+    args: [--config=scripts/python/pyproject.toml]
 
 - repo: https://github.com/asottile/blacken-docs
   rev: "1.13.0"
