@@ -49,6 +49,10 @@
 #include "filesystem_compat.hpp"
 #include <QTcpSocket>
 
+#define AUTOSCOPER_SOCKET_VERSION_MAJOR 1
+#define AUTOSCOPER_SOCKET_VERSION_MINOR 0
+#define AUTOSCOPER_SOCKET_VERSION_PATCH 0
+
 Socket::Socket(AutoscoperMainWindow* mainwindow, unsigned long long int listenPort) : m_mainwindow(mainwindow)
 {
   tcpServer = new QTcpServer();
@@ -62,6 +66,15 @@ Socket::~Socket()
   for (auto &a : clientConnections){
     a->disconnectFromHost();
   }
+}
+
+int constexpr Socket::versionMajor() { return AUTOSCOPER_SOCKET_VERSION_MAJOR; }
+int constexpr Socket::versionMinor() { return AUTOSCOPER_SOCKET_VERSION_MINOR; }
+int constexpr Socket::versionPatch() { return AUTOSCOPER_SOCKET_VERSION_PATCH; }
+
+QString Socket::versionString()
+{
+  return QString("%1.%2.%3").arg(QString::number(Socket::versionMajor()), QString::number(Socket::versionMinor()), QString::number(Socket::versionPatch()));
 }
 
 void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
@@ -360,6 +373,16 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       connection->write(array);
     }
     break;
+
+  case 16:
+    // get the version of the server
+    {
+      QByteArray array = QByteArray(1, 16);
+      array.append(versionString().toLocal8Bit());
+      connection->write(array);
+    }
+    break;
+
   default:
     std::cerr << "Cannot handle message" << std::endl;
     connection->write(QByteArray(1,0));
