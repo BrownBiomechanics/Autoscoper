@@ -58,6 +58,18 @@ public:
   Socket(AutoscoperMainWindow* mainwindow, unsigned long long int listenPort);
   ~Socket();
 
+  /// @{
+  /// The Autoscoper Socket major/minor/patch version.
+  ///
+  /// \see https://semver.org/spec/v2.0.0.html for details.
+  int constexpr versionMajor();
+  int constexpr versionMinor();
+  int constexpr versionPatch();
+  /// @}
+
+  /// The Autoscoper Socket version formatted as "MAJOR.MINOR.PATCH".
+  QString versionString();
+
 private:
   QTcpServer *tcpServer;
   std::vector<QTcpSocket *> clientConnections;
