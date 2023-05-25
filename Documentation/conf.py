@@ -34,6 +34,7 @@ myst_enable_extensions = [
 myst_heading_anchors = 3
 
 supress_warnings = ["myst.header"]
+myst_number_code_blocks = ["linenos"]  # set custom code block name for numbered code blocks
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
