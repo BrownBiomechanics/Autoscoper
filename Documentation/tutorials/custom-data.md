@@ -66,26 +66,8 @@ trial name
 
 
 ## Camera Calibration File
-The camera calibration file should be in the following format:
-```
-image size
-width,height
 
-camera matrix
-fx,0,cx
-0,fy,cy
-0,0,1
-
-rotation
-r11,r12,r13
-r21,r22,r23
-r31,r32,r33
-
-translation
-t1
-t2
-t3
-```
+For information on how to create a camera calibration file, see the [Camera Calibration File Format](../file-specifications/camera-calibration.md) page.
 
 
 ## Creating a Configuration File

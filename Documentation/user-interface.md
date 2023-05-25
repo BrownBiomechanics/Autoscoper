@@ -44,6 +44,7 @@ The New Trial Dialog has 2 sections that allow the user to add as many cameras a
 The Cameras section contains the following options:
 * Calibration File
     * Opens a file dialog to select a `.txt` calibration file.
+    * For more information on the calibration file format, see the [Calibration File Format Specification](file-specifications\camera-calibration.md).
 * Video Path
     * Opens a file dialog to select a directory containing the corresponding tiff sequences for the calibration file.
 
