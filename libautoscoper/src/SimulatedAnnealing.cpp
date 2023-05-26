@@ -63,9 +63,9 @@ void SA_BA(double pose0, double *Y, int *ITER, double MAX_TEMP, double MAX_ITER)
 
   for (int i = 0; i < 6; i++)
   {
-    cout << xyzypr[i] << " ";
+    std::cout << xyzypr[i] << " ";
   }
-  cout << endl;
+  std::cout << std::endl;
 
 
 

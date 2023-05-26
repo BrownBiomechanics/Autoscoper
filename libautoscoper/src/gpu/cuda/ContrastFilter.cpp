@@ -44,8 +44,6 @@
 
 #include <sstream>
 
-using namespace std;
-
 namespace xromm { namespace gpu {
 
 // Unique identifier for each contrast filter
@@ -58,7 +56,7 @@ ContrastFilter::ContrastFilter()
       beta_(1.0f),
       size_(3)
 {
-    stringstream name_stream;
+    std::stringstream name_stream;
     name_stream << "ContrastFilter" << (++num_contrast_filters);
     name_ = name_stream.str();
 }

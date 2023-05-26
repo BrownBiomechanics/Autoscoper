@@ -52,12 +52,10 @@
 #include "Volume.hpp"
 #include "Camera.hpp"
 
-using namespace std;
-
 namespace xromm
 {
 
-  Trial::Trial(const string& filename)
+  Trial::Trial(const std::string& filename)
     : cameras(), videos(), volumes(), frame(0), num_frames(0), guess(0), current_volume(0), num_volumes(0)
   {
     if (filename.compare("") == 0) {
@@ -65,20 +63,20 @@ namespace xromm
     }
 
     // Load the config file.
-    ifstream file(filename.c_str());
+    std::ifstream file(filename.c_str());
     if (file.is_open() == false) {
-      throw runtime_error("File not found: " + filename);
+      throw std::runtime_error("File not found: " + filename);
     }
 
-    vector<string> mayaCams;
-    vector<string> camRootDirs;
-    vector<string> volumeFiles;
-    vector<string> voxelSizes;
-    vector<string> volumeFlips;
-    vector<string> renderResolution;
-    vector<string> optimizationOffsets;
+    std::vector<std::string> mayaCams;
+    std::vector<std::string> camRootDirs;
+    std::vector<std::string> volumeFiles;
+    std::vector<std::string> voxelSizes;
+    std::vector<std::string> volumeFlips;
+    std::vector<std::string> renderResolution;
+    std::vector<std::string> optimizationOffsets;
 
-    string line, key, value;
+    std::string line, key, value;
     while (getline(file, line)) {
 
       // Skip blank lines and commented lines.
@@ -86,7 +84,7 @@ namespace xromm
         continue;
       }
 
-      istringstream lineStream(line);
+      std::istringstream lineStream(line);
       getline(lineStream, key, ' ');
       if (key.compare("mayaCam_csv") == 0) {
         getline(lineStream, value);
@@ -123,16 +121,16 @@ namespace xromm
 
     // Check that this is a valid trial
     if (mayaCams.size() < 1) {
-      throw runtime_error("There must be at least one mayacam files.");
+      throw std::runtime_error("There must be at least one mayacam files.");
     }
     if (mayaCams.size() != camRootDirs.size()) {
-      throw runtime_error("The number of cameras and videos must match.");
+      throw std::runtime_error("The number of cameras and videos must match.");
     }
     if (volumeFiles.size() < 1) {
-      throw runtime_error("There must be at least one volume file.");
+      throw std::runtime_error("There must be at least one volume file.");
     }
     if (volumeFiles.size() != voxelSizes.size()) {
-      throw runtime_error("You must sepcify a voxels size for each volume.");
+      throw std::runtime_error("You must sepcify a voxels size for each volume.");
     }
 
     cameras.clear();
@@ -141,8 +139,8 @@ namespace xromm
         Camera camera(mayaCams[i]);
         cameras.push_back(camera);
       }
-      catch (exception& e) {
-        cerr << e.what() << endl;
+      catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
       }
     }
 
@@ -156,7 +154,7 @@ namespace xromm
 
         int flip_x = 0, flip_y = 0, flip_z = 0;
         if (i < volumeFlips.size()) {
-          stringstream volume_flip(volumeFlips[i]);
+          std::stringstream volume_flip(volumeFlips[i]);
           volume_flip >> flip_x >> flip_y >> flip_z;
         }
 
@@ -165,7 +163,7 @@ namespace xromm
         volume.flipZ(flip_z);
 
         float scaleX, scaleY, scaleZ;
-        stringstream voxelSize(voxelSizes[i]);
+        std::stringstream voxelSize(voxelSizes[i]);
         voxelSize >> scaleX >> scaleY >> scaleZ;
 
         volume.scaleX(scaleX);
@@ -176,7 +174,7 @@ namespace xromm
         volumestransform.push_back(VolumeTransform());
         num_volumes++;
       }
-      catch (exception& e) {
+      catch (std::exception& e) {
         throw e;
       }
     }
@@ -191,8 +189,8 @@ namespace xromm
         }
         videos.push_back(video);
       }
-      catch (exception& e) {
-        cerr << e.what() << endl;
+      catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
       }
     }
 
@@ -200,7 +198,7 @@ namespace xromm
     offsets[0] = 0.1; offsets[1] = 0.1; offsets[2] = 0.1;
     offsets[3] = 0.1; offsets[4] = 0.1; offsets[5] = 0.1;
     if (!optimizationOffsets.empty()) {
-      stringstream offset_stream(optimizationOffsets.back());
+      std::stringstream offset_stream(optimizationOffsets.back());
       offset_stream >> offsets[0] >> offsets[1] >> offsets[2] >>
         offsets[3] >> offsets[4] >> offsets[5];
     }
@@ -209,7 +207,7 @@ namespace xromm
     render_width = 512;
     render_height = 512;
     if (!renderResolution.empty()) {
-      stringstream resolution_stream(renderResolution.back());
+      std::stringstream resolution_stream(renderResolution.back());
       resolution_stream >> render_width >> render_height;
     }
 
@@ -219,40 +217,40 @@ namespace xromm
 
   void Trial::save(const std::string& filename)
   {
-    ofstream file(filename.c_str());
+    std::ofstream file(filename.c_str());
     if (!file) {
-      throw runtime_error("Failed to save to file: " + filename);
+      throw std::runtime_error("Failed to save to file: " + filename);
     }
 
     file.precision(12);
 
     for (unsigned i = 0; i < cameras.size(); ++i) {
-      file << "mayaCam_csv " << cameras.at(i).mayacam() << endl;
+      file << "mayaCam_csv " << cameras.at(i).mayacam() << std::endl;
     }
 
     for (unsigned i = 0; i < videos.size(); ++i) {
-      file << "CameraRootDir " << videos.at(i).dirname() << endl;
+      file << "CameraRootDir " << videos.at(i).dirname() << std::endl;
     }
 
     for (unsigned i = 0; i < volumes.size(); ++i) {
-      file << "VolumeFile " << volumes.at(i).name() << endl;
+      file << "VolumeFile " << volumes.at(i).name() << std::endl;
       file << "VolumeFlip " << volumes.at(i).flipX() << " "
         << volumes.at(i).flipY() << " "
-        << volumes.at(i).flipZ() << endl;
+        << volumes.at(i).flipZ() << std::endl;
       file << "VoxelSize " << volumes.at(i).scaleX() << " "
         << volumes.at(i).scaleY() << " "
-        << volumes.at(i).scaleZ() << endl;
+        << volumes.at(i).scaleZ() << std::endl;
     }
 
     file << "RenderResolution " << render_width << " "
-      << render_height << endl;
+      << render_height << std::endl;
 
     file << "OptimizationOffsets " << offsets[0] << " "
       << offsets[1] << " "
       << offsets[2] << " "
       << offsets[3] << " "
       << offsets[4] << " "
-      << offsets[5] << endl;
+      << offsets[5] << std::endl;
 
     file.close();
   }

@@ -66,23 +66,19 @@ static clGetGLContextInfoKHR_fn pfn_clGetGLContextInfoKHR;
 #define TYPE CL_DEVICE_TYPE_GPU
 
 #define ERROR(msg) do{\
-  cerr << "Error at " << __FILE__ << ':' << __LINE__ \
-       << "\n  " << msg << endl; \
+  std::cerr << "Error at " << __FILE__ << ':' << __LINE__ \
+       << "\n  " << msg << std::endl; \
   xromm::bt(); \
   exit(1); \
   }while(0)
 
 #define CHECK_CL \
   if (err_ != CL_SUCCESS) {\
-    cerr << "OpenCL error at " << __FILE__ << ':' << __LINE__ \
-           << "\n  " << err_ << ' ' << opencl_error(err_) << endl; \
+    std::cerr << "OpenCL error at " << __FILE__ << ':' << __LINE__ \
+           << "\n  " << err_ << ' ' << opencl_error(err_) << std::endl; \
     xromm::bt(); \
     exit(1); \
   }
-
-
-
-using namespace std;
 
 static bool inited_ = false;
 static bool gl_inited_ = false;
@@ -184,24 +180,24 @@ static const char* opencl_error(cl_int err)
 
 static void print_platform(cl_platform_id platform)
 {
-  cerr << "# OpenCL Platform" << endl;
+  std::cerr << "# OpenCL Platform" << std::endl;
 
   char buffer[1024];
 
   err_ = clGetPlatformInfo(
         platform, CL_PLATFORM_VERSION, sizeof(buffer), buffer, NULL);
   CHECK_CL
-  cerr << "# Version    : " << buffer << endl;
+  std::cerr << "# Version    : " << buffer << std::endl;
 
   err_ = clGetPlatformInfo(
         platform, CL_PLATFORM_NAME, sizeof(buffer), buffer, NULL);
   CHECK_CL
-  cerr << "# Name       : " << buffer << endl;
+  std::cerr << "# Name       : " << buffer << std::endl;
 
   err_ = clGetPlatformInfo(
         platform, CL_PLATFORM_VENDOR, sizeof(buffer), buffer, NULL);
   CHECK_CL
-  cerr << "# Vendor     : " << buffer << endl;
+  std::cerr << "# Vendor     : " << buffer << std::endl;
 }
 
 
@@ -214,104 +210,104 @@ static void print_device(cl_device_id device)
   cl_uint ui;
   size_t s[3];
 
-  cerr << "# OpenCL Device" << "\n";
+  std::cerr << "# OpenCL Device" << "\n";
 
   err_ = clGetDeviceInfo(
         device, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
   CHECK_CL
-  cerr << "# Name          : " << buffer << "\n";
+  std::cerr << "# Name          : " << buffer << "\n";
 
   err_ = clGetDeviceInfo(
         device, CL_DEVICE_TYPE, sizeof(t), &t, NULL);
-  cerr << "# Type          : ";
+  std::cerr << "# Type          : ";
   switch (t) {
-    case CL_DEVICE_TYPE_CPU: cerr << "CPU\n"; break;
-    case CL_DEVICE_TYPE_GPU: cerr << "GPU\n"; break;
-    case CL_DEVICE_TYPE_ACCELERATOR: cerr << "Accelerator\n"; break;
-    case CL_DEVICE_TYPE_DEFAULT: cerr << "Default\n"; break;
-    default: cerr << "Unknown\n";
+    case CL_DEVICE_TYPE_CPU: std::cerr << "CPU\n"; break;
+    case CL_DEVICE_TYPE_GPU: std::cerr << "GPU\n"; break;
+    case CL_DEVICE_TYPE_ACCELERATOR: std::cerr << "Accelerator\n"; break;
+    case CL_DEVICE_TYPE_DEFAULT: std::cerr << "Default\n"; break;
+    default: std::cerr << "Unknown\n";
   }
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(ui), &ui, NULL);
   CHECK_CL
-  cerr << "# Compute Cores : " << ui << "\n";
+  std::cerr << "# Compute Cores : " << ui << "\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(ui), &ui, NULL);
   CHECK_CL
-  cerr << "# Core Freq.    : " << ui << " Mhz\n";
+  std::cerr << "# Core Freq.    : " << ui << " Mhz\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_VENDOR, sizeof(buffer), buffer, NULL);
   CHECK_CL
-  cerr << "# Vendor        : " << buffer << "\n";
+  std::cerr << "# Vendor        : " << buffer << "\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_VENDOR_ID, sizeof(ui), &ui, NULL);
   CHECK_CL
-  cerr << "# Vendor ID     : " << ui << "\n";
+  std::cerr << "# Vendor ID     : " << ui << "\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_VERSION, sizeof(buffer), buffer, NULL);
   CHECK_CL
-  cerr << "# Version       : " << buffer << "\n";
+  std::cerr << "# Version       : " << buffer << "\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DRIVER_VERSION, sizeof(buffer), buffer, NULL);
   CHECK_CL
-  cerr << "# Driver Ver.   : " << buffer << "\n";
+  std::cerr << "# Driver Ver.   : " << buffer << "\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_AVAILABLE, sizeof(b), &b, NULL);
   CHECK_CL
-  cerr << "# Available     : ";
+  std::cerr << "# Available     : ";
   switch (b) {
-    case CL_TRUE: cerr << "Yes\n"; break;
-    case CL_FALSE: cerr << "No\n"; break;
-    default: cerr << "Unknown\n";
+    case CL_TRUE: std::cerr << "Yes\n"; break;
+    case CL_FALSE: std::cerr << "No\n"; break;
+    default: std::cerr << "Unknown\n";
   }
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(s), s, NULL);
   CHECK_CL
-  cerr << "# Max Items     : ("
+  std::cerr << "# Max Items     : ("
      << s[0] << ',' << s[1] << ',' << s[2] << ")\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), s, NULL);
   CHECK_CL
-  cerr << "# Max Group     : " << s[0] << "\n";
+  std::cerr << "# Max Group     : " << s[0] << "\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE, sizeof(ul), &ul, NULL);
   CHECK_CL
-  cerr << "# Max Constant  : " << ul << " kB\n";
+  std::cerr << "# Max Constant  : " << ul << " kB\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_MAX_CONSTANT_ARGS, sizeof(ui), &ui, NULL);
   CHECK_CL
-  cerr << "# Max Constants : " << ui << "\n";
+  std::cerr << "# Max Constants : " << ui << "\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_LOCAL_MEM_SIZE, sizeof(ul), &ul, NULL);
   CHECK_CL
-  cerr << "# Local Mem.    : " << (ul/1024) << " kB\n";
+  std::cerr << "# Local Mem.    : " << (ul/1024) << " kB\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(ul), &ul, NULL);
   CHECK_CL
-  cerr << "# Global Mem.   : " << (ul/1024) << " kB\n";
+  std::cerr << "# Global Mem.   : " << (ul/1024) << " kB\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_GLOBAL_MEM_CACHE_SIZE, sizeof(ul), &ul, NULL);
   CHECK_CL
-  cerr << "# Global Cache  : " << ul << " B\n";
+  std::cerr << "# Global Cache  : " << ul << " B\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_IMAGE_SUPPORT, sizeof(b), &b, NULL);
   CHECK_CL
-  cerr << "# Image Support : " << b << "\n";
+  std::cerr << "# Image Support : " << b << "\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_IMAGE2D_MAX_WIDTH, sizeof(size_t), s+0, NULL);
@@ -319,7 +315,7 @@ static void print_device(cl_device_id device)
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_IMAGE2D_MAX_HEIGHT, sizeof(size_t), s+1, NULL);
   CHECK_CL
-  cerr << "# Max 2D Image  : (" << s[0] << ',' << s[1] << ")\n";
+  std::cerr << "# Max 2D Image  : (" << s[0] << ',' << s[1] << ")\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_IMAGE3D_MAX_WIDTH, sizeof(size_t), s+0, NULL);
@@ -330,14 +326,14 @@ static void print_device(cl_device_id device)
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_IMAGE3D_MAX_DEPTH, sizeof(size_t), s+2, NULL);
   CHECK_CL
-  cerr << "# Max 3D Image  : ("
+  std::cerr << "# Max 3D Image  : ("
 
      << s[0] << ',' << s[1] << ',' << s[2] << ")\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_EXTENSIONS, sizeof(buffer), buffer, NULL);
   CHECK_CL
-  cerr << "# Extensions    :  "  << buffer << " \n";
+  std::cerr << "# Extensions    :  "  << buffer << " \n";
 }
 
 namespace xromm { namespace gpu {
@@ -395,7 +391,7 @@ std::vector< std::vector<std::string> > get_platforms(){
       cl_ulong ul;
       cl_uint ui;
       size_t s[3];
-      stringstream ss;
+      std::stringstream ss;
 
       ss << "# OpenCL Device";
       platform_desc.push_back(ss.str());
@@ -866,12 +862,12 @@ void Kernel::addLocalMem(size_t size)
 void Kernel::launch()
 {
 #if DEBUG
-  cerr << "block:";
-  for (unsigned i=0; i<grid_dim_; i++) cerr << ' ' << block_[i];
-  cerr << endl;
-  cerr << "grid:";
-  for (unsigned i=0; i<grid_dim_; i++) cerr << ' ' << grid_[i];
-  cerr << endl;
+  std::cerr << "block:";
+  for (unsigned i=0; i<grid_dim_; i++) std::cerr << ' ' << block_[i];
+  std::cerr << std::endl;
+  std::cerr << "grid:";
+  for (unsigned i=0; i<grid_dim_; i++) std::cerr << ' ' << grid_[i];
+  std::cerr << std::endl;
 #endif
   if (!block_dim_) {
     ERROR("Block dimension is unset");
@@ -947,8 +943,8 @@ Kernel* Program::compile(const char* code, const char* func)
           log_size, build_log, NULL);
       CHECK_CL
       build_log[log_size] = '\0';
-      cerr << "OpenCL build failure for kernel function '" << func
-           << "':\n" << build_log << endl;
+      std::cerr << "OpenCL build failure for kernel function '" << func
+           << "':\n" << build_log << std::endl;
       free(build_log);
       exit(1);
     } else {
@@ -1058,8 +1054,8 @@ Image::Image(size_t* dims, cl_image_format *format, cl_mem_flags access)
   access_ = access;
 
 #if DEBUG
-  cerr << "OpenCL::Image dims (" << dims[0] << ',' << dims[1] << ','
-     << dims[2] << ')' << endl;
+  std::cerr << "OpenCL::Image dims (" << dims[0] << ',' << dims[1] << ','
+     << dims[2] << ')' << std::endl;
 #endif
 
   if (dims[0] == 0 || dims[1] == 0 || dims[2] == 0)

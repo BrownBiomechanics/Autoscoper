@@ -49,8 +49,6 @@
 #include "RadRenderer.hpp"
 #include "RadRenderer_kernels.h"
 
-using namespace std;
-
 namespace xromm { namespace gpu
 {
 
@@ -68,7 +66,7 @@ RadRenderer::RadRenderer() : array_(0)
     viewport_[2] =  2.0f;
     viewport_[3] =  2.0f;
 
-    stringstream name_stream;
+    std::stringstream name_stream;
     name_stream << "RadRenderer" << (++num_rad_renderers);
     name_ = name_stream.str();
 }
@@ -91,8 +89,8 @@ RadRenderer::set_rad(const void* data, size_t width, size_t height, size_t bps)
         case 16: desc = cudaCreateChannelDesc<unsigned short>(); break;
         case 32: desc = cudaCreateChannelDesc<unsigned int>(); break;
         default:
-            cerr << "RadRenderer::rad(): Unsupported bit depth "
-                 << bps << endl;
+            std::cerr << "RadRenderer::rad(): Unsupported bit depth "
+                 << bps << std::endl;
             return;
     }
     cutilSafeCall(cudaMallocArray(&array_, &desc, width, height));

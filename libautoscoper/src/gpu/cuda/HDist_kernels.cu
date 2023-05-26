@@ -43,7 +43,6 @@
 
 #include <iostream>
 #include <cstdlib>
-using namespace std;
 
 #include <cutil_inline.h>
 

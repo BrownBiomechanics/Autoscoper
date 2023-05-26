@@ -46,8 +46,6 @@
 
 #include <Matrix.hpp>
 
-using namespace std;
-
 template <class T> class Ray;
 
 //! This class is a provides a 3-dimensional manipulator for translating and

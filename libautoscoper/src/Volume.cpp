@@ -47,12 +47,10 @@
 #include "Volume.hpp"
 #include "TiffImage.h"
 
-using namespace std;
-
 namespace xromm
 {
 
-Volume::Volume(const string& filename)
+Volume::Volume(const std::string& filename)
     : name_(filename),
       width_(0), height_(0), depth_(0), bps_(0),
       scaleX_(1.0f), scaleY_(1.0f), scaleZ_(1.0f),
@@ -62,7 +60,7 @@ Volume::Volume(const string& filename)
     TIFFSetWarningHandler(0);
     TIFF* tif = TIFFOpen(filename.c_str(), "r");
     if (!tif) {
-        throw runtime_error("Unable to open volume file: " + filename);
+        throw std::runtime_error("Unable to open volume file: " + filename);
     }
 
     // Determine the size and format of each slice
@@ -70,7 +68,7 @@ Volume::Volume(const string& filename)
     tiffImageReadMeta(tif, &img);
 
     if (img.samplesPerPixel != 1 || img.sampleFormat != 1) {
-        throw runtime_error("Unsupported image format");
+        throw std::runtime_error("Unsupported image format");
     }
 
     // Count the number of slices
@@ -93,7 +91,7 @@ Volume::Volume(const string& filename)
         if (img.width != width_ ||
             img.height != height_ ||
             img.bitsPerSample != bps_) {
-            throw runtime_error("Non uniform volume slices.");
+            throw std::runtime_error("Non uniform volume slices.");
         }
 
         memcpy(dp, img.data, width_*height_*(bps_/8));

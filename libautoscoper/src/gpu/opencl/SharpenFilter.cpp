@@ -47,8 +47,6 @@
 #define BX 16
 #define BY 16
 
-using namespace std;
-
 namespace xromm { namespace gpu {
 
 
@@ -64,7 +62,7 @@ SharpenFilter::SharpenFilter()
     contrast_(1),
     sharpen_(NULL)
 {
-  stringstream name_stream;
+  std::stringstream name_stream;
   name_stream << "SharpenFilter" << (++num_sharpen_filters);
   name_ = name_stream.str();
 

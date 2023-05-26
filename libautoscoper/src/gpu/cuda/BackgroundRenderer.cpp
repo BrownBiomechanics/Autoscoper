@@ -49,8 +49,6 @@
 #include "BackgroundRenderer.hpp"
 #include "BackgroundRenderer_kernels.h"
 
-using namespace std;
-
 namespace xromm { namespace gpu
 {
 

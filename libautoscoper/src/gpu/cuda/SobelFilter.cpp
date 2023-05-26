@@ -45,8 +45,6 @@
 
 #include <sstream>
 
-using namespace std;
-
 namespace xromm { namespace gpu {
 
 static int num_sobel_filters = 0;
@@ -55,7 +53,7 @@ SobelFilter::SobelFilter() : Filter(XROMM_GPU_SOBEL_FILTER,""),
                              scale_(1.0f),
                              blend_(0.5f)
 {
-    stringstream name_stream;
+    std::stringstream name_stream;
     name_stream << "SobelFilter" << (++num_sobel_filters);
     name_ = name_stream.str();
 }

@@ -47,8 +47,6 @@
 #include "RayCaster_kernels.h"
 #include "VolumeDescription.hpp"
 
-using namespace std;
-
 namespace xromm { namespace gpu {
 
 static int num_ray_casters = 0;
@@ -59,7 +57,7 @@ RayCaster::RayCaster() : volumeDescription_(0),
                          cutoff_(0.0f),
                          name_("")
 {
-    stringstream name_stream;
+    std::stringstream name_stream;
     name_stream << "DrrRenderer" << (++num_ray_casters);
     name_ = name_stream.str();
 
@@ -84,7 +82,7 @@ void
 RayCaster::setInvModelView(const double* invModelView)
 {
     if (!volumeDescription_) {
-        cerr << "RayCaster: ERROR: Unable to calculate matrix." << endl;
+        std::cerr << "RayCaster: ERROR: Unable to calculate matrix." << std::endl;
         exit(0);
     }
 
@@ -134,7 +132,7 @@ void
 RayCaster::render(float* buffer, size_t width, size_t height)
 {
     if (!volumeDescription_) {
-        cerr << "RayCaster: WARNING: No volume loaded. " << endl;
+        std::cerr << "RayCaster: WARNING: No volume loaded. " << std::endl;
         return;
     }
 

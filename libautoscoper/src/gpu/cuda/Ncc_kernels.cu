@@ -43,8 +43,6 @@
 
 #include <iostream>
 
-using namespace std;
-
 #include <cutil_inline.h>
 
 //////// Global variables ////////

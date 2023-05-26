@@ -51,8 +51,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 #define sqr(a) ((a) * (a))
 
 namespace xromm
@@ -421,7 +419,7 @@ CoordFrame CoordFrame::linear_extrap(const CoordFrame& x) const
             axis[2] = A[1]-A[3];
         }
         else {
-            cerr << "TODO: Unable to determine angle." << endl;
+            std::cerr << "TODO: Unable to determine angle." << std::endl;
         }
     }
     // Angle is zero, use any axis
@@ -508,9 +506,9 @@ CoordFrame& CoordFrame::operator=(const CoordFrame& xcframe)
     return *this;
 }
 
-string CoordFrame::to_string() const
+std::string CoordFrame::to_string() const
 {
-    stringstream ss;
+    std::stringstream ss;
     ss << rotation_[0] << ", "
        << rotation_[1] << ", "
        << rotation_[2] << ", "

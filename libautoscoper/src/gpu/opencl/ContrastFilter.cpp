@@ -42,8 +42,6 @@
 #include <sstream>
 #include "ContrastFilter.hpp"
 
-using namespace std;
-
 namespace xromm { namespace gpu {
 
 #define KERNEL_X 16
@@ -63,7 +61,7 @@ ContrastFilter::ContrastFilter()
       beta_(1.0f),
       size_(3)
 {
-    stringstream name_stream;
+    std::stringstream name_stream;
     name_stream << "ContrastFilter" << (++num_contrast_filters);
     name_ = name_stream.str();
 }

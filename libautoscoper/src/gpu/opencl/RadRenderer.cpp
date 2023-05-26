@@ -47,8 +47,6 @@
 #define BX 16
 #define BY 16
 
-using namespace std;
-
 namespace xromm { namespace gpu
 {
 
@@ -70,7 +68,7 @@ RadRenderer::RadRenderer() : image_(0)
     viewport_[2] =  2.0f;
     viewport_[3] =  2.0f;
 
-    stringstream name_stream;
+    std::stringstream name_stream;
     name_stream << "RadRenderer" << (++num_rad_renderers);
     name_ = name_stream.str();
 }
@@ -89,8 +87,8 @@ RadRenderer::set_rad(const void* data, size_t width, size_t height, size_t bps)
         case 8:  format.image_channel_data_type = CL_UNORM_INT8; break;
         case 16: format.image_channel_data_type = CL_UNORM_INT16; break;
         default:
-            cerr << "RadRenderer::rad(): Unsupported bit depth "
-                 << bps << endl;
+            std::cerr << "RadRenderer::rad(): Unsupported bit depth "
+                 << bps << std::endl;
             return;
     }
 

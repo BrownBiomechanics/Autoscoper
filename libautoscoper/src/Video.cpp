@@ -59,12 +59,10 @@
 #include "Video.hpp"
 #include "TiffImage.h"
 
-using namespace std;
-
 namespace xromm
 {
 
-  Video::Video(const string& dirname)
+  Video::Video(const std::string& dirname)
     : dirname_(dirname),
     filenames_(),
     frame_(),
@@ -73,14 +71,14 @@ namespace xromm
 {
     DIR *dir = opendir(dirname_.c_str());
     if (dir == 0) {
-        throw runtime_error("Unable to open directory: " + dirname_);
+        throw std::runtime_error("Unable to open directory: " + dirname_);
     }
 
     struct dirent *ent;
     while ((ent = readdir(dir)) != NULL) {
 
         // Ignore hidden files
-        string filename(ent->d_name);
+        std::string filename(ent->d_name);
         if(filename.compare(0,1,".") == 0) {
             continue;
         }
@@ -97,7 +95,7 @@ namespace xromm
 
     // Check if we found any files
     if (filenames_.size() == 0) {
-        throw runtime_error("No tif files found in directory: " + dirname_);
+        throw std::runtime_error("No tif files found in directory: " + dirname_);
     }
 
     // Sort the filenames and load the first frame
@@ -160,7 +158,7 @@ int Video::create_background_image()
   for (int i = 0; i < filenames_.size(); i++){
     tif = TIFFOpen(filenames_.at(i).c_str(), "r");
     if (!tif) {
-      cerr << "Video::frame(): Unable to open image. " << endl;
+      std::cerr << "Video::frame(): Unable to open image. " << std::endl;
       return -2;
     }
 
@@ -208,7 +206,7 @@ Video::set_frame(size_type i)
     TIFFSetWarningHandler(0);
     TIFF* tif = TIFFOpen(filenames_.at(i).c_str(), "r");
     if (!tif) {
-        cerr << "Video::frame(): Unable to open image. " << endl;
+        std::cerr << "Video::frame(): Unable to open image. " << std::endl;
         return;
     }
 

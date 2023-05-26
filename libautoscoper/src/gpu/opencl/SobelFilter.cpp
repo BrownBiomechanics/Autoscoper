@@ -42,8 +42,6 @@
 #include <sstream>
 #include "SobelFilter.hpp"
 
-using namespace std;
-
 #define BX 16
 #define BY 16
 
@@ -59,7 +57,7 @@ SobelFilter::SobelFilter() : Filter(XROMM_GPU_SOBEL_FILTER,""),
                scale_(1.0f),
                blend_(0.5f)
 {
-  stringstream name_stream;
+  std::stringstream name_stream;
   name_stream << "SobelFilter" << (++num_sobel_filters);
   name_ = name_stream.str();
 }
