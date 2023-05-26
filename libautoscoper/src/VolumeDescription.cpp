@@ -58,8 +58,6 @@
 #undef max
 #undef min
 
-using namespace std;
-
 template <class T>
 void flipVolume(const T* data,
         T* dest,
@@ -146,8 +144,8 @@ void copyVolume(T* dest,
                 T* minVal,
                 T* maxVal)
 {
-    *minVal = numeric_limits<T>::max();
-    *maxVal = numeric_limits<T>::min();
+    *minVal = std::numeric_limits<T>::max();
+    *maxVal = std::numeric_limits<T>::min();
     for (int k = min[2]; k < max[2]+1; k++) {
         for (int i = min[1]; i < max[1]+1; i++) {
             for (int j = min[0]; j < max[0]+1; j++) {
@@ -171,7 +169,7 @@ VolumeDescription::VolumeDescription(const Volume& volume)
 {
     // Crop the volume
     int min[3], max[3];
-  vector<char> data_flipped(volume.width()*volume.height()*volume.depth()*(volume.bps()/8));
+  std::vector<char> data_flipped(volume.width()*volume.height()*volume.depth()*(volume.bps()/8));
 
     switch(volume.bps()) {
         case 8: {
@@ -212,8 +210,8 @@ VolumeDescription::VolumeDescription(const Volume& volume)
             break;
         }
         default: {
-            cerr << "VolumeDescription(): Unsupported bit-depth "
-                                          << volume.bps() << endl;
+            std::cerr << "VolumeDescription(): Unsupported bit-depth "
+                                          << volume.bps() << std::endl;
             exit(0);
         }
     }
@@ -226,7 +224,7 @@ VolumeDescription::VolumeDescription(const Volume& volume)
 
     // Copy to the cropped volume
     int dim[3] = { max[0]-min[0]+1, max[1]-min[1]+1, max[2]-min[2]+1 };
-    vector<char> data(dim[0]*dim[1]*dim[2]*(volume.bps()/8));
+    std::vector<char> data(dim[0]*dim[1]*dim[2]*(volume.bps()/8));
     switch(volume.bps()) {
         case 8: {
             unsigned char minVal, maxVal;
@@ -239,8 +237,8 @@ VolumeDescription::VolumeDescription(const Volume& volume)
                     max,
                     &minVal,
                     &maxVal);
-            minValue_ = minVal/(float)numeric_limits<unsigned char>::max();
-            maxValue_ = maxVal/(float)numeric_limits<unsigned char>::max();
+            minValue_ = minVal / (float)std::numeric_limits<unsigned char>::max();
+            maxValue_ = maxVal / (float)std::numeric_limits<unsigned char>::max();
             break;
         }
         case 16: {
@@ -254,13 +252,13 @@ VolumeDescription::VolumeDescription(const Volume& volume)
                     max,
                     &minVal,
                     &maxVal);
-            minValue_ = minVal/(float)numeric_limits<unsigned short>::max();
-            maxValue_ = maxVal/(float)numeric_limits<unsigned short>::max();
+            minValue_ = minVal / (float)std::numeric_limits<unsigned short>::max();
+            maxValue_ = maxVal / (float)std::numeric_limits<unsigned short>::max();
             break;
         }
         default:
-            cerr << "VolumeDescription(): Unsupported bit-depth "
-                                          << volume.bps() << endl;
+            std::cerr << "VolumeDescription(): Unsupported bit-depth "
+                                          << volume.bps() << std::endl;
             exit(0);
     }
 
@@ -289,8 +287,8 @@ VolumeDescription::VolumeDescription(const Volume& volume)
         case 8: desc = cudaCreateChannelDesc<unsigned char>(); break;
         case 16: desc = cudaCreateChannelDesc<unsigned short>(); break;
         default:
-                 cerr << "VolumeDescription(): Unsupported bit-depth "
-                                               << volume.bps() << endl;
+                 std::cerr << "VolumeDescription(): Unsupported bit-depth "
+                                               << volume.bps() << std::endl;
                  exit(0);
     }
     cudaExtent extent = make_cudaExtent(dim[0], dim[1], dim[2]);
@@ -315,8 +313,8 @@ VolumeDescription::VolumeDescription(const Volume& volume)
         case 8:  format.image_channel_data_type = CL_UNORM_INT8; break;
         case 16: format.image_channel_data_type = CL_UNORM_INT16; break;
         default:
-            cerr << "VolumeDescription(): unsupported bit depth "
-                 << volume.bps() << endl;
+            std::cerr << "VolumeDescription(): unsupported bit depth "
+                 << volume.bps() << std::endl;
             return;
     }
 

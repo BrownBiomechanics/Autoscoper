@@ -278,10 +278,10 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent *e){
                                     curve.value(it)+s_out*curve.out_tangent(it) < max_y;
 
                 if (in_selected && !node_selected && !out_selected) {
-                    new_nodes.push_back(make_pair(make_pair(&curve,it),IN_TANGENT));
+                    new_nodes.push_back(std::make_pair(std::make_pair(&curve,it),IN_TANGENT));
                 }
                 else if (!in_selected && !node_selected && out_selected) {
-                    new_nodes.push_back(make_pair(make_pair(&curve,it),OUT_TANGENT));
+                    new_nodes.push_back(std::make_pair(std::make_pair(&curve,it),OUT_TANGENT));
                 }
             }
 
@@ -296,7 +296,7 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent *e){
             mainwindow->getTracker()->trial()->getXCurve(-1)->time(it) < max_x &&
             mainwindow->getTracker()->trial()->getXCurve(-1)->value(it) > min_y &&
             mainwindow->getTracker()->trial()->getXCurve(-1)->value(it) < max_y) {
-            new_nodes.push_back(make_pair(make_pair(mainwindow->getTracker()->trial()->getXCurve(-1), it), NODE));
+            new_nodes.push_back(std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getXCurve(-1), it), NODE));
                     }
                     ++it;
                 }
@@ -308,7 +308,7 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent *e){
             mainwindow->getTracker()->trial()->getYCurve(-1)->time(it) < max_x &&
             mainwindow->getTracker()->trial()->getYCurve(-1)->value(it) > min_y &&
             mainwindow->getTracker()->trial()->getYCurve(-1)->value(it) < max_y) {
-            new_nodes.push_back(make_pair(make_pair(mainwindow->getTracker()->trial()->getYCurve(-1), it), NODE));
+            new_nodes.push_back(std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getYCurve(-1), it), NODE));
           }
                     ++it;
                 }
@@ -320,7 +320,7 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent *e){
             mainwindow->getTracker()->trial()->getZCurve(-1)->time(it) < max_x &&
             mainwindow->getTracker()->trial()->getZCurve(-1)->value(it) > min_y &&
             mainwindow->getTracker()->trial()->getZCurve(-1)->value(it) < max_y) {
-            new_nodes.push_back(make_pair(make_pair(mainwindow->getTracker()->trial()->getZCurve(-1), it), NODE));
+            new_nodes.push_back(std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getZCurve(-1), it), NODE));
           }
                     ++it;
                 }
@@ -332,7 +332,7 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent *e){
             mainwindow->getTracker()->trial()->getYawCurve(-1)->time(it) < max_x &&
             mainwindow->getTracker()->trial()->getYawCurve(-1)->value(it) > min_y &&
             mainwindow->getTracker()->trial()->getYawCurve(-1)->value(it) < max_y) {
-            new_nodes.push_back(make_pair(make_pair(mainwindow->getTracker()->trial()->getYawCurve(-1), it), NODE));
+            new_nodes.push_back(std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getYawCurve(-1), it), NODE));
           }
                     ++it;
                 }
@@ -344,7 +344,7 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent *e){
             mainwindow->getTracker()->trial()->getPitchCurve(-1)->time(it) < max_x &&
             mainwindow->getTracker()->trial()->getPitchCurve(-1)->value(it) > min_y &&
             mainwindow->getTracker()->trial()->getPitchCurve(-1)->value(it) < max_y) {
-            new_nodes.push_back(make_pair(make_pair(mainwindow->getTracker()->trial()->getPitchCurve(-1), it), NODE));
+            new_nodes.push_back(std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getPitchCurve(-1), it), NODE));
           }
                     ++it;
                 }
@@ -356,7 +356,7 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent *e){
             mainwindow->getTracker()->trial()->getRollCurve(-1)->time(it) < max_x &&
             mainwindow->getTracker()->trial()->getRollCurve(-1)->value(it) > min_y &&
             mainwindow->getTracker()->trial()->getRollCurve(-1)->value(it) < max_y) {
-            new_nodes.push_back(make_pair(make_pair(mainwindow->getTracker()->trial()->getRollCurve(-1), it), NODE));
+            new_nodes.push_back(std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getRollCurve(-1), it), NODE));
           }
                     ++it;
                 }

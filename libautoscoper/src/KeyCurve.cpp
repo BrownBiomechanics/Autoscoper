@@ -43,8 +43,6 @@
 
 #include "KeyCurve.hpp"
 
-using namespace std;
-
 void KeyCurve::insert(int time)
 {
     insert(time,(*this)(time));
@@ -62,7 +60,7 @@ void KeyCurve::insert(int time, float value)
 
     iterator position = keys.find(time);
     if (position == keys.end()) {
-        pair<iterator,bool> temp = keys.insert(make_pair(time,key));
+        std::pair<iterator,bool> temp = keys.insert(std::make_pair(time,key));
         position = temp.first;
     }
     else {
@@ -76,11 +74,11 @@ void KeyCurve::insert(int time, float value)
 
         if (position == keys.begin()) {
             erase(position);
-            position = keys.insert(keys.begin(),make_pair(time,key));
+            position = keys.insert(keys.begin(), std::make_pair(time,key));
         }
         else {
             erase(position--);
-            position = keys.insert(position,make_pair(time,key));
+            position = keys.insert(position, std::make_pair(time,key));
         }
     }
     key_changed(position);
@@ -110,11 +108,11 @@ KeyCurve::iterator KeyCurve::set_time(iterator position, int time)
     Key key = position->second;
     if (position == keys.begin()) {
         erase(position);
-        position = keys.insert(keys.begin(),make_pair(time,key));
+        position = keys.insert(keys.begin(), std::make_pair(time,key));
     }
     else {
         erase(position--);
-        position = keys.insert(position,make_pair(time,key));
+        position = keys.insert(position, std::make_pair(time,key));
     }
     key_changed(position);
 

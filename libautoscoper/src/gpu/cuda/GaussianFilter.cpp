@@ -48,8 +48,6 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-using namespace std;
-
 namespace xromm { namespace gpu {
 
 // Unique identifier for each contrast filter
@@ -60,7 +58,7 @@ GaussianFilter::GaussianFilter()
     : Filter(XROMM_GPU_GAUSSIAN_FILTER,""),
       gaussian_(NULL)
 {
-    stringstream name_stream;
+    std::stringstream name_stream;
     name_stream << "GaussianFilter" << (++num_gaussian_filters);
     name_ = name_stream.str();
 

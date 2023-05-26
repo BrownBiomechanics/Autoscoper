@@ -75,10 +75,6 @@
 
 #include "Filter.hpp"
 
-
-
-using namespace std;
-
 namespace xromm { namespace gpu
 {
 
@@ -155,7 +151,7 @@ View::renderRad(Buffer* buffer, unsigned width, unsigned height)
   init();
 
   if (width > maxWidth_ || height > maxHeight_) {
-        cerr << "View::renderRad(): ERROR: Buffer too large." << endl;
+        std::cerr << "View::renderRad(): ERROR: Buffer too large." << std::endl;
     }
     if (width > maxWidth_) {
         width = maxWidth_;
@@ -183,7 +179,7 @@ View::renderBackground(Buffer* buffer, unsigned width, unsigned height)
   init();
 
   if (width > maxWidth_ || height > maxHeight_) {
-    cerr << "View::renderBackground(): ERROR: Buffer too large." << endl;
+    std::cerr << "View::renderBackground(): ERROR: Buffer too large." << std::endl;
   }
   if (width > maxWidth_) {
     width = maxWidth_;
@@ -211,7 +207,7 @@ View::renderDrr(Buffer* buffer, unsigned width, unsigned height)
   init();
 
     if (width > maxWidth_ || height > maxHeight_) {
-        cerr << "View::renderDrr(): ERROR: Buffer too large." << endl;
+        std::cerr << "View::renderDrr(): ERROR: Buffer too large." << std::endl;
     }
     if (width > maxWidth_) {
         width = maxWidth_;
@@ -243,7 +239,7 @@ void View::renderDrrSingle(int volume, Buffer* buffer, unsigned width, unsigned 
   init();
 
   if (width > maxWidth_ || height > maxHeight_) {
-    cerr << "View::renderDrr(): ERROR: Buffer too large." << endl;
+    std::cerr << "View::renderDrr(): ERROR: Buffer too large." << std::endl;
   }
   if (width > maxWidth_) {
     width = maxWidth_;
@@ -314,7 +310,7 @@ void View::saveImage(std::string filename, int width, int height)
   init();
 
   if (width > maxWidth_ || height > maxHeight_) {
-    cerr << "View::renderDrr(): ERROR: Buffer too large." << endl;
+    std::cerr << "View::renderDrr(): ERROR: Buffer too large." << std::endl;
   }
   if (width > maxWidth_) {
     width = maxWidth_;
@@ -356,10 +352,10 @@ void View::saveImage(std::string filename, int width, int height)
       uchar_image[y*width + x] = (int)(255 * (1.0 - host_image[(height - y - 1)*width + x]));
     }
   }
-  ofstream file(filename.c_str(), ios::out);
-  file << "P2" << endl;
-  file << width << " " << height << endl;
-  file << 255 << endl;
+  std::ofstream file(filename.c_str(), std::ios::out);
+  file << "P2" << std::endl;
+  file << width << " " << height << std::endl;
+  file << 255 << std::endl;
   for (int i = 0; i < width*height; i++) {
     file << (int)uchar_image[i] << " ";
   }
@@ -482,7 +478,7 @@ void
 View::init(unsigned width, unsigned height)
 {
   if (width*height > maxWidth_ * maxHeight_) {
-    throw runtime_error("GPU Buffers too small");
+    throw std::runtime_error("GPU Buffers too small");
     }
 
     if (!inited_) {
@@ -535,7 +531,7 @@ View::filter(const std::vector<Filter*>& filters,
     }
 
     // Explicitly apply the first filter and altername buffers after
-    vector<Filter*>::const_iterator iter = filters.begin();;
+    std::vector<Filter*>::const_iterator iter = filters.begin();;
 
     if ((*iter)->enabled()) {
         (*iter)->apply(input, buffer1, (int)width, (int)height);
@@ -557,7 +553,7 @@ View::filter(const std::vector<Filter*>& filters,
                        width*height*sizeof(float),
                        cudaMemcpyDeviceToDevice);
         }
-        swap(buffer1, buffer2);
+        std::swap(buffer1, buffer2);
     }
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
     // If there are no filters simply copy the input to the output
@@ -580,7 +576,7 @@ View::filter(const std::vector<Filter*>& filters,
     }
 
     // Explicitly apply the first filter and altername buffers after
-    vector<Filter*>::const_iterator iter = filters.begin();;
+    std::vector<Filter*>::const_iterator iter = filters.begin();;
 
     if ((*iter)->enabled()) {
         (*iter)->apply(input, buffer1, (int)width, (int)height);
@@ -596,7 +592,7 @@ View::filter(const std::vector<Filter*>& filters,
         else {
       buffer1->copy(buffer2, width*height*sizeof(float));
         }
-        swap(buffer1, buffer2);
+        std::swap(buffer1, buffer2);
     }
 #endif
 }

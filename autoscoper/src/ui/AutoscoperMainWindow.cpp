@@ -585,7 +585,7 @@ void AutoscoperMainWindow::setupUI()
 
   //Add Volumes
   for (unsigned int i = 0; i < tracker->trial()->volumes.size(); i++) {
-    cout << "Volume Name: " << tracker->trial()->volumes[i].name() << endl;
+    std::cout << "Volume Name: " << tracker->trial()->volumes[i].name() << std::endl;
     volumes_widget->addVolume(tracker->trial()->volumes[i].name());
   }
 
@@ -628,7 +628,7 @@ void AutoscoperMainWindow::setupUI()
     // Update the coordinate frames
   timeline_widget->getPosition_graph()->min_frame = 0;
   timeline_widget->getPosition_graph()->max_frame = tracker->trial()->num_frames-1; //
-    timeline_widget->getPosition_graph()->frame_locks = vector<bool>(tracker->trial()->num_frames,false);
+    timeline_widget->getPosition_graph()->frame_locks = std::vector<bool>(tracker->trial()->num_frames,false);
 
     update_graph_min_max(timeline_widget->getPosition_graph());
 
@@ -743,7 +743,7 @@ void AutoscoperMainWindow::setLastFolder(QString lastFolder)
 void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume){
   const char* s = save_with_commas ? "," : " ";
 
-  std::ofstream file(filename.toStdString().c_str(), ios::out);
+  std::ofstream file(filename.toStdString().c_str(), std::ios::out);
 
   int start, stop;
   if (volume == -1)
@@ -758,7 +758,7 @@ void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_
   }
 
   file.precision(16);
-  file.setf(ios::fixed, ios::floatfield);
+  file.setf(std::ios::fixed, std::ios::floatfield);
   bool invalid;
   for (int i = 0; i < tracker->trial()->num_frames; ++i) {
     for (int j = start; j < stop; j++) {
@@ -858,14 +858,14 @@ void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_
 
       if (j != tracker->trial()->num_volumes - 1) file << s;
     }
-    file << endl;
+    file << std::endl;
   }
   file.close();
 }
 
 void AutoscoperMainWindow::loadFilterSettings(int camera, QString filename)
 {
-  // cout << "Test Load Filter: " << filename.toStdString() << endl;
+  // std::cout << "Test Load Filter: " << filename.toStdString() << std::endl;
   filters_widget->loadFilterSettings(camera, filename);
 }
 
@@ -915,10 +915,10 @@ void AutoscoperMainWindow::saveFullDRR()
   /*QString filename = get_filename(true);
   if (filename.compare("") != 0) {
     try {
-      string drr_folderpath = filename.toStdString().c_str();
+      std::string drr_folderpath = filename.toStdString().c_str();
     }
-    catch (exception& e) {
-      cerr << e.what() << endl;
+    catch (std::exception& e) {
+      std::cerr << e.what() << std::endl;
     }
   }*/
   getTracker()->getFullDRR(tracker->trial()->current_volume);
@@ -978,7 +978,7 @@ void AutoscoperMainWindow::load_tracking_results(QString filename, bool save_as_
     start = volume;
     stop = volume + 1;
   }
-  std::ifstream file(filename.toStdString().c_str(), ios::in);
+  std::ifstream file(filename.toStdString().c_str(), std::ios::in);
 
   for (int j = start; j < stop; j++){
     tracker->trial()->getXCurve(j)->clear();
@@ -990,12 +990,12 @@ void AutoscoperMainWindow::load_tracking_results(QString filename, bool save_as_
   }
 
   double m[16];
-  string line, value;
+  std::string line, value;
   for (int i = 0; i < tracker->trial()->num_frames && getline(file, line); ++i) {
-    istringstream lineStream(line);
+    std::istringstream lineStream(line);
     for (int k = start; k < stop; k++){
       for (int j = 0; j < (save_as_matrix ? 16 : 6) && getline(lineStream, value, s); ++j) {
-        istringstream valStream(value);
+        std::istringstream valStream(value);
         valStream >> m[j];
       }
 
@@ -1102,7 +1102,7 @@ void AutoscoperMainWindow::openTrial(QString filename){
 
     trial_filename = filename.toStdString().c_str();
     puts("\n\nSetting up a new trial...");
-    cout << "Filename: " << trial_filename << std::endl;
+    std::cout << "Filename: " << trial_filename << std::endl;
     is_trial_saved = true;
     is_tracking_saved = true;
 
@@ -1124,7 +1124,7 @@ void AutoscoperMainWindow::openTrial(QString filename){
     default_root_path = QString::fromStdString(def_root_path_temp);
     std::string test = default_root_path.toStdString().c_str();
 
-    cout << "Root Path is: " << test << endl;
+    std::cout << "Root Path is: " << test << std::endl;
 
     // Store Default Values:
     default_filter_folder = "xParameters";
@@ -1148,7 +1148,7 @@ void AutoscoperMainWindow::openTrial(QString filename){
     /////// TRACKED PATH:
     size_t pos_trck = trial_filename.find(".cfg");
     std::string task_name_tmp = trial_filename.substr(pos + 1, pos_trck - pos - 1);
-    cout << "Task Name: " << task_name_tmp << endl;
+    std::cout << "Task Name: " << task_name_tmp << std::endl;
 
     default_task_name = QString::fromStdString(task_name_tmp);
 
@@ -1167,7 +1167,7 @@ void AutoscoperMainWindow::openTrial(QString filename){
 
       load_tracking_results(tracking_path, 1, default_saving_format, 1, 0, 0, 0, iVol);
 
-      // cout << "Tracking Path is: " << tracking_path.toStdString().c_str() << endl;
+      // std::cout << "Tracking Path is: " << tracking_path.toStdString().c_str() << std::endl;
     }
 
     on_actionInsert_Key_triggered(true);
@@ -1389,8 +1389,8 @@ void AutoscoperMainWindow::on_actionSave_triggered(bool checked){
             tracker->trial()->save(trial_filename);
             is_trial_saved = true;
         }
-        catch (exception& e) {
-            cerr << e.what() << endl;
+        catch (std::exception& e) {
+            std::cerr << e.what() << std::endl;
         }
     }*/
   QString filename = get_filename(true, "*.tra");
@@ -1408,8 +1408,8 @@ void AutoscoperMainWindow::on_actionSave_as_triggered(bool checked){
       tracker->trial()->save(trial_filename);
             is_trial_saved = true;
         }
-        catch (exception& e) {
-            cerr << e.what() << endl;
+        catch (std::exception& e) {
+            std::cerr << e.what() << std::endl;
         }
     }
 }
@@ -1766,7 +1766,7 @@ void AutoscoperMainWindow::on_actionDelete_triggered(bool checked) {
   /*if (!timeline_widget->getSelectedNodes()->empty()) {
     push_state();
 
-    cout << "Size\n: " << timeline_widget->getSelectedNodes()->size();
+    std::cout << "Size\n: " << timeline_widget->getSelectedNodes()->size();
     for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
       if ((*timeline_widget->getSelectedNodes())[i].second == NODE) {
         if (!timeline_widget->getPosition_graph()->frame_locks.at((int)(*timeline_widget->getSelectedNodes())[i].first.first->time((*timeline_widget->getSelectedNodes())[i].first.second))) {
@@ -1865,7 +1865,7 @@ void AutoscoperMainWindow::on_actionInsert_Key_triggered(bool checked){
   redrawGL();
 
   double NCC = getTracker()->minimizationFunc(manip_0);
-  cout << "Current NCC is: " << NCC << endl;
+  std::cout << "Current NCC is: " << NCC << std::endl;
 }
 
 void AutoscoperMainWindow::on_actionLock_triggered(bool checked){
@@ -2056,10 +2056,10 @@ void AutoscoperMainWindow::on_actionExport_NCC_as_csv_triggered(bool checked) {
 
 void AutoscoperMainWindow::save_ncc_results(QString filename) {
 
-  std::ofstream file(filename.toStdString().c_str(), ios::out);
+  std::ofstream file(filename.toStdString().c_str(), std::ios::out);
 
   file.precision(6);
-  file.setf(ios::fixed, ios::floatfield);
+  file.setf(std::ios::fixed, std::ios::floatfield);
   unsigned int volume = tracker->trial()->current_volume;
   std::vector<double>  ncc_values(2,999);
   for (int frame = 0; frame < tracker->trial()->num_frames; ++frame) {
@@ -2073,7 +2073,7 @@ void AutoscoperMainWindow::save_ncc_results(QString filename) {
     setFrame(frame);
     ncc_values = tracker->trackFrame(volume, pose);
 
-    file << ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0)+ ncc_values.at(1) << endl;
+    file << ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0)+ ncc_values.at(1) << std::endl;
   }
   file.close();
 }
@@ -2110,7 +2110,7 @@ void AutoscoperMainWindow::on_actionOpen_Sample_Wrist_triggered(bool checked) {
     default_config_path += "/";
     default_config_path += "wrist.cfg";
 
-    ifstream file(default_config_path.toStdString().c_str());
+    std::ifstream file(default_config_path.toStdString().c_str());
     if (file.is_open() == false) {
         QString l_1 = "mayaCam_csv " + root_path +
         "sample_data/Calibration/xr_calib_wrist_cam01.txt";
@@ -2134,29 +2134,29 @@ void AutoscoperMainWindow::on_actionOpen_Sample_Wrist_triggered(bool checked) {
     QString l_12 = "VolumeFile " + root_path +
       "sample_data/Models/uln_dcm_cropped.tif";
 
-        ofstream cfg_file(default_config_path.toStdString().c_str());
+        std::ofstream cfg_file(default_config_path.toStdString().c_str());
         cfg_file.precision(12);
-        cfg_file << l_1.toStdString().c_str() << endl;
-        cfg_file << l_2.toStdString().c_str() << endl;
-        cfg_file << l_3.toStdString().c_str() << endl;
-        cfg_file << l_4.toStdString().c_str() << endl;
+        cfg_file << l_1.toStdString().c_str() << std::endl;
+        cfg_file << l_2.toStdString().c_str() << std::endl;
+        cfg_file << l_3.toStdString().c_str() << std::endl;
+        cfg_file << l_4.toStdString().c_str() << std::endl;
     // Radius
-        cfg_file << l_5.toStdString().c_str() << endl;
-        cfg_file << l_6.toStdString().c_str() << endl;
-        cfg_file << l_7.toStdString().c_str() << endl;
+        cfg_file << l_5.toStdString().c_str() << std::endl;
+        cfg_file << l_6.toStdString().c_str() << std::endl;
+        cfg_file << l_7.toStdString().c_str() << std::endl;
     // MC2-MC3
-    cfg_file << l_10.toStdString().c_str() << endl;
-    cfg_file << l_6.toStdString().c_str() << endl;
-    cfg_file << l_7.toStdString().c_str() << endl;
+    cfg_file << l_10.toStdString().c_str() << std::endl;
+    cfg_file << l_6.toStdString().c_str() << std::endl;
+    cfg_file << l_7.toStdString().c_str() << std::endl;
     // MC3
-    cfg_file << l_11.toStdString().c_str() << endl;
-    cfg_file << l_6.toStdString().c_str() << endl;
-    cfg_file << l_7.toStdString().c_str() << endl;
+    cfg_file << l_11.toStdString().c_str() << std::endl;
+    cfg_file << l_6.toStdString().c_str() << std::endl;
+    cfg_file << l_7.toStdString().c_str() << std::endl;
     // ULN
-    cfg_file << l_12.toStdString().c_str() << endl;
-    cfg_file << l_6.toStdString().c_str() << endl;
-    cfg_file << l_7.toStdString().c_str() << endl;
-    cfg_file << l_8.toStdString().c_str() << endl;
+    cfg_file << l_12.toStdString().c_str() << std::endl;
+    cfg_file << l_6.toStdString().c_str() << std::endl;
+    cfg_file << l_7.toStdString().c_str() << std::endl;
+    cfg_file << l_8.toStdString().c_str() << std::endl;
     cfg_file << l_9.toStdString().c_str();
         cfg_file.close();
     }
@@ -2174,7 +2174,7 @@ void AutoscoperMainWindow::on_actionOpen_Sample_Knee_triggered(bool checked) {
   default_config_path += "/";
   default_config_path += "left_knee.cfg";
 
-  ifstream file(default_config_path.toStdString().c_str());
+  std::ifstream file(default_config_path.toStdString().c_str());
   if (file.is_open() == false) {
     QString l_1 = "mayaCam_csv " + root_path +
       "sample_data/Calibration/xr_calib_left_knee_cam01.txt";
@@ -2194,28 +2194,28 @@ void AutoscoperMainWindow::on_actionOpen_Sample_Knee_triggered(bool checked) {
     QString l_10 = "VolumeFile " + root_path +
       "sample_data/Models/left_knee_tibia_cropped.tif";
 
-    ofstream cfg_file(default_config_path.toStdString().c_str());
+    std::ofstream cfg_file(default_config_path.toStdString().c_str());
     cfg_file.precision(12);
-    cfg_file << l_1.toStdString().c_str() << endl;
-    cfg_file << l_2.toStdString().c_str() << endl;
-    cfg_file << l_3.toStdString().c_str() << endl;
-    cfg_file << l_4.toStdString().c_str() << endl;
+    cfg_file << l_1.toStdString().c_str() << std::endl;
+    cfg_file << l_2.toStdString().c_str() << std::endl;
+    cfg_file << l_3.toStdString().c_str() << std::endl;
+    cfg_file << l_4.toStdString().c_str() << std::endl;
     // Femur
-    cfg_file << l_5.toStdString().c_str() << endl;
-    cfg_file << l_6.toStdString().c_str() << endl;
-    cfg_file << l_7.toStdString().c_str() << endl;
+    cfg_file << l_5.toStdString().c_str() << std::endl;
+    cfg_file << l_6.toStdString().c_str() << std::endl;
+    cfg_file << l_7.toStdString().c_str() << std::endl;
     // Tibia
-    cfg_file << l_10.toStdString().c_str() << endl;
-    cfg_file << l_6.toStdString().c_str() << endl;
-    cfg_file << l_7.toStdString().c_str() << endl;
+    cfg_file << l_10.toStdString().c_str() << std::endl;
+    cfg_file << l_6.toStdString().c_str() << std::endl;
+    cfg_file << l_7.toStdString().c_str() << std::endl;
 
-    cfg_file << l_8.toStdString().c_str() << endl;
+    cfg_file << l_8.toStdString().c_str() << std::endl;
     cfg_file << l_9.toStdString().c_str();
     cfg_file.close();
   }
   file.close();
 
-  //cout << default_config_path.toStdString().c_str() << endl;
+  //cout << default_config_path.toStdString().c_str() << std::endl;
   openTrial(default_config_path);
 }
 
@@ -2227,7 +2227,7 @@ void AutoscoperMainWindow::on_actionOpen_Sample_Ankle_triggered(bool checked) {
   default_config_path += "/";
   default_config_path += "right_ankle.cfg";
 
-  ifstream file(default_config_path.toStdString().c_str());
+  std::ifstream file(default_config_path.toStdString().c_str());
   if (file.is_open() == false) {
     QString l_1 = "mayaCam_csv " + root_path +
       "sample_data/Calibration/xr_calib_right_ankle_cam01.txt";
@@ -2250,40 +2250,40 @@ void AutoscoperMainWindow::on_actionOpen_Sample_Ankle_triggered(bool checked) {
       "sample_data/Models/right_ankle_tibia.tif";
 
 
-    ofstream cfg_file(default_config_path.toStdString().c_str());
+    std::ofstream cfg_file(default_config_path.toStdString().c_str());
     cfg_file.precision(12);
-    cfg_file << l_1.toStdString().c_str() << endl;
-    cfg_file << l_2.toStdString().c_str() << endl;
-    cfg_file << l_3.toStdString().c_str() << endl;
-    cfg_file << l_4.toStdString().c_str() << endl;
+    cfg_file << l_1.toStdString().c_str() << std::endl;
+    cfg_file << l_2.toStdString().c_str() << std::endl;
+    cfg_file << l_3.toStdString().c_str() << std::endl;
+    cfg_file << l_4.toStdString().c_str() << std::endl;
     // Calc
-    cfg_file << l_5.toStdString().c_str() << endl;
-    cfg_file << l_6.toStdString().c_str() << endl;
-    cfg_file << l_7.toStdString().c_str() << endl;
+    cfg_file << l_5.toStdString().c_str() << std::endl;
+    cfg_file << l_6.toStdString().c_str() << std::endl;
+    cfg_file << l_7.toStdString().c_str() << std::endl;
     // Talus
-    cfg_file << l_10.toStdString().c_str() << endl;
-    cfg_file << l_6.toStdString().c_str() << endl;
-    cfg_file << l_7.toStdString().c_str() << endl;
+    cfg_file << l_10.toStdString().c_str() << std::endl;
+    cfg_file << l_6.toStdString().c_str() << std::endl;
+    cfg_file << l_7.toStdString().c_str() << std::endl;
     // Tibia
-    cfg_file << l_11.toStdString().c_str() << endl;
-    cfg_file << l_6.toStdString().c_str() << endl;
-    cfg_file << l_7.toStdString().c_str() << endl;
+    cfg_file << l_11.toStdString().c_str() << std::endl;
+    cfg_file << l_6.toStdString().c_str() << std::endl;
+    cfg_file << l_7.toStdString().c_str() << std::endl;
 
-    cfg_file << l_8.toStdString().c_str() << endl;
+    cfg_file << l_8.toStdString().c_str() << std::endl;
     cfg_file << l_9.toStdString().c_str();
     cfg_file.close();
   }
   file.close();
 
-  //cout << default_config_path.toStdString().c_str() << endl;
+  //cout << default_config_path.toStdString().c_str() << std::endl;
   openTrial(default_config_path);
 }
 
 void AutoscoperMainWindow::save_nearby_nccs(QString filename) {
-  std::ofstream file(filename.toStdString().c_str(), ios::out);
+  std::ofstream file(filename.toStdString().c_str(), std::ios::out);
 
   file.precision(6);
-  file.setf(ios::fixed, ios::floatfield);
+  file.setf(std::ios::fixed, std::ios::floatfield);
   unsigned int volume = tracker->trial()->current_volume;
   std::vector<double>  ncc_values(2, 9999);
 
@@ -2303,7 +2303,7 @@ void AutoscoperMainWindow::save_nearby_nccs(QString filename) {
   // Get Current One
   ncc_values = tracker->trackFrame(volume, pose);
   file << pose[0] << "," << pose[1] << "," << pose[2] << "," << pose[3] << "," << pose[4] << "," << pose[5] << ","
-    << ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0) + ncc_values.at(1) << endl;
+    << ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0) + ncc_values.at(1) << std::endl;
 
 
   // Look the neighbors
@@ -2335,7 +2335,7 @@ void AutoscoperMainWindow::save_nearby_nccs(QString filename) {
               ncc_values = tracker->trackFrame(volume, next_pose);
 
               file << next_pose[0] << "," << next_pose[1] << "," << next_pose[2] << "," << next_pose[3] << "," << next_pose[4] << "," << next_pose[5] << ","
-                << ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0)+ncc_values.at(1) << endl;
+                << ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0)+ncc_values.at(1) << std::endl;
             }
           }
         }
@@ -2345,7 +2345,7 @@ void AutoscoperMainWindow::save_nearby_nccs(QString filename) {
 
   file.close();
 
-  cout << "All NCCs were saved nearby this pose..." << endl;
+  std::cout << "All NCCs were saved nearby this pose..." << std::endl;
 }
 
 

@@ -44,8 +44,6 @@
 #include <iostream>
 #include <cmath>
 
-using namespace std;
-
 namespace xromm { namespace gpu {
 
 //////// Global variables ////////
@@ -89,8 +87,8 @@ static void get_max_threads()
     }
 
 #if DEBUG
-    cerr << "ncc: maxLocalMem = " << maxLocalMem << endl;
-    cerr << "ncc: maxNumThreads = " << g_maxNumThreads << endl;
+    std::cerr << "ncc: maxLocalMem = " << maxLocalMem << std::endl;
+    std::cerr << "ncc: maxNumThreads = " << g_maxNumThreads << std::endl;
 #endif
   }
 }
@@ -115,9 +113,9 @@ static float ncc_sum(Buffer* f, unsigned n)
   while (n > 1)
   {
 #if DEBUG
-    cerr << "ncc_sum[" << n << "] numThreads = " << numThreads << endl;
-    cerr << "ncc_sum[" << n << "] numBlocks = " << numBlocks << endl;
-    cerr << "ncc_sum[" << n << "] sizeMem = " << sizeMem << endl;
+    std::cerr << "ncc_sum[" << n << "] numThreads = " << numThreads << std::endl;
+    std::cerr << "ncc_sum[" << n << "] numBlocks = " << numBlocks << std::endl;
+    std::cerr << "ncc_sum[" << n << "] sizeMem = " << sizeMem << std::endl;
 #endif
 
     kernel->block2d(numThreads, 1);
@@ -134,9 +132,9 @@ static float ncc_sum(Buffer* f, unsigned n)
     float *tmp = new float[numBlocks];
     d_sums->write(tmp, numBlocks*sizeof(float));
     for (unsigned j=0; j<numBlocks; j++) {
-      cerr << " " << tmp[j];
+      std::cerr << " " << tmp[j];
     }
-    cerr << endl;
+    std::cerr << std::endl;
     delete tmp;
 #endif
 
@@ -192,8 +190,8 @@ float ncc(Buffer* f, Buffer* g, Buffer* mask, unsigned n)
   float meanG = ncc_sum(g, n) / nbPixel;
 
 #if DEBUG
-  cerr << "meanF: " << meanF << endl;
-  cerr << "meanG: " << meanG << endl;
+  std::cerr << "meanF: " << meanF << std::endl;
+  std::cerr << "meanG: " << meanG << std::endl;
 #endif
 
   size_t numThreads, numBlocks, sizeMem;

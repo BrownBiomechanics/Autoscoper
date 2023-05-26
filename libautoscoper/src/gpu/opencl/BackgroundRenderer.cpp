@@ -47,8 +47,6 @@
 #define BX 16
 #define BY 16
 
-using namespace std;
-
 namespace xromm { namespace gpu
 {
 

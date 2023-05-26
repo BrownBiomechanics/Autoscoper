@@ -43,8 +43,6 @@
 #include <cmath>
 #include "GaussianFilter.hpp"
 
-using namespace std;
-
 namespace xromm { namespace gpu {
 
 #define KERNEL_X 16
@@ -61,7 +59,7 @@ GaussianFilter::GaussianFilter()
   : Filter(XROMM_GPU_GAUSSIAN_FILTER,""),
     gaussian_(NULL)
 {
-  stringstream name_stream;
+  std::stringstream name_stream;
   name_stream << "GaussianFilter" << (++num_gaussian_filters);
   name_ = name_stream.str();
 

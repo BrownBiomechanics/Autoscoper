@@ -49,8 +49,6 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-using namespace std;
-
 namespace xromm { namespace gpu {
 
 // Unique identifier for each contrast filter
@@ -63,7 +61,7 @@ SharpenFilter::SharpenFilter()
       contrast_(1),
       sharpen_(NULL)
 {
-    stringstream name_stream;
+    std::stringstream name_stream;
     name_stream << "SharpenFilter" << (++num_sharpen_filters);
     name_ = name_stream.str();
 

@@ -74,9 +74,6 @@
 #include "CoordFrame.hpp"
 #include "PSO.hpp"
 
-
-using namespace std;
-
 static bool firstRun = true;
 
 #define DEBUG 0
@@ -134,11 +131,11 @@ namespace xromm {
     sprintf(filename,"C:/Autoscoper-v2.7/build/install/bin/Release/debug/image_cam%02d.pgm",count++);
     #endif
 
-    cout << filename << endl;
-  ofstream file(filename,ios::out);
-  file << "P2" << endl;
-  file << width << " " << height << endl;
-  file << 255 << endl;
+    std::cout << filename << std::endl;
+  std::ofstream file(filename, std::ios::out);
+  file << "P2" << std::endl;
+  file << width << " " << height << std::endl;
+  file << 255 << std::endl;
   for (int i = 0; i < width*height; i++) {
     file << 255-(int)uchar_image[i] << " "; // (255-X) because we want white to be air
   }
@@ -187,11 +184,11 @@ namespace xromm {
     sprintf_s(filename, "C:/_MyDRRs/image_cam%02d.pgm", count++);
 #endif
 
-    cout << filename << endl;
-    ofstream file(filename, ios::out);
-    file << "P2" << endl;
-    file << width << " " << height << endl;
-    file << 255 << endl;
+    std::cout << filename << std::endl;
+    std::ofstream file(filename, std::ios::out);
+    file << "P2" << std::endl;
+    file << width << " " << height << std::endl;
+    file << 255 << std::endl;
     for (int i = 0; i < width * height; i++) {
       file << 255 - (int)uchar_image[i] << " "; // (255-X) because we want white to be air
     }
@@ -237,7 +234,7 @@ void Tracker::load(const Trial& trial)
 {
     trial_ = trial;
 
-    vector<gpu::View*>::iterator viewIter;
+    std::vector<gpu::View*>::iterator viewIter;
     for (viewIter = views_.begin(); viewIter != views_.end(); ++viewIter) {
         delete *viewIter;
     }
@@ -316,7 +313,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
   cf_model_select = cf_model;
 
     if (frame < 0 || frame >= trial_.num_frames) {
-        cerr << "Tracker::optimize(): Invalid frame." << endl;
+        std::cerr << "Tracker::optimize(): Invalid frame." << std::endl;
         return;
     }
 
@@ -449,15 +446,15 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
 
       printf("Time elapsed:%10.3lf s\n", (double)(cpu_end - cpu_begin) / CLOCKS_PER_SEC);
 
-      cout << "Pose change from initial position: ";
+      std::cout << "Pose change from initial position: ";
       for (int i = 0; i < NUM_OF_DIMENSIONS; i++)
       {
         if (i == NUM_OF_DIMENSIONS - 1)
         {
-          cout << gBest[i] << endl;
+          std::cout << gBest[i] << std::endl;
         }
         else {
-          cout << gBest[i] << ",";
+          std::cout << gBest[i] << ",";
         }
         xyzypr_manip[i] = gBest[i];
       }
@@ -521,12 +518,12 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
       double final_ncc = minimizationFunc((P[1] + 1));
 
       if (final_ncc < init_ncc) {
-        cout << "Downhill Simplex Optimized Final NCC: " << minimizationFunc((P[1] + 1)) << endl;
+        std::cout << "Downhill Simplex Optimized Final NCC: " << minimizationFunc((P[1] + 1)) << std::endl;
         // For Downhill Simplex Method (Final)
         manip = CoordFrame::from_xyzAxis_angle(P[1] + 1);
       }
       else {
-        cout << "The initial position was optimized." << endl;
+        std::cout << "The initial position was optimized." << std::endl;
         manip = CoordFrame::from_xyzAxis_angle(init_manip);
       }
 
@@ -556,7 +553,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
       // Optimize the frame
       AMOEBA(P, Y, NDIM, FTOL, &ITER);
 
-      cout << "Optimized Final NCC: " << minimizationFunc((P[1] + 1)) << endl;
+      std::cout << "Optimized Final NCC: " << minimizationFunc((P[1] + 1)) << std::endl;
 
       // For Downhill Simplex Method
       manip = CoordFrame::from_xyzAxis_angle(P[1] + 1);
@@ -581,8 +578,8 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
     }
   totalIter += ITER;
 
-    cerr << "Tracker::optimize(): Frame " << trial_.frame
-         << " done in " << totalIter << " total iterations" << endl;
+    std::cerr << "Tracker::optimize(): Frame " << trial_.frame
+         << " done in " << totalIter << " total iterations" << std::endl;
 }
 
 

@@ -67,8 +67,6 @@
 #include <Matrix.hpp>
 #include <Vector.hpp>
 
-using namespace std;
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~// Constants //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 // One quarter coverage stipple pattern
@@ -122,8 +120,8 @@ static void draw_cone(float base, float height, int slices, int stacks);
 
 static double safe_acos(double x)
 {
-    static const float min_x = -1.0+numeric_limits<double>::epsilon();
-    static const float max_x = 1.0-numeric_limits<double>::epsilon();
+    static const float min_x = -1.0 + std::numeric_limits<double>::epsilon();
+    static const float max_x = 1.0 - std::numeric_limits<double>::epsilon();
 
     if (x > max_x) x = max_x;
     else if (x < min_x) x = min_x;
@@ -268,7 +266,7 @@ void Manip3D::on_mouse_press(int x, int y, int button)
     Ray<double> ray1 = create_ray(x+1,y,modelview_,projection_,viewport_);
     Ray<double> ray2 = create_ray(x,y+1,modelview_,projection_,viewport_);
 
-    rads_per_pixel = max(safe_acos(dot(ray.direction,ray1.direction)/
+    rads_per_pixel = std::max(safe_acos(dot(ray.direction,ray1.direction)/
                               len(ray.direction)/len(ray1.direction)),
                          safe_acos(dot(ray.direction,ray2.direction)/
                               len(ray.direction)/len(ray2.direction)));

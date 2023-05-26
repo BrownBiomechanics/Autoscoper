@@ -51,8 +51,6 @@
 
 #include "Camera.hpp"
 
-using namespace std;
-
 namespace xromm
 {
 
@@ -95,16 +93,16 @@ namespace xromm
 
 
 
-Camera::Camera(const string& mayacam) : mayacam_(mayacam)
+Camera::Camera(const std::string& mayacam) : mayacam_(mayacam)
 {
     // Load the mayacam.csv file into an array of doubles
 
-    fstream file(mayacam.c_str(), ios::in);
+    std::fstream file(mayacam.c_str(), std::ios::in);
     if (file.is_open() == false) {
-        throw runtime_error("File not found: " + mayacam);
+        throw std::runtime_error("File not found: " + mayacam);
     }
 
-    string csv_line;
+    std::string csv_line;
   safeGetline(file, csv_line);
   file.close();
   if (csv_line.compare("image size") == 0)
@@ -121,15 +119,15 @@ Camera::Camera(const string& mayacam) : mayacam_(mayacam)
 
 void Camera::loadMayaCam1(const std::string& mayacam)
   {
-    fstream file(mayacam.c_str(), ios::in);
+    std::fstream file(mayacam.c_str(), std::ios::in);
     double csv_vals[5][3];
-    string csv_line, csv_val;
+    std::string csv_line, csv_val;
     for (int i = 0; i < 5 && safeGetline(file, csv_line); ++i) {
-      istringstream csv_line_stream(csv_line);
+      std::istringstream csv_line_stream(csv_line);
       for (int j = 0; j < 3 && getline(csv_line_stream, csv_val, ','); ++j) {
-        istringstream csv_val_stream(csv_val);
+        std::istringstream csv_val_stream(csv_val);
         if (!(csv_val_stream >> csv_vals[i][j])) {
-          throw runtime_error("Invalid MayaCam file");
+          throw std::runtime_error("Invalid MayaCam file");
         }
       }
     }
@@ -248,11 +246,11 @@ void Camera::loadMayaCam1(const std::string& mayacam)
     double translation[3];
 
 
-    fstream file(mayacam.c_str(), ios::in);
+    std::fstream file(mayacam.c_str(), std::ios::in);
     double csv_vals[5][3];
-    string csv_line, csv_val;
+    std::string csv_line, csv_val;
     for (int i = 0; i < 17 && safeGetline(file, csv_line); ++i) {
-      istringstream csv_line_stream(csv_line);
+      std::istringstream csv_line_stream(csv_line);
 
       switch (i)
       {
@@ -260,9 +258,9 @@ void Camera::loadMayaCam1(const std::string& mayacam)
           break;
         case 1: //size
           for (int j = 0; j < 2 && getline(csv_line_stream, csv_val, ','); ++j) {
-            istringstream csv_val_stream(csv_val);
+            std::istringstream csv_val_stream(csv_val);
             if (!(csv_val_stream >> size_[j])) {
-              throw runtime_error("Invalid MayaCam file");
+              throw std::runtime_error("Invalid MayaCam file");
             }
           }
           break;
@@ -270,9 +268,9 @@ void Camera::loadMayaCam1(const std::string& mayacam)
         case 5:
         case 6:
           for (int j = 0; j < 3 && getline(csv_line_stream, csv_val, ','); ++j) {
-            istringstream csv_val_stream(csv_val);
+            std::istringstream csv_val_stream(csv_val);
             if (!(csv_val_stream >> K[j][i - 4])) {
-              throw runtime_error("Invalid MayaCam file");
+              throw std::runtime_error("Invalid MayaCam file");
             }
           }
           break;
@@ -281,9 +279,9 @@ void Camera::loadMayaCam1(const std::string& mayacam)
         case 10:
         case 11:
           for (int j = 0; j < 3 && getline(csv_line_stream, csv_val, ','); ++j) {
-            istringstream csv_val_stream(csv_val);
+            std::istringstream csv_val_stream(csv_val);
             if (!(csv_val_stream >> rotation[j][i - 9])) {
-              throw runtime_error("Invalid MayaCam file");
+              throw std::runtime_error("Invalid MayaCam file");
             }
           }
           break;
@@ -291,7 +289,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
         case 15:
         case 16:
           if (!(csv_line_stream >> translation[i - 14])) {
-              throw runtime_error("Invalid MayaCam file");
+              throw std::runtime_error("Invalid MayaCam file");
             }
 
           break;
