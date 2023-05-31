@@ -49,7 +49,6 @@ html_theme_options = {
     "display_version": False,
 }
 
-
 html_static_path = ["_static"]
 
 # These paths are either relative to html_static_path
