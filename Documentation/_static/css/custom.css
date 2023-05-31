@@ -1,0 +1,4 @@
+/* Make the content take up the whole screen rather than just half */
+.wy-nav-content{
+    max-width: 100%;
+} 
