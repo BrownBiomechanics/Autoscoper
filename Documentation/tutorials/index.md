@@ -5,4 +5,5 @@
 
 sample-data.md
 custom-data.md
+filters.md
 ```
