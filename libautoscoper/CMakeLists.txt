@@ -59,6 +59,15 @@ list(APPEND libautoscoper_SOURCES
   src/filesystem_compat.cpp
   )
 
+if(Autoscoper_COLLISION_DETECTION) # Add collision detection sources
+  list(APPEND libautoscoper_SOURCES
+    src/Mesh.cpp
+  )
+  list(APPEND libautoscoper_HEADERS
+    src/Mesh.hpp
+  )
+endif()
+
 if(Autoscoper_RENDERING_BACKEND STREQUAL "CUDA")
   # CUDA 10.2 supports C++ up to version 14
   # See https://docs.nvidia.com/cuda/archive/10.2/cuda-c-programming-guide/index.html#c-cplusplus-language-support
@@ -123,6 +132,26 @@ endif()
 target_compile_definitions(libautoscoper PUBLIC
   Autoscoper_RENDERING_USE_${Autoscoper_RENDERING_BACKEND}_BACKEND
 )
+
+if (Autoscoper_COLLISION_DETECTION) # Add definitions for collision detection
+  target_compile_definitions(libautoscoper PUBLIC
+    Autoscoper_COLLISION_DETECTION
+  )
+  find_package(VTK COMPONENTS
+    CommonCore
+    CommonSystem
+    FiltersSources
+    IOGeometry
+  )
+  if(NOT VTK_FOUND)
+    message(FATAL_ERROR "VTK was not found")
+  endif()
+  target_link_libraries(libautoscoper PUBLIC ${VTK_LIBRARIES})
+  vtk_module_autoinit(
+    TARGETS libautoscoper
+    MODULES ${VTK_LIBRARIES}
+  )
+endif()
 
 set_target_properties(libautoscoper PROPERTIES
   RUNTIME_OUTPUT_NAME "libautoscoper${Autoscoper_ARTIFACT_SUFFIX}"
