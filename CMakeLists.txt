@@ -89,6 +89,10 @@ option(Autoscoper_SUPERBUILD "Build ${PROJECT_NAME} and the projects it depends 
 mark_as_advanced(Autoscoper_SUPERBUILD)
 set(Autoscoper_BINARY_INNER_SUBDIR Autoscoper-build)
 
+option(Autoscoper_BUILD_VTK "Builds VTK alongside Autoscoper." OFF)
+mark_as_advanced(Autoscoper_BUILD_VTK)
+mark_as_superbuild(Autoscoper_BUILD_VTK)
+
 if(UNIX AND NOT APPLE)
   if(NOT DEFINED OpenGL_GL_PREFERENCE)
     set(OpenGL_GL_PREFERENCE "LEGACY")
@@ -153,6 +157,18 @@ if(NOT DEFINED Autoscoper_EXECUTABLE_LINK_FLAGS)
   set(Autoscoper_EXECUTABLE_LINK_FLAGS "")
 endif()
 mark_as_superbuild(Autoscoper_EXECUTABLE_LINK_FLAGS:STRING)
+
+#-----------------------------------------------------------------------------
+# Collision Detection
+#-----------------------------------------------------------------------------
+if(Autoscoper_BUILD_VTK OR (DEFINED VTK_DIR AND EXISTS ${VTK_DIR}))
+  message(STATUS "Configuring with collision detection")
+  set(Autoscoper_COLLISION_DETECTION 1)
+else()
+  message(STATUS "Configuring without collision detection. If you want to enable collision detection, please set either Autoscoper_BUILD_VTK (if you want to build VTK as apart of the Superbuild) or VTK_DIR (If you want to use a pre-built version of VTK).")
+  set(Autoscoper_COLLISION_DETECTION 0)
+endif()
+mark_as_superbuild(Autoscoper_COLLISION_DETECTION)
 
 #-----------------------------------------------------------------------------
 # Dependencies
@@ -227,6 +243,9 @@ if(Autoscoper_CONFIGURE_LAUCHER_SCRIPT)
       endif()
     endif()
   endforeach()
+  if(Autoscoper_COLLISION_DETECTION AND NOT VTK IN_LIST Autoscoper_DEPENDENCIES) # If collision is enabled but VTK was not built as part of the superbuild
+    list(APPEND _library_paths "${VTK_DIR}/bin/$<CONFIG>/")
+  endif()
 
   string(REPLACE ";" "${_pathsep}" PATHS_CONFIG "${_library_paths}")
 
@@ -258,7 +277,11 @@ if(Autoscoper_INSTALL_DEPENDENCIES)
   foreach(dependency IN LISTS Autoscoper_DEPENDENCIES)
     install(SCRIPT "${Autoscoper_SUPERBUILD_DIR}/${dependency}-build/cmake_install.cmake")
   endforeach()
+  if(Autoscoper_COLLISION_DETECTION AND NOT VTK IN_LIST Autoscoper_DEPENDENCIES) # If collision is enabled but VTK was not built as part of the superbuild
+    install(SCRIPT "${VTK_DIR}/cmake_install.cmake")
+  endif()
 endif()
+
 
 #-----------------------------------------------------------------------------
 # Sample Data

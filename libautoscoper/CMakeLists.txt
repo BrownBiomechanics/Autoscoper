@@ -33,6 +33,9 @@ set(libautoscoper_SOURCES
   src/VolumeTransform.cpp
 )
 
+if(Autoscoper_COLLISION_DETECTION) # Add collision detection sources
+endif()
+
 if(Autoscoper_RENDERING_BACKEND STREQUAL "CUDA")
   find_package(CUDA REQUIRED)
   include(${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/cuda/CMakeLists.txt)
@@ -67,6 +70,26 @@ endif()
 target_compile_definitions(libautoscoper PUBLIC
   Autoscoper_RENDERING_USE_${Autoscoper_RENDERING_BACKEND}_BACKEND
 )
+
+if (Autoscoper_COLLISION_DETECTION) # Add definitions for collision detection
+  target_compile_definitions(libautoscoper PUBLIC
+    Autoscoper_COLLISION_DETECTION
+  )
+  find_package(VTK COMPONENTS
+    CommonCore
+    CommonSystem
+    FiltersSources
+    IOGeometry
+  )
+  if(NOT VTK_FOUND)
+    message(FATAL_ERROR "VTK was not found")
+  endif()
+  target_link_libraries(libautoscoper PUBLIC ${VTK_LIBRARIES})
+  vtk_module_autoinit(
+    TARGETS libautoscoper
+    MODULES ${VTK_LIBRARIES}
+  )
+endif()
 
 set_target_properties(libautoscoper PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_BIN_DIR}"
