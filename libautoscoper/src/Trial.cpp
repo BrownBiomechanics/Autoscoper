@@ -75,6 +75,7 @@ namespace xromm
     std::vector<std::string> volumeFlips;
     std::vector<std::string> renderResolution;
     std::vector<std::string> optimizationOffsets;
+    std::vector<std::string> meshFiles;
 
     std::string line, key, value;
     while (getline(file, line)) {
@@ -114,6 +115,10 @@ namespace xromm
         getline(lineStream, value);
         optimizationOffsets.push_back(value);
       }
+      else if (key.compare("MeshFile") == 0) {
+        getline(lineStream, value);
+        meshFiles.push_back(value);
+      }
     }
 
     // Close the file.
@@ -131,6 +136,9 @@ namespace xromm
     }
     if (volumeFiles.size() != voxelSizes.size()) {
       throw std::runtime_error("You must sepcify a voxels size for each volume.");
+    }
+    if (meshFiles.size() != 0 && volumeFiles.size() != meshFiles.size()) {
+      throw std::runtime_error("You must sepcify a mesh file for each volume or none at all.");
     }
 
     cameras.clear();
@@ -178,6 +186,25 @@ namespace xromm
         throw e;
       }
     }
+
+    // load in mesh files if they exist
+    if (meshFiles.size() > 0) {
+#ifdef Autoscoper_COLLISION_DETECTION
+      meshes.clear();
+      for (unsigned int i = 0; i < meshFiles.size(); ++i) {
+        try {
+          Mesh mesh(meshFiles[i]);
+          meshes.push_back(mesh);
+        }
+        catch (std::exception& e) {
+          std::cerr << e.what() << std::endl;
+        }
+      }
+#else
+      std::cerr << "WARNING: Autoscoper was not compiled with collision detection support.  No mesh files will be loaded." << std::endl;
+#endif // Autoscoper_COLLISION_DETECTION
+    }
+
 
     int maxVideoFrames = 0;
     videos.clear();
