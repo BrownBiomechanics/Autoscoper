@@ -9,6 +9,12 @@ if(Autoscoper_RENDERING_BACKEND STREQUAL "OpenCL")
     )
 endif()
 
+if(Autoscoper_BUILD_VTK)
+  list(APPEND Autoscoper_DEPENDENCIES
+    VTK
+   )
+endif()
+
 set(proj ${SUPERBUILD_TOPLEVEL_PROJECT})
 
 ExternalProject_Include_Dependencies(${proj}
@@ -31,6 +37,7 @@ ExternalProject_Add(${proj}
     -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD}
     -DCMAKE_CXX_STANDARD_REQUIRED:BOOL=${CMAKE_CXX_STANDARD_REQUIRED}
     -DQt5_DIR:PATH=${Qt5_DIR}
+    -DVTK_DIR:PATH=${VTK_DIR}
     # Options
     -DAutoscoper_SUPERBUILD:BOOL=OFF
     -DAutoscoper_SUPERBUILD_DIR:PATH=${CMAKE_BINARY_DIR}
