@@ -180,6 +180,18 @@ endif()
 mark_as_superbuild(Autoscoper_EXECUTABLE_LINK_FLAGS:STRING)
 
 #-----------------------------------------------------------------------------
+# Collision Detection
+#-----------------------------------------------------------------------------
+if(DEFINED VTK_DIR AND EXISTS ${VTK_DIR})
+  message(STATUS "Configuring with collision detection")
+  set(Autoscoper_COLLISION_DETECTION 1)
+else()
+  message(STATUS "Configuring without collision detection. If you want to enable collision detection, please set VTK_DIR.")
+  set(Autoscoper_COLLISION_DETECTION 0)
+endif()
+mark_as_superbuild(Autoscoper_COLLISION_DETECTION)
+
+#-----------------------------------------------------------------------------
 # Dependencies
 #-----------------------------------------------------------------------------
 find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
@@ -252,6 +264,9 @@ if(Autoscoper_CONFIGURE_LAUCHER_SCRIPT)
       endif()
     endif()
   endforeach()
+  if(Autoscoper_COLLISION_DETECTION)
+    list(APPEND _library_paths "${VTK_DIR}/bin/$<CONFIG>/")
+  endif()
 
   string(REPLACE ";" "${_pathsep}" PATHS_CONFIG "${_library_paths}")
 
@@ -283,6 +298,9 @@ if(Autoscoper_INSTALL_DEPENDENCIES)
   foreach(dependency IN LISTS Autoscoper_DEPENDENCIES)
     install(SCRIPT "${Autoscoper_SUPERBUILD_DIR}/${dependency}-build/cmake_install.cmake")
   endforeach()
+  if(Autoscoper_COLLISION_DETECTION)
+    install(SCRIPT "${VTK_DIR}/cmake_install.cmake")
+  endif()
 endif()
 
 #-----------------------------------------------------------------------------
