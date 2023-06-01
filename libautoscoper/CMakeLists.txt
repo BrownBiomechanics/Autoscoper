@@ -33,7 +33,13 @@ set(libautoscoper_SOURCES
   src/VolumeTransform.cpp
 )
 
-if(Autoscoper_COLLISION_DETECTION) # Add collision detection sources
+if(Autoscoper_COLLISION_DETECTION) # Add collision detection sources/headers
+  list(APPEND libautoscoper_SOURCES
+    src/Mesh.cpp
+  )
+  list(APPEND libautoscoper_HEADERS
+    src/Mesh.hpp
+  )
 endif()
 
 if(Autoscoper_RENDERING_BACKEND STREQUAL "CUDA")

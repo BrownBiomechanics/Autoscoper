@@ -88,6 +88,7 @@ namespace xromm
     std::vector<std::string> volumeFlips;
     std::vector<std::string> renderResolution;
     std::vector<std::string> optimizationOffsets;
+    std::vector<std::string> meshFiles;
 
     parse(file,
           version,
@@ -238,6 +239,10 @@ namespace xromm
         std::getline(lineStream, value);
         optimizationOffsets.push_back(value);
       }
+      else if (key.compare("MeshFile") == 0) {
+        getline(lineStream, value);
+        meshFiles.push_back(value);
+      }
       else if (key.compare("Version") == 0) {
         std::getline(lineStream, value);
         trimLineEndings(value);
@@ -262,31 +267,34 @@ namespace xromm
   }
 
   void  Trial::validate(const std::vector<std::string>& mayaCams,
-                        const std::vector<std::string>& camRootDirs,
-                        const std::vector<std::string>& volumeFiles,
-                        const std::vector<std::string>& voxelSizes,
-                        const std::string& filename) {
+    const std::vector<std::string>& camRootDirs,
+    const std::vector<std::string>& volumeFiles,
+    const std::vector<std::string>& voxelSizes,
+    const std::string& filename) {
 
     // Check that this is a valid trial
     if (mayaCams.size() < 1) {
       throw std::runtime_error(
-            trialReadingError(filename, "There must be at least one mayacam files."));
+        trialReadingError(filename, "There must be at least one mayacam files."));
     }
     if (mayaCams.size() != camRootDirs.size()) {
       throw std::runtime_error(
-            trialReadingError(filename, std::string("The number of cameras and videos must match.\n") +
-                        "Found " + std::to_string(mayaCams.size()) + " cameras "
-                        "and " + std::to_string(camRootDirs.size()) + " videos."));
+        trialReadingError(filename, std::string("The number of cameras and videos must match.\n") +
+          "Found " + std::to_string(mayaCams.size()) + " cameras "
+          "and " + std::to_string(camRootDirs.size()) + " videos."));
     }
     if (volumeFiles.size() < 1) {
       throw std::runtime_error(
-            trialReadingError(filename, "There must be at least one volume file."));
+        trialReadingError(filename, "There must be at least one volume file."));
     }
     if (volumeFiles.size() != voxelSizes.size()) {
       throw std::runtime_error(
-            trialReadingError(filename, std::string("Each volume must be associated with its corresponding voxel sizes.\n") +
-                               "Found " + std::to_string(volumeFiles.size()) + " volumes "
-                               "and " + std::to_string(voxelSizes.size()) + " voxel sizes."));
+        trialReadingError(filename, std::string("Each volume must be associated with its corresponding voxel sizes.\n") +
+          "Found " + std::to_string(volumeFiles.size()) + " volumes "
+          "and " + std::to_string(voxelSizes.size()) + " voxel sizes."));
+    }
+    if (meshFiles.size() != 0 && volumeFiles.size() != meshFiles.size()) {
+      throw std::runtime_error("You must sepcify a mesh file for each volume or none at all.");
     }
   }
 
@@ -330,9 +338,27 @@ namespace xromm
         volumestransform.push_back(VolumeTransform());
         num_volumes++;
     }
+    // load in mesh files if they exist
+    if (meshFiles.size() > 0) {
+#ifdef Autoscoper_COLLISION_DETECTION
+      meshes.clear();
+      for (unsigned int i = 0; i < meshFiles.size(); ++i) {
+        try {
+          Mesh mesh(meshFiles[i]);
+          meshes.push_back(mesh);
+        }
+        catch (std::exception& e) {
+          std::cerr << e.what() << std::endl;
+        }
+      }
+#else
+      std::cerr << "WARNING: Autoscoper was not compiled with collision detection support.  No mesh files will be loaded." << std::endl;
+#endif // Autoscoper_COLLISION_DETECTION
+    }
   }
 
   void Trial::loadVideos(std::vector<std::string>& camRootDirs) {
+
     int maxVideoFrames = 0;
     videos.clear();
     for (unsigned int i = 0; i < camRootDirs.size(); ++i) {

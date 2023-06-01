@@ -52,6 +52,11 @@
 #include "Volume.hpp"
 #include "VolumeTransform.hpp"
 
+#ifdef Autoscoper_COLLISION_DETECTION
+#include "Mesh.hpp"
+#endif // Autoscoper_COLLISION_DETECTION
+
+
 namespace xromm
 {
 // The trial class contains all of the state information for an autoscoper run.
@@ -63,28 +68,32 @@ class Trial
 {
 public:
 
-    // Loads a trial file
+  // Loads a trial file
 
-    Trial(const std::string& filename = "");
+  Trial(const std::string& filename = "");
 
-    void save(const std::string& filename);
+  void save(const std::string& filename);
 
-    std::vector<Camera> cameras;
-    std::vector<Video>  videos;
-    std::vector<Volume> volumes;
+  std::vector<Camera> cameras;
+  std::vector<Video>  videos;
+  std::vector<Volume> volumes;
   std::vector<VolumeTransform> volumestransform;
+#ifdef Autoscoper_COLLISION_DETECTION
+  std::vector<Mesh> meshes;
+#endif // Autoscoper_COLLISION_DETECTION
 
-    // State information
-    int frame;
-    int num_frames;
+
+  // State information
+  int frame;
+  int num_frames;
   int current_volume;
   int num_volumes;
 
-    //Controls for the optimization process
-    int guess;
-    double offsets[6];
-    int render_width;
-    int render_height;
+  //Controls for the optimization process
+  int guess;
+  double offsets[6];
+  int render_width;
+  int render_height;
 
   KeyCurve * getXCurve(int volumeID);
   KeyCurve * getYCurve(int volumeID);
