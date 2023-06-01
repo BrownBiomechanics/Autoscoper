@@ -5,7 +5,8 @@
 class Mesh {
 public:
 	Mesh(const std::string& filename);
-	Mesh(const Mesh&);
+	//Mesh(const Mesh&);
+
 
 	vtkPolyData* GetPolyData() const { return this->polyData; }
 

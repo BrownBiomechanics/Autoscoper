@@ -1,6 +1,8 @@
 #include "Mesh.hpp"
 #include <vtkSTLReader.h>
 #include <vtkSTLWriter.h>
+#include <vtkNew.h>
+
 
 Mesh::Mesh(const std::string& filename) {
   vtkSTLReader* reader = vtkSTLReader::New();
@@ -8,11 +10,6 @@ Mesh::Mesh(const std::string& filename) {
   reader->Update();
   this->polyData = reader->GetOutput();
   reader->Delete();
-}
-
-Mesh::Mesh(const Mesh& other) {
-  this->polyData = vtkPolyData::New();
-  this->polyData->DeepCopy(other.polyData);
 }
 
 void Mesh::Write(const std::string& filename) const {
