@@ -52,8 +52,11 @@
 #include "Volume.hpp"
 #include "VolumeTransform.hpp"
 
-namespace xromm {
+#ifdef Autoscoper_COLLISION_DETECTION
+#  include "Mesh.hpp"
+#endif // Autoscoper_COLLISION_DETECTION
 
+namespace xromm {
 // The trial class contains all of the state information for an autoscoper run.
 // It should eventually become an in-memory representation of the xromm
 // autoscoper file format. Currently that file format does not however hold the
@@ -72,6 +75,9 @@ public:
   std::vector<Video> videos;
   std::vector<Volume> volumes;
   std::vector<VolumeTransform> volumestransform;
+#ifdef Autoscoper_COLLISION_DETECTION
+  std::vector<Mesh> meshes;
+#endif // Autoscoper_COLLISION_DETECTION
 
   // State information
   int frame;
@@ -107,7 +113,8 @@ private:
              std::vector<std::string>& voxelSizes,
              std::vector<std::string>& volumeFlips,
              std::vector<std::string>& renderResolution,
-             std::vector<std::string>& optimizationOffsets);
+             std::vector<std::string>& optimizationOffsets,
+             std::vector<std::string>& meshFiles);
 
   void parseVersion(const std::string& text, std::vector<int>& version);
 
@@ -128,6 +135,7 @@ private:
                 const std::vector<std::string>& camRootDirs,
                 const std::vector<std::string>& volumeFiles,
                 const std::vector<std::string>& voxelSizes,
+                const std::vector<std::string>& meshFiles,
                 const std::string& filename);
 
   void loadCameras(std::vector<std::string>& mayaCams);
@@ -141,6 +149,8 @@ private:
   void loadOffsets(std::vector<std::string>& offsets);
 
   void loadRenderResolution(std::vector<std::string>& renderResolution);
+
+  void loadMeshes(std::vector<std::string>& meshFiles);
 };
 } // namespace xromm
 
