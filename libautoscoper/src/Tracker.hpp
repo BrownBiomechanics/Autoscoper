@@ -46,6 +46,7 @@
 #include <string>
 
 #include "Filter.hpp"
+#include "Mesh.hpp"
 
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
 #include "gpu/cuda/RayCaster.hpp"
@@ -94,7 +95,7 @@ namespace xromm
     void updateBackground();
     void setBackgroundThreshold(float threshold);
     std::vector<unsigned char> getImageData(unsigned volumeID, unsigned camera, double* xyzpr, unsigned& width, unsigned& height);
-
+    bool computeCollisions(std::vector<Mesh> meshes, unsigned int current_volume, double* xyzypr, std::vector<std::vector<double>> poses) const;
 
     // Bardiya Cost Function for Implants
     //double implantMinFunc(const double* values) const;
