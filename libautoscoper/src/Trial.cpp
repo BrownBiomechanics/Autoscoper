@@ -190,18 +190,18 @@ namespace xromm
     // load in mesh files if they exist
     if (meshFiles.size() > 0) {
 #ifdef Autoscoper_COLLISION_DETECTION
-      meshes.clear();
-      for (unsigned int i = 0; i < meshFiles.size(); ++i) {
-        try {
-          Mesh mesh(meshFiles[i]);
-          meshes.push_back(mesh);
+        meshes.clear();
+        for (unsigned int i = 0; i < meshFiles.size(); ++i) {
+            try {
+                Mesh mesh(meshFiles[i]);
+                meshes.push_back(mesh);
+            }
+            catch (std::exception& e) {
+                std::cerr << e.what() << std::endl;
+            }
         }
-        catch (std::exception& e) {
-          std::cerr << e.what() << std::endl;
-        }
-      }
 #else
-      std::cerr << "WARNING: Autoscoper was not compiled with collision detection support.  No mesh files will be loaded." << std::endl;
+        std::cerr << "WARNING: Autoscoper was not compiled with collision detection support.  No mesh files will be loaded." << std::endl;
 #endif // Autoscoper_COLLISION_DETECTION
     }
 

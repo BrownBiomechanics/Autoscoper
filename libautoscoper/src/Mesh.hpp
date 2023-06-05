@@ -4,14 +4,14 @@
 
 class Mesh {
 public:
-	Mesh(const std::string& filename);
-	Mesh(const Mesh&);
+    Mesh(const std::string& filename);
+    Mesh(const Mesh&);
 
-	vtkPolyData* GetPolyData() const { return this->polyData; }
+    vtkPolyData* GetPolyData() const { return this->polyData; }
 
-	void Write(const std::string& filename) const;
+    void Write(const std::string& filename) const;
 
 private:
 
-	vtkPolyData* polyData;
+    vtkPolyData* polyData;
 };
