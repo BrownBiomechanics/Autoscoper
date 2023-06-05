@@ -40,6 +40,15 @@
 /// \author Andy Loomis, Benjamin Knorlein
 
 #include "Tracker.hpp"
+#include "Mesh.hpp"
+
+
+#include <vtkPolyData.h>
+#include <vtkTransform.h>
+#include <vtkCollisionDetectionFilter.h>
+
+#include <vtkSphereSource.h>
+
 
 #include <algorithm>
 #include <limits>
@@ -650,7 +659,6 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
 double Tracker::minimizationFunc(const double* values) const
 {
   // Construct a coordinate frame from the given values
-
   double xyzypr[6] = { (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame),
     (*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame),
     (*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame),
@@ -665,6 +673,28 @@ double Tracker::minimizationFunc(const double* values) const
 
   unsigned int idx = trial_.current_volume;
   xcframe.to_xyzypr(xyzypr);
+
+#ifdef Autoscoper_RENDERING_USE_OpenCL_BACKEND
+  // get the current pose of each volume fot the current frame
+  std::vector<std::vector<double>> poses;
+  
+  for (unsigned int i = 0; i < trial_.meshes.size(); ++i) {
+    poses.push_back(std::vector<double>(6));
+    poses[i][0] = (*(const_cast<Trial&>(trial_)).getXCurve(i))(trial_.frame);
+    poses[i][1] = (*(const_cast<Trial&>(trial_)).getYCurve(i))(trial_.frame);
+    poses[i][2] = (*(const_cast<Trial&>(trial_)).getZCurve(i))(trial_.frame);
+    poses[i][3] = (*(const_cast<Trial&>(trial_)).getYawCurve(i))(trial_.frame);
+    poses[i][4] = (*(const_cast<Trial&>(trial_)).getPitchCurve(i))(trial_.frame);
+    poses[i][5] = (*(const_cast<Trial&>(trial_)).getRollCurve(i))(trial_.frame);
+  }
+  
+  // check for collisions
+  if (computeCollisions(trial_.meshes, trial_.current_volume, xyzypr, poses))
+      return 9999;
+#endif // Autoscoper_RENDERING_USE_OpenCL_BACKEND
+
+
+
   std::vector <double> correlations = trackFrame(idx, &xyzypr[0]);
 
   double correlation = correlations[0];
@@ -772,6 +802,52 @@ std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned cam
 
     return out_data;
 }
+
+bool Tracker::computeCollisions(std::vector<Mesh> meshes, unsigned int current_volume, double* xyzypr, std::vector<std::vector<double>> poses) const {
+    // meshes is a vector of meshes, one for each volume
+    // current_volume is the index of the volume we are currently tracking
+    // xyzypr is the possible new pose of the current volume
+    // poses is a vector of poses for all volumes
+
+    vtkNew<vtkSphereSource> sphere0;
+    sphere0->SetRadius(0.5);
+    sphere0->SetPhiResolution(31);
+    sphere0->SetThetaResolution(31);
+    sphere0->SetCenter(0.0, 0, 0);
+
+    vtkNew<vtkSphereSource> sphere1;
+    sphere1->SetRadius(0.5);
+    sphere1->SetPhiResolution(30);
+    sphere1->SetThetaResolution(30);
+    sphere1->SetCenter(0.75, 0, 0);
+    
+    vtkNew<vtkMatrix4x4> matrix1;
+    vtkNew<vtkTransform> transform0;
+
+    vtkNew<vtkCollisionDetectionFilter> collide;
+    collide->SetCollisionModeToFirstContact();
+
+    collide->SetInputData(0, sphere0->GetOutput());
+    collide->SetTransform(0, transform0);
+    collide->SetInputData(1, sphere1->GetOutput());
+    collide->SetMatrix(1, matrix1);
+    collide->SetBoxTolerance(0.0);
+    collide->SetCellTolerance(0.0);
+
+   // std::cout << "Inside computeCollision" << std::endl;
+
+    
+    collide->Update();
+
+    if (collide->GetNumberOfContacts() != 0) {
+        // std::cout << "Collison occurred" << std::endl;
+        return false;
+    }
+    
+    return false;
+}
+
+
 
 void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) const
 {
