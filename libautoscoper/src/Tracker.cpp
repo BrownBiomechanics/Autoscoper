@@ -54,6 +54,7 @@
 #include <limits>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -688,6 +689,7 @@ double Tracker::minimizationFunc(const double* values) const
     poses[i][5] = (*(const_cast<Trial&>(trial_)).getRollCurve(i))(trial_.frame);
   }
   
+  std::cout << "Num Volumes = " << trial_.num_volumes << std::endl;;
   // check for collisions
   if (computeCollisions(trial_.meshes, trial_.current_volume, xyzypr, poses))
       return 9999;
@@ -809,40 +811,87 @@ bool Tracker::computeCollisions(std::vector<Mesh> meshes, unsigned int current_v
     // xyzypr is the possible new pose of the current volume
     // poses is a vector of poses for all volumes
 
-    vtkNew<vtkSphereSource> sphere0;
-    sphere0->SetRadius(0.5);
-    sphere0->SetPhiResolution(31);
-    sphere0->SetThetaResolution(31);
-    sphere0->SetCenter(0.0, 0, 0);
+    //vtkNew<vtkSphereSource> sphere0;
+    //sphere0->SetRadius(0.5);
+    //sphere0->SetPhiResolution(31);
+    //sphere0->SetThetaResolution(31);
+    //sphere0->SetCenter(0.0, 0, 0);
 
-    vtkNew<vtkSphereSource> sphere1;
-    sphere1->SetRadius(0.5);
-    sphere1->SetPhiResolution(30);
-    sphere1->SetThetaResolution(30);
-    sphere1->SetCenter(0.75, 0, 0);
-    
+    //vtkNew<vtkSphereSource> sphere1;
+    //sphere1->SetRadius(0.5);
+    //sphere1->SetPhiResolution(30);
+    //sphere1->SetThetaResolution(30);
+    //sphere1->SetCenter(0.75, 0, 0);
+    //
     vtkNew<vtkMatrix4x4> matrix1;
     vtkNew<vtkTransform> transform0;
 
     vtkNew<vtkCollisionDetectionFilter> collide;
     collide->SetCollisionModeToFirstContact();
 
-    collide->SetInputData(0, sphere0->GetOutput());
-    collide->SetTransform(0, transform0);
-    collide->SetInputData(1, sphere1->GetOutput());
-    collide->SetMatrix(1, matrix1);
-    collide->SetBoxTolerance(0.0);
-    collide->SetCellTolerance(0.0);
+    //collide->SetInputData(0, sphere0->GetOutput());
+    //collide->SetTransform(0, transform0);
+    //collide->SetInputData(1, sphere1->GetOutput());
+    //collide->SetMatrix(1, matrix1);
+    //collide->SetBoxTolerance(0.0);
+    //collide->SetCellTolerance(0.0);
 
-   // std::cout << "Inside computeCollision" << std::endl;
+    std::cout << "Inside computeCollision" << std::endl;
 
-    
-    collide->Update();
+    std::cout << "Num meshes = " << meshes.size() << std::endl;
+    std::cout << "Num meshes = " << meshes.size() << std::endl;
 
-    if (collide->GetNumberOfContacts() != 0) {
-        // std::cout << "Collison occurred" << std::endl;
-        return false;
+    /*for (auto meshA = meshes.begin(); (meshA != meshes.end()); meshA++) {
+
+        for (auto meshB = ++meshA; (meshB != meshes.end()); meshB++) {
+
+            collide->SetInputData(0, meshA->GetPolyData());
+            collide->SetTransform(0, transform0);
+            collide->SetInputData(1, meshB->GetPolyData());
+            collide->SetMatrix(1, matrix1);
+            collide->SetBoxTolerance(0.0);
+            collide->SetCellTolerance(0.0);
+
+            if (collide->GetNumberOfContacts() != 0) {
+                std::cout << "Collison occurred between mesh " << std::endl;
+                return false;
+            }
+        }
+    }*/
+
+    for (auto meshA = 0; meshA <= meshes.size(); meshA++) {
+
+        for (auto meshB = meshA+1; meshB <= meshes.size(); meshB++) {
+
+            int meshAVertCount = meshes[meshA].GetPolyData()->GetNumberOfVerts();
+            int meshBVertCount = meshes[meshB].GetPolyData()->GetNumberOfVerts();
+
+            std::cout << "Mesh A num verts = " << meshAVertCount << std::endl;
+            std::cout << "Mesh B num verts = " << meshBVertCount << std::endl;
+
+            collide->SetInputData(0, meshes[meshA].GetPolyData());
+            collide->SetTransform(0, transform0);
+            collide->SetInputData(1, meshes[meshB].GetPolyData());
+            collide->SetMatrix(1, matrix1);
+            collide->SetBoxTolerance(0.0);
+            collide->SetCellTolerance(0.0);
+
+            collide->Update();
+
+            if (collide->GetNumberOfContacts() != 0) {
+                std::cout << "Collison occurred between mesh " << meshA << " and mesh "<< meshB << std::endl;
+                return true;
+            }
+
+        }
     }
+    
+    //collide->Update();
+
+    //if (collide->GetNumberOfContacts() != 0) {
+    //    // std::cout << "Collison occurred" << std::endl;
+    //    return false;
+    //}
     
     return false;
 }
