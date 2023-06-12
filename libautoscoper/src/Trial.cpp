@@ -194,6 +194,7 @@ namespace xromm
         for (unsigned int i = 0; i < meshFiles.size(); ++i) {
             try {
                 Mesh mesh(meshFiles[i]);
+                std::cout << "Loading mesh " << meshFiles[i] << std::endl;
                 meshes.push_back(mesh);
             }
             catch (std::exception& e) {
@@ -205,6 +206,7 @@ namespace xromm
 #endif // Autoscoper_COLLISION_DETECTION
     }
 
+   
 
     int maxVideoFrames = 0;
     videos.clear();
