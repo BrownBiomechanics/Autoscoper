@@ -1,5 +1,7 @@
 # Loading Custom Data
+
 ## Preparing the Data
+
 SAM requires the following data to track a skeletal structure:
 * One or more radiograph series
 * A 3D volume of each bone in the skeletal structure you wish to track
@@ -71,6 +73,7 @@ For information on how to create a camera calibration file, see the [Camera Cali
 
 
 ## Creating a Configuration File
+
 SAM uses a `.cfg` file to specify the location of the radiographs, volumes, and camera calibration files. You can create a `.cfg` file by going to `File` -> `New`. This will open up the configuration dialog:
 
 ![Configuration Dialog](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/tutorial_ConfigDialog.png)

@@ -1,9 +1,11 @@
 # Building AutoscoperM
 
 ## Building Slicer
+
 Being an extension of 3D Slicer, the first step is to build Slicer from source. The instructions for building Slicer can be found [here](https://slicer.readthedocs.io/en/latest/developer_guide/build_instructions/index.html).
 
 ## Building AutoscoperM
+
 Once Slicer is built, the next step is to build AutoscoperM.
 
 * Clone the AutoscoperM respotory into its own directory: 
