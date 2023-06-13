@@ -1,5 +1,4 @@
-Contributing to Autoscoper
-==========================
+# Contributing to Autoscoper
 
 There are many ways to contribute to Autoscoper, with varying levels of effort. Do try to
 look through the [documentation](https://github.com/BrownBiomechanics/Autoscoper#readme) first if something is unclear, and let us know how we can
@@ -12,10 +11,9 @@ do better.
 We encourage a range of Pull Requests, from patches that include passing tests and
 documentation, all the way down to half-baked ideas that launch discussions.
 
-The PR Process, Circle CI, and Related Gotchas
-----------------------------------------------
+## The PR Process, Circle CI, and Related Gotchas
 
-#### How to submit a PR ?
+### How to submit a PR ?
 
 If you are new to Autoscoper development and you don't have push access to the Autoscoper
 repository, here are the steps:
@@ -34,7 +32,7 @@ them of your awesome contributions.
 Based on the comments posted by the reviewers, you may have to revisit your patches.
 
 
-#### How to efficiently contribute ?
+### How to efficiently contribute ?
 
 We encourage all developers to:
 
@@ -43,7 +41,7 @@ We encourage all developers to:
 * consider potential backward compatibility breakage and discuss these on the
   [Autoscoper forum][autoscoper-forum].
 
-#### How to write commit messages ?
+### How to write commit messages ?
 
 Write your commit messages using the standard prefixes for Autoscoper commit
 messages:
@@ -96,7 +94,7 @@ Examples:
   - Good: `COMP: Fix compilation error with Numpy on Visual Studio`
 
 
-#### How to integrate a PR ?
+### How to integrate a PR ?
 
 Getting your contributions integrated is relatively straightforward, here
 is the checklist:
@@ -112,7 +110,7 @@ is the checklist:
   you would like to speed up the integration, do not hesitate to send a note on
   the [Autoscoper forum][autoscoper-forum].
 
-#### Decision-making process
+### Decision-making process
 
 1. Given the topic of interest, initiate discussion on the [Autoscoper forum][autoscoper-forum].
 
