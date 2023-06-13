@@ -23,7 +23,7 @@ The menu bar contains the following menus:
     * Contains options for:
         * Setting a new threshold for the background
         * Basic utiliy functions such as undo, redo, and copy/paste
-* Tracking 
+* Tracking
     * Contains options for:
         * Tracking data I/O: Importing and exporting tracking data
         * Inserting Keyframes
@@ -41,7 +41,7 @@ The menu bar contains the following menus:
 
 ![New Trial Dialog](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/tutorial_ConfigDialog.png)
 
-The New Trial Dialog has 2 sections that allow the user to add as many cameras and volumes as they want. 
+The New Trial Dialog has 2 sections that allow the user to add as many cameras and volumes as they want.
 
 #### Cameras
 
@@ -140,17 +140,17 @@ The Tracking Dialog has the following options:
     * Previous frame: It uses the position of the “bone” in the previous frame as the initial position
     * Linear extrapolation: It estimates the initial position using a linear extrapolation of the previous two frames.
     * Spline interpolation: It estimates the initial position using a spline interpolation of all frames. [This is the curve that you see in the Timeline Window (bottom)]
-* Optimization Method:  
+* Optimization Method:
     * Partical Swarm Optimization (PSO): Global Minimization Algorithm. This method takes longer time, but the initialization does not matter as much as it matters for other methods
     * Downhill Simplex (DS): Fast Local Minimization Algorithm. Initialization is really important in this method.
-    * Number of refinements: Number of times the optimization algorithm looks for the best match. This does not matter for PSO; however, it improves the Downhill Simplex (rule of thumb is 10 for DS). 
+    * Number of refinements: Number of times the optimization algorithm looks for the best match. This does not matter for PSO; however, it improves the Downhill Simplex (rule of thumb is 10 for DS).
 * PSO Options
     * Min limit: This assigns a minimum neighborhood that PSO looks for the best match. Default is -3, which means PSO looks for the best match in the neighborhood of 3 mm and 3 degree of the initial position.
     * Max limit: This assigns a maximum neighborhood that PSO looks for the best match. Default is +3, which means PSO looks for the best match in the neighborhood of 3 mm and 3 degree of the initial position.
     * Max Epochs: How many epochs you want the optimization to run before it stops. Default is 1000, however, it is unlikely that it will reach this number.
     * Max Stall: Stopping criteria for PSO. If the best match does not change for this number of epochs, the optimization stops. Default is 25.
 * Cost Function:
-    * Normalized Cross Correlation (NCC): A normalzied cost function to detect the best match. The closer to 0 the better the match. However, this is dependent on the image filters and qualities. 
+    * Normalized Cross Correlation (NCC): A normalzied cost function to detect the best match. The closer to 0 the better the match. However, this is dependent on the image filters and qualities.
     * Sum of Absolute Differences (SAD): A cost function to detect the best match. The closer to 0 the better the match. However, this is dependent on the image filters and qualities.
 
 ## 2D Viewer

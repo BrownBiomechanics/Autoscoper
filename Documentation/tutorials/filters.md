@@ -1,6 +1,6 @@
 # Rendering and Filters
 
-Filters are used to modify the rendering of the DRRs and Radiographs. This is an important step, as the quality of the filters will impact the quality of the registration. The filters are applied to the DRRs and Radiographs before the registration is performed. 
+Filters are used to modify the rendering of the DRRs and Radiographs. This is an important step, as the quality of the filters will impact the quality of the registration. The filters are applied to the DRRs and Radiographs before the registration is performed.
 
 For a brief overview of the rendering options UI, see that section of the [UI Overview](../user-interface.md#rendering-options).
 

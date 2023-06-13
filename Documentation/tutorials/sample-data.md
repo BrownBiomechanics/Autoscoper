@@ -40,7 +40,7 @@ To zoom in on the radiographs and see the details, you can use `Control + Mouse 
 
 ### Aligning a Volume
 
-SAM tracks a skeletal structure by aligning a volume to a set of bi-plane radiographs. To align a volume, start by selecting the volume you wish to align from the volumes list in the lower left corner of the screen. In this case, we will align the radius or the `rad_dcm_cropped` volume. Once the volume is selected, you can move your mouse over to one of the radiograph images and use the `Left Mouse Button` to move the volume around. 
+SAM tracks a skeletal structure by aligning a volume to a set of bi-plane radiographs. To align a volume, start by selecting the volume you wish to align from the volumes list in the lower left corner of the screen. In this case, we will align the radius or the `rad_dcm_cropped` volume. Once the volume is selected, you can move your mouse over to one of the radiograph images and use the `Left Mouse Button` to move the volume around.
 
 You can press `E` to switch to rotation mode, or `W` to go back to translation mode. If need you can press `D` to move the location of the pivot point. If you wish to set a keyframe, this can be done by pressing `S`. Keyframes are used as reference points in the tracking process. Pressing `C` will perform the optimization on the current frame, this can be useful for snapping the volume to the radiographs.
 

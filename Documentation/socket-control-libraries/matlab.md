@@ -222,7 +222,7 @@ All of these arguments are optional and have default values. The default values 
 | min_lim | -3.0 | Minimum limit for the Partial Swarm Optimization to move the volume |
 | max_lim | 3.0 | Maximum limit for the Partial Swarm Optimization to move the volume |
 | max_stall_itr | 25 | Maximum number of iterations to run the optimization without improvement. |
-| dframe | 1 | The amount of frames to skip over. | 
+| dframe | 1 | The amount of frames to skip over. |
 | opt_method | 0 | The optimization method to use. 0 is Partial Swarm Optimization and 1 is Downhill Simplex. |
 | cf_model | 0 | The cost function model to use. 0 is NCC and 1 is Sum of Absolute Differences. |
 
