@@ -99,7 +99,7 @@ The configuration file is a CFG file that contains all of the information to loa
 ### Example
 
 ```
-# This is a comment 
+# This is a comment
 mayaCam_csv C:/Users/username/Documents/Autoscoper/Calibration/cam01.csv
 mayaCam_csv C:/Users/username/Documents/Autoscoper/Calibration/cam02.csv
 

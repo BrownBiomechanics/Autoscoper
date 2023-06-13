@@ -3,7 +3,7 @@
 Debugging Autoscoper can be a challenge, due to the separation of the GUI and the backend. This page will provide some tips and tricks for debugging Autoscoper.
 
 ```{note}
-These instructions are for debugging Autoscoper on Windows using Visual Studio (2022 at the time of writing). 
+These instructions are for debugging Autoscoper on Windows using Visual Studio (2022 at the time of writing).
 ```
 
 ## Setting up Breakpoints for the Backend
@@ -20,4 +20,4 @@ Autoscoper's backend is written in C++ and is compiled as a library. This means 
 8) From the main Visual Studio window, Navigate to `Tools > Options > Debugging`.
 9) Uncheck `Enable Just My Code`.
 
-You should now be able to set breakpoints in the backend code. 
+You should now be able to set breakpoints in the backend code.

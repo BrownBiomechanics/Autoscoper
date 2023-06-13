@@ -38,7 +38,7 @@ From 2012 to 2013, Autoscoper v1 was developed at Brown University by Andy Loomi
 When citing Autoscoper in your scientific research, please mention the following work to support increased visibility and dissemination of our software:
 
 > Akhbari, B., Morton, A. M., Moore, D. C., Weiss, A-P. C., Wolfe, W. S., Crisco, J. J., 2019. Accuracy of Biplane Videoradiography for Quantifying Dynamic Wrist Kinematics, Journal of Biomechanics.
-> 
+>
 > See https://www.sciencedirect.com/science/article/abs/pii/S0021929019303847
 
 For your convenience, you may use the following BibTex entry:
@@ -79,7 +79,7 @@ developer-guide/index.md
 
 Sample data is available for download from the [SlicerAutoscoperM Sample Data](tutorials/sample-data.md#downloading-sample-data) page. Currently available sample data includes:
 
-* Wrist BVR data - This was part of the data used in the [Akhbari et al. 2019](https://www.sciencedirect.com/science/article/abs/pii/S0021929019303847) paper. 
+* Wrist BVR data - This was part of the data used in the [Akhbari et al. 2019](https://www.sciencedirect.com/science/article/abs/pii/S0021929019303847) paper.
   * Three frames of movement are included in the sample data.
   * Four DRRs are included in the sample data. The radius, ulna, third meta-carpal, and a combined second and third meta-carpal are included.
 * Knee BVR data - This data was provided by Jill Beveridge.
