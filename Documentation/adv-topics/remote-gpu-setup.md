@@ -41,9 +41,9 @@ g) *Voila!*
 ## 2. Using High-Performace Computing (HPC) Servers:
 
 If you are using Autoscoper for research, your university probably is providing you with free exploratory
-accounts [Brown University: [Center for Computation & Visualization](https://ccv.brown.edu/)]. If you have access to such a system,
+accounts [Brown University: Center for Computation & Visualization](https://ccv.brown.edu/)]. If you have access to such a system,
 you need to use your [Virtual Network Computing (VNC)](https://docs.ccv.brown.edu/oscar/connecting-to-oscar/open-ondemand/desktop-app-vnc) nodes to access the Linux OS. You need to compile
-the Autoscoper code on your system. You can find compiling instruction [here](./developer-guide/building-autoscoper.md)
+the Autoscoper code on your system. You can find compiling instruction [here](/developer-guide/building-autoscoper.md)
 
 ## 3. Open Autoscoper when Remote Session is not connected:
 

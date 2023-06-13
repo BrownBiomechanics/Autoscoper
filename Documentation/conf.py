@@ -31,7 +31,7 @@ myst_enable_extensions = [
     "linkify",  # Allow automatic creation of links from URLs (it is sufficient to write https://google.com instead of <https://google.com>)
 ]
 
-myst_heading_anchors = 3
+myst_heading_anchors = 4
 
 supress_warnings = ["myst.header"]
 myst_number_code_blocks = ["linenos"]  # set custom code block name for numbered code blocks
