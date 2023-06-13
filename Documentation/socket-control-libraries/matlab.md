@@ -3,6 +3,7 @@
 This document describes how to use the MATLAB TCP client to communicate with the Autoscoper server.
 
 ## Setup
+
 Similar to the Python interface, the MATLAB TCP client is also a class based implementation. So the first step is to update the MATLAB path to include the directory containing the `AutoscoperConnection.m` file. This can be done by running the following command in the MATLAB command window:
 
 ```matlab
@@ -12,6 +13,7 @@ addpath /path/to/autoscoper/scripts/matlab
 ## Usage
 
 ### Establishing a Connection
+
 The MATLAB TCP client is a class based implementation. So the first step is to create an instance of the `AutoscoperConnection` class. This can be done by running the following command in the MATLAB command window:
 
 ```matlab
@@ -25,6 +27,7 @@ conn = AutoscoperConnection(myAddress);
 ```
 
 ### Closing a Connection
+
 To close the connection, you can call the `closeConnecation` method on the connection object:
 
 ```matlab
@@ -32,6 +35,7 @@ conn.closeConnection();
 ```
 
 ### Loading a Trial
+
 To load a trial, you can call the `loadTrial` method on the connection object:
 
 ```matlab
@@ -39,6 +43,7 @@ conn.loadTrial("path/to/cfg/file.cfg");
 ```
 
 ### Loading Tracking Data
+
 To load tracking data, you can call the `loadTrackingData` method on the connection object:
 
 ```matlab
@@ -75,6 +80,7 @@ All of these arguments are optional and have default values. The default values 
 | interpY | false | If true, the tracking data will be interpolated in the Y direction using spline interpolation. |
 
 ### Saving Tracking Data
+
 To save tracking data, you can call the `saveTrackingData` method on the connection object:
 
 ```matlab
@@ -111,6 +117,7 @@ All of these arguments are optional and have default values. The default values 
 | interpY | false | If true, the tracking data will be interpolated in the Y direction using spline interpolation. |
 
 ### Loading Filters
+
 To load filters, you can call the `loadFilters` method on the connection object:
 
 ```matlab
@@ -118,13 +125,15 @@ conn.loadFilters(cameraNum,"path/to/filters/file.vie");
 ```
 
 ### Setting Current Frame
+
 To set the current frame, you can call the `setFrame` method on the connection object:
 
 ```matlab
 conn.setFrame(frameNumber);
 ```
 
-### Getting the Pose 
+### Getting the Pose
+
 To get the pose of a volume on a frame, you can call the `getPose` method on the connection object:
 
 ```matlab
@@ -134,6 +143,7 @@ pose = conn.getPose(volumeNumber,frameNumber);
 This will return an array of length 6 containing the x, y, z, roll, pitch, and yaw of the volume on the specified frame.
 
 ### Setting the Pose
+
 To set the pose of a volume on a frame, you can call the `setPose` method on the connection object:
 
 ```matlab
@@ -141,6 +151,7 @@ conn.setPose(volumeNumber,frameNumber,pose);
 ```
 
 ### Getting the NCC Value
+
 To get the NCC value of a volume's pose, you can call the `getNCC` method on the connection object:
 
 ```matlab
@@ -160,6 +171,7 @@ ncc_this_frame = conn.getNCC_This_Frame(volumeNumber,frameNumber);
 ```
 
 ### Updating the Background Threshold
+
 To update the background threshold, you can call the `setBackground` method on the connection object:
 
 ```matlab
@@ -167,6 +179,7 @@ conn.setBackground(threshold);
 ```
 
 ### Getting the Cropped Image
+
 **WARNING: This method is not fully implemented yet.**
 
 To get the cropped image of a volume on a frame, you can call the `getCroppedImage` method on the connection object:
@@ -176,6 +189,7 @@ croppedImage = conn.getCroppedImage(volumeNumber,cameraNumber,frameNumber);
 ```
 
 ### Optimize Frame
+
 To optimize the position of a volume on a frame, you can call the `optimizeFrame` method on the connection object:
 
 ```matlab
@@ -213,6 +227,7 @@ All of these arguments are optional and have default values. The default values 
 | cf_model | 0 | The cost function model to use. 0 is NCC and 1 is Sum of Absolute Differences. |
 
 ### Tracking Dialog
+
 To emulate the tracking dialog from the GUI, you can call the `trackingDialog` method on the connection object:
 
 ```matlab
@@ -227,6 +242,7 @@ conn.trackingDialog(
 The tracking dialog method has the same optional arguments as the `optimizeFrame` method.
 
 ### Save Full DRR Image
+
 To save the full DRR image of the scene, you can call the `saveFullDRRImage` method on the connection object:
 
 ```matlab

@@ -46,6 +46,7 @@ you need to use your [Virtual Network Computing (VNC)](https://docs.ccv.brown.ed
 the Autoscoper code on your system. You can find compiling instruction [here](./developer-guide/building-autoscoper.md)
 
 ## 3. Open Autoscoper when Remote Session is not connected:
+
 There is another approach, but it's a little bit complicated and needs using [Command-Prompt](https://www.bleepingcomputer.com/tutorials/windows-command-prompt-introduction/). Basically, you
 need to open the software while you are not remotely connected to your PC. So, we want to automatically
 disconnect the “Remote Session” and open Autoscoper. After we run this code, we remote back into the
