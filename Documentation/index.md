@@ -11,9 +11,9 @@
 
 about.md
 getting-started.md
-adv-topics/index.md
 user-interface.md
 tutorials/index.md
+adv-topics/index.md
 file-specifications/index.md
 socket-control-libraries/index.md
 developer-guide/index.md
