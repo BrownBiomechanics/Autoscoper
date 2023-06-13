@@ -1,14 +1,27 @@
 # Getting Started
 
-Autoscoper is distributed through SlicerAutoscoperM (SAM), a free, open source and multi-platform 3D Slicer extension. To learn more about the relationship between Autoscoper and AutoscoperM, see https://autoscoperm.slicer.org/.
+This page contains information on how to obtain and install AutoscoperM, as well as how to get started using the software.
 
-## Obtaining Autoscoper
+## System Requirements
 
-1. Download and install the latest **preview** release of [3D Slicer](https://download.slicer.org/).
+AutoscoperM is a module for [3D Slicer](https://download.slicer.org/), a free, open-source software platform for medical image computing. For more information on the system requirements for 3D Slicer, please see the [3D Slicer documentation](https://slicer.readthedocs.io/en/latest/user_guide/getting_started.html#system-requirements).
+
+```{note}
+AutoscoperM currently only supports Windows and Linux operating systems. MacOS support is planned for the near future.
+```
+
+### OpenCL Requirements
+
+A graphics card that supports OpenCL 1.2 or higher is required to run AutoscoperM. For more information on OpenCL, please see the [OpenCL documentation](https://www.khronos.org/opencl/). Please check your graphics card's specifications to ensure that it supports OpenCL 1.2 or higher. If your graphics card supports OpenCL 1.2 or higher, please make sure to update to the latest version of your graphics card drivers.
+
+
+## Installing AutoscoperM
+
+1. Download and install the latest **preview** release of [3D Slicer](https://download.slicer.org/). For more information on installing 3D Slicer, please see the [3D Slicer documentation](https://slicer.readthedocs.io/en/latest/user_guide/getting_started.html#installing-3d-slicer).
 2. Once installed, open 3D Slicer and go to the [Extensions Manager](https://slicer.readthedocs.io/en/latest/user_guide/extensions_manager.html).
 3. Search for and install the `AutoscoperM` extension.
 4. Restart 3D Slicer. The AutoscoperM module will be available in the application, under the `Tracking` category.
 
 ```{hint}
-If you are using AutoscoerM on a remote computer, you will likely need to setup a [remote GPU](./adv-topics/remote-gpu-setup.md) to enable GPU acceleration.
+If you are using AutoscoperM on a remote computer, you will likely need to setup a [remote GPU](./adv-topics/remote-gpu-setup.md) to enable GPU acceleration.
 ```
