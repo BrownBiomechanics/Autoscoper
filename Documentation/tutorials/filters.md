@@ -2,7 +2,7 @@
 
 Filters are used to modify the rendering of the DRRs and Radiographs. This is an important step, as the quality of the filters will impact the quality of the registration. The filters are applied to the DRRs and Radiographs before the registration is performed.
 
-For a brief overview of the rendering options UI, see that section of the [UI Overview](../user-interface.md#rendering-options).
+For a brief overview of the rendering options UI, see that section of the [UI Overview](/user-interface.md#rendering-option).
 
 ```{note}
 Enhancing the image features using filters is a necessary step to achieve an accurate match. Define the parameters of the four filters, including contrast (intensity detection), Sobel (edge detection), Gaussian (blurring/smoother), and Sharpen (boldening the edges) in the software. These filters can be selected by right-clicking on the Rad Renderer or DRR Renderer objects shown in the top-left widget.
