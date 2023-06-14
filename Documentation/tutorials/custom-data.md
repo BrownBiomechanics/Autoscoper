@@ -5,7 +5,7 @@ This tutorial will show you how to prepare your own data for use with Autoscoper
 
 ## Preparing the Data
 
-SAM requires the following data to track a skeletal structure:
+AutoscoperM requires the following data to track a skeletal structure:
 * One or more radiograph series
 * A 3D volume of each bone in the skeletal structure you wish to track
 * A camera calibration file for each radiograph series
@@ -48,7 +48,7 @@ trial name
 
 ### Automatic filter and tracking data loading
 
-SAM can automatically load filter and tracking data from a trial. To do this, the filter and tracking data must be in the following format:
+AutoscoperM can automatically load filter and tracking data from a trial. To do this, the filter and tracking data must be in the following format:
 
 ```
 trial name
@@ -77,7 +77,7 @@ For information on how to create a camera calibration file, see the [Camera Cali
 
 ## Creating a Configuration File
 
-SAM uses a `.cfg` file to specify the location of the radiographs, volumes, and camera calibration files. You can create a `.cfg` file by going to `File` -> `New`. This will open up the configuration dialog:
+AutoscoperM uses a `.cfg` file to specify the location of the radiographs, volumes, and camera calibration files. You can create a `.cfg` file by going to `File` -> `New`. This will open up the configuration dialog:
 
 ![Configuration Dialog](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/tutorial_ConfigDialog.png)
 
@@ -85,4 +85,4 @@ From the dialog you can create as many cameras as needed. Where the `Calibration
 
 You can also create as many volumes as needed. Where the `File` points to the volume file. and the `Scale XYZ` is the scale of the volume in the x, y, and z directions. The `Scale XYZ` is used to scale the volume to match the size of the radiographs. The `   Flip XYZ` indicates whether the volume should be flipped in the x, y, and z directions. The `Flip XYZ` is used to match the orientation of the volume to the radiographs.
 
-Once everything is set in the dialog you can press `OK` to automatically load the trial into SAM. In order to save the configuration file, you can go to `File` -> `Save Trial as`. This will save the configuration file to the specified location. You can also press `Crtl + Shift + S` to save the configuration file.
+Once everything is set in the dialog you can press `OK` to automatically load the trial into AutoscoperM. In order to save the configuration file, you can go to `File` -> `Save Trial as`. This will save the configuration file to the specified location. You can also press `Crtl + Shift + S` to save the configuration file.
