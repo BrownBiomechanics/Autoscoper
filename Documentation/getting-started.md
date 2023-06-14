@@ -26,6 +26,10 @@ A graphics card that supports OpenCL 1.2 or higher is required to run Autoscoper
 If you are using AutoscoperM on a remote computer, you will likely need to setup a [remote GPU](./adv-topics/remote-gpu-setup.md) to enable GPU acceleration.
 ```
 
+## Tutorials
+
+A series of tutorials are available to help you get started using AutoscoperM. These tutorials are available on the [AutoscoperM Tutorials](./tutorials/index.md) page.
+
 ## Sample Data
 
 Sample data is available for download from the [SlicerAutoscoperM Sample Data](tutorials/sample-data.md#downloading-sample-data) page. Currently available sample data includes:
