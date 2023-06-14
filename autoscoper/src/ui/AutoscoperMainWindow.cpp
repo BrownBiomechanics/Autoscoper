@@ -856,7 +856,7 @@ void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_
         }
       }
 
-      if (j != tracker->trial()->num_volumes - 1) file << s;
+      if (j != stop - 1) file << s;
     }
     file << std::endl;
   }
