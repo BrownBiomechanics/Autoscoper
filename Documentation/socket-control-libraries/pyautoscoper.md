@@ -20,7 +20,7 @@ The AutoscoperConnection class can be created with two optional arguments:
 * `address`: The IP address of the Autoscoper server. Default is `127.0.0.1` (localhost).
 * `verbose`: If True, the methods will print out information about the connection. Default is False.
 
-Ensure that Autoscoper is running, the class will attempt to connect to Autoscoper upon instantiation. If the connection is successful, the is_connected method will return True.
+Ensure that Autoscoper is running, the class will attempt to connect to Autoscoper upon instantiation. If the connection is successful, the `is_connected` method will return True.
 
 ```{literalinclude} ../../scripts/python/examples/pyautoscoper-examples.py
 :language: python
@@ -33,12 +33,12 @@ Ensure that Autoscoper is running, the class will attempt to connect to Autoscop
 
 This example will load the trial configuration file `trial_config.cfg` and the filter settings file `filter_settings.vie` for both cameras.
 
-The loadTrial method takes one argument:
+The `loadTrial` method takes one argument:
 * `trial_config`: The path to the trial configuration file.
 
-The loadFilter method takes two arguments:
+The `loadFilter` method takes two arguments:
 * `camera`: The camera number (0-indexed).
-* `f`ilter_file`: The path to the filter settings file.
+* `filter_file`: The path to the filter settings file.
 
 ```{literalinclude} ../../scripts/python/examples/pyautoscoper-examples.py
 :language: python
@@ -55,7 +55,7 @@ This example will load the tracking data file `tracking_data.tra` and save it as
 A trial must be loaded before loading tracking data.
 ```
 
-The loadTrackingData method takes at least two arguments:
+The `loadTrackingData` method takes at least two arguments:
 * `volume`: The volume index (0-indexed).
 * `tracking_data`: The path to the tracking data file.
 * `is_matrix`: If True, the tracking data will be loaded as a 4 by 4 matrix. If False, the tracking data will be loaded in xyz roll pitch yaw format. Defaults to True.
@@ -65,7 +65,7 @@ The loadTrackingData method takes at least two arguments:
 * `is_rad`: If True, the tracking data will be loaded in radians. If False, the tracking data will be loaded in degrees. Defaults to False.
 * `interpolate`: If True, the tracking data will be interpolated with the spline method. If False, the tracking data will not be interpolated (NaN values). Defaults to False.
 
-The saveTrackingData method takes at least two arguments:
+The `saveTrackingData` method takes at least two arguments:
 * `volume`: The volume index (0-indexed).
 * `tracking_data`: The path to the tracking data file.
 * `save_as_matrix`: If True, the tracking data will be saved as a 4 by 4 matrix. If False, the tracking data will be saved in xyz roll pitch yaw format. Defaults to True.
@@ -88,18 +88,18 @@ This example will change the pose on multiple frames.
 
 ```{note}
  A trial must be loaded before changing the current frame and pose.
- ```
+```
 
-The setPose method takes three arguments:
+The `setPose` method takes three arguments:
 * `volume`: The volume index (0-indexed).
 * `frame`: The frame index (0-indexed).
 * `pose`: The pose of the volume in the form of an array of 6 floats. Array order is [x, y, z, roll, pitch, yaw].
 
-The getPose method takes two arguments:
+The `getPose` method takes two arguments:
 * `volume`: The volume index (0-indexed).
 * `frame`: The frame index (0-indexed).
 
-The setFrame method takes one argument:
+The `setFrame` method takes one argument:
 * `frame`: The frame index (0-indexed).
 
 ```{literalinclude} ../../scripts/python/examples/pyautoscoper-examples.py
@@ -115,7 +115,7 @@ There are two methods for optimizing the tracking data:
 * `optimizeFrame`: Optimizes the tracking data for a single frame.
 * `trackingDialog`: Automatically optimizes the tracking data for all given frames.
 
-The optimizeFrame method takes ten arguments:
+The `optimizeFrame` method takes ten arguments:
 * `volume`: The volume index (0-indexed).
 * `frame`: The frame index (0-indexed).
 * `repeats`: The number of times to repeat the optimization.
@@ -134,7 +134,7 @@ The optimizeFrame method takes ten arguments:
 :end-before: "[Example 5 - End]"
 ```
 
-The trackingDialog method takes at least three arguments:
+The `trackingDialog` method takes at least three arguments:
 * `volume`: The volume index (0-indexed).
 * `start_frame`: The starting frame index (0-indexed).
 * `end_frame`: The ending frame index (0-indexed).
