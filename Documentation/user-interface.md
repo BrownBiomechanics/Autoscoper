@@ -22,7 +22,7 @@ The menu bar contains the following menus:
 * Edit
     * Contains options for:
         * Setting a new threshold for the background
-        * Basic utiliy functions such as undo, redo, and copy/paste
+        * Basic utility functions such as undo, redo, and copy/paste
 * Tracking
     * Contains options for:
         * Tracking data I/O: Importing and exporting tracking data
@@ -99,8 +99,8 @@ The Import/Export Tracking Options dialog has the following options:
     * Selects whether to import/export the tracking data as a 4x4 matrix or as a list of x, y, z, yaw, pitch, and roll values.
 * Orientation: Row or Column
     * Selects whether to import/export the tracking data as a row or column vector.
-* Seperator: Comma or Space
-    * Selects whether to import/export the tracking data as a comma or space seperated list.
+* Separator: Comma or Space
+    * Selects whether to import/export the tracking data as a comma or space separated list.
 * Interpolation: None or Spline
     * Selects whether to import/export the tracking data as is or to interpolate the data using spline interpolation.
 * Translation Units: mm or cm
@@ -135,13 +135,13 @@ The Tracking Dialog has the following options:
     * The range of frames to track and the number of frames to skip between tracking.
     * Reverse Tracking
         * If checked, the tracking will be done in reverse.
-* Inital Guess:
+* Initial Guess:
     * Current frame: It uses the position of the “bone” in the current frame as the initial position
     * Previous frame: It uses the position of the “bone” in the previous frame as the initial position
     * Linear extrapolation: It estimates the initial position using a linear extrapolation of the previous two frames.
     * Spline interpolation: It estimates the initial position using a spline interpolation of all frames. [This is the curve that you see in the Timeline Window (bottom)]
 * Optimization Method:
-    * Partical Swarm Optimization (PSO): Global Minimization Algorithm. This method takes longer time, but the initialization does not matter as much as it matters for other methods
+    * Particle Swarm Optimization (PSO): Global Minimization Algorithm. This method takes longer time, but the initialization does not matter as much as it matters for other methods
     * Downhill Simplex (DS): Fast Local Minimization Algorithm. Initialization is really important in this method.
     * Number of refinements: Number of times the optimization algorithm looks for the best match. This does not matter for PSO; however, it improves the Downhill Simplex (rule of thumb is 10 for DS).
 * PSO Options
@@ -150,7 +150,7 @@ The Tracking Dialog has the following options:
     * Max Epochs: How many epochs you want the optimization to run before it stops. Default is 1000, however, it is unlikely that it will reach this number.
     * Max Stall: Stopping criteria for PSO. If the best match does not change for this number of epochs, the optimization stops. Default is 25.
 * Cost Function:
-    * Normalized Cross Correlation (NCC): A normalzied cost function to detect the best match. The closer to 0 the better the match. However, this is dependent on the image filters and qualities.
+    * Normalized Cross Correlation (NCC): A normalized cost function to detect the best match. The closer to 0 the better the match. However, this is dependent on the image filters and qualities.
     * Sum of Absolute Differences (SAD): A cost function to detect the best match. The closer to 0 the better the match. However, this is dependent on the image filters and qualities.
 
 ## 2D Viewer

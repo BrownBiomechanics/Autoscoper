@@ -10,7 +10,7 @@ Once Slicer is built, the next step is to build AutoscoperM.
 
 * Clone the AutoscoperM respotory into its own directory:
     * `git clone https://github.com/BrownBiomechanics/SlicerAutoscoperM.git`
-* Create a build directory for AutoscoperM (it is recomened to do an out of source build):
+* Create a build directory for AutoscoperM (it is recommended to do an out of source build):
     * `mkdir SlicerAutoscoperM-build`
 * The build configuration has the following options:
     * `Slicer_DIR`: The path to the Slicer build directory.

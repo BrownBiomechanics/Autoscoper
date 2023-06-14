@@ -85,4 +85,4 @@ From the dialog you can create as many cameras as needed. Where the `Calibration
 
 You can also create as many volumes as needed. Where the `File` points to the volume file. and the `Scale XYZ` is the scale of the volume in the x, y, and z directions. The `Scale XYZ` is used to scale the volume to match the size of the radiographs. The `   Flip XYZ` indicates whether the volume should be flipped in the x, y, and z directions. The `Flip XYZ` is used to match the orientation of the volume to the radiographs.
 
-Once everything is set in the dialog you can press `Ok` to automatically load the trial into SAM. Inorder to save the configuration file, you can go to `File` -> `Save Trial as`. This will save the configuration file to the specified location. You can also press `Crtl + Shift + S` to save the configuration file.
+Once everything is set in the dialog you can press `OK` to automatically load the trial into SAM. In order to save the configuration file, you can go to `File` -> `Save Trial as`. This will save the configuration file to the specified location. You can also press `Crtl + Shift + S` to save the configuration file.

@@ -123,7 +123,7 @@ The optimizeFrame method takes ten arguments:
 * `min_lim`: The minimum limit for the PSO movement.
 * `max_lim`: The maximum limit for the PSO movement.
 * `max_stall_itr`: The maximum number of iterations to stall the optimization.
-* `dframe`: The amount of frames to skip backwards for the intial guess.
+* `dframe`: The amount of frames to skip backwards for the initial guess.
 * `opt_method`: The optimization method to use, 0 for Particle Swarm, 1 for Downhill Simplex.
 * `cf_model`: The cost function to use, 0 for NCC (Bone Models), 1 for Sum of Absolute Differences (Implant Models)
 

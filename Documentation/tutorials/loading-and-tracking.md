@@ -53,7 +53,7 @@ You may find it easier to align the volume with one of the radiographs first, th
 ### Tracking the volume
 
 ```{warning}
-Once `ok` is pressed in the tracking dialog, the tracking process will begin. This process can take a long time, and the program will be unresponsive until the tracking is complete.
+Once `OK` is pressed in the tracking dialog, the tracking process will begin. This process can take a long time, and the program will be unresponsive until the tracking is complete.
 
 To view the output of the tracking process, you can open the Python terminal in 3D Slicer by hitting `Control + 3`. The output will be printed to the terminal.
 ```
@@ -62,9 +62,9 @@ Once the volume is aligned with the radiographs, you can press the `Tracking Dia
 
 ![Tracking Dialog](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/tutorial_TrackingDialog.png)
 
-The dialog has several options. The first option is the `Tracking Range` which allows you to specify the range of frames you wish to track. The default is to track all the frames in order. The second option is `Intial Guess`, changing this will change how the intial position of the volume is determined. The default is to use the position of the volume in current frame. The third option is `Optmiziation method`, you can choose between partical swarm optmiziation (PSO) or downhill simplex. The default is PSO. You can also specifiy the number of time you want the optmization to run on each frame. The default is 1. The fourth option is `PSO Algorithm Parameters`, you can change the parameters for the optmization here. The default values are usually good enough. The last option is `Cost Function`, you can choose between the normalized cross correlation (NCC) or the sum of absolute differences (SAD). The default is NCC.
+The dialog has several options. The first option is the `Tracking Range` which allows you to specify the range of frames you wish to track. The default is to track all the frames in order. The second option is `Initial Guess`, changing this will change how the initial position of the volume is determined. The default is to use the position of the volume in current frame. The third option is `Optimization method`, you can choose between particle swarm optimization (PSO) or downhill simplex. The default is PSO. You can also specify the number of time you want the optimization to run on each frame. The default is 1. The fourth option is `PSO Algorithm Parameters`, you can change the parameters for the optimization here. The default values are usually good enough. The last option is `Cost Function`, you can choose between the normalized cross correlation (NCC) or the sum of absolute differences (SAD). The default is NCC.
 
-Once you have set the options, you can press the `Ok` button to start tracking. The tracking will take a while to complete, and trials with lots of frames will take even longer. Once the tracking is complete, the dialog will close.
+Once you have set the options, you can press the `OK` button to start tracking. The tracking will take a while to complete, and trials with lots of frames will take even longer. Once the tracking is complete, the dialog will close.
 
 ### Viewing the tracking results
 
@@ -78,4 +78,4 @@ You can also view the tracking results in the 3D view by going to `View` -> `Sho
 
 ### Saving the tracking results
 
-Once you are satisfied with the tracking results, you can save the tracking results by clicking the `Save Tracking` button. This will open a dialog where you can specify the name of the file you wish to save the tracking results to. The file will be saved as a `.tra` file. This file can be loaded back into Autoscoper at a later time by clicking the `Load Tracking` button. Once the file name is specified, you can click the `Ok` button and the tracking import/export dialog will open. For more information on the import/export dialog, see the [Import/Export](/user-interface.md#importexport-tracking-options) section.
+Once you are satisfied with the tracking results, you can save the tracking results by clicking the `Save Tracking` button. This will open a dialog where you can specify the name of the file you wish to save the tracking results to. The file will be saved as a `.tra` file. This file can be loaded back into Autoscoper at a later time by clicking the `Load Tracking` button. Once the file name is specified, you can click the `OK` button and the tracking import/export dialog will open. For more information on the import/export dialog, see the [Import/Export](/user-interface.md#importexport-tracking-options) section.
