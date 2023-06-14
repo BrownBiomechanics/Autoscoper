@@ -32,7 +32,7 @@ A series of tutorials are available to help you get started using AutoscoperM. T
 
 ## Sample Data
 
-Sample data is available for download from the [SlicerAutoscoperM Sample Data](tutorials/sample-data.md#downloading-sample-data) page. Currently available sample data includes:
+Sample data is available for download from the [SlicerAutoscoperM Sample Data](/tutorials/loading-and-tracking.md#downloading-sample-data) page. Currently available sample data includes:
 
 * Wrist BVR data - This was part of the data used in the [Akhbari et al. 2019](https://www.sciencedirect.com/science/article/abs/pii/S0021929019303847) paper. 
   * Three frames of movement are included in the sample data.
