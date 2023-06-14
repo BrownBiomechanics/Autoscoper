@@ -1,4 +1,4 @@
-# Loading and Tracking Sample Data
+# Loading and Tracking Data
 
 This tutorial will show you how to load sample data from Slicer and track it in Autoscoper.
 

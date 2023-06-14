@@ -1,5 +1,8 @@
 # Loading Custom Data
 
+This tutorial will show you how to prepare your own data for use with AutoscoperM. This tutorial assumes that you have some familiarity with tracking data using AutoscoperM. If you are new to AutoscoperM, please see the [Loading and Tracking Data](./loading-and-tracking.md#tracking-a-skeletal-structure) tutorial for information on how to track data with AutoscoperM.
+
+
 ## Preparing the Data
 
 SAM requires the following data to track a skeletal structure:
