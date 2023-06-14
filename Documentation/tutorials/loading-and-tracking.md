@@ -1,6 +1,6 @@
 # Loading and Tracking Data
 
-This tutorial will show you how to load sample data from Slicer and track it in Autoscoper.
+This tutorial provides step-by-step instructions on how to load sample data from Slicer and track it in Autoscoper.
 
 ## Downloading Sample Data
 
@@ -8,29 +8,31 @@ Some short sample data is included within the SlicerAutoscoperM extension. To lo
 
 ![Sample Data Module](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/tutorial_SampleDataModule.png)
 
-Once you have the `Sample Data` module open, scroll down the left hand side until you see the `Tracking` section. You can then choose which sample data you would like to load by clicking the icon of the desired data.
-Included in the sample data are:
+In the `Sample Data` module, scroll down the left-hand side until you see the `Tracking` section. Select your desired data by clicking on the icon for that data.
+
+Available sample data includes:
+
 * AutoscoperM - Wrist BVR
 * AutoscoperM - Knee BVR
 * AutoscoperM - Ankle BVR
 
 ![Sample Data Downloading](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/tutorial_DownloadSampleData.png)
 
-Once the desired sample data is download you can switch to the `AutoscoperM` module to begin tracking. This is located in the module drop down menu, in the top left corner of the Slicer window, under the `Tracking` section.
+Once downloaded, switch to the `AutoscoperM` module to begin tracking. This module is located in the module drop-down menu, under the `Tracking` section.
 
 ![AutoscoperM Module](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/tutorial_AutoscoperModule.png)
 
 ## Launching Autoscoper and Loading Sample Data
 
-```{note}
+```{warning}
 Launching Autoscoper for the first time on Windows may require you to allow the program to run. 
 ```
 
-Once you have the `AutoscoperM` module open, you can launch Autoscoper by clicking the `Launch Autoscoper` button. This will open a new window with the Autoscoper interface. Once Autoscoper is open, you can load the sample data by clicking one of the buttons in the `Sample Data` section of the interface. The buttons are labeled `Load Wrist Data`, `Load Knee Data`, and `Load Ankle Data`. 
+Once the `AutoscoperM` module is open, click the `Launch Autoscoper` button to launch Autoscoper. This will open a new window with the `Autoscoper` interface. Once Autoscoper is open, you can load the sample data by clicking one of the buttons in the Sample Data section of the interface. The buttons are labeled `Load Wrist Data`, `Load Knee Data`, and `Load Ankle Data`.
 
-![Autoscoper Interface](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/tutorial_LaunchAndLoad.png)
+![AutoscoperM Interface](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/tutorial_LaunchAndLoad.png)
 
-Once you have loaded the sample data, the Autoscoper window should look like this:
+After loading the sample data, the Autoscoper window should look like this:
 
 ![Sample Data Loaded](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/tutorial_SampleLoaded.png)
 
@@ -40,11 +42,13 @@ To zoom in on the radiographs and see the details, you can use `Control + Mouse 
 
 ### Aligning a Volume
 
-SAM tracks a skeletal structure by aligning a volume to a set of bi-plane radiographs. To align a volume, start by selecting the volume you wish to align from the volumes list in the lower left corner of the screen. In this case, we will align the radius or the `rad_dcm_cropped` volume. Once the volume is selected, you can move your mouse over to one of the radiograph images and use the `Left Mouse Button` to move the volume around.
+The first step in tracking a skeletal structure is aligning a volume to a set of bi-plane radiographs. Start by selecting the volume you wish to align from the volumes list in the lower-left corner of the screen. In this example, we will align the radius or the `rad_dcm_cropped` volume. To align the volume, move the mouse over one of the radiograph images and use the `Left Mouse Button` to move the volume around.
 
-You can press `E` to switch to rotation mode, or `W` to go back to translation mode. If need you can press `D` to move the location of the pivot point. If you wish to set a keyframe, this can be done by pressing `S`. Keyframes are used as reference points in the tracking process. Pressing `C` will perform the optimization on the current frame, this can be useful for snapping the volume to the radiographs.
+You can press `E` to switch to rotation mode or `W` to return to translation mode. Use `D` to move the location of the pivot point if needed. Use `S` to set a keyframe, which is used as a reference point in the tracking process. Pressing `C` will perform optimization on the current frame, which can be useful for snapping the volume to radiographs.
 
-You may find it easier to align the volume with one of the radiographs first, then make sure the volume is aligned with all the radiographs.
+```{tip}
+It may help if you align the volume with one of the radiographs first, then ensure that the volume aligns with all the radiographs.
+```
 
 ![Aligned with the right radiograph](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/tutorial_AlignedWithRight.png)
 
@@ -78,4 +82,10 @@ You can also view the tracking results in the 3D view by going to `View` -> `Sho
 
 ### Saving the tracking results
 
-Once you are satisfied with the tracking results, you can save the tracking results by clicking the `Save Tracking` button. This will open a dialog where you can specify the name of the file you wish to save the tracking results to. The file will be saved as a `.tra` file. This file can be loaded back into Autoscoper at a later time by clicking the `Load Tracking` button. Once the file name is specified, you can click the `OK` button and the tracking import/export dialog will open. For more information on the import/export dialog, see the [Import/Export](/user-interface.md#importexport-tracking-options) section.
+Once you are satisfied with the tracking results, you can save the tracking results by clicking the `Save Tracking` button. This will open a dialog where you can specify the name of the file you wish to save the tracking results to. The file will be saved as a `.tra` file. This file can be loaded back into Autoscoper at a later time by clicking the `Load Tracking` button.
+
+Once the file name is specified, you can click the `OK` button and the tracking import/export dialog will open.
+
+```{seealso}
+For more information, see [](/user-interface.md#importexport-tracking-options).
+```
