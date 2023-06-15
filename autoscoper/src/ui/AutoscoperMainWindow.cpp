@@ -158,6 +158,13 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 
   // Setup Shortcuts
   setupShortcuts();
+
+  // Enable the sample data menus if the sample data is installed
+#if defined(Autoscoper_INSTALL_SAMPLE_DATA)
+  ui->actionOpen_Sample_Wrist->setEnabled(true);
+  ui->actionOpen_Sample_Knee->setEnabled(true);
+  ui->actionOpen_Sample_Ankle->setEnabled(true);
+#endif 
 }
 
 AutoscoperMainWindow::~AutoscoperMainWindow(){
