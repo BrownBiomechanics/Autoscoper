@@ -137,6 +137,8 @@ find_package(GLEW REQUIRED CONFIG)
 target_link_libraries(autoscoper PUBLIC GLEW::GLEW)
 target_compile_definitions(autoscoper PUBLIC -DUSE_GLEW)
 
+target_compile_definitions(autoscoper PRIVATE $<$<BOOL:${Autoscoper_INSTALL_SAMPLE_DATA}>:Autoscoper_INSTALL_SAMPLE_DATA>)
+
 install(TARGETS autoscoper DESTINATION ${Autoscoper_BIN_DIR} COMPONENT Runtime)
 
 if(Autoscoper_INSTALL_Qt_LIBRARIES)
