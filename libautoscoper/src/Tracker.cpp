@@ -43,10 +43,6 @@
 #include "Mesh.hpp"
 
 
-#include <vtkPolyData.h>
-#include <vtkTransform.h>
-#include <vtkCollisionDetectionFilter.h>
-
 #include <algorithm>
 #include <limits>
 #include <fstream>
@@ -206,12 +202,18 @@ namespace xromm {
 
 
 Tracker::Tracker()
-    : rendered_drr_(NULL),
+    : transformA(NULL),
+      transformB(NULL),
+      collide(NULL),
+      rendered_drr_(NULL),
       rendered_rad_(NULL),
     drr_mask_(NULL),
     background_mask_(NULL)
 {
-    g_markerless = this;
+  transformA = vtkTransform::New();
+  transformB = vtkTransform::New();
+  collide = vtkCollisionDetectionFilter::New();
+  g_markerless = this;
   optimization_method = 0; // initialize cost function
   cf_model_select = 0; //cost function selector
   intializeRandom();
@@ -818,13 +820,48 @@ bool Tracker::computeCollisions(std::vector<Mesh> meshes, unsigned int current_v
     // xyzypr is the possible new pose of the current volume
     // poses is a vector of poses for all volumes
 
-    vtkNew<vtkTransform> transformA;
-    vtkNew<vtkTransform> transformB;
 
-    vtkNew<vtkCollisionDetectionFilter> collide;
+
+    //for (int i = 0; i < colliders.size(); i++) {
+
+    //    int meshA = trial.meshIds[i].first;
+    //    int meshB = trial.meshIds[i].second;
+
+    //    if (meshA == current_volume) {
+
+    //        transformA->Identity();
+    //        // Apply Translation
+    //        transformA->Translate(xyzypr[0], xyzypr[1], xyzypr[2]);
+
+    //        // Apply Rotation
+    //        transformA->RotateZ(xyzypr[3]);
+    //        transformA->RotateY(xyzypr[4]);
+    //        transformA->RotateX(xyzypr[5]);
+
+    //        transformB->Identity();
+
+    //        // Translate to pose position
+    //        transformB->Translate(poses[meshB][0], poses[meshB][1], poses[meshB][2]);
+    //        // Apply Rotation
+    //        transformB->RotateZ(poses[meshB][3]);
+    //        transformB->RotateY(poses[meshB][4]);
+    //        transformB->RotateX(poses[meshB][5]);
+
+    //        colliders[i]->SetTransform(0, transformA);
+    //        colliders[i]->SetTransform(1, transformB);
+    //        colliders[i]->Update();
+
+    //        if (colliders[i]->GetNumberOfContacts() != 0) {
+    //            return true;
+    //        }
+    //    }
+    //}
+
     collide->SetCollisionModeToFirstContact();
 
     int meshA = current_volume;
+
+    transformA->Identity();
 
     // Apply Translation
     transformA->Translate(xyzypr[0], xyzypr[1], xyzypr[2]);
@@ -833,12 +870,32 @@ bool Tracker::computeCollisions(std::vector<Mesh> meshes, unsigned int current_v
     transformA->RotateZ(xyzypr[3]);
     transformA->RotateY(xyzypr[4]);
     transformA->RotateX(xyzypr[5]);
+    // transformA->Update();
 
-    transformA->Update();
+    // Get bounding box to generate spherical sweep
+    double boundsA[6];
+    meshes[meshA].GetPolyData()->GetBounds(boundsA);
+
+    double centerA[3];
+    meshes[meshA].GetPolyData()->GetCenter(centerA);
+
+    double radiusA =
+        (boundsA[1] - centerA[0]) * (boundsA[1] - centerA[0]) +
+        (boundsA[3] - centerA[1]) * (boundsA[3] - centerA[1]) +
+        (boundsA[5] - centerA[2]) * (boundsA[5] - centerA[2]);
+    radiusA = sqrt(radiusA);
+
+    transformA->TransformVector(centerA, centerA);
+
+    centerA[0] += xyzypr[0];
+    centerA[1] += xyzypr[1];
+    centerA[2] += xyzypr[2];
 
     for (int meshB = 0; meshB < meshes.size(); meshB++)
     {
         if (meshB != meshA) {
+
+            transformB->Identity();
 
             // Translate to pose position
             transformB->Translate(poses[meshB][0], poses[meshB][1], poses[meshB][2]);
@@ -846,7 +903,48 @@ bool Tracker::computeCollisions(std::vector<Mesh> meshes, unsigned int current_v
             transformB->RotateZ(poses[meshB][3]);
             transformB->RotateY(poses[meshB][4]);
             transformB->RotateX(poses[meshB][5]);
-            transformB->Update();
+            // transformB->Update();
+
+            double boundsB[6];
+
+            meshes[meshB].GetPolyData()->GetBounds(boundsB);
+
+            double centerB[3];
+            meshes[meshB].GetPolyData()->GetCenter(centerB);
+
+            double radiusB =
+                (boundsB[1] - centerB[0]) * (boundsB[1] - centerB[0]) +
+                (boundsB[3] - centerB[1]) * (boundsB[3] - centerB[1]) +
+                (boundsB[5] - centerB[2]) * (boundsB[5] - centerB[2]);
+            radiusB = sqrt(radiusB);
+
+            //std::cout << "Center B = " << centerB[0] << ", " << centerB[1] << ", " << centerB[2] << std::endl;
+            transformA->TransformVector(centerB, centerB);
+
+            //std::cout << "Center B = " << centerB[0] << ", " << centerB[1] << ", " << centerB[2] << std::endl;
+
+            centerB[0] += poses[meshB][0];
+            centerB[1] += poses[meshB][1];
+            centerB[2] += poses[meshB][2];
+
+            // Check for intersection of spherical representation
+            double distance = sqrt(pow(centerA[0] - centerB[0], 2) + pow(centerA[1] - centerB[1], 2) + pow(centerA[2] - centerB[2], 2));
+
+           /* std::cout << "Distance = "<< distance << std::endl;
+            std::cout << "Radius A = " << radiusA << std::endl;
+            std::cout << "Radius B = " << radiusB << std::endl;
+            std::cout << "Sum = " << radiusB + radiusA << std::endl;*/
+
+            if (distance > radiusA + radiusB) {
+                // std::cout << "Skipped in CD in spherical sweep" << std::endl;
+                return false;
+            }
+
+
+           /* std::cout << std::endl;
+            std::cout << "Printing Transforms ******************" << std::endl;
+            transformA->PrintSelf(std::cout, vtkIndent(2));
+            transformB->PrintSelf(std::cout, vtkIndent(2));*/
 
             collide->SetInputData(0, meshes[meshA].GetPolyData());
             collide->SetTransform(0, transformA);
@@ -855,6 +953,10 @@ bool Tracker::computeCollisions(std::vector<Mesh> meshes, unsigned int current_v
             collide->SetBoxTolerance(0.0);
             collide->SetCellTolerance(0.0);
             collide->Update();
+
+           /* std::cout << std::endl;
+            std::cout << "Printing Collision Detection ******************" << std::endl;
+            collide->PrintSelf(std::cout, vtkIndent(2));*/
 
             if (collide->GetNumberOfContacts() != 0) {
                 return true;

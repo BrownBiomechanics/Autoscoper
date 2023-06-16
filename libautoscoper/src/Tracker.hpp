@@ -45,6 +45,10 @@
 #include <vector>
 #include <string>
 
+#include <vtkPolyData.h>
+#include <vtkTransform.h>
+#include <vtkCollisionDetectionFilter.h>
+
 #include "Filter.hpp"
 #include "Mesh.hpp"
 
@@ -112,6 +116,14 @@ namespace xromm
     Trial trial_;
     std::vector <gpu::VolumeDescription*> volumeDescription_;
     std::vector <gpu::View*> views_;
+
+    // Collision Detection filter and transforms
+
+    vtkTransform* transformA;
+    vtkTransform* transformB;
+
+    vtkCollisionDetectionFilter* collide;
+
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
     Buffer* rendered_drr_;
     Buffer* rendered_rad_;
