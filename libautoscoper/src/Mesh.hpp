@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <vtkPolyData.h>
+#include <vtkOBBTree.h>
+
 
 class Mesh {
 public:
@@ -18,5 +20,6 @@ public:
 private:
 
     vtkPolyData* polyData;
-    
+    vtkOBBTree* meshOBB;
+
 };
