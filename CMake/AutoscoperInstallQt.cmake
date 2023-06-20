@@ -6,7 +6,7 @@ if(WIN32)
       ${_qt5Core_install_prefix}/bin/Qt5Gui.dll
       ${_qt5Core_install_prefix}/bin/Qt5Core.dll
       ${_qt5Core_install_prefix}/bin/Qt5Network.dll
-    DESTINATION ${Autoscoper_BIN_DIR} CONFIGURATIONS Release
+    DESTINATION ${Autoscoper_BIN_DIR} CONFIGURATIONS Release RelWithDebInfo MinSizeRel
     COMPONENT Runtime
   )
   install(
@@ -22,7 +22,7 @@ if(WIN32)
   install(
     FILES
       ${_qt5Core_install_prefix}/plugins/platforms/qwindows.dll
-    DESTINATION ${Autoscoper_BIN_DIR}/platforms CONFIGURATIONS Release
+    DESTINATION ${Autoscoper_BIN_DIR}/platforms CONFIGURATIONS Release RelWithDebInfo MinSizeRel
     COMPONENT Runtime
   )
   install(
