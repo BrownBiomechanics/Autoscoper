@@ -4,9 +4,11 @@ set(Autoscoper_DEPENDENCIES
   TIFF
   )
 if(Autoscoper_RENDERING_BACKEND STREQUAL "OpenCL")
-  list(APPEND Autoscoper_DEPENDENCIES
-    OpenCL-ICD-Loader
-    )
+  if(Autoscoper_OPENCL_USE_ICD_LOADER)
+    list(APPEND Autoscoper_DEPENDENCIES
+      OpenCL-ICD-Loader
+      )
+  endif()
 endif()
 
 set(proj ${SUPERBUILD_TOPLEVEL_PROJECT})

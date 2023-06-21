@@ -105,9 +105,17 @@ if(Autoscoper_RENDERING_BACKEND STREQUAL "OpenCL")
   mark_as_superbuild(Autoscoper_OpenCL_MINIMUM_REQUIRED_VERSION:STRING)
   message(STATUS "Setting Autoscoper_OpenCL_MINIMUM_REQUIRED_VERSION to ${Autoscoper_OpenCL_MINIMUM_REQUIRED_VERSION}")
 
+  # This option is specific to "OpenCL-ICD-Loader"
   set(Autoscoper_CL_TARGET_OPENCL_VERSION "120")
   mark_as_superbuild(Autoscoper_CL_TARGET_OPENCL_VERSION:STRING)
   message(STATUS "Setting Autoscoper_CL_TARGET_OPENCL_VERSION to ${Autoscoper_CL_TARGET_OPENCL_VERSION}")
+
+  set(Autoscoper_OPENCL_USE_ICD_LOADER TRUE)
+  if(APPLE)
+    set(Autoscoper_OPENCL_USE_ICD_LOADER FALSE)
+  endif()
+  mark_as_superbuild(Autoscoper_OPENCL_USE_ICD_LOADER:BOOL)
+  message(STATUS "Setting Autoscoper_OPENCL_USE_ICD_LOADER to ${Autoscoper_OPENCL_USE_ICD_LOADER}")
 endif()
 
 #-----------------------------------------------------------------------------
