@@ -39,12 +39,17 @@ endif()
 if(NOT DEFINED Autoscoper_BIN_DIR)
   set(Autoscoper_BIN_DIR bin)
 endif()
+mark_as_superbuild(Autoscoper_BIN_DIR:STRING)
+
 if(NOT DEFINED Autoscoper_LIB_DIR)
   set(Autoscoper_LIB_DIR lib)
 endif()
+mark_as_superbuild(Autoscoper_LIB_DIR:STRING)
+
 if(NOT DEFINED Autoscoper_SAMPLE_DATA_DIR)
   set(Autoscoper_SAMPLE_DATA_DIR "${Autoscoper_BIN_DIR}")
 endif()
+mark_as_superbuild(Autoscoper_SAMPLE_DATA_DIR:STRING)
 
 #-----------------------------------------------------------------------------
 # Options
