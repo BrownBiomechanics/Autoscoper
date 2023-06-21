@@ -99,7 +99,7 @@ add_executable(autoscoper  ${GUI_TYPE} ${autoscoper_SOURCES} ${autoscoper_HEADER
   src/ui/autoscoper_resource.qrc
 )
 
-if(CMAKE_VERSION VERSION_LESS "3.20" AND UNIX)
+if(Autoscoper_CONFIGURE_LAUCHER_SCRIPT AND CMAKE_VERSION VERSION_LESS "3.20" AND UNIX)
   set(_launcher_script "autoscoper_set_env.sh")
   add_custom_command(TARGET autoscoper POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo "Changing '${_launcher_script}' permissions"
