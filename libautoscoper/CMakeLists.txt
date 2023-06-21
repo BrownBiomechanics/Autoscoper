@@ -43,13 +43,19 @@ if(Autoscoper_RENDERING_BACKEND STREQUAL "CUDA")
   target_include_directories(libautoscoper PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/cuda/cutil)
   # Explicitly linking against CUDA_LIBRARIES is already done in "CUDA_ADD_LIBRARY()".
 elseif(Autoscoper_RENDERING_BACKEND STREQUAL "OpenCL")
-  find_package(OpenCLHeaders REQUIRED)
-  find_package(OpenCLICDLoader REQUIRED)
+  if(Autoscoper_OPENCL_USE_ICD_LOADER)
+    find_package(OpenCLHeaders REQUIRED)
+    find_package(OpenCLICDLoader REQUIRED)
+  else()
+    find_package(OpenCL ${Autoscoper_OpenCL_MINIMUM_REQUIRED_VERSION} REQUIRED)
+  endif()
   include(${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/opencl/CMakeLists.txt)
   add_library(libautoscoper STATIC ${libautoscoper_SOURCES} ${libautoscoper_HEADERS} ${opencl_SOURCES} ${opencl_HEADERS})
   add_dependencies(libautoscoper ${SHADER_TO_HEADER})
   target_compile_definitions(libautoscoper PUBLIC
-    CL_TARGET_OPENCL_VERSION=${Autoscoper_CL_TARGET_OPENCL_VERSION}
+    $<$<BOOL:${Autoscoper_OPENCL_USE_ICD_LOADER}>:CL_TARGET_OPENCL_VERSION=${Autoscoper_CL_TARGET_OPENCL_VERSION}>
+    # Silence warning: 'glFunction' is deprecated: first deprecated in macOS 10.14 - OpenGL API deprecated
+    $<$<AND:$<NOT:$<BOOL:${Autoscoper_OPENCL_USE_ICD_LOADER}>>,$<BOOL:${APPLE}>>:GL_SILENCE_DEPRECATION>
   )
   target_link_libraries(libautoscoper PUBLIC
     OpenCL::OpenCL
