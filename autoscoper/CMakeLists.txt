@@ -1,6 +1,5 @@
 find_package(OpenGL)
 
-#ADD QT4 SUPPORT
 find_package(Qt5 COMPONENTS Core Widgets Gui OpenGL Network REQUIRED)
 set(CMAKE_AUTOMOC ON)
 
@@ -8,7 +7,6 @@ set(autoscoper_SOURCES
   src/main.cpp
 )
 
-#HEADER AND SOURCE FILES FOR UI
 set(autoscoper_FORMS_HEADERS
   src/ui/AutoscoperMainWindow.h
   src/ui/FilterDockWidget.h
@@ -67,7 +65,6 @@ set(autoscoper_FORMS_SOURCES
   src/net/Socket.cpp
 )
 
-#QT DESIGNER UI FILES
 set(autoscoper_FORMS
   src/ui/ui-files/AboutAutoscoper.ui
   src/ui/ui-files/AutoscoperMainWindow.ui
