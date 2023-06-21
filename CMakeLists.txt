@@ -121,12 +121,20 @@ else()
   mark_as_superbuild(VARS CMAKE_CONFIGURATION_TYPES ALL_PROJECTS)
 endif()
 
+#-----------------------------------------------------------------------------
 if(NOT CMAKE_DEBUG_POSTFIX)
   set(CMAKE_DEBUG_POSTFIX d)
 endif()
 
 set(CMAKE_C_FLAGS_RELEASE "-O3")
 set(BUILD_SHARED_LIBS ON)
+
+if(APPLE)
+  if(NOT DEFINED Autoscoper_MACOSX_BUNDLE)
+    set(Autoscoper_MACOSX_BUNDLE ON)
+  endif()
+  mark_as_superbuild(Autoscoper_MACOSX_BUNDLE:BOOL)
+endif()
 
 #-----------------------------------------------------------------------------
 # Dependencies

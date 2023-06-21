@@ -87,7 +87,7 @@ set(autoscoper_RESOURCES
 )
 QT5_ADD_RESOURCES(autoscoper_RESOURCES_RCC ${autoscoper_RESOURCES})
 
-if(APPLE)
+if(APPLE AND Autoscoper_MACOSX_BUNDLE)
   set(GUI_TYPE MACOSX_BUNDLE)
 endif()
 
