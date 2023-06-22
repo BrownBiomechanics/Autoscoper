@@ -149,6 +149,11 @@ if(APPLE)
   mark_as_superbuild(Autoscoper_MACOSX_BUNDLE:BOOL)
 endif()
 
+if(NOT DEFINED Autoscoper_EXECUTABLE_LINK_FLAGS)
+  set(Autoscoper_EXECUTABLE_LINK_FLAGS "")
+endif()
+mark_as_superbuild(Autoscoper_EXECUTABLE_LINK_FLAGS:STRING)
+
 #-----------------------------------------------------------------------------
 # Dependencies
 #-----------------------------------------------------------------------------

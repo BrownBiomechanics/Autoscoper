@@ -99,6 +99,10 @@ add_executable(autoscoper  ${GUI_TYPE} ${autoscoper_SOURCES} ${autoscoper_HEADER
   src/ui/autoscoper_resource.qrc
 )
 
+if(NOT "${Autoscoper_EXECUTABLE_LINK_FLAGS}" STREQUAL "")
+  set_target_properties(autoscoper PROPERTIES LINK_FLAGS ${Autoscoper_EXECUTABLE_LINK_FLAGS})
+endif()
+
 if(Autoscoper_CONFIGURE_LAUCHER_SCRIPT AND CMAKE_VERSION VERSION_LESS "3.20" AND UNIX)
   set(_launcher_script "autoscoper_set_env.sh")
   add_custom_command(TARGET autoscoper POST_BUILD
