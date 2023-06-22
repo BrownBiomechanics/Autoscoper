@@ -6,10 +6,6 @@ This page contains information on how to obtain and install AutoscoperM, as well
 
 AutoscoperM is a module for [3D Slicer](https://download.slicer.org/), a free, open-source software platform for medical image computing. For more information on the system requirements for 3D Slicer, please see the [3D Slicer documentation](https://slicer.readthedocs.io/en/latest/user_guide/getting_started.html#system-requirements).
 
-```{note}
-AutoscoperM currently only supports Windows and Linux operating systems. MacOS support is planned for the near future.
-```
-
 ### OpenCL Requirements
 
 A graphics card that supports OpenCL 1.2 or higher is required to run AutoscoperM. For more information on OpenCL, please see the [OpenCL documentation](https://www.khronos.org/opencl/). Please check your graphics card's specifications to ensure that it supports OpenCL 1.2 or higher. If your graphics card supports OpenCL 1.2 or higher, please make sure to update to the latest version of your graphics card drivers.
