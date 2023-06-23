@@ -49,6 +49,17 @@ if((NOT DEFINED TIFF_INCLUDE_DIR
       -Dtiff_BUILD_CONTRIB:BOOL=OFF
       -Dtiff_BUILD_MAN:BOOL=OFF
       -Dtiff_BUILD_HTMLDOC:BOOL=OFF
+      # Codec options
+      -Dlibdeflate:BOOL=OFF
+      -Djbig:BOOL=OFF
+      -Djpeg:BOOL=OFF
+      -Dold-jpeg:BOOL=OFF
+      -Djpeg12:BOOL=OFF
+      -Dlerc:BOOL=OFF
+      -Dlzma:BOOL=OFF
+      -Dwebp:BOOL=OFF
+      -Dzlib:BOOL=ON # Assumed to be available on the system
+      -Dzstd:BOOL=OFF
       # Install directories
       -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
       -DCMAKE_INSTALL_BINDIR:STRING=${Autoscoper_BIN_DIR}
