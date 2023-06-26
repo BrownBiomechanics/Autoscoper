@@ -16,7 +16,7 @@ if(WIN32)
       ${_qt5Core_install_prefix}/bin/Qt5Guid.dll
       ${_qt5Core_install_prefix}/bin/Qt5Cored.dll
       ${_qt5Core_install_prefix}/bin/Qt5Networkd.dll
-    DESTINATION ${Autoscoper_BIN_DIR} CONFIGURATIONS Debug
+    DESTINATION ${Autoscoper_BIN_DIR} CONFIGURATIONS Release RelWithDebInfo MinSizeRel
     COMPONENT Runtime
   )
   install(

@@ -43,7 +43,23 @@ Mesh::Mesh(const std::string& filename) {
 	// Register so it exists after deleting the reader
 	this->polyData->Register(nullptr);
 
-	auto newCenter = this->polyData->GetCenter();
+	// Compute bounding radius
+	double centerA[3];
+	this->polyData->GetCenter(centerA);
+
+	double bounds[6];
+	this->polyData->GetBounds(bounds);
+
+	boundingRadius =
+		(bounds[1] - centerA[0]) * (bounds[1] - centerA[0]) +
+		(bounds[3] - centerA[1]) * (bounds[3] - centerA[1]) +
+		(bounds[5] - centerA[2]) * (bounds[5] - centerA[2]);
+	
+	boundingRadius = sqrt(boundingRadius);
+
+	std::cout << "Mesh " << filename << ", has a bounding radius of: " << boundingRadius << std::endl;
+
+
 	reader->Delete();
 }
 
