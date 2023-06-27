@@ -838,9 +838,6 @@ bool Tracker::computeCollisions(std::vector<Mesh> meshes, unsigned int current_v
 
 
     // Get bounding box to generate spherical sweep
-    double boundsA[6];
-    meshes[meshA].GetPolyData()->GetBounds(boundsA);
-
     double centerA[3];
     meshes[meshA].GetPolyData()->GetCenter(centerA);
 
@@ -869,10 +866,15 @@ bool Tracker::computeCollisions(std::vector<Mesh> meshes, unsigned int current_v
             double centerB[3];
             meshes[meshB].GetPolyData()->GetCenter(centerB);
 
-            double radiusB = meshes[meshB].getBoundingRadius();
-          
 
-            //// Check for intersection of spherical representation
+            double radiusB = meshes[meshB].getBoundingRadius();
+
+            transformB->TransformVector(centerB, centerB);
+            centerB[0] += poses[meshB][0];
+            centerB[1] += poses[meshB][1];
+            centerB[2] += poses[meshB][2];
+
+            // Check for intersection of spherical representation
             double distance = sqrt(pow(centerA[0] - centerB[0], 2) + pow(centerA[1] - centerB[1], 2) + pow(centerA[2] - centerB[2], 2));
 
 
