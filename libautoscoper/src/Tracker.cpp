@@ -52,6 +52,7 @@
 #include <sstream>
 #include <vector>
 #include <cmath>
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -424,13 +425,14 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
       for (int i = 0; i < NUM_OF_PARTICLES*NUM_OF_DIMENSIONS; i++)
       {
         if (i >= NUM_OF_DIMENSIONS) {
-          positions[i] = getRandom(START_RANGE_MIN, START_RANGE_MAX);
+          // Note: For better performance, consider replacing with Sobol sequences (Initialising PSO with randomised low-discrepancy sequences: the comparative results)
+          positions[i] = getRandom(START_RANGE_MIN, START_RANGE_MAX); 
         }
         // First point will be the initial position
         else {
           //if (j > 1)
           //{
-            positions[i] = (float)0.0;
+            positions[i] = (float)0.0;  
           //}
           //else
           //{
@@ -440,6 +442,31 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
         pBests[i] = positions[i];
         velocities[i] = 0;
       }
+
+     /* float spacing = START_RANGE_MAX - START_RANGE_MIN;
+      
+      int minN = (int)START_RANGE_MIN;
+      int maxN = (int)START_RANGE_MAX;
+      int jump = (int)spacing;
+      int count = 0;
+
+      std::vector<std::vector<float>> pos;
+
+      for (int i = minN; i >= maxN; i + jump) {
+          for (int j = minN; j >= maxN; j + jump) {
+              for (int k = minN; k >= maxN; k + jump) {
+                  for (int l = minN; l >= maxN; l + jump) {
+                      for (int m = minN; m >= maxN; m + jump) {
+                          for (int n = minN; n >= maxN; n + jump) {
+                              
+                              positions[count] = 
+
+                          }
+                      }
+                  }
+              }
+          }
+      }*/
 
       for (int i = 0; i < NUM_OF_DIMENSIONS; i++)
       {
@@ -691,15 +718,15 @@ double Tracker::minimizationFunc(const double* values) const
   
   // std::cout << "Num Volumes = " << trial_.num_volumes << std::endl;
   // check for collisions
-  if (computeCollisions(trial_.meshes, trial_.current_volume, xyzypr, poses)) 
-  {
-#if DEBUG
-      std::cout << "****************  Collision  ****************" << std::endl; //return 9999;
-#endif
-      return 9999;
-
-      // collisionMultiplier = 2.0;
-  }
+//  if (computeCollisions(trial_.meshes, trial_.current_volume, xyzypr, poses)) 
+//  {
+//#if DEBUG
+//      std::cout << "****************  Collision  ****************" << std::endl; //return 9999;
+//#endif
+//      return 9999;
+//
+//      // collisionMultiplier = 2.0;
+//  }
       
 #endif // Autoscoper_RENDERING_USE_OpenCL_BACKEND
 
@@ -862,11 +889,8 @@ bool Tracker::computeCollisions(std::vector<Mesh> meshes, unsigned int current_v
             transformB->RotateY(poses[meshB][4]);
             transformB->RotateX(poses[meshB][5]);
 
-
             double centerB[3];
             meshes[meshB].GetPolyData()->GetCenter(centerB);
-
-
             double radiusB = meshes[meshB].getBoundingRadius();
 
             transformB->TransformVector(centerB, centerB);
