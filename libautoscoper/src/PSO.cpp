@@ -56,7 +56,11 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
   unsigned int counter = 0;
   //for (int iter = 0; iter < (signed int)MAX_EPOCHS; iter++)
 
-  float OMEGA = 0.8f;
+  // Inertial weight of PSO. Measure of how likley a particle is to remail
+  // traveling in the same direciton it has been traveling (momentum like)
+  float OMEGA = 0.5f;
+
+  float OMEGA_MIN = 0.0001;
 
   while (do_this)
   {
@@ -77,8 +81,15 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
 
       positions[i] += velocities[i];
     }
-
+    // Note: For better performance, consider changing this to be linearly decreasing, with a floor at w=0.4 (DOI: 10.1080/0952813X.2013.782348)
     OMEGA = OMEGA * 0.9f;
+
+    /*float dOmega = (OMEGA - OMEGA_MIN) / 30.0;
+    OMEGA = OMEGA - dOmega;
+
+    OMEGA = std::max(OMEGA, OMEGA_MIN);*/
+
+    float globalBest = currentBest;
 
     for (int i = 0; i < NUM_OF_PARTICLES*NUM_OF_DIMENSIONS; i += NUM_OF_DIMENSIONS)
     {
@@ -88,33 +99,44 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
         tempParticle2[j] = pBests[i + j];
       }
 
-      if (host_fitness_function(tempParticle1) < host_fitness_function(tempParticle2))
+      // Normalized cross correlation for this particle now
+      float nccP = host_fitness_function(tempParticle1);
+      // Normalized cross correlation for this particle in its best position so far
+      float nccPBest = host_fitness_function(tempParticle2);
+
+      // if (host_fitness_function(tempParticle1) < host_fitness_function(tempParticle2))
+      if (nccP < nccPBest)
       {
         for (int j = 0; j < NUM_OF_DIMENSIONS; j++)
         {
           pBests[i + j] = positions[i + j];
         }
 
-        if (host_fitness_function(tempParticle1) < host_fitness_function(gBest))
+        // if (host_fitness_function(tempParticle1) < host_fitness_function(gBest))
+        if (nccP < globalBest)
         {
           //cout << "Current Best is: " ;
           for (int j = 0; j < NUM_OF_DIMENSIONS; j++)
           {
             gBest[j] = pBests[i + j];
           }
+          globalBest = nccP;
         }
       }
     }
 
-    float epochBest = host_fitness_function(gBest);
+    float epochBest = globalBest; 
+    // float epochBest = host_fitness_function(gBest);
 
-    std::cout << "Current Best NCC: " << epochBest << std::endl;
+
+    if (counter % 5 == 0) std::cout << "Current Best NCC: " << epochBest << std::endl;
     //std::cout << "Stall: " << stall_iter << std::endl;
     if (abs(epochBest - currentBest) < 1e-4f)
     {
       //std::cout << "Increased Stall Iter" << std::endl;
       stall_iter++;
-    } else if (abs(epochBest - currentBest) > 0.001f)
+    } 
+    else if (abs(epochBest - currentBest) > 0.001f)
     {
       //std::cout << "Zeroed Stall Iter" << std::endl;
       stall_iter = 0;
