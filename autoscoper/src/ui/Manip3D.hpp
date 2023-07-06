@@ -163,6 +163,8 @@ public:
 
     void on_mouse_release(int x, int y);
 
+    void setThickLinesMode(bool checked);
+
 private:
 
     void draw_axes() const;
@@ -207,6 +209,8 @@ private:
   bool movePivot_;
 
   double pivotSize_;
+
+  bool is_thick_lines_mode_;
 };
 
 #endif // MANIP_3D_HPP

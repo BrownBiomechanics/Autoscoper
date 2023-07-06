@@ -1981,6 +1981,22 @@ void AutoscoperMainWindow::on_actionShow_world_view_triggered(bool checked){
   }
 }
 
+void AutoscoperMainWindow::on_actionThick_Lines_Mode_triggered(bool checked)
+{
+  // Check if we have at least one Manipluator
+  if (manipulator.size() == 0) {
+    return;
+  }
+
+  // Set Thick Lines Mode for all Manipulators
+  for(Manip3D* manip3D: manipulator) {
+    manip3D->setThickLinesMode(checked);
+  }
+
+  // Redraw
+  redrawGL();
+}
+
 //Toolbar
 void AutoscoperMainWindow::on_toolButtonOpenTrial_clicked(){
   save_trial_prompt();

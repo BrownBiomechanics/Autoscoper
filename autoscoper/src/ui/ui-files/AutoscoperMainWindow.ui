@@ -467,8 +467,15 @@ Dialog</string>
     <property name="title">
      <string>View</string>
     </property>
+    <widget class="QMenu" name="menuAccessiblity">
+     <property name="title">
+      <string>Accessiblity</string>
+     </property>
+     <addaction name="actionThick_Lines_Mode"/>
+    </widget>
     <addaction name="actionShow_world_view"/>
     <addaction name="actionLayoutCameraViews"/>
+    <addaction name="menuAccessiblity"/>
    </widget>
    <widget class="QMenu" name="menuAdvanced_Tool">
     <property name="title">
@@ -700,6 +707,14 @@ Dialog</string>
   <action name="actionExport_Full_DRR_Image">
    <property name="text">
     <string>Export Full DRR Image</string>
+   </property>
+  </action>
+  <action name="actionThick_Lines_Mode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Thick Line Mode</string>
    </property>
   </action>
  </widget>

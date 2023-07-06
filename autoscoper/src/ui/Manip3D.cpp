@@ -146,7 +146,8 @@ Manip3D::Manip3D()
       modelview_(Mat4d::eye()),
       selection_(NONE),
       point1_(Vec3d::zero()),
-      point2_(Vec3d::zero())
+      point2_(Vec3d::zero()),
+      is_thick_lines_mode_(false)
 {
     viewport_[0] = 0;
     viewport_[1] = 0;
@@ -306,6 +307,11 @@ void Manip3D::on_mouse_release(int x, int y)
     transform2_ = Mat4d::eye();
 }
 
+void Manip3D::setThickLinesMode(bool checked)
+{
+    is_thick_lines_mode_ = checked;
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~// Private Functions //~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 void Manip3D::draw_axes() const
@@ -354,6 +360,10 @@ void Manip3D::draw_axes() const
 
     // Draw x-axis if the view angle is large enough
 
+
+    if (this->is_thick_lines_mode_)
+      glLineWidth(5.0); // For thick lines mode
+
     if (view_angle.x > min_view_angle) {
         if (selection_ == NONE || selection_ == X || selection_ == VIEW_PLANE) {
             if (selection_ == X) {
@@ -369,7 +379,7 @@ void Manip3D::draw_axes() const
             glDisable(GL_LIGHTING);
             glBegin(GL_LINES);
             glVertex3d(0.0,0.0,0.0);
-            glVertex3d(size_,0.0,0.0);
+            glVertex3d(size_-5,0.0,0.0);
             glEnd();
             glPopAttrib();
 
@@ -409,7 +419,7 @@ void Manip3D::draw_axes() const
             glDisable(GL_LIGHTING);
             glBegin(GL_LINES);
             glVertex3d(0.0,0.0,0.0);
-            glVertex3d(0.0,size_,0.0);
+            glVertex3d(0.0,size_-5,0.0);
             glEnd();
             glPopAttrib();
 
@@ -447,7 +457,7 @@ void Manip3D::draw_axes() const
             glDisable(GL_LIGHTING);
             glBegin(GL_LINES);
             glVertex3d(0.0,0.0,0.0);
-            glVertex3d(0.0,0.0,size_);
+            glVertex3d(0.0,0.0,size_-5);
             glEnd();
             glPopAttrib();
 
@@ -577,6 +587,9 @@ void Manip3D::draw_gimbals() const
     }
     glEnd();
 
+    if (this->is_thick_lines_mode_)
+      glLineWidth(5.0); // For thick lines mode
+
     // Draw x-axis gimbal
 
     if (selection_ == X) {
@@ -585,8 +598,8 @@ void Manip3D::draw_gimbals() const
     else {
         glColor4dv(red);
     }
-    glBegin(GL_LINE_STRIP);
-    for (int i = 0; i < 32; ++i) {
+    glBegin(GL_LINE_LOOP);
+    for (int i = 0; i < 64; ++i) {
         float theta = alpha.x+M_PI*i/(float)(32-1);
         glVertex3d(0.0,size_*cos(theta),size_*sin(theta));
     }
@@ -600,8 +613,8 @@ void Manip3D::draw_gimbals() const
     else {
         glColor4dv(green);
     }
-    glBegin(GL_LINE_STRIP);
-    for (int i = 0; i < 32; ++i) {
+    glBegin(GL_LINE_LOOP);
+    for (int i = 0; i < 64; ++i) {
         float theta = alpha.y+M_PI*i/(float)(32-1);
         glVertex3d(size_*cos(theta),0.0,size_*sin(theta));
     }
@@ -615,8 +628,8 @@ void Manip3D::draw_gimbals() const
     else {
         glColor4dv(blue);
     }
-    glBegin(GL_LINE_STRIP);
-    for (int i = 0; i < 32; ++i) {
+    glBegin(GL_LINE_LOOP);
+    for (int i = 0; i < 64; ++i) {
         float theta = alpha.z+M_PI*i/(float)(32-1);
         glVertex3d(size_*cos(theta),size_*sin(theta),0.0);
     }
