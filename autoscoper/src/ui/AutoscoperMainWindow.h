@@ -245,6 +245,7 @@ class AutoscoperMainWindow : public QMainWindow{
     //View
     void on_actionLayoutCameraViews_triggered(bool checked);
     void on_actionShow_world_view_triggered(bool checked);
+    void on_actionThick_Lines_Mode_triggered(bool checked);
 
 
     // Extra
