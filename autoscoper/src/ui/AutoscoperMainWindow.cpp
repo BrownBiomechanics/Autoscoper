@@ -1194,7 +1194,7 @@ bool AutoscoperMainWindow::openTrial(QString filename){
 
       QString tracking_filename = QString("%1_%2.tra").arg(
             QString::fromStdString(task_name_tmp),
-            volumes_widget->getVolumeName(iVol));
+            volumes_widget->getFullVolumeName(iVol));
 
       tracking_path = tracking_path_root;
       tracking_path += "/";
