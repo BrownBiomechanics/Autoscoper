@@ -9,4 +9,5 @@ A series of tutorials are available to help you get started using AutoscoperM. T
 loading-and-tracking.md
 custom-data.md
 filters.md
+saving-and-resuming-tracks.md
 ```
