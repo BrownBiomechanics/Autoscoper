@@ -75,3 +75,7 @@ QString VolumeDockWidget::getVolumeName(int volume_index) {
   QString selected_volume_name = QString::fromStdString(model_name);
   return selected_volume_name;
 }
+
+QString VolumeDockWidget::getFullVolumeName(int volume_index) {
+  return QString::fromStdString(model_names_list[volume_index]);
+}
