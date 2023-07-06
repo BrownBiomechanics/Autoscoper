@@ -40,7 +40,15 @@ To zoom in on the radiographs and see the details, you can use `Control + Mouse 
 
 ## Tracking a Skeletal Structure
 
+```{warning}
+The filters provided with the sample data may not be the optimal filters. Since the filters play an important role in the tracking process, you may need to adjust the filters to get the best results. Please see the [](./filters.md) tutorial for more information on filters and how to adjust them.
+```
+
 ### Aligning a Volume
+
+```{warning}
+The current version of AutoscoperM only supports tracking a single volume at a time. If you wish to track multiple volumes, it is recommended to align and track one volume all the way through before moving on to the next volume.
+```
 
 The first step in tracking a skeletal structure is aligning a volume to a set of bi-plane radiographs. Start by selecting the volume you wish to align from the volumes list in the lower-left corner of the screen. In this example, we will align the radius or the `rad_dcm_cropped` volume. To align the volume, move the mouse over one of the radiograph images and use the `Left Mouse Button` to move the volume around.
 
@@ -62,13 +70,15 @@ Once `OK` is pressed in the tracking dialog, the tracking process will begin. Th
 To view the output of the tracking process, you can open the Python terminal in 3D Slicer by hitting `Control + 3`. The output will be printed to the terminal.
 ```
 
-Once the volume is aligned with the radiographs, you can press the `Tracking Dialog` button to open the tracking dialog. The dialog will look like this:
+Once the volume is aligned with the radiographs, you can press the `Tracking Dialog` button on the [](../user-interface.md#toolbar) to open the tracking dialog. The dialog will look like this:
 
 ![Tracking Dialog](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/tutorial_TrackingDialog.png)
 
 The dialog has several options. The first option is the `Tracking Range` which allows you to specify the range of frames you wish to track. The default is to track all the frames in order. The second option is `Initial Guess`, changing this will change how the initial position of the volume is determined. The default is to use the position of the volume in current frame. The third option is `Optimization method`, you can choose between particle swarm optimization (PSO) or downhill simplex. The default is PSO. You can also specify the number of time you want the optimization to run on each frame. The default is 1. The fourth option is `PSO Algorithm Parameters`, you can change the parameters for the optimization here. The default values are usually good enough. The last option is `Cost Function`, you can choose between the normalized cross correlation (NCC) or the sum of absolute differences (SAD). The default is NCC.
 
 Once you have set the options, you can press the `OK` button to start tracking. The tracking will take a while to complete, and trials with lots of frames will take even longer. Once the tracking is complete, the dialog will close.
+
+For more information see the [](../user-interface.md#tracking-dialog) section of the user interface page.
 
 ### Viewing the tracking results
 

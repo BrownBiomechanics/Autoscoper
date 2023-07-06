@@ -2,6 +2,9 @@
 
 This tutorial will show you how to prepare your own data for use with AutoscoperM. This tutorial assumes that you have some familiarity with tracking data using AutoscoperM. If you are new to AutoscoperM, please see the [Loading and Tracking Data](./loading-and-tracking.md#tracking-a-skeletal-structure) tutorial for information on how to track data with AutoscoperM.
 
+```{note}
+This tutorial is intended for users who wish to use their own data with AutoscoperM. However, for learning purposes, it can still be followed using the sample data provided with AutoscoperM. The sample data is downloaded into the cache directory of 3D Slicer. To locate your cache directory open 3D Slicer and go to `Edit` -> `Application Settings` -> `Cache`. You can then click on the button next to `Cache location:` to open the cache directory.
+```
 
 ## Preparing the Data
 
@@ -76,6 +79,10 @@ For information on how to create a camera calibration file, see the [Camera Cali
 
 
 ## Creating a Configuration File
+
+```{note}
+If you have any unsaved changes to your current trial, you will be prompted to save them before creating a new trial.
+```
 
 AutoscoperM uses a `.cfg` file to specify the location of the radiographs, volumes, and camera calibration files. You can create a `.cfg` file by going to `File` -> `New`. This will open up the configuration dialog:
 
