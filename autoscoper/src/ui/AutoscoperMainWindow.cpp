@@ -2459,29 +2459,52 @@ void AutoscoperMainWindow::key_minus_pressed(){
 
 //Shortcuts
 void AutoscoperMainWindow::setupShortcuts(){
+  // W - switches to translate mode
   new QShortcut(QKeySequence(Qt::Key_W), this, SLOT(key_w_pressed()));
+  // E - switches to rotate mode
   new QShortcut(QKeySequence(Qt::Key_E), this, SLOT(key_e_pressed()));
+  // D - switches to move pivot mode
   new QShortcut(QKeySequence(Qt::Key_D), this, SLOT(key_d_pressed()));
+  // H - Enables/Disables DRRs
   new QShortcut(QKeySequence(Qt::Key_H), this, SLOT(key_h_pressed()));
+  // T - Opens the tracking dialog
   new QShortcut(QKeySequence(Qt::Key_T), this, SLOT(key_t_pressed()));
+  // P - Retrack - not enabled
   //new QShortcut(QKeySequence(Qt::Key_P), this, SLOT(key_p_pressed()));
+  // C - Track current frame
   new QShortcut(QKeySequence(Qt::Key_C), this, SLOT(key_c_pressed()));
+  // + - Increase pivot size
   new QShortcut(QKeySequence(Qt::Key_Plus), this, SLOT(key_plus_pressed()));
+  // = - Increase pivot size
   new QShortcut(QKeySequence(Qt::Key_Equal), this, SLOT(key_equal_pressed()));
+  // - - Decrease pivot size
   new QShortcut(QKeySequence(Qt::Key_Minus), this, SLOT(key_minus_pressed()));
 
+  // CTRL+C - Copy keyframe
   ui->actionCopy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
+  // CTRL+V - Paste keyframe
   ui->actionPaste->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
+  // CTRL+X - Cut keyframe
   ui->actionCut->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_X));
+  // Delete - Deletes keyframe
   ui->actionDelete->setShortcut(QKeySequence(Qt::Key_Delete));
+  // CTRL+Z - Undo back to last keyframe
   ui->actionUndo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z));
+  // CTRL+Y - Redo back to next keyframe
   ui->actionRedo->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Y));
+  // CTRL+L - Smooth tangents
   ui->actionSmooth_Tangents->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_L));
+  // CTRL+N - New trial
   ui->actionNew->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
+  // CTRL+O - Open trial
   ui->actionOpen->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
+  // CTRL+S - Save tracking
   ui->actionSave->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
+  // CTRL+SHIFT+S - Save trial as
   ui->actionSave_as->setShortcut(QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_S));
+  // CTRL+Q - Quit
   ui->actionQuit->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
+  // S - Insert keyframe
   ui->actionInsert_Key->setShortcut(QKeySequence(Qt::Key_S));
 }
 
