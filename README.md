@@ -6,9 +6,19 @@ Autoscoper has been used for tracking the shoulder, spine, wrist, hip, knee, and
 
 ## Installation
 
-The installer for Autoscoper 2.7.1 are available [on the SimTk website](https://simtk.org/projects/autoscoper).
+Autoscoper is distributed through SlicerAutoscoperM (SAM), a free, open source and multi-platform 3D Slicer extension. To learn more about the relationship between Autoscoper and AutoscoperM, see https://autoscoperm.slicer.org/.
 
-You need to install the [CUDA toolkit](https://developer.nvidia.com/cuda-downloads?), and update your graphics card driver to run the application.
+## Documentation
+
+Autoscoper provides documentation to help users get started and use the program effectively. The documentation is hosted on [Read the Docs](https://autoscoper.readthedocs.io). For convenience, direct links are also provided below.
+
+* [Getting Started][getting-started]
+* [Tutorials][tutorials]
+
+[getting-started]: https://autoscoper.readthedocs.io/en/latest/getting-started.html
+[tutorials]: https://autoscoper.readthedocs.io/en/latest/tutorials/index.html
+
+The documentation includes step-by-step tutorials, explanations of important concepts, and detailed information on how to use the program.
 
 ## License
 
