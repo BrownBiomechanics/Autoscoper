@@ -89,6 +89,10 @@ private:
 
   void loadMayaCam2(const std::string& mayacam);
 
+  // helper functions
+  void calculateViewport(const double &cx, const double &cy, const double &fx, const double &fy);
+  void calculateImagePlane(const double &cx, const double &cy, const double &z);
+
 };
 
 } // namespace xromm

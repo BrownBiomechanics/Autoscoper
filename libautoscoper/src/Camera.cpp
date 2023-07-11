@@ -200,64 +200,14 @@ void Camera::loadMayaCam1(const std::string& mayacam)
     coord_frame_ = CoordFrame::from_xyzypr(xyzypr);
 
     // Calculate the viewport
-    viewport_[0] = (2.0f*u0 - size_[0]) / z;
-    viewport_[1] = (2.0f*v0 - size_[1]) / z;
-    viewport_[2] = -2.0f*size_[0] / z;
-    viewport_[3] = -2.0f*size_[1] / z;
+    if (z < 0) {
+      calculateViewport(u0, v0, -z, -z);
+    } else {
+      calculateViewport(u0, v0, z, z);
+    }
 
-    // Choose the scaling factor such that the image plane will be on the
-    // other side of the origin from the camera. The values in the mayacam
-    // file are discarded.
-    double distance = sqrt(translation[0] * translation[0] +
-      translation[1] * translation[1] +
-      translation[2] * translation[2]);
-    double scale = -1.5*distance / z;
-
-    image_plane_trans[0] = scale*(size_[0] / 2.0 - u0);
-    image_plane_trans[1] = scale*(size_[1] / 2.0 - v0);
-    image_plane_trans[2] = scale*z;
-
-    // Calculate the vertices at the corner of the image plane.
-    double image_plane_center[3];
-    coord_frame_.point_to_world_space(image_plane_trans, image_plane_center);
-
-    double half_width = scale*size_[0] / 2.0;
-    double half_height = scale*size_[1] / 2.0;
-
-    double right[3] = { coord_frame_.rotation()[0],
-      coord_frame_.rotation()[1],
-      coord_frame_.rotation()[2] };
-    double up[3] = { coord_frame_.rotation()[3],
-      coord_frame_.rotation()[4],
-      coord_frame_.rotation()[5] };
-
-    image_plane_[0] = image_plane_center[0] - half_width*right[0] +
-      half_height*up[0];
-    image_plane_[1] = image_plane_center[1] - half_width*right[1] +
-      half_height*up[1];
-    image_plane_[2] = image_plane_center[2] - half_width*right[2] +
-      half_height*up[2];
-
-    image_plane_[3] = image_plane_center[0] - half_width*right[0] -
-      half_height*up[0];
-    image_plane_[4] = image_plane_center[1] - half_width*right[1] -
-      half_height*up[1];
-    image_plane_[5] = image_plane_center[2] - half_width*right[2] -
-      half_height*up[2];
-
-    image_plane_[6] = image_plane_center[0] + half_width*right[0] -
-      half_height*up[0];
-    image_plane_[7] = image_plane_center[1] + half_width*right[1] -
-      half_height*up[1];
-    image_plane_[8] = image_plane_center[2] + half_width*right[2] -
-      half_height*up[2];
-
-    image_plane_[9] = image_plane_center[0] + half_width*right[0] +
-      half_height*up[0];
-    image_plane_[10] = image_plane_center[1] + half_width*right[1] +
-      half_height*up[1];
-    image_plane_[11] = image_plane_center[2] + half_width*right[2] +
-      half_height*up[2];
+    // Calculate the Image Plane
+    calculateImagePlane(u0, v0, z);
   }
 
 
@@ -398,32 +348,45 @@ void Camera::loadMayaCam1(const std::string& mayacam)
     coord_frame_ = CoordFrame(&rotation[0][0], translation);
 
     // Calculate the viewport
-    viewport_[0] = -(2.0f*K[2][0] - size_[0]) / K[0][0];
-    viewport_[1] = -(2.0f*K[2][1] - size_[1]) / K[1][1];
-    viewport_[2] = 2.0f*size_[0] / K[0][0];
-    viewport_[3] = 2.0f*size_[1] / K[1][1];
+    calculateViewport(K[2][0], K[2][1], K[0][0], K[1][1]);
+
+    // Calculate the image plane
+    double z = -0.5* (K[0][0] + K[1][1]); // Average focal length, negated to be consistent with MayaCam 1.0
+    calculateImagePlane(K[2][0], K[2][1], z);
+  }
 
 
-    // Choose the scaling factor such that the image plane will be on the
-    // other side of the origin from the camera. The values in the mayacam
-    // file are discarded.
-    double z = - 0.5* (K[0][0] + K[1][1]);
-    double distance = sqrt(translation[0] * translation[0] +
-      translation[1] * translation[1] +
-      translation[2] * translation[2]);
-    double scale = -1.5*distance / z;
+  void Camera::calculateViewport(const double& cx, const double& cy, const double& fx, const double& fy) {
+    // Calculate the viewport
+
+    // Validate that neither fx nor fy are zero
+    if (fx == 0 || fy == 0) {
+      throw std::runtime_error("Invalid camera parameters (fx or fy is zero)");
+    }
+    viewport_[0] = -(2.0f*cx - size_[0]) / fx;
+    viewport_[1] = -(2.0f*cy - size_[1]) / fy;
+    viewport_[2] = 2.0f* size_[0] / fx;
+    viewport_[3] = 2.0f* size_[1] / fy;
+  }
+
+  void Camera::calculateImagePlane(const double& cx, const double& cy, const double& z) {
+    // Pick a scale factor that places the image plane on the other side of the origin from the camera.
+    double distance = sqrt(coord_frame_.translation()[0] * coord_frame_.translation()[0] +
+      coord_frame_.translation()[1] * coord_frame_.translation()[1] +
+      coord_frame_.translation()[2] * coord_frame_.translation()[2]);
+    double scale = -1.5 * distance / z;
 
     double image_plane_trans[3];
-    image_plane_trans[0] = scale*(size_[0] / 2.0 - K[2][0]);
-    image_plane_trans[1] = scale*(size_[1] / 2.0 - K[2][1]);
-    image_plane_trans[2] = scale*z;
+    image_plane_trans[0] = scale * (size_[0] / 2.0 - cx);
+    image_plane_trans[1] = scale * (size_[1] / 2.0 - cy);
+    image_plane_trans[2] = scale * z;
 
     // Calculate the vertices at the corner of the image plane.
     double image_plane_center[3];
     coord_frame_.point_to_world_space(image_plane_trans, image_plane_center);
 
-    double half_width = scale*size_[0] / 2.0;
-    double half_height = scale*size_[1] / 2.0;
+    double half_width = scale * size_[0] / 2.0;
+    double half_height = scale * size_[1] / 2.0;
 
     double right[3] = { coord_frame_.rotation()[0],
       coord_frame_.rotation()[1],
@@ -432,33 +395,33 @@ void Camera::loadMayaCam1(const std::string& mayacam)
       coord_frame_.rotation()[4],
       coord_frame_.rotation()[5] };
 
-    image_plane_[0] = image_plane_center[0] - half_width*right[0] +
-      half_height*up[0];
-    image_plane_[1] = image_plane_center[1] - half_width*right[1] +
-      half_height*up[1];
-    image_plane_[2] = image_plane_center[2] - half_width*right[2] +
-      half_height*up[2];
+    image_plane_[0] = image_plane_center[0] - half_width * right[0] +
+      half_height * up[0];
+    image_plane_[1] = image_plane_center[1] - half_width * right[1] +
+      half_height * up[1];
+    image_plane_[2] = image_plane_center[2] - half_width * right[2] +
+      half_height * up[2];
 
-    image_plane_[3] = image_plane_center[0] - half_width*right[0] -
-      half_height*up[0];
-    image_plane_[4] = image_plane_center[1] - half_width*right[1] -
-      half_height*up[1];
-    image_plane_[5] = image_plane_center[2] - half_width*right[2] -
-      half_height*up[2];
+    image_plane_[3] = image_plane_center[0] - half_width * right[0] -
+      half_height * up[0];
+    image_plane_[4] = image_plane_center[1] - half_width * right[1] -
+      half_height * up[1];
+    image_plane_[5] = image_plane_center[2] - half_width * right[2] -
+      half_height * up[2];
 
-    image_plane_[6] = image_plane_center[0] + half_width*right[0] -
-      half_height*up[0];
-    image_plane_[7] = image_plane_center[1] + half_width*right[1] -
-      half_height*up[1];
-    image_plane_[8] = image_plane_center[2] + half_width*right[2] -
-      half_height*up[2];
+    image_plane_[6] = image_plane_center[0] + half_width * right[0] -
+      half_height * up[0];
+    image_plane_[7] = image_plane_center[1] + half_width * right[1] -
+      half_height * up[1];
+    image_plane_[8] = image_plane_center[2] + half_width * right[2] -
+      half_height * up[2];
 
-    image_plane_[9] = image_plane_center[0] + half_width*right[0] +
-      half_height*up[0];
-    image_plane_[10] = image_plane_center[1] + half_width*right[1] +
-      half_height*up[1];
-    image_plane_[11] = image_plane_center[2] + half_width*right[2] +
-      half_height*up[2];
+    image_plane_[9] = image_plane_center[0] + half_width * right[0] +
+      half_height * up[0];
+    image_plane_[10] = image_plane_center[1] + half_width * right[1] +
+      half_height * up[1];
+    image_plane_[11] = image_plane_center[2] + half_width * right[2] +
+      half_height * up[2];
   }
 
 } // namespace XROMM
