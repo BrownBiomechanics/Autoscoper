@@ -993,7 +993,8 @@ void Buffer::copy(const Buffer* dst, size_t size) const
 {
   if (size == 0) size = size_;
   if (size > dst->size_)
-    ERROR("Destination buffer does not have enough room!");
+    ERROR("Destination buffer does not have enough room! ("
+          << size << " > " << dst->size_ << ")");
   err_ = clEnqueueCopyBuffer(
       queue_, buffer_, dst->buffer_, 0, 0, size, 0, NULL, NULL);
   CHECK_CL
