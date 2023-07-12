@@ -108,6 +108,7 @@ target_compile_definitions(libautoscoper PUBLIC -DUSE_LIBTIFF)
 target_include_directories(libautoscoper PUBLIC
   ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/src
+  ../math
 )
 
 install(TARGETS libautoscoper

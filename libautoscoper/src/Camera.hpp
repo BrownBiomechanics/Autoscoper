@@ -44,6 +44,9 @@
 
 #include <string>
 
+#include <Matrix.hpp>
+#include <Vector.hpp>
+
 #include "CoordFrame.hpp"
 
 namespace xromm
@@ -89,9 +92,14 @@ private:
 
   void loadMayaCam2(const std::string& mayacam);
 
+  void loadVTKCamera(const std::string& filename);
+
   // helper functions
   void calculateViewport(const double &cx, const double &cy, const double &fx, const double &fy);
   void calculateImagePlane(const double &cx, const double &cy, const double &z);
+  double* calculateRotationMatrix(const double* camera_pos, const double* focal_point);
+  double* calculateFocalLength(const double& view_angle);
+  double* lookAt(Vec3d eye, Vec3d center, Vec3d up);
 
 };
 
