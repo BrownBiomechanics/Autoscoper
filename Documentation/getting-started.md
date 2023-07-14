@@ -32,10 +32,10 @@ Sample data is available for download from the [SlicerAutoscoperM Sample Data](/
 
 * Wrist BVR data - This was part of the data used in the [Akhbari et al. 2019](https://www.sciencedirect.com/science/article/abs/pii/S0021929019303847) paper.
   * Three frames of movement are included in the sample data.
-  * Four DRRs are included in the sample data. The radius, ulna, third meta-carpal, and a combined second and third meta-carpal are included.
+  * Four partial volumes are included in the sample data. The radius, ulna, third meta-carpal, and a combined second and third meta-carpal are included.
 * Knee BVR data - This data was provided by Jill Beveridge.
   * Three frames of movement are included in the sample data.
-  * Two DRRs are included in the sample data. The femur and tibia are included.
+  * Two partial volumes are included in the sample data. The femur and tibia are included.
 * Ankle BVR data - This data was provided by Michael Rainbow.
   * Three frames of movement are included in the sample data.
-  * Three DRRs are included in the sample data. The tibia, talus, and calcaneus are included.
+  * Three partial volumes are included in the sample data. The tibia, talus, and calcaneus are included.
