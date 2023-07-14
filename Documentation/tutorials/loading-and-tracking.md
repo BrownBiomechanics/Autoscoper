@@ -55,7 +55,7 @@ The first step in tracking a skeletal structure is aligning a volume to a set of
 You can press `E` to switch to rotation mode or `W` to return to translation mode. Use `D` to move the location of the pivot point if needed. Use `S` to set a keyframe, which is used as a reference point in the tracking process. Pressing `C` will perform optimization on the current frame, which can be useful for snapping the volume to radiographs.
 
 ```{tip}
-It may help if you align the volume with one of the radiographs first, then ensure that the volume aligns with all the radiographs.
+For help with aligning a volume, please see the [](./tips-and-tricks.md) tutorial.
 ```
 
 ![Aligned with the right radiograph](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/tutorial_AlignedWithRight.png)
@@ -86,7 +86,7 @@ Once the tracking is complete, you can view the tracking results by moving the s
 
 ![Tracking Results](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/tutorial_tracked.gif)
 
-You can also view the tracking results in the 3D view by going to `View` -> `Show World View` in the main menu. You can use `Control + Middle Mouse Button` to pan the 3D view, `Control + Left Mouse Button` to rotate the 3D view, and `Control + Right Mouse Button + Drag` to zoom in and out.
+You can also view the tracking results in the 3D view by going to `View` -> `Show World View` in the main menu. You can use `Control + Middle Mouse Button` to pan the 3D view, `Control + Left Mouse Button` to rotate the 3D view, and `Control + Right Mouse Button + Drag` to zoom in and out. Move the view so you can see all of the volumes and radiographs at once. Using the slider at the bottom of the screen, you can move through the frames and see the tracking results in the 3D view.
 
 ![World View](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/tutorial_WorldView.png)
 

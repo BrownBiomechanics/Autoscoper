@@ -14,4 +14,5 @@ loading-and-tracking.md
 custom-data.md
 filters.md
 saving-and-resuming-tracks.md
+tips-and-tricks.md
 ```
