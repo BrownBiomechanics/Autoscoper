@@ -144,8 +144,7 @@ void TrackingOptionsDialog::frame_optimize()
       mainwindow->setFrame(mainwindow->getTracker()->trial()->frame);
 
          //update progress bar
-
-         double value = abs(to_frame-from_frame) > 0 ? abs(frame-from_frame)/ abs(to_frame-from_frame) : 0;
+     double value = abs(to_frame - from_frame) > 0 ? fabs(frame - from_frame) / fabs(to_frame - from_frame) : 0;
      int progress = value *100;
      diag->progressBar->setValue(progress);
 
