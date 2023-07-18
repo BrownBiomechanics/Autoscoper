@@ -124,13 +124,13 @@ namespace xromm
       throw std::runtime_error("There must be at least one mayacam files.");
     }
     if (mayaCams.size() != camRootDirs.size()) {
-      throw std::runtime_error("The number of cameras and videos must match.");
+      throw std::runtime_error("The number of cameras and videos must match. Found " + mayaCams.size() + " cameras and " + camRootDirs.size() + " videos.");
     }
     if (volumeFiles.size() < 1) {
       throw std::runtime_error("There must be at least one volume file.");
     }
     if (volumeFiles.size() != voxelSizes.size()) {
-      throw std::runtime_error("You must sepcify a voxels size for each volume.");
+      throw std::runtime_error("You must sepcify a voxels size for each volume. Found " + volumeFiles.size() + " volumes and " + voxelSizes.size() + " voxel sizes.");
     }
 
     cameras.clear();

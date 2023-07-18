@@ -68,7 +68,11 @@ Volume::Volume(const std::string& filename)
     tiffImageReadMeta(tif, &img);
 
     if (img.samplesPerPixel != 1 || img.sampleFormat != 1) {
-        throw std::runtime_error("Unsupported image format");
+        throw std::runtime_error("Unsupported image format! Got samplesPerPixel of " +
+                                 std::to_string(img.samplesPerPixel) +
+                                 " and sampleFormat of " +
+                                 std::to_string(img.sampleFormat) +
+                                 " but expected 1 and 1.");
     }
 
     // Count the number of slices
@@ -91,7 +95,20 @@ Volume::Volume(const std::string& filename)
         if (img.width != width_ ||
             img.height != height_ ||
             img.bitsPerSample != bps_) {
-            throw std::runtime_error("Non uniform volume slices.");
+            throw std::runtime_error("Non uniform volume slices. Slice: " +
+                                     std::to_string(i) +
+                                     " has dimensions: " +
+                                     std::to_string(img.width) +
+                                     "x" +
+                                     std::to_string(img.height) +
+                                     "x" +
+                                     std::to_string(img.bitsPerSample) +
+                                     " but expected: " +
+                                     std::to_string(width_) +
+                                     "x" +
+                                     std::to_string(height_) +
+                                     "x" +
+                                     std::to_string(bps_));
         }
 
         memcpy(dp, img.data, width_*height_*(bps_/8));
