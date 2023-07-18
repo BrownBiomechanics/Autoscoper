@@ -127,7 +127,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
       for (int j = 0; j < 3 && getline(csv_line_stream, csv_val, ','); ++j) {
         std::istringstream csv_val_stream(csv_val);
         if (!(csv_val_stream >> csv_vals[i][j])) {
-          throw std::runtime_error("Invalid MayaCam file");
+          throw std::runtime_error("Invalid MayaCam file! Please check the mayacam 1.0 specification. https://autoscoper.readthedocs.io/en/latest/file-specifications/camera-calibration.html#mayacam-1-0");
         }
       }
     }
@@ -260,7 +260,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
           for (int j = 0; j < 2 && getline(csv_line_stream, csv_val, ','); ++j) {
             std::istringstream csv_val_stream(csv_val);
             if (!(csv_val_stream >> size_[j])) {
-              throw std::runtime_error("Invalid MayaCam file");
+              throw std::runtime_error("Invalid MayaCam file! (size)");
             }
           }
           break;
@@ -270,7 +270,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
           for (int j = 0; j < 3 && getline(csv_line_stream, csv_val, ','); ++j) {
             std::istringstream csv_val_stream(csv_val);
             if (!(csv_val_stream >> K[j][i - 4])) {
-              throw std::runtime_error("Invalid MayaCam file");
+              throw std::runtime_error("Invalid MayaCam file! (K)");
             }
           }
           break;
@@ -281,7 +281,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
           for (int j = 0; j < 3 && getline(csv_line_stream, csv_val, ','); ++j) {
             std::istringstream csv_val_stream(csv_val);
             if (!(csv_val_stream >> rotation[j][i - 9])) {
-              throw std::runtime_error("Invalid MayaCam file");
+              throw std::runtime_error("Invalid MayaCam file! (R)");
             }
           }
           break;
@@ -289,7 +289,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
         case 15:
         case 16:
           if (!(csv_line_stream >> translation[i - 14])) {
-              throw std::runtime_error("Invalid MayaCam file");
+              throw std::runtime_error("Invalid MayaCam file! (t)");
             }
 
           break;
