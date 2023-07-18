@@ -50,6 +50,12 @@ void KeyCurve::insert(int time)
 
 void KeyCurve::insert(int time, float value)
 {
+  // If curve type is ROLL, PITCH or YAW, then need to convert from [-180,180] to [0,360]
+  if (type == ROLL_CURVE || type == PITCH_CURVE || type == YAW_CURVE) {
+    if (value < 0) {
+      value += 360;
+    }
+  }
     Key key;
     key.value = value;
     key.in_tangent_type = SMOOTH;
