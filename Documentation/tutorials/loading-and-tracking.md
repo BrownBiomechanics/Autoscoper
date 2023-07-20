@@ -99,3 +99,35 @@ Once the file name is specified, you can click the `OK` button and the tracking 
 ```{seealso}
 For more information, see [](/user-interface.md#importexport-tracking-options).
 ```
+
+## Evaluating the Sample Data Tracking Results
+
+SlicerAutoscoperM includes a module, `Tracking Evaluation`, that can be used to compare your results to some ground truth data included in the sample data.
+
+### Exporting your Tracking Results from Autoscoper
+
+To export your tracking results from Autoscoper, click the `Save Tracking` button on the [](../user-interface.md#toolbar). This will open a dialog where you can specify the name of the file you wish to save the tracking results to. Once you press okay, the [](../user-interface.md#importexport-tracking-options) dialog will open. Ensure that the `All` option under the `Volumes` section is selected. Then press the `OK` button to export the tracking results.
+
+![Export Tracking Results](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/eval_AllVolumes.png)
+
+### Switching to the Tracking Evaluation Module
+
+The `Tracking Evaluation` module can be found in the `tracking` category of the module drop-down menu.
+
+![Tracking Evaluation Module](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/eval_SwitchModule.png)
+
+### Loading in Results
+
+To load in your tracking results, select the file you exported from Autoscoper in the `Input Data` section of the module. Then select the sample data type you wish to compare your results to. Finally, press the `Load Data for Evaluation` button.
+
+```{note}
+You may need to adjust the camera of the 3D scene inorder to see the results clearly.
+```
+
+![Load data](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/eval_LoadData.png)
+
+### Visualizing Results
+
+You can click the `Play` button in the `Visualize Results` sections to automatically scrub through the sequence. You can also use the timeline to scrub through the sequence manually. Results that are within a 1mm or 2 degree difference of the ground truth will be displayed as green. If your results exceed these thresholds, they will be displayed as red and a partially transparent version of the ground truth will be displayed.
+
+![Results Gif](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/eval_ShowModule.gif)
