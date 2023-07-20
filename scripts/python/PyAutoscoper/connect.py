@@ -1,13 +1,9 @@
 import os
 import socket
 import struct
-from packaging.version import Version, parse
+from packaging.version import Version, parse as parse_version
 
-CLIENT_VERSION_MAJOR = 1
-CLIENT_VERSION_MINOR = 0
-CLIENT_VERSION_PATCH = 0
-
-CLIENT_VERSION = Version(f"{CLIENT_VERSION_MAJOR}.{CLIENT_VERSION_MINOR}.{CLIENT_VERSION_PATCH}")
+EXPECTED_SERVER_VERSION = Version("1.0.0")
 
 
 class AutoscoperServerError(Exception):
@@ -15,6 +11,18 @@ class AutoscoperServerError(Exception):
 
     def __str__(self):
         return f"Autoscoper Server error: {super().__str__()}"
+
+
+class AutoscoperServerVersionMismatch(Exception):
+    """Exception raised when the client attempt to connect to an unsupported server."""
+
+    def __init__(self, server_version):
+        self.server_version = server_version
+        msg = f"server_version {self.server_version}, expected_version {EXPECTED_SERVER_VERSION}"
+        super().__init__(msg)
+
+    def __str__(self):
+        return f"Autoscoper Server Version mismatch: {super().__str__()}"
 
 
 class AutoscoperConnectionError(Exception):
@@ -119,18 +127,16 @@ class AutoscoperConnection:
 
         Called automatically upon init.
 
-        :raises AutoscoperServerError: If the server version is not compatible with the client version
+        :raises AutoscoperServerVersionMismatch: If the server version is not compatible with the client version
         """
         response = self._send_command(0x10)  # 16
-        server_version = parse(response[1:].decode("utf-8"))  # version string formatted as "MAJOR.MINOR.PATCH"
+        server_version = parse_version(response[1:].decode("utf-8"))  # version string formatted as "MAJOR.MINOR.PATCH"
+
+        if server_version != EXPECTED_SERVER_VERSION:
+            raise AutoscoperServerVersionMismatch(server_version)
 
         if self.verbose:
             print(f"Server version: {server_version}")
-            print(f"Client version: {CLIENT_VERSION}")
-
-        if server_version != CLIENT_VERSION:
-            msg = f"Server version {server_version} is not compatible with client version {CLIENT_VERSION_MAJOR}.{CLIENT_VERSION_MINOR}.{CLIENT_VERSION_PATCH}"
-            raise AutoscoperServerError(msg)
 
         return
 
