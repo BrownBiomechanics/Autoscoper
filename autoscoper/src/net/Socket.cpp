@@ -76,6 +76,11 @@ QString Socket::versionString()
 void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 {
   unsigned char message_type = data[0];
+  size_t preamble_offset = 1;
+
+  #define SocketReadValuePointerMacro(fieldName, fieldPtrType) \
+    fieldPtrType* fieldName = reinterpret_cast<fieldPtrType*>(&data[offset]); \
+    offset = offset + sizeof(fieldPtrType)
 
   switch (message_type)
   {
@@ -87,8 +92,11 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
   break;
   case 1:
     {
+      size_t offset = preamble_offset;
+
       //load trial
-      std::string filename = std::string(&data[1],length-1);
+      std::string filename = std::string(&data[offset], length - offset);
+
       std::ifstream test(filename.c_str());
       if (!test) {
           std::cerr << "Cannot find " << filename.c_str() << std::endl;
@@ -105,14 +113,17 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
   case 2:
     //load tracking data
     {
-      qint32* volume = reinterpret_cast<qint32*>(&data[1]);
-      qint32* save_as_matrix = reinterpret_cast<qint32*>(&data[5]);
-      qint32* save_as_rows = reinterpret_cast<qint32*>(&data[9]);
-      qint32* save_with_commas = reinterpret_cast<qint32*>(&data[13]);
-      qint32* convert_to_cm = reinterpret_cast<qint32*>(&data[17]);
-      qint32* convert_to_rad = reinterpret_cast<qint32*>(&data[21]);
-      qint32* interpolate = reinterpret_cast<qint32*>(&data[25]);
-      std::string filename = std::string(&data[29], length - 29);
+      size_t offset = preamble_offset;
+
+      SocketReadValuePointerMacro(volume, qint32);
+      SocketReadValuePointerMacro(save_as_matrix, qint32);
+      SocketReadValuePointerMacro(save_as_rows, qint32);
+      SocketReadValuePointerMacro(save_with_commas, qint32);
+      SocketReadValuePointerMacro(convert_to_cm, qint32);
+      SocketReadValuePointerMacro(convert_to_rad, qint32);
+      SocketReadValuePointerMacro(interpolate, qint32);
+
+      std::string filename = std::string(&data[offset], length - offset);
 
       if (!std::filesystem::exists(filename)) {
           std::cerr << "Cannot find " << filename.c_str() << std::endl;
@@ -131,14 +142,17 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
   case 3:
     //save tracking data
     {
-      qint32* volume = reinterpret_cast<qint32*>(&data[1]);
-      qint32* save_as_matrix = reinterpret_cast<qint32*>(&data[5]);
-      qint32* save_as_rows = reinterpret_cast<qint32*>(&data[9]);
-      qint32* save_with_commas = reinterpret_cast<qint32*>(&data[13]);
-      qint32* convert_to_cm = reinterpret_cast<qint32*>(&data[17]);
-      qint32* convert_to_rad = reinterpret_cast<qint32*>(&data[21]);
-      qint32* interpolate = reinterpret_cast<qint32*>(&data[25]);
-      std::string filename = std::string(&data[29], length - 29);
+      size_t offset = preamble_offset;
+
+      SocketReadValuePointerMacro(volume, qint32);
+      SocketReadValuePointerMacro(save_as_matrix, qint32);
+      SocketReadValuePointerMacro(save_as_rows, qint32);
+      SocketReadValuePointerMacro(save_with_commas, qint32);
+      SocketReadValuePointerMacro(convert_to_cm, qint32);
+      SocketReadValuePointerMacro(convert_to_rad, qint32);
+      SocketReadValuePointerMacro(interpolate, qint32);
+
+      std::string filename = std::string(&data[offset], length - offset);
 
       // If needed, create parent directory
       bool parent_directory_exists = false;
@@ -191,8 +205,12 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
   case 4:
     //load filter settings
     {
-      qint32* camera = reinterpret_cast<qint32*>(&data[1]);
-      std::string filename = std::string(&data[5], length - 5);
+      size_t offset = preamble_offset;
+
+      SocketReadValuePointerMacro(camera, qint32);
+
+      std::string filename = std::string(&data[offset], length - offset);
+
       if (!std::filesystem::exists(filename)) {
           std::cerr << "Cannot find " << filename.c_str() << std::endl;
           connection->write(QByteArray(1, 0));
@@ -209,7 +227,9 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
   case 5:
     //set current frame
     {
-      qint32* frame = reinterpret_cast<qint32*>(&data[1]);
+      size_t offset = preamble_offset;
+
+      SocketReadValuePointerMacro(frame, qint32);
 
       std::cerr << "set frame to " << *frame << std::endl;
       m_mainwindow->setFrame(*frame);
@@ -220,8 +240,10 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
   case 6:
     //get Pose
     {
-      qint32* volume = reinterpret_cast<qint32*>(&data[1]);
-      qint32* frame = reinterpret_cast<qint32*>(&data[5]);
+      size_t offset = preamble_offset;
+
+      SocketReadValuePointerMacro(volume, qint32);
+      SocketReadValuePointerMacro(frame, qint32);
 
       std::cerr << "get pose for volume " << *volume << " frame " << *frame << std::endl;
       std::vector<double> pose = m_mainwindow->getPose(*volume,*frame);
@@ -235,9 +257,12 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
   case 7:
     //set Pose
     {
-      qint32* volume = reinterpret_cast<qint32*>(&data[1]);
-      qint32* frame = reinterpret_cast<qint32*>(&data[5]);
-      double * pose_data = reinterpret_cast<double*>(&data[9]);
+      size_t offset = preamble_offset;
+
+      SocketReadValuePointerMacro(volume, qint32);
+      SocketReadValuePointerMacro(frame, qint32);
+      SocketReadValuePointerMacro(pose_data, double);
+
       std::vector<double> pose;
       pose.assign(pose_data, pose_data + 6);
 
@@ -253,8 +278,11 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
   case 8:
     //get NCC
     {
-      qint32* volume = reinterpret_cast<qint32*>(&data[1]);
-      double * pose_data = reinterpret_cast<double*>(&data[5]);
+      size_t offset = preamble_offset;
+
+      SocketReadValuePointerMacro(volume, qint32);
+      SocketReadValuePointerMacro(pose_data, double);
+
       std::vector<double> pose;
       pose.assign(pose_data, pose_data + 6);
 
@@ -271,7 +299,9 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
   case 9:
     //set Background
     {
-      double * threshold = reinterpret_cast<double*>(&data[1]);
+      size_t offset = preamble_offset;
+
+      SocketReadValuePointerMacro(threshold, double);
 
       std::cerr << "set background " << *threshold << std::endl;
       m_mainwindow->setBackground(*threshold);
@@ -282,14 +312,17 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
   case 10:
     //get the image - cropped
     {
-      qint32* volume = reinterpret_cast<qint32*>(&data[1]);
-      qint32* camera = reinterpret_cast<qint32*>(&data[5]);
-      double * pose_data = reinterpret_cast<double*>(&data[9]);
+      size_t offset = preamble_offset;
+
+      SocketReadValuePointerMacro(volume, qint32);
+      SocketReadValuePointerMacro(camera, qint32);
+      SocketReadValuePointerMacro(pose_data, double);
 
       std::cerr << "Read images for volume " << *volume << " and camera " << *camera << std::endl;
 
       std::vector<double> pose;
       pose.assign(pose_data, pose_data + 6);
+
       unsigned int width, height;
       std::vector<unsigned char> img_Data = m_mainwindow->getImageData(*volume,*camera, &pose_data[0], width, height );
 
@@ -308,17 +341,19 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
   case 11:
     //optimize from matlab
     {
-      qint32* volumeID = reinterpret_cast<qint32*>(&data[1]);
-      qint32* frame = reinterpret_cast<qint32*>(&data[5]);
-      qint32* repeats = reinterpret_cast<qint32*>(&data[9]);
-      qint32* max_iter = reinterpret_cast<qint32*>(&data[13]);
-      double* min_limit = reinterpret_cast<double*>(&data[17]);
-      double* max_limit = reinterpret_cast<double*>(&data[25]);
-      qint32* stall_iter = reinterpret_cast<qint32*>(&data[33]);
+      size_t offset = preamble_offset;
 
-      qint32* dframe = reinterpret_cast<qint32*>(&data[37]);
-      qint32* opt_method = reinterpret_cast<qint32*>(&data[41]);
-      qint32* cf_model = reinterpret_cast<qint32*>(&data[45]);
+      SocketReadValuePointerMacro(volumeID, qint32);
+      SocketReadValuePointerMacro(frame, qint32);
+      SocketReadValuePointerMacro(repeats, qint32);
+      SocketReadValuePointerMacro(max_iter, qint32);
+      SocketReadValuePointerMacro(min_limit, double);
+      SocketReadValuePointerMacro(max_limit, double);
+      SocketReadValuePointerMacro(stall_iter, qint32);
+
+      SocketReadValuePointerMacro(dframe, qint32);
+      SocketReadValuePointerMacro(opt_method, qint32);
+      SocketReadValuePointerMacro(cf_model, qint32);
 
       std::cerr << "Running optimization from autoscoper for frame #" << *frame << std::endl;
 
