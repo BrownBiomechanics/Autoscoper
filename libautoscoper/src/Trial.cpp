@@ -151,13 +151,8 @@ namespace xromm
 
     cameras.clear();
     for (unsigned int i = 0; i < mayaCams.size(); ++i) {
-      try {
         Camera camera(mayaCams[i]);
         cameras.push_back(camera);
-      }
-      catch (std::exception& e) {
-        std::cerr << e.what() << std::endl;
-      }
     }
 
     // First load the volumes as more continous memory is required than for the videos.
