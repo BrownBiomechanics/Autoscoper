@@ -9,6 +9,7 @@ repos:
   - id: check-toml
   - id: check-yaml
   - id: debug-statements
+  - id: trailing-whitespace
 
 - repo: https://github.com/psf/black
   rev: "23.3.0" # Keep in sync with blacken-docs
