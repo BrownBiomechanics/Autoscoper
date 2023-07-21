@@ -24,3 +24,5 @@ d6ea8ed817d1c77e202344040848ab3fa6ab6467
 03f8ee9418be98e5fa40dfa9726fbe488de34446
 # STYLE: Update CMake sources to use consistent indentation and spacing
 6c933dc51248b0cd47adeda36b6592b2d8779c09
+# STYLE: Strip all trailing white spaces
+fb438c6f3f5303e0ddc6ed364bdb480eefaaaa7f
