@@ -1101,7 +1101,7 @@ void AutoscoperMainWindow::openTrial(){
   }
 }
 
-void AutoscoperMainWindow::openTrial(QString filename){
+bool AutoscoperMainWindow::openTrial(QString filename){
   try {
     Trial * trial = new Trial(filename.toStdString().c_str());
     tracker->load(*trial);
@@ -1180,9 +1180,11 @@ void AutoscoperMainWindow::openTrial(QString filename){
     on_actionInsert_Key_triggered(true);
     // on_actionDelete_triggered(true);
     //
+    return true;
   }
   catch (std::exception& e) {
     std::cerr << e.what() << std::endl;
+    return false;
   }
 }
 
