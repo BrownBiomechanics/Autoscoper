@@ -24,12 +24,12 @@ loadFilters(aobj, -1, filterFileName);
 
 %if seeding poses available
 for vNum = 0: length(myVolumeList)-1
-	loadTrackingData(aobj, vNum, [trackDataInFileName,myVolumeList{vNum}]); 
+	loadTrackingData(aobj, vNum, [trackDataInFileName,myVolumeList{vNum}]);
 
 	trackingDialog(vNum, tf, numberOfFrames);
-	
+
 	saveTrackingData(vNum, [saveDataFileName,myVolumeList{vNum}]);
-end	
+end
 closeConnection(aobj);
 ```
 
@@ -62,7 +62,7 @@ This function has the following parameter:
 * path_to_cfg_file: The path to the configuration file.
 
 ### Load Tracking Data
-  
+
 ```matlab
 connection.loadTrackingData(volNum, tra_fileName, is_matrix, is_rows, is_csv, is_cm, is_rad);
 OR
@@ -83,7 +83,7 @@ This function has the following parameters:
 
 
   ### Save Tracking Data
-  
+
 ```matlab
 connection.saveTrackingData(volNum, tra_fileName, save_as_matrix, save_as_rows, save_with_commas, convert_mm_to_cm, convert_deg_to_rad, interpY);
 OR
@@ -106,7 +106,7 @@ This function has the following optional parameters:
 
 
 ### Load Filters
-  
+
 ```matlab
 connection.loadFilters(camera, filter_file);
 OR
@@ -118,10 +118,10 @@ This will load filters from the specified file. The filters file is a `.vie` fil
 This function has the following parameters:
 
 * camera: The camera index to load the filters for. (index base 0)  -1 for all
-* filter_file: The path anf fielname to the filters file. 
+* filter_file: The path anf fielname to the filters file.
 
 ### Set Frame
-  
+
 ```matlab
 connection.setFrame(frameNum);
 OR
@@ -135,7 +135,7 @@ This function has the following parameter:
 * frameNum: The frame to set.
 
 ### Get Pose
-    
+
 ```matlab
 pose = connection.getPose(volNum, frameNum);
 OR
@@ -154,7 +154,7 @@ This function returns the following:
 * pose: The pose for the specified volume at the specified frame.
 
 ### Set Pose
-    
+
 ```matlab
 connection.setPose(volume, frame, pose);
 OR
@@ -170,7 +170,7 @@ This function has the following parameters:
 * pose: The pose to set.
 
 ### Get NCC
-    
+
 ```matlab
 ncc = connection.getNCC(voNum, pose);
 OR
@@ -185,11 +185,11 @@ This function has the following parameters:
 * pose: The pose to get the NCC at. (see getPose xyzrpy)
 
 This function returns the following:
-  
+
 * ncc: The NCC for the specified volume at the specified frame.
 
 ### Set Background
-    
+
 ```matlab
 connection.setBackground(threshold);
 OR
@@ -203,7 +203,7 @@ This function has the following parameter:
 * threshold: The threshold to set.
 
 ### Get Image Cropped
-    
+
 ```matlab
 connection.getImageCropped(volume, camera, pose);
 ```
@@ -242,7 +242,7 @@ This function has the following parameters:
 * cf_model: Optional. The cost function model, 0 for NCC, 1 for Sum of Absolute Differences. Default: 0
 
 ### Tracking Dialog
-  
+
 ```matlab
 connection.trackingDialog(volNum, startframe, endframe, repeats, max_itr, min_lim, max_lim, max_stall_itr, dframe, opt_method, cf_model);
 OR
@@ -266,7 +266,7 @@ This function has the following parameters:
 * cf_model: Optional. The cost function model, 0 for NCC, 1 for Sum of Absolute Differences. Default: 0
 
 ### Get NCC Sum
-    
+
 ```matlab
 ncc_sum = connection.getNCC_Sum(volNum, pose);
 OR
@@ -278,7 +278,7 @@ This will get the NCC sum for the specified volume in the specified pose (set ge
 This function has the following parameters:
 
 * volNum: The volume to get the NCC sum for.
-* pose: The pose to get the NCC sum at. 
+* pose: The pose to get the NCC sum at.
 
 ### Get NCC This Frame
 
@@ -298,7 +298,7 @@ This function has the following parameters:
 *returns a three element double- the ncc values returned from getNCC  , and thier product
 
 ### Close Connection
-  
+
 ```matlab
 connection.closeConnection();
 ```
