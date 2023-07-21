@@ -478,7 +478,10 @@ void
 View::init(unsigned width, unsigned height)
 {
   if (width*height > maxWidth_ * maxHeight_) {
-    throw std::runtime_error("GPU Buffers too small! GPU buffer size: " + std::to_string(maxWidth_ * maxHeight_) + ", but image size: " + std::to_string(width*height) + ".");
+    throw std::runtime_error(
+          "GPU Buffers too small.\n"
+          "GPU buffer size is " + std::to_string(maxWidth_ * maxHeight_) + " but "
+          "image mage size is " + std::to_string(width * height) + ".");
     }
 
     if (!inited_) {

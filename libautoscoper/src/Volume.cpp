@@ -67,12 +67,28 @@ Volume::Volume(const std::string& filename)
     TiffImage img;
     tiffImageReadMeta(tif, &img);
 
-    if (img.samplesPerPixel != 1 || img.sampleFormat != 1) {
-        throw std::runtime_error("Unsupported image format! Got samplesPerPixel of " +
-                                 std::to_string(img.samplesPerPixel) +
-                                 " and sampleFormat of " +
-                                 std::to_string(img.sampleFormat) +
-                                 " but expected 1 and 1.");
+    {
+        uint16_t expectedSamplesPerPixel = 1; // 1 for bilevel, grayscale
+        if (img.samplesPerPixel != expectedSamplesPerPixel) {
+            throw std::runtime_error(
+                "Unsupported TIFF image format. Invalid 'SamplesPerPixel' value in " + filename + ".\n"
+                "Current value is " + std::to_string(img.samplesPerPixel) + "\n"
+                "Expected value is " + std::to_string(expectedSamplesPerPixel) + "\n"
+                "\n"
+                "See https://www.awaresystems.be/imaging/tiff/tifftags/samplesperpixel.html");
+        }
+    }
+
+    {
+        uint16_t expectedSampleFormat = 1; // unsigned integer data
+        if (img.sampleFormat != expectedSampleFormat) {
+            throw std::runtime_error(
+                  "Unsupported TIFF image format. Invalid 'SampleFormat' value in " + filename + ".\n"
+                  "Current value is " + std::to_string(img.samplesPerPixel) + "\n"
+                  "Expected value is " + std::to_string(expectedSampleFormat) + "\n"
+                  "\n"
+                  "See https://www.awaresystems.be/imaging/tiff/tifftags/sampleformat.html\n");
+        }
     }
 
     // Count the number of slices
@@ -95,20 +111,12 @@ Volume::Volume(const std::string& filename)
         if (img.width != width_ ||
             img.height != height_ ||
             img.bitsPerSample != bps_) {
-            throw std::runtime_error("Non uniform volume slices. Slice: " +
-                                     std::to_string(i) +
-                                     " has dimensions: " +
-                                     std::to_string(img.width) +
-                                     "x" +
-                                     std::to_string(img.height) +
-                                     "x" +
-                                     std::to_string(img.bitsPerSample) +
-                                     " but expected: " +
-                                     std::to_string(width_) +
-                                     "x" +
-                                     std::to_string(height_) +
-                                     "x" +
-                                     std::to_string(bps_));
+            throw std::runtime_error(
+                "Unsupported TIFF image format. Non uniform volume slices in " + filename + ".\n"
+                "Slice " + std::to_string(i) + " has dimensions " +
+                std::to_string(img.width) + "x" + std::to_string(img.height) + "x" + std::to_string(img.bitsPerSample) +
+                " but expected dimensions is " +
+                std::to_string(width_) + "x" + std::to_string(height_) + "x" + std::to_string(bps_));
         }
 
         memcpy(dp, img.data, width_*height_*(bps_/8));
