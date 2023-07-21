@@ -253,13 +253,14 @@ void Camera::loadMayaCam1(const std::string& mayacam)
     std::cout << "Reading MayaCam 2.0 file: " << mayacam << std::endl;
 
     // camera matrix
-    double K[3][3];
+    double K[3][3] = {0.};
 
     // rotation
-    double rotation[3][3];
+    double rotation[3][3] = {0.};
 
     // translation
-    double translation[3];
+    double translation[3] = {0.};
+    int translation_read_count = 0;
 
 
     std::fstream file(mayacam.c_str(), std::ios::in);
@@ -273,37 +274,57 @@ void Camera::loadMayaCam1(const std::string& mayacam)
         default:
           break;
         case 1: //size
+        {
+          int read_count = 0;
           for (int j = 0; j < 2 && getline(csv_line_stream, csv_val, ','); ++j) {
             std::istringstream csv_val_stream(csv_val);
             if (!(csv_val_stream >> size_[j])) {
-              throw std::runtime_error(
-                    mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'image size' values."));
+              break;
             }
+            ++read_count;
+          }
+          if (read_count != 2) {
+            throw std::runtime_error(
+                  mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'image size' values."));
           }
           break;
+        }
         case 4: //K
         case 5:
         case 6:
+        {
+          int read_count = 0;
           for (int j = 0; j < 3 && getline(csv_line_stream, csv_val, ','); ++j) {
             std::istringstream csv_val_stream(csv_val);
             if (!(csv_val_stream >> K[j][i - 4])) {
-              throw std::runtime_error(
-                    mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'camera matrix' values."));
+              break;
             }
+            ++read_count;
+          }
+          if (read_count != 3) {
+            throw std::runtime_error(
+                  mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'camera matrix' values."));
           }
           break;
-
+        }
         case 9: //R
         case 10:
         case 11:
+        {
+          int read_count = 0;
           for (int j = 0; j < 3 && getline(csv_line_stream, csv_val, ','); ++j) {
             std::istringstream csv_val_stream(csv_val);
             if (!(csv_val_stream >> rotation[j][i - 9])) {
-              throw std::runtime_error(
-                    mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'rotation' values."));
+              break;
             }
+            ++read_count;
+          }
+          if (read_count != 3) {
+            throw std::runtime_error(
+                  mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'rotation' values."));
           }
           break;
+        }
         case 14: //t
         case 15:
         case 16:
@@ -311,12 +332,17 @@ void Camera::loadMayaCam1(const std::string& mayacam)
             throw std::runtime_error(
                   mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'translation' values."));
             }
-
+          ++translation_read_count;
           break;
 
       }
     }
     file.close();
+
+    if (translation_read_count != 3) {
+      throw std::runtime_error(
+            mayaCamReadingError("2", /* line= */ 14 + 1, mayacam, "There was an error reading 'translation' values."));
+    }
 
     //invert y - axis
     translation[0] = -translation[0];
