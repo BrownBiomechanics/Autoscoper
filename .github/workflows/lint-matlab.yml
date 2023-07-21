@@ -1,0 +1,43 @@
+name: lint-matlab
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+    - "scripts/matlab/**"
+  push:
+    branches:
+      - main
+    paths:
+    - "scripts/matlab/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-matlab:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+
+    - name: Install dependencies
+      run: |
+        pip install miss_hit
+
+    - name: Generate config
+      run: |
+        cat <<EOF > scripts/matlab/miss_hit.cfg
+        tab_width: 4
+        line_length: 400
+
+        suppress_rule: "copyright_notice"
+        suppress_rule: "naming_classes"
+        suppress_rule: "naming_functions"
+        suppress_rule: "naming_parameters"
+        EOF
+
+    - name: Check
+      run: |
+        mh_style scripts/matlab/
