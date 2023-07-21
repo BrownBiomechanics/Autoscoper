@@ -160,7 +160,6 @@ namespace xromm
     volumestransform.clear();
     for (unsigned int i = 0; i < volumeFiles.size(); ++i) {
 
-      try {
         Volume volume(volumeFiles[i]);
 
         int flip_x = 0, flip_y = 0, flip_z = 0;
@@ -184,25 +183,16 @@ namespace xromm
         volumes.push_back(volume);
         volumestransform.push_back(VolumeTransform());
         num_volumes++;
-      }
-      catch (std::exception& e) {
-        throw e;
-      }
     }
 
     int maxVideoFrames = 0;
     videos.clear();
     for (unsigned int i = 0; i < camRootDirs.size(); ++i) {
-      try {
         Video video(camRootDirs[i]);
         if (video.num_frames() > maxVideoFrames) {
           maxVideoFrames = video.num_frames();
         }
         videos.push_back(video);
-      }
-      catch (std::exception& e) {
-        std::cerr << e.what() << std::endl;
-      }
     }
 
     // Read in the offsets, otherwise default to 0.1

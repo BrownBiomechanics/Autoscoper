@@ -95,7 +95,7 @@ namespace xromm
 
     // Check if we found any files
     if (filenames_.size() == 0) {
-        throw std::runtime_error("No tif files found in directory: " + dirname_);
+        throw std::runtime_error("No TIFF files found in directory: " + dirname_);
     }
 
     // Sort the filenames and load the first frame
