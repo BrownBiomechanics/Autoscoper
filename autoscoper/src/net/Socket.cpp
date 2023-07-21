@@ -96,9 +96,9 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       }
       else {
           std::cerr << "load trial " << filename.c_str() << std::endl;
-          m_mainwindow->openTrial(QString(filename.c_str()));
+          bool success = m_mainwindow->openTrial(QString(filename.c_str()));
 
-          connection->write(QByteArray(1, 1));
+          connection->write(QByteArray(1, success ? 1 : 0));
       }
     }
     break;
