@@ -54,6 +54,14 @@
 
 namespace xromm
 {
+  std::string trialReadingError(const std::string& filename, const std::string& message)
+  {
+    return std::string("Invalid trial configuration file. ") + message + "\n"
+          "See " + filename + ".\n"
+          "\n"
+          "Please check the trial configuration specification.\n"
+          "See https://autoscoper.readthedocs.io/en/latest/file-specifications/config.html";
+  }
 
   Trial::Trial(const std::string& filename)
     : cameras(), videos(), volumes(), frame(0), num_frames(0), guess(0), current_volume(0), num_volumes(0)
@@ -121,16 +129,24 @@ namespace xromm
 
     // Check that this is a valid trial
     if (mayaCams.size() < 1) {
-      throw std::runtime_error("There must be at least one mayacam files.");
+      throw std::runtime_error(
+            trialReadingError(filename, "There must be at least one mayacam files."));
     }
     if (mayaCams.size() != camRootDirs.size()) {
-      throw std::runtime_error("The number of cameras and videos must match. Found " + mayaCams.size() + " cameras and " + camRootDirs.size() + " videos.");
+      throw std::runtime_error(
+            trialReadingError(filename, std::string("The number of cameras and videos must match.\n") +
+                        "Found " + std::to_string(mayaCams.size()) + " cameras "
+                        "and " + std::to_string(camRootDirs.size()) + " videos."));
     }
     if (volumeFiles.size() < 1) {
-      throw std::runtime_error("There must be at least one volume file.");
+      throw std::runtime_error(
+            trialReadingError(filename, "There must be at least one volume file."));
     }
     if (volumeFiles.size() != voxelSizes.size()) {
-      throw std::runtime_error("You must sepcify a voxels size for each volume. Found " + volumeFiles.size() + " volumes and " + voxelSizes.size() + " voxel sizes.");
+      throw std::runtime_error(
+            trialReadingError(filename, std::string("Each volume must be associated with its corresponding voxel sizes.\n") +
+                               "Found " + std::to_string(volumeFiles.size()) + " volumes "
+                               "and " + std::to_string(voxelSizes.size()) + " voxel sizes."));
     }
 
     cameras.clear();

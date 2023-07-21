@@ -91,7 +91,14 @@ namespace xromm
     }
   }
 
-
+  std::string mayaCamReadingError(const std::string& version, int line, const std::string& filename, const std::string& message)
+  {
+    return std::string("Invalid MayaCam ") + version + ".0 file. " + message + "\n"
+          "See line " + std::to_string(line) + " in " + filename + ".\n"
+          "\n"
+          "Please check the MayaCam " + version + ".0 specification.\n"
+          "See https://autoscoper.readthedocs.io/en/latest/file-specifications/camera-calibration.html#mayacam-" + version + "-0";
+  }
 
 Camera::Camera(const std::string& mayacam) : mayacam_(mayacam)
 {
@@ -127,7 +134,8 @@ void Camera::loadMayaCam1(const std::string& mayacam)
       for (int j = 0; j < 3 && getline(csv_line_stream, csv_val, ','); ++j) {
         std::istringstream csv_val_stream(csv_val);
         if (!(csv_val_stream >> csv_vals[i][j])) {
-          throw std::runtime_error("Invalid MayaCam file! Please check the mayacam 1.0 specification. https://autoscoper.readthedocs.io/en/latest/file-specifications/camera-calibration.html#mayacam-1-0");
+          throw std::runtime_error(
+                mayaCamReadingError("1", /* line= */ i + 1, mayacam, "There was an error reading values."));
         }
       }
     }
@@ -240,9 +248,13 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 
   void Camera::loadMayaCam2(const std::string& mayacam)
   {
+    // camera matrix
     double K[3][3];
 
+    // rotation
     double rotation[3][3];
+
+    // translation
     double translation[3];
 
 
@@ -260,7 +272,8 @@ void Camera::loadMayaCam1(const std::string& mayacam)
           for (int j = 0; j < 2 && getline(csv_line_stream, csv_val, ','); ++j) {
             std::istringstream csv_val_stream(csv_val);
             if (!(csv_val_stream >> size_[j])) {
-              throw std::runtime_error("Invalid MayaCam file! (size)");
+              throw std::runtime_error(
+                    mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'image size' values."));
             }
           }
           break;
@@ -270,7 +283,8 @@ void Camera::loadMayaCam1(const std::string& mayacam)
           for (int j = 0; j < 3 && getline(csv_line_stream, csv_val, ','); ++j) {
             std::istringstream csv_val_stream(csv_val);
             if (!(csv_val_stream >> K[j][i - 4])) {
-              throw std::runtime_error("Invalid MayaCam file! (K)");
+              throw std::runtime_error(
+                    mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'camera matrix' values."));
             }
           }
           break;
@@ -281,7 +295,8 @@ void Camera::loadMayaCam1(const std::string& mayacam)
           for (int j = 0; j < 3 && getline(csv_line_stream, csv_val, ','); ++j) {
             std::istringstream csv_val_stream(csv_val);
             if (!(csv_val_stream >> rotation[j][i - 9])) {
-              throw std::runtime_error("Invalid MayaCam file! (R)");
+              throw std::runtime_error(
+                    mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'rotation' values."));
             }
           }
           break;
@@ -289,7 +304,8 @@ void Camera::loadMayaCam1(const std::string& mayacam)
         case 15:
         case 16:
           if (!(csv_line_stream >> translation[i - 14])) {
-              throw std::runtime_error("Invalid MayaCam file! (t)");
+            throw std::runtime_error(
+                  mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'translation' values."));
             }
 
           break;
