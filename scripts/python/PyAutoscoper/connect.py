@@ -1,9 +1,8 @@
 import os
 import socket
 import struct
-from packaging.version import Version, parse as parse_version
 
-EXPECTED_SERVER_VERSION = Version("1.0.0")
+EXPECTED_SERVER_VERSION = 1
 
 
 class AutoscoperServerError(Exception):
@@ -127,10 +126,10 @@ class AutoscoperConnection:
 
         Called automatically upon init.
 
-        :raises AutoscoperServerVersionMismatch: If the server version is not compatible with the client version
+        :raises AutoscoperServerVersionMismatch: If the server version does not match the client version
         """
         response = self._send_command(0x10)  # 16
-        server_version = parse_version(response[1:].decode("utf-8"))  # version string formatted as "MAJOR.MINOR.PATCH"
+        server_version = struct.unpack("i", response[1:])[0]  # version string formatted as "NUMBER"
 
         if server_version != EXPECTED_SERVER_VERSION:
             raise AutoscoperServerVersionMismatch(server_version)
