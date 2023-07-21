@@ -129,19 +129,32 @@ void Camera::loadMayaCam1(const std::string& mayacam)
     std::cout << "Reading MayaCam 1.0 file: " << mayacam << std::endl;
 
     std::fstream file(mayacam.c_str(), std::ios::in);
-    double csv_vals[5][3];
+    double csv_vals[5][3] = {0.};
     std::string csv_line, csv_val;
+    int line_count = 0;
+
     for (int i = 0; i < 5 && safeGetline(file, csv_line); ++i) {
+      int read_count = 0;
       std::istringstream csv_line_stream(csv_line);
       for (int j = 0; j < 3 && getline(csv_line_stream, csv_val, ','); ++j) {
         std::istringstream csv_val_stream(csv_val);
         if (!(csv_val_stream >> csv_vals[i][j])) {
-          throw std::runtime_error(
-                mayaCamReadingError("1", /* line= */ i + 1, mayacam, "There was an error reading values."));
+          break;
         }
+        ++read_count;
       }
+      if (read_count != 3) {
+        throw std::runtime_error(
+              mayaCamReadingError("1", /* line= */ i + 1, mayacam, "There was an error reading values."));
+      }
+      ++line_count;
     }
     file.close();
+
+    if (line_count != 5) {
+      throw std::runtime_error(
+            mayaCamReadingError("1", /* line= */ 1, mayacam, "There was an error reading values."));
+    }
 
     // Line 1: Camera location in world space
     // Line 2: Rotations around the local x, y, and z axes of the camera. The
