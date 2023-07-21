@@ -126,6 +126,8 @@ Camera::Camera(const std::string& mayacam) : mayacam_(mayacam)
 
 void Camera::loadMayaCam1(const std::string& mayacam)
   {
+    std::cout << "Reading MayaCam 1.0 file: " << mayacam << std::endl;
+
     std::fstream file(mayacam.c_str(), std::ios::in);
     double csv_vals[5][3];
     std::string csv_line, csv_val;
@@ -248,6 +250,8 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 
   void Camera::loadMayaCam2(const std::string& mayacam)
   {
+    std::cout << "Reading MayaCam 2.0 file: " << mayacam << std::endl;
+
     // camera matrix
     double K[3][3];
 
