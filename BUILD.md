@@ -62,7 +62,7 @@ _These instructions are untested and maybe obsolete._
 
 1. Clone the [GitHub repository](https://github.com/BrownBiomechanics/Autoscoper)
 2. Install [Docker](https://www.docker.com/products/docker-desktop)
-3. If running Windows Subsystem for Linux (WSL), install [VcXsrv Windows X Server](https://sourceforge.net/projects/vcxsrv/) for GUI passthrough. 
+3. If running Windows Subsystem for Linux (WSL), install [VcXsrv Windows X Server](https://sourceforge.net/projects/vcxsrv/) for GUI passthrough.
 4. Open a terminal and navigate to the docker subfolder of the repository
 5. Run `docker build -t "autoscoper_dev_ubuntu:latest" -f ./UbuntuDockerFile .`
 6. Find your IP address (using `ipconfig` on Windows or `ifconfig` on Unix)

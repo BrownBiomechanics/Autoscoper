@@ -6,9 +6,9 @@ classdef AutoscoperConnection
     end
     methods
         function obj = AutoscoperConnection(address)
-            % Creates a connection to the Autoscoper 
+            % Creates a connection to the Autoscoper
             % supports single instance connection only
-           
+
             v_old = isMATLABReleaseOlderThan("R2022a");
             if v_old
                 obj.socket_descriptor = tcpip(obj.address, obj.port, 'NetworkRole', 'client');
@@ -34,7 +34,7 @@ classdef AutoscoperConnection
             % Loads a trial
             % path_to_cfg_file : full path to config (.cfg) file
             %   fail if incorrect filepath/ no file found
-            
+
             fwrite(obj.socket_descriptor, [1 path_to_cfg_file]);
             while obj.socket_descriptor.BytesAvailable == 0
                 pause(1)
@@ -55,7 +55,7 @@ classdef AutoscoperConnection
             % is_cm: 1 if the tracking data is in cm, 0 if it is in mm
             % is_rad: 1 if the tracking data is in radians, 0 if it is in degrees
             % interpY: 1 to interpolate(Spline), 0 to leave as is
-            
+
             if nargin < 3
                 error('Not enough input arguments')
             end
@@ -80,7 +80,7 @@ classdef AutoscoperConnection
             fwrite(obj.socket_descriptor, [2 typecast(int32(volNum),'uint8') typecast(int32(is_matrix),'uint8'),...
                 typecast(int32(is_rows),'uint8') typecast(int32(is_csv),'uint8') typecast(int32(is_cm),'uint8'),...
                 typecast(int32(is_rad),'uint8') typecast(int32(interpY),'uint8') tra_fileName]);
-            
+
             while obj.socket_descriptor.BytesAvailable == 0
                 pause(1)
             end
@@ -303,7 +303,7 @@ classdef AutoscoperConnection
             if nargin < 11
                 cf_model = 0;
             end
-            fwrite(obj.socket_descriptor, [11 typecast(int32(volNum),'uint8') typecast(int32(frameNum),'uint8') typecast(int32(repeats),'uint8') typecast(int32(max_itr),'uint8') typecast(double(min_lim),'uint8') typecast(double(max_lim),'uint8') typecast(int32(max_stall_itr),'uint8') typecast(int32(dframe),'uint8') typecast(int32(opt_method),'uint8') typecast(int32(cf_model),'uint8')]);    
+            fwrite(obj.socket_descriptor, [11 typecast(int32(volNum),'uint8') typecast(int32(frameNum),'uint8') typecast(int32(repeats),'uint8') typecast(int32(max_itr),'uint8') typecast(double(min_lim),'uint8') typecast(double(max_lim),'uint8') typecast(int32(max_stall_itr),'uint8') typecast(int32(dframe),'uint8') typecast(int32(opt_method),'uint8') typecast(int32(cf_model),'uint8')]);
             while obj.socket_descriptor.BytesAvailable == 0
                 pause(1)
             end
@@ -324,7 +324,7 @@ classdef AutoscoperConnection
             % Performs optimization on a range of frames
             % Only obj, volNum, startframe, and endframe are required
             % all other parameters are optional
-            
+
             %volNum: volume to be optimized over the designated range
             % startframe: the first frame to optimize
             % endframe: the last frame to optimize
@@ -378,7 +378,7 @@ classdef AutoscoperConnection
         function ncc_out = getNCC_Sum(obj,volNum,pose)
             % Gets the sum of the NCC for the given volNum and pose
 
-            % volNum: the volume number to get the NCC for 
+            % volNum: the volume number to get the NCC for
             % pose: the pose to get the NCC for
 
             if nargin < 3
@@ -400,7 +400,7 @@ classdef AutoscoperConnection
         function ncc_out = getNCC_This_Frame(obj,volNum,frameNum)
             % Gets the NCC for the given volNum and frame
 
-            % volNum: the volume number to get the NCC for 
+            % volNum: the volume number to get the NCC for
             % frame: the frame to get the NCC for
 
             if nargin < 3

@@ -25,7 +25,7 @@ Once downloaded, switch to the `AutoscoperM` module to begin tracking. This modu
 ## Launching Autoscoper and Loading Sample Data
 
 ```{warning}
-Launching Autoscoper for the first time on Windows may require you to allow the program to run. 
+Launching Autoscoper for the first time on Windows may require you to allow the program to run.
 ```
 
 Once the `AutoscoperM` module is open, click the `Launch Autoscoper` button to launch Autoscoper. This will open a new window with the `Autoscoper` interface. Once Autoscoper is open, you can load the sample data by clicking one of the buttons in the Sample Data section of the interface. The buttons are labeled `Load Wrist Data`, `Load Knee Data`, and `Load Ankle Data`.

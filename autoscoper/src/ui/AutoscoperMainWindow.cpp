@@ -164,7 +164,7 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
   ui->actionOpen_Sample_Wrist->setEnabled(true);
   ui->actionOpen_Sample_Knee->setEnabled(true);
   ui->actionOpen_Sample_Ankle->setEnabled(true);
-#endif 
+#endif
 }
 
 AutoscoperMainWindow::~AutoscoperMainWindow(){
