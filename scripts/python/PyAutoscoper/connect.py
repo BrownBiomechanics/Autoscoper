@@ -1,8 +1,23 @@
 import os
 import socket
 import struct
+from enum import Enum
 
 EXPECTED_SERVER_VERSION = 1
+
+
+class CostFunction(Enum):
+    """Enum for the different cost functions available in PyAutoscoper."""
+
+    NORMALIZED_CROSS_CORRELATION = 0
+    SUM_OF_ABSOLUTE_DIFFERENCES = 1
+
+
+class OptimizationMethod(Enum):
+    """Enum for the different optimization methods available in PyAutoscoper."""
+
+    PARTICAL_SWARM_OPTIMIZATION = 0
+    DOWNHILL_SIMPLEX = 1
 
 
 class AutoscoperServerError(Exception):
@@ -427,16 +442,18 @@ class AutoscoperConnection:
         :param dframe: The amount of frames to skip
         :type dframe: int
         :param opt_method: The optimization method to use, 0 for Particle Swarm, 1 for Downhill Simplex
-        :type opt_method: int
+        :type opt_method: int or OptimizationMethod
         :param cf_model: The cost function model to use, 0 for NCC (Bone Models), 1 for Sum of Absolute Differences (Implant Models)
-        :type cf_model: int
+        :type cf_model: int or CostFunction
         :raises AutoscoperServerError: If the server fails to optimize the frame
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
-        if opt_method not in [0, 1]:
-            raise Exception("Invalid optimization method")
-        if cf_model not in [0, 1]:
-            raise Exception("Invalid cost function model")
+        if not isinstance(cf_model, CostFunction):
+            cf_model = CostFunction(cf_model)
+
+        if not isinstance(opt_method, OptimizationMethod):
+            opt_method = OptimizationMethod(opt_method)
+
         if self.verbose:
             print(f"Optimizing volume {volume} on frame {frame}")
         self._send_command(
