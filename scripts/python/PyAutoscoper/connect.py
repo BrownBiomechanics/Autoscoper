@@ -445,8 +445,10 @@ class AutoscoperConnection:
         :type opt_method: int or OptimizationMethod
         :param cf_model: The cost function model to use, 0 for NCC (Bone Models), 1 for Sum of Absolute Differences (Implant Models)
         :type cf_model: int or CostFunction
+
         :raises AutoscoperServerError: If the server fails to optimize the frame
         :raises AutoscoperConnectionError: If the connection to the server is lost
+        :raises ValueError: If parameters accepting an enum value are incorrectly specified.
         """
         if not isinstance(cf_model, CostFunction):
             cf_model = CostFunction(cf_model)
@@ -532,11 +534,13 @@ class AutoscoperConnection:
         :param max_stall_itr: The maximum number of iterations to stall
         :type max_stall_itr: int
         :param opt_method: The optimization method to use, 0 for Particle Swarm, 1 for Downhill Simplex
-        :type opt_method: int
+        :type opt_method: int or OptimizationMethod
         :param cf_model: The cost function model to use, 0 for NCC (Bone Models), 1 for Sum of Absolute Differences (Implant Models)
-        :type cf_model: int
+        :type cf_model: int or CostFunction
+
         :raises AutoscoperServerError: If the server fails to track the volume
         :raises AutoscoperConnectionError: If the connection to the server is lost
+        :raises ValueError: If parameters accepting an enum value are incorrectly specified.
         """
         if self.verbose:
             print(f"Automated tracking of volume {volume} from frame {start_frame} to {end_frame}.\n")
