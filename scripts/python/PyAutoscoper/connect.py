@@ -505,8 +505,8 @@ class AutoscoperConnection:
         min_lim=-3.0,
         max_lim=3.0,
         max_stall_itr=25,
-        opt_method=0,
-        cf_model=0,
+        opt_method=OptimizationMethod.PARTICAL_SWARM_OPTIMIZATION,
+        cf_model=CostFunction.NORMALIZED_CROSS_CORRELATION,
     ):
         """
         Automatically tracks the volume accross the given frames.
