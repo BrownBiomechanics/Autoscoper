@@ -20,4 +20,7 @@
         <file>resource-files/icons/star_gold.png</file>
         <file alias="app_icon">resource-files/icons/Autoscoper_App_Icon.png</file>
     </qresource>
+    <qresource prefix="/logo">
+        <file alias="autoscoper-256x256.png">resource-files/logo/autoscoper-256x256.png</file>
+    </qresource>
 </RCC>
