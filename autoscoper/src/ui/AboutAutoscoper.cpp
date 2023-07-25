@@ -41,13 +41,40 @@
 
 #include "ui/AboutAutoscoper.h"
 #include "ui_AboutAutoscoper.h"
-#include "ui/AutoscoperMainWindow.h"
+
+#include <QTextBrowser>
 
 AboutAutoscoper::AboutAutoscoper(QWidget *parent) :
                 QDialog(parent),
                 about(new Ui::AboutAutoscoper) {
 
   about->setupUi(this);
+
+  // Logo (left side)
+  about->LogoLabel->setPixmap(QPixmap(":/logo/autoscoper-256x256.png"));
+
+  // Description (right side)
+  QTextBrowser* textBrowser = about->descriptionTextBrowser;
+  textBrowser->setFontPointSize(25);
+  textBrowser->append("Autoscoper");
+  textBrowser->setFontPointSize(11);
+  textBrowser->append("");
+  QString versionString = QString("v%1.%2").arg("2", "8");
+  textBrowser->append(versionString);
+  textBrowser->append("");
+  textBrowser->moveCursor(QTextCursor::Start, QTextCursor::MoveAnchor);
+
+  // Links (bottom)
+  textBrowser = about->linksTextBrowser;
+  textBrowser->insertHtml(QString(
+    "<table align=\"center\" border=\"0\" width=\"80%\">"
+    "  <tr>"
+    "    <td align=\"center\"><a href=\"https://autoscoper.readthedocs.io/en/latest/about.html#license\">Licensing Information</a></td>"
+    "    <td align=\"center\"><a href=\"https://autoscoper.readthedocs.io/\">Website</a></td>"
+    "  </tr>"
+    "</table>"));
+
+  connect(about->ButtonBox, SIGNAL(rejected()), this, SLOT(close()));
 }
 
 AboutAutoscoper::~AboutAutoscoper() {
