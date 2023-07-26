@@ -1,6 +1,10 @@
 NUM_CAMERAS = 2
 # [Example 1 - Start]
-from PyAutoscoper.connect import AutoscoperConnection
+from PyAutoscoper.connect import (
+    AutoscoperConnection,
+    OptimizationMethod,
+    CostFunction,
+)
 
 autoscoperSocket = AutoscoperConnection()
 autoscoperSocket.is_connected()
@@ -42,8 +46,8 @@ autoscoperSocket.optimizeFrame(
     max_lim=1.0,
     max_stall_itr=10,
     dframe=1,
-    opt_method=0,
-    cf_model=0,
+    opt_method=OptimizationMethod.PARTICAL_SWARM_OPTIMIZATION,
+    cf_model=CostFunction.NORMALIZED_CROSS_CORRELATION,
 )
 # [Example 5 - End]
 
@@ -53,7 +57,11 @@ autoscoperSocket.trackingDialog(volume=0, start_frame=0, end_frame=10)
 
 # [Example 6 - Start]
 import random as rand
-from PyAutoscoper.connect import AutoscoperConnection
+from PyAutoscoper.connect import (
+    AutoscoperConnection,
+    OptimizationMethod,
+    CostFunction,
+)
 
 # Create a socket connection to Autoscoper
 autoscoperSocket = AutoscoperConnection()
@@ -87,8 +95,8 @@ for volume in range(3):
             max_lim=1.0,
             max_stall_itr=10,
             dframe=1,
-            opt_method=0,
-            cf_model=0,
+            opt_method=OptimizationMethod.PARTICAL_SWARM_OPTIMIZATION,
+            cf_model=CostFunction.NORMALIZED_CROSS_CORRELATION,
         )
 
     autoscoperSocket.saveTracking(volume, f"path/to/tracking_data_volume_{volume}_out.tra")
