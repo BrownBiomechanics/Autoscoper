@@ -16,7 +16,7 @@ class CostFunction(Enum):
 class OptimizationMethod(Enum):
     """Enum for the different optimization methods available in PyAutoscoper."""
 
-    PARTICAL_SWARM_OPTIMIZATION = 0
+    PARTICLE_SWARM_OPTIMIZATION = 0
     DOWNHILL_SIMPLEX = 1
 
 
@@ -507,7 +507,7 @@ class AutoscoperConnection:
         min_lim=-3.0,
         max_lim=3.0,
         max_stall_itr=25,
-        opt_method=OptimizationMethod.PARTICAL_SWARM_OPTIMIZATION,
+        opt_method=OptimizationMethod.PARTICLE_SWARM_OPTIMIZATION,
         cf_model=CostFunction.NORMALIZED_CROSS_CORRELATION,
     ):
         """

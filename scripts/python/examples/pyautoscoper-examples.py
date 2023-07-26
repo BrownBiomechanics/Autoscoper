@@ -46,7 +46,7 @@ autoscoperSocket.optimizeFrame(
     max_lim=1.0,
     max_stall_itr=10,
     dframe=1,
-    opt_method=OptimizationMethod.PARTICAL_SWARM_OPTIMIZATION,
+    opt_method=OptimizationMethod.PARTICLE_SWARM_OPTIMIZATION,
     cf_model=CostFunction.NORMALIZED_CROSS_CORRELATION,
 )
 # [Example 5 - End]
@@ -95,7 +95,7 @@ for volume in range(3):
             max_lim=1.0,
             max_stall_itr=10,
             dframe=1,
-            opt_method=OptimizationMethod.PARTICAL_SWARM_OPTIMIZATION,
+            opt_method=OptimizationMethod.PARTICLE_SWARM_OPTIMIZATION,
             cf_model=CostFunction.NORMALIZED_CROSS_CORRELATION,
         )
 

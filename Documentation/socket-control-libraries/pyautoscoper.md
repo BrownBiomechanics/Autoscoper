@@ -144,7 +144,7 @@ The `trackingDialog` method takes at least three arguments:
 * `min_lim`: The minimum limit for the PSO movement. Defaults to -3.0.
 * `max_lim`: The maximum limit for the PSO movement. Defaults to 3.0.
 * `max_stall_itr`: The maximum number of iterations to stall the optimization. Defaults to 25.
-* `opt_method`: The {const}`~PyAutoscoper.connect.OptimizationMethod` to use. Defaults to {const}`~PyAutoscoper.connect.OptimizationMethod.PARTICAL_SWARM_OPTIMIZATION`.
+* `opt_method`: The {const}`~PyAutoscoper.connect.OptimizationMethod` to use. Defaults to {const}`~PyAutoscoper.connect.OptimizationMethod.PARTICLE_SWARM_OPTIMIZATION`.
 * `cf_model` : The {const}`~PyAutoscoper.connect.CostFunction` to use for evaluating the optimization. Defaults to {const}`~PyAutoscoper.connect.CostFunction.NORMALIZED_CROSS_CORRELATION`.
 
 ```{literalinclude} ../../scripts/python/examples/pyautoscoper-examples.py
