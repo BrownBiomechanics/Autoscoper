@@ -124,8 +124,8 @@ The `optimizeFrame` method takes ten arguments:
 * `max_lim`: The maximum limit for the PSO movement.
 * `max_stall_itr`: The maximum number of iterations to stall the optimization.
 * `dframe`: The amount of frames to skip backwards for the initial guess.
-* `opt_method`: The optimization method to use, 0 for Particle Swarm, 1 for Downhill Simplex.
-* `cf_model`: The cost function to use, 0 for NCC (Bone Models), 1 for Sum of Absolute Differences (Implant Models)
+* `opt_method`: The {const}`~PyAutoscoper.connect.OptimizationMethod` to use.
+* `cf_model` : The {const}`~PyAutoscoper.connect.CostFunction` to use for evaluating the optimization.
 
 ```{literalinclude} ../../scripts/python/examples/pyautoscoper-examples.py
 :language: python
@@ -144,8 +144,8 @@ The `trackingDialog` method takes at least three arguments:
 * `min_lim`: The minimum limit for the PSO movement. Defaults to -3.0.
 * `max_lim`: The maximum limit for the PSO movement. Defaults to 3.0.
 * `max_stall_itr`: The maximum number of iterations to stall the optimization. Defaults to 25.
-* `opt_method`: The optimization method to use, 0 for Particle Swarm, 1 for Downhill Simplex. Defaults to 0.
-* `cf_model`: The cost function to use, 0 for NCC (Bone Models), 1 for Sum of Absolute Differences (Implant Models). Defaults to 0.
+* `opt_method`: The {const}`~PyAutoscoper.connect.OptimizationMethod` to use. Defaults to {const}`~PyAutoscoper.connect.OptimizationMethod.PARTICAL_SWARM_OPTIMIZATION`.
+* `cf_model` : The {const}`~PyAutoscoper.connect.CostFunction` to use for evaluating the optimization. Defaults to {const}`~PyAutoscoper.connect.CostFunction.NORMALIZED_CROSS_CORRELATION`.
 
 ```{literalinclude} ../../scripts/python/examples/pyautoscoper-examples.py
 :language: python
