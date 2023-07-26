@@ -441,10 +441,10 @@ class AutoscoperConnection:
         :type max_stall_itr: int
         :param dframe: The amount of frames to skip
         :type dframe: int
-        :param opt_method: The optimization method to use, 0 for Particle Swarm, 1 for Downhill Simplex
-        :type opt_method: int or OptimizationMethod
-        :param cf_model: The cost function model to use, 0 for NCC (Bone Models), 1 for Sum of Absolute Differences (Implant Models)
-        :type cf_model: int or CostFunction
+        :param opt_method: The optimization method to use.
+        :type opt_method: int or :const:`~OptimizationMethod`
+        :param cf_model: The cost function to use. :const:`~CostFunction.NORMALIZED_CROSS_CORRELATION` for Bone Models,  :const:`~CostFunction.SUM_OF_ABSOLUTE_DIFFERENCES` for Implant Models.
+        :type cf_model: int or :const:`~CostFunction`
 
         :raises AutoscoperServerError: If the server fails to optimize the frame
         :raises AutoscoperConnectionError: If the connection to the server is lost
@@ -533,10 +533,10 @@ class AutoscoperConnection:
         :type max_lim: float
         :param max_stall_itr: The maximum number of iterations to stall
         :type max_stall_itr: int
-        :param opt_method: The optimization method to use, 0 for Particle Swarm, 1 for Downhill Simplex
-        :type opt_method: int or OptimizationMethod
-        :param cf_model: The cost function model to use, 0 for NCC (Bone Models), 1 for Sum of Absolute Differences (Implant Models)
-        :type cf_model: int or CostFunction
+        :param opt_method: The optimization method to use.
+        :type opt_method: int or :const:`~OptimizationMethod`
+        :param cf_model: The cost function to use. :const:`~CostFunction.NORMALIZED_CROSS_CORRELATION` for Bone Models,  :const:`~CostFunction.SUM_OF_ABSOLUTE_DIFFERENCES` for Implant Models.
+        :type cf_model: int or :const:`~CostFunction`
 
         :raises AutoscoperServerError: If the server fails to track the volume
         :raises AutoscoperConnectionError: If the connection to the server is lost
