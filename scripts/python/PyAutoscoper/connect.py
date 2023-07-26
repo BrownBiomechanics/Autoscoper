@@ -557,9 +557,9 @@ class AutoscoperConnection:
                 min_lim=min_lim,
                 max_lim=max_lim,
                 max_stall_itr=max_stall_itr,
+                dframe=frame_skip,
                 opt_method=opt_method,
                 cf_model=cf_model,
-                dframe=frame_skip,
             )
 
     def getNumVolumes(self):
