@@ -70,7 +70,6 @@ namespace xromm
       return;
     }
 
-    // Load the config file.
     std::ifstream file(filename.c_str());
     if (file.is_open() == false) {
       throw std::runtime_error("File not found: " + filename);
@@ -83,6 +82,43 @@ namespace xromm
     std::vector<std::string> volumeFlips;
     std::vector<std::string> renderResolution;
     std::vector<std::string> optimizationOffsets;
+
+    parse(file,
+          mayaCams,
+          camRootDirs,
+          volumeFiles,
+          voxelSizes,
+          volumeFlips,
+          renderResolution,
+          optimizationOffsets);
+
+    file.close();
+
+    validate(mayaCams,
+             camRootDirs,
+             volumeFiles,
+             voxelSizes,
+             filename);
+
+    loadCameras(mayaCams);
+
+    loadVolumes(volumeFiles, voxelSizes, volumeFlips);
+
+    loadVideos(camRootDirs);
+
+    loadOffsets(optimizationOffsets);
+
+    loadRenderResolution(renderResolution);
+  }
+
+  void Trial::parse(std::ifstream& file,
+                    std::vector<std::string>& mayaCams,
+                    std::vector<std::string>& camRootDirs,
+                    std::vector<std::string>& volumeFiles,
+                    std::vector<std::string>& voxelSizes,
+                    std::vector<std::string>& volumeFlips,
+                    std::vector<std::string>& renderResolution,
+                    std::vector<std::string>& optimizationOffsets) {
 
     std::string line, key, value;
     while (std::getline(file, line)) {
@@ -123,10 +159,13 @@ namespace xromm
         optimizationOffsets.push_back(value);
       }
     }
+  }
 
-    // Close the file.
-    file.close();
-
+  void  Trial::validate(const std::vector<std::string>& mayaCams,
+                        const std::vector<std::string>& camRootDirs,
+                        const std::vector<std::string>& volumeFiles,
+                        const std::vector<std::string>& voxelSizes,
+                        const std::string& filename) {
     // Check that this is a valid trial
     if (mayaCams.size() < 1) {
       throw std::runtime_error(
@@ -148,13 +187,19 @@ namespace xromm
                                "Found " + std::to_string(volumeFiles.size()) + " volumes "
                                "and " + std::to_string(voxelSizes.size()) + " voxel sizes."));
     }
+  }
 
+  void Trial::loadCameras(std::vector<std::string>& mayaCams) {
     cameras.clear();
     for (unsigned int i = 0; i < mayaCams.size(); ++i) {
         Camera camera(mayaCams[i]);
         cameras.push_back(camera);
     }
+  }
 
+  void Trial::loadVolumes(std::vector<std::string>& volumeFiles,
+                          std::vector<std::string>& voxelSizes,
+                          std::vector<std::string>& volumeFlips) {
     // First load the volumes as more continous memory is required than for the videos.
     volumes.clear();
     volumestransform.clear();
@@ -184,7 +229,9 @@ namespace xromm
         volumestransform.push_back(VolumeTransform());
         num_volumes++;
     }
+  }
 
+  void Trial::loadVideos(std::vector<std::string>& camRootDirs) {
     int maxVideoFrames = 0;
     videos.clear();
     for (unsigned int i = 0; i < camRootDirs.size(); ++i) {
@@ -195,6 +242,11 @@ namespace xromm
         videos.push_back(video);
     }
 
+    // Initialize the coordinate frames
+    num_frames = maxVideoFrames;
+  }
+
+  void Trial::loadOffsets(std::vector<std::string>& optimizationOffsets) {
     // Read in the offsets, otherwise default to 0.1
     offsets[0] = 0.1; offsets[1] = 0.1; offsets[2] = 0.1;
     offsets[3] = 0.1; offsets[4] = 0.1; offsets[5] = 0.1;
@@ -203,7 +255,9 @@ namespace xromm
       offset_stream >> offsets[0] >> offsets[1] >> offsets[2] >>
         offsets[3] >> offsets[4] >> offsets[5];
     }
+  }
 
+  void Trial::loadRenderResolution(std::vector<std::string>& renderResolution) {
     // Read in the rendering dimensions, default to 512
     render_width = 512;
     render_height = 512;
@@ -211,9 +265,6 @@ namespace xromm
       std::stringstream resolution_stream(renderResolution.back());
       resolution_stream >> render_width >> render_height;
     }
-
-    // Initialize the coordinate frames
-    num_frames = maxVideoFrames;
   }
 
   void Trial::save(const std::string& filename)
