@@ -12,6 +12,27 @@ addpath /path/to/autoscoper/scripts/matlab
 
 ## Usage
 
+### Enumerated Types
+
+The MATLAB TCP client uses enumerated types to represent the different optimization methods, cost functions, and initial frame heuristics. These enumerated types are defined in there respective files:
+
+* `OptimizationMethod.m`
+* `CostFunction.m`
+* `OptimizationInitializationHeuristic.m`
+
+The following table lists the different enumerated types and their corresponding values:
+
+| Enumerated Type | Value | Integer Value |
+| --------------- | ----- | ------------- |
+| `OptimizationMethod` | `OptimizationMethod.PARTICLE_SWARM_OPTIMIZATION` | 0 |
+| `OptimizationMethod` | `OptimizationMethod.DOWNHILL_SIMPLEX` | 1 |
+| `CostFunction` | `CostFunction.NORMALIZED_CROSS_CORRELATION` | 0 |
+| `CostFunction` | `CostFunction.SUM_OF_ABSOLUTE_DIFFERENCES` | 1 |
+| `OptimizationInitializationHeuristic` | `OptimizationInitializationHeuristic.CURRENT_FRAME` | 0 |
+| `OptimizationInitializationHeuristic` | `OptimizationInitializationHeuristic.PREVIOUS_FRAME` | 1 |
+| `OptimizationInitializationHeuristic` | `OptimizationInitializationHeuristic.LINEAR_EXTRAPOLATION` | 2 |
+| `OptimizationInitializationHeuristic` | `OptimizationInitializationHeuristic.SPLINE_INTERPOLATION` | 3 |
+
 ### Establishing a Connection
 
 The MATLAB TCP client is a class based implementation. So the first step is to create an instance of the `AutoscoperConnection` class. This can be done by running the following command in the MATLAB command window:
@@ -224,9 +245,9 @@ All of these arguments are optional and have default values. The default values 
 | max_lim | 3.0 | Maximum limit for the Partial Swarm Optimization to move the volume |
 | max_stall_itr | 25 | Maximum number of iterations to run the optimization without improvement. |
 | dframe | 1 | The amount of frames to skip over. |
-| opt_method | 0 | The optimization method to use. 0 is Partial Swarm Optimization and 1 is Downhill Simplex. |
-| cf_model | 0 | The cost function model to use. 0 is NCC and 1 is Sum of Absolute Differences. |
-| opt_init_heuristic | 1 | The heuristic used to initialize the optimization, 0 for current frame, 1 for previous frame, 2 linear extrapolation, 3 for spline interpolation. |
+| opt_method | PARTIAL_SWARM_OPTIMIZATION | The optimization method to use. See the [](./matlab.md#enumerated-types) table for a list of all optimization methods. |
+| cf_model | NORMALIZED_CROSS_CORRELATION | The cost function model to use. See the [](./matlab.md#enumerated-types) table for a list of all cost function models. |
+| opt_init_heuristic | PREVIOUS_FRAME | The heuristic to use to initialize the optimization. See the [](./matlab.md#enumerated-types) table for a list of all optimization initialization heuristics. |
 
 ### Tracking Dialog
 
