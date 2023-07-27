@@ -998,10 +998,10 @@ void AutoscoperMainWindow::load_tracking_results(QString filename, bool save_as_
 
   double m[16];
   std::string line, value;
-  for (int i = 0; i < tracker->trial()->num_frames && getline(file, line); ++i) {
+  for (int i = 0; i < tracker->trial()->num_frames && std::getline(file, line); ++i) {
     std::istringstream lineStream(line);
     for (int k = start; k < stop; k++){
-      for (int j = 0; j < (save_as_matrix ? 16 : 6) && getline(lineStream, value, s); ++j) {
+      for (int j = 0; j < (save_as_matrix ? 16 : 6) && std::getline(lineStream, value, s); ++j) {
         std::istringstream valStream(value);
         valStream >> m[j];
       }

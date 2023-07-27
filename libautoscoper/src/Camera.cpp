@@ -136,7 +136,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
     for (int i = 0; i < 5 && safeGetline(file, csv_line); ++i) {
       int read_count = 0;
       std::istringstream csv_line_stream(csv_line);
-      for (int j = 0; j < 3 && getline(csv_line_stream, csv_val, ','); ++j) {
+      for (int j = 0; j < 3 && std::getline(csv_line_stream, csv_val, ','); ++j) {
         std::istringstream csv_val_stream(csv_val);
         if (!(csv_val_stream >> csv_vals[i][j])) {
           break;
@@ -289,7 +289,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
         case 1: //size
         {
           int read_count = 0;
-          for (int j = 0; j < 2 && getline(csv_line_stream, csv_val, ','); ++j) {
+          for (int j = 0; j < 2 && std::getline(csv_line_stream, csv_val, ','); ++j) {
             std::istringstream csv_val_stream(csv_val);
             if (!(csv_val_stream >> size_[j])) {
               break;
@@ -307,7 +307,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
         case 6:
         {
           int read_count = 0;
-          for (int j = 0; j < 3 && getline(csv_line_stream, csv_val, ','); ++j) {
+          for (int j = 0; j < 3 && std::getline(csv_line_stream, csv_val, ','); ++j) {
             std::istringstream csv_val_stream(csv_val);
             if (!(csv_val_stream >> K[j][i - 4])) {
               break;
@@ -325,7 +325,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
         case 11:
         {
           int read_count = 0;
-          for (int j = 0; j < 3 && getline(csv_line_stream, csv_val, ','); ++j) {
+          for (int j = 0; j < 3 && std::getline(csv_line_stream, csv_val, ','); ++j) {
             std::istringstream csv_val_stream(csv_val);
             if (!(csv_val_stream >> rotation[j][i - 9])) {
               break;
