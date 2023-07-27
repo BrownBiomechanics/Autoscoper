@@ -1769,8 +1769,6 @@ void AutoscoperMainWindow::on_actionPaste_triggered(bool checked){
 }
 
 void AutoscoperMainWindow::on_actionDelete_triggered(bool checked) {
-
-
   // Old Method
   /*if (!timeline_widget->getSelectedNodes()->empty()) {
     push_state();
@@ -1791,6 +1789,10 @@ void AutoscoperMainWindow::on_actionDelete_triggered(bool checked) {
     redrawGL();
 
   }*/
+
+  if (timeline_widget->getSelectedNodes()->empty()) {
+    return; // If there are no nodes to be deleted, exit the method
+  }
 
   // Bardiya's Circumvention for Deleting
   // Insert Key First
