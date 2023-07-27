@@ -94,6 +94,36 @@ public:
   KeyCurve * getRollCurve(int volumeID);
 
   CoordFrame * getVolumeMatrix(int volumeID); // Pivot
+
+private:
+
+
+    void parse(std::ifstream& file,
+               std::vector<std::string>& mayaCams,
+               std::vector<std::string>& camRootDirs,
+               std::vector<std::string>& volumeFiles,
+               std::vector<std::string>& voxelSizes,
+               std::vector<std::string>& volumeFlips,
+               std::vector<std::string>& renderResolution,
+               std::vector<std::string>& optimizationOffsets);
+
+    void validate(const std::vector<std::string>& mayaCams,
+                  const std::vector<std::string>& camRootDirs,
+                  const std::vector<std::string>& volumeFiles,
+                  const std::vector<std::string>& voxelSizes,
+                  const std::string& filename);
+
+    void loadCameras(std::vector<std::string>& mayaCams);
+
+    void loadVideos(std::vector<std::string>& camRootDirs);
+
+    void loadVolumes(std::vector<std::string>& volumeFiles,
+                     std::vector<std::string>& voxelSizes,
+                     std::vector<std::string>& volumeFlips);
+
+    void loadOffsets(std::vector<std::string>& offsets);
+
+    void loadRenderResolution(std::vector<std::string>& renderResolution);
 };
 
 } // namespace xromm
