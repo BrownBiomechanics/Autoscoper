@@ -85,7 +85,7 @@ namespace xromm
     std::vector<std::string> optimizationOffsets;
 
     std::string line, key, value;
-    while (getline(file, line)) {
+    while (std::getline(file, line)) {
 
       // Skip blank lines and commented lines.
       if (line.size() == 0 || line[0] == '\n' || line[0] == '#') {
@@ -93,33 +93,33 @@ namespace xromm
       }
 
       std::istringstream lineStream(line);
-      getline(lineStream, key, ' ');
+      std::getline(lineStream, key, ' ');
       if (key.compare("mayaCam_csv") == 0) {
-        getline(lineStream, value);
+        std::getline(lineStream, value);
         mayaCams.push_back(value);
       }
       else if (key.compare("CameraRootDir") == 0) {
-        getline(lineStream, value);
+        std::getline(lineStream, value);
         camRootDirs.push_back(value);
       }
       else if (key.compare("VolumeFile") == 0) {
-        getline(lineStream, value);
+        std::getline(lineStream, value);
         volumeFiles.push_back(value);
       }
       else if (key.compare("VolumeFlip") == 0) {
-        getline(lineStream, value);
+        std::getline(lineStream, value);
         volumeFlips.push_back(value);
       }
       else if (key.compare("VoxelSize") == 0) {
-        getline(lineStream, value);
+        std::getline(lineStream, value);
         voxelSizes.push_back(value);
       }
       else if (key.compare("RenderResolution") == 0) {
-        getline(lineStream, value);
+        std::getline(lineStream, value);
         renderResolution.push_back(value);
       }
       else if (key.compare("OptimizationOffsets") == 0) {
-        getline(lineStream, value);
+        std::getline(lineStream, value);
         optimizationOffsets.push_back(value);
       }
     }
