@@ -53,6 +53,10 @@
 #include "Volume.hpp"
 #include "Camera.hpp"
 
+#include <filesystem_compat.hpp>
+
+namespace fs = std::filesystem;
+
 namespace xromm
 {
   std::string trialReadingError(const std::string& filename, const std::string& message)
@@ -108,6 +112,13 @@ namespace xromm
                 << "See https://autoscoper.readthedocs.io/en/latest/file-specifications/config.html";
     }
 
+    if (version[0] == 1 && version[1] >= 1) {
+      std::string configLocation = fs::path(filename).parent_path().string();
+      convertToAbsolutePaths(mayaCams, configLocation);
+      convertToAbsolutePaths(camRootDirs, configLocation);
+      convertToAbsolutePaths(volumeFiles, configLocation);
+    }
+
     validate(mayaCams,
              camRootDirs,
              volumeFiles,
@@ -123,6 +134,31 @@ namespace xromm
     loadOffsets(optimizationOffsets);
 
     loadRenderResolution(renderResolution);
+  }
+
+  void Trial::convertToAbsolutePaths(std::vector<std::string>& paths, const std::string& basePath) {
+    for (size_t idx = 0; idx < paths.size(); ++idx) {
+      paths[idx] = toAbsolutePath(paths[idx], basePath);
+    }
+  }
+
+  std::string Trial::toAbsolutePath(const std::string& path, const std::string& basePath) {
+     fs::path fsPath = fs::path(path);
+     fs::path fsBasePath = fs::path(basePath);
+     if (!fsPath.is_absolute()) {
+       return (fsBasePath / fsPath).string();
+     }
+     return path;
+  }
+
+  void Trial::convertToRelativePaths(std::vector<std::string>& paths, const std::string& basePath) {
+    for (size_t idx = 0; idx < paths.size(); ++idx) {
+      paths[idx] = toRelativePath(paths[idx], basePath);
+    }
+  }
+
+  std::string Trial::toRelativePath(const std::string& path, const std::string& basePath) {
+    return fs::relative(path, basePath);
   }
 
   void Trial::parse(std::ifstream& file,
@@ -299,6 +335,27 @@ namespace xromm
 
   void Trial::save(const std::string& filename)
   {
+    std::vector<std::string> mayaCamsFiles;
+    for(const Camera& camera: cameras) {
+      mayaCamsFiles.push_back(camera.mayacam());
+    }
+
+    std::vector<std::string> camRootDirs;
+    for(const Video& video: videos) {
+      camRootDirs.push_back(video.dirname());
+    }
+
+    std::vector<std::string> volumeFiles;
+    for(const Volume& volume: volumes) {
+      volumeFiles.push_back(volume.name());
+    }
+
+    // Convert to relative paths
+    std::string configLocation = fs::path(filename).parent_path().string();
+    convertToRelativePaths(mayaCamsFiles, configLocation);
+    convertToRelativePaths(camRootDirs, configLocation);
+    convertToRelativePaths(volumeFiles, configLocation);
+
     std::ofstream file(filename.c_str());
     if (!file) {
       throw std::runtime_error("Failed to save to file: " + filename);
@@ -306,18 +363,18 @@ namespace xromm
 
     file.precision(12);
 
-    file << "Version 1.0" << std::endl;
+    file << "Version 1.1" << std::endl;
 
-    for (unsigned i = 0; i < cameras.size(); ++i) {
-      file << "mayaCam_csv " << cameras.at(i).mayacam() << std::endl;
+    for (const std::string& mayaCamsFile: mayaCamsFiles) {
+      file << "mayaCam_csv " << mayaCamsFile << std::endl;
     }
 
-    for (unsigned i = 0; i < videos.size(); ++i) {
-      file << "CameraRootDir " << videos.at(i).dirname() << std::endl;
+    for (const std::string& camRootDir: camRootDirs) {
+      file << "CameraRootDir " << camRootDir << std::endl;
     }
 
     for (unsigned i = 0; i < volumes.size(); ++i) {
-      file << "VolumeFile " << volumes.at(i).name() << std::endl;
+      file << "VolumeFile " << volumeFiles.at(i) << std::endl;
       file << "VolumeFlip " << volumes.at(i).flipX() << " "
         << volumes.at(i).flipY() << " "
         << volumes.at(i).flipZ() << std::endl;
