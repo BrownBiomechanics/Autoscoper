@@ -53,4 +53,14 @@ keywords = {Biplane videoradiography, Wrist kinematics, Accuracy study, Markerle
 
 ## Contact Us
 
-It is recommended to post any questions, bug reports, or enhancement requests in the `SlicerAutoscoperM` category on the [Slicer forum](https://discourse.slicer.org/c/community/slicerautoscoperm/30).
+We want to hear from you! If you have any questions, bug reports, or enhancement requests regarding SlicerAutoscoperM or Autoscoper, there are several communication channels available for you:
+
+**SlicerAutoscoperM Forum**
+
+Visit the [SlicerAutoscoperM category](https://discourse.slicer.org/c/community/slicerautoscoperm/30) on the Slicer Discourse forum for community-driven support, to share your experiences, exchange ideas and best practices, and to discuss challenges.
+
+**Issue Tracker**
+
+Use our [public issue tracker](https://github.com/BrownBiomechanics/SlicerAutoscoperM/issues) to report any bugs or request enhancements. This tracker is a ticket-based system that allows you to keep track of your issues and follow up on their progress.
+
+If you already know to witch component your request pertains, you may explicitly use the [SlicerAutoscoperM](https://github.com/BrownBiomechanics/SlicerAutoscoperM/issues) or [Autoscoper](https://github.com/BrownBiomechanics/SlicerAutoscoperM/issues) issue tracker.
