@@ -42,6 +42,7 @@
 #include "Trial.hpp"
 
 #include <algorithm>
+#include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -75,6 +76,7 @@ namespace xromm
       throw std::runtime_error("File not found: " + filename);
     }
 
+    std::vector<int> version{0, 0};
     std::vector<std::string> mayaCams;
     std::vector<std::string> camRootDirs;
     std::vector<std::string> volumeFiles;
@@ -84,6 +86,7 @@ namespace xromm
     std::vector<std::string> optimizationOffsets;
 
     parse(file,
+          version,
           mayaCams,
           camRootDirs,
           volumeFiles,
@@ -93,6 +96,17 @@ namespace xromm
           optimizationOffsets);
 
     file.close();
+
+    if (version[0] == 0 && version[1] == 0) {
+      version[0] = 1;
+      version[1] = 0;
+      std::cerr << "Trial configuration file is missing the `Version` key. "
+                << "Assuming version is " << version[0] << "." << version[1] << "\n"
+                << "See " + filename + ".\n"
+                << "\n"
+                << "Please check the trial configuration specification.\n"
+                << "See https://autoscoper.readthedocs.io/en/latest/file-specifications/config.html";
+    }
 
     validate(mayaCams,
              camRootDirs,
@@ -112,6 +126,7 @@ namespace xromm
   }
 
   void Trial::parse(std::ifstream& file,
+                    std::vector<int>& version,
                     std::vector<std::string>& mayaCams,
                     std::vector<std::string>& camRootDirs,
                     std::vector<std::string>& volumeFiles,
@@ -158,6 +173,20 @@ namespace xromm
         std::getline(lineStream, value);
         optimizationOffsets.push_back(value);
       }
+      else if (key.compare("Version") == 0) {
+        std::getline(lineStream, value);
+        parseVersion(value, version);
+        continue;
+      }
+    }
+  }
+
+  void Trial::parseVersion(const std::string& text, std::vector<int>& version) {
+    std::istringstream versionStream(text);
+    for (int idx = 0; idx < 2; ++idx) {
+      std::string versionNumber;
+      std::getline(versionStream, versionNumber, '.');
+      version[idx] = std::atoi(versionNumber.c_str());
     }
   }
 
@@ -166,6 +195,7 @@ namespace xromm
                         const std::vector<std::string>& volumeFiles,
                         const std::vector<std::string>& voxelSizes,
                         const std::string& filename) {
+
     // Check that this is a valid trial
     if (mayaCams.size() < 1) {
       throw std::runtime_error(
@@ -275,6 +305,8 @@ namespace xromm
     }
 
     file.precision(12);
+
+    file << "Version 1.0" << std::endl;
 
     for (unsigned i = 0; i < cameras.size(); ++i) {
       file << "mayaCam_csv " << cameras.at(i).mayacam() << std::endl;

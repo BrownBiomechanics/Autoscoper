@@ -99,6 +99,7 @@ private:
 
 
     void parse(std::ifstream& file,
+               std::vector<int>& version,
                std::vector<std::string>& mayaCams,
                std::vector<std::string>& camRootDirs,
                std::vector<std::string>& volumeFiles,
@@ -106,6 +107,8 @@ private:
                std::vector<std::string>& volumeFlips,
                std::vector<std::string>& renderResolution,
                std::vector<std::string>& optimizationOffsets);
+
+    void parseVersion(const std::string& text, std::vector<int>& version);
 
     void validate(const std::vector<std::string>& mayaCams,
                   const std::vector<std::string>& camRootDirs,
