@@ -110,6 +110,12 @@ private:
 
     void parseVersion(const std::string& text, std::vector<int>& version);
 
+    void convertToAbsolutePaths(std::vector<std::string>& paths, const std::string& basePath);
+    std::string toAbsolutePath(const std::string& path, const std::string& basePath);
+
+    void convertToRelativePaths(std::vector<std::string>& paths, const std::string& basePath);
+    std::string toRelativePath(const std::string& path, const std::string& basePath);
+
     void validate(const std::vector<std::string>& mayaCams,
                   const std::vector<std::string>& camRootDirs,
                   const std::vector<std::string>& volumeFiles,
