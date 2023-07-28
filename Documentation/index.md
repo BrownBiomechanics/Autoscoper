@@ -11,6 +11,7 @@
 
 about.md
 getting-started.md
+get-help.md
 user-interface.md
 tutorials/index.md
 adv-topics/index.md
