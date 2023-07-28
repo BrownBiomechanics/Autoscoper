@@ -158,7 +158,7 @@ namespace xromm
   }
 
   std::string Trial::toRelativePath(const std::string& path, const std::string& basePath) {
-    return fs::relative(path, basePath);
+    return fs::relative(path, basePath).string();
   }
 
   void Trial::parse(std::ifstream& file,
