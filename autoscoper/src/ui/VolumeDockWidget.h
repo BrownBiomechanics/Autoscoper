@@ -26,7 +26,6 @@ class VolumeDockWidget : public QDockWidget{
 
 
     QString getVolumeName(int volume_index);
-    QString getFullVolumeName(int volume_index);
 
   private:
     Ui::VolumeDockWidget *dock;

@@ -67,15 +67,6 @@ void VolumeDockWidget::on_listWidget_currentItemChanged (QListWidgetItem* curren
   }
 }
 
-
 QString VolumeDockWidget::getVolumeName(int volume_index) {
-  std::string full_model_name = model_names_list[volume_index];
-  size_t pos = full_model_name.find("_dcm_cropped");
-  std::string model_name = full_model_name.substr(0, pos);
-  QString selected_volume_name = QString::fromStdString(model_name);
-  return selected_volume_name;
-}
-
-QString VolumeDockWidget::getFullVolumeName(int volume_index) {
   return QString::fromStdString(model_names_list[volume_index]);
 }
