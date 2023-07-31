@@ -343,14 +343,25 @@ classdef AutoscoperConnection
                 dframe = 1;
             end
             if nargin < 10
-                opt_method = 0;
+                opt_method = OptimizationMethod.PARTICLE_SWARM_OPTIMIZATION;
             end
             if nargin < 11
-                cf_model = 0;
+                cf_model = CostFunction.NORMALIZED_CROSS_CORRELATION;
             end
             if nargin < 12
-                opt_init_heuristic = 0;
+                opt_init_heuristic = OptimizationInitializationHeuristic.PREVIOUS_FRAME;
             end
+
+            if ~isenum(opt_method)
+                opt_method = OptimizationMethod(opt_method);
+            end
+            if ~isenum(cf_model)
+                cf_model = CostFunction(cf_model);
+            end
+            if ~isenum(opt_init_heuristic)
+                opt_init_heuristic = OptimizationInitializationHeuristic(opt_init_heuristic);
+            end
+
             fwrite(obj.socket_descriptor, [ ...
                                            11 ...
                                            typecast(int32(volNum), 'uint8') ...
@@ -421,13 +432,23 @@ classdef AutoscoperConnection
                 dframe = 1;
             end
             if nargin < 11
-                opt_method = 0;
+                opt_method = OptimizationMethod.PARTICLE_SWARM_OPTIMIZATION;
             end
             if nargin < 12
-                cf_model = 0;
+                cf_model = CostFunction.NORMALIZED_CROSS_CORRELATION;
             end
             if nargin < 13
-                opt_init_heuristic = 0;
+                opt_init_heuristic = OptimizationInitializationHeuristic.PREVIOUS_FRAME;
+            end
+
+            if ~isenum(opt_method)
+                opt_method = OptimizationMethod(opt_method);
+            end
+            if ~isenum(cf_model)
+                cf_model = CostFunction(cf_model);
+            end
+            if ~isenum(opt_init_heuristic)
+                opt_init_heuristic = OptimizationInitializationHeuristic(opt_init_heuristic);
             end
 
             for i = startframe:endframe
