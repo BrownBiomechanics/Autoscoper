@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-import os
 import socket
 import struct
 from enum import Enum
+
+from PyAutoscoper.validators import Boolean, Float, FloatList, Integer, Path
 
 EXPECTED_SERVER_VERSION = 2
 
@@ -202,10 +203,10 @@ class AutoscoperConnection:
         :raises AutoscoperServerError: If the server fails to load the trial file
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
+        Path(file=True).validate(trial_file)
+
         if self.verbose:
             print(f"Loading trial file: {trial_file}")
-        if not os.path.exists(trial_file):
-            raise AutoscoperServerError(f"File not found: {trial_file}")
         self._send_command(0x01, trial_file)
 
     def loadTrackingData(
@@ -247,10 +248,18 @@ class AutoscoperConnection:
         :raises AutoscoperServerError: If the server fails to load the tracking data
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
+        Integer().validate(volume)
+        Boolean().validate(is_matrix)
+        Boolean().validate(is_rows)
+        Boolean().validate(is_with_commas)
+        Boolean().validate(is_cm)
+        Boolean().validate(is_rad)
+        Boolean().validate(interpolate)
+        Path(file=True).validate(tracking_data)
+
         if self.verbose:
             print(f"Loading tracking data: {tracking_data}")
-        if not os.path.exists(tracking_data):
-            raise AutoscoperServerError(f"Tracking data not found: {tracking_data}")
+
         self._send_command(
             0x02,
             volume,
@@ -302,6 +311,14 @@ class AutoscoperConnection:
         :raises AutoscoperServerError: If the server fails to save the tracking data
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
+        Integer().validate(volume)
+        Boolean().validate(save_as_matrix)
+        Boolean().validate(save_as_rows)
+        Boolean().validate(save_with_commas)
+        Boolean().validate(convert_to_cm)
+        Boolean().validate(convert_to_rad)
+        Boolean().validate(interpolate)
+
         if self.verbose:
             print(f"Saving tracking data: {tracking_file}")
 
@@ -328,10 +345,12 @@ class AutoscoperConnection:
         :raises AutoscoperServerError: If the server fails to load the filter settings
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
+        Integer().validate(camera)
+        Path(file=True).validate(settings_file)
+
         if self.verbose:
             print(f"Loading filter settings: {settings_file}")
-        if not os.path.exists(settings_file):
-            raise AutoscoperServerError(f"Filter settings not found: {settings_file}")
+
         self._send_command(0x04, camera, settings_file)
 
     def setFrame(self, frame: int) -> None:
@@ -343,8 +362,11 @@ class AutoscoperConnection:
         :raises AutoscoperServerError: If the server fails to set the frame
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
+        Integer().validate(frame)
+
         if self.verbose:
             print(f"Setting frame: {frame}")
+
         self._send_command(0x05, frame)
 
     def getPose(self, volume: int, frame: int) -> list[float]:
@@ -360,8 +382,12 @@ class AutoscoperConnection:
         :raises AutoscoperServerError: If the server fails to get the pose
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
+        Integer().validate(volume)
+        Integer().validate(frame)
+
         if self.verbose:
             print(f"Getting pose for volume {volume} on frame {frame}")
+
         response = self._send_command(0x06, volume, frame)
         return [
             struct.unpack("d", response[1:9])[0],
@@ -385,8 +411,13 @@ class AutoscoperConnection:
         :raises AutoscoperServerError: If the server fails to set the pose
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
+        Integer().validate(volume)
+        Integer().validate(frame)
+        FloatList(size=6).validate(pose)
+
         if self.verbose:
             print(f"Setting pose {pose} for volume {volume} on frame {frame}")
+
         self._send_command(0x07, volume, frame, *pose)
 
     def getNCC(self, volume: int, pose: list[float]) -> list[float]:
@@ -402,8 +433,12 @@ class AutoscoperConnection:
         :raises AutoscoperServerError: If the server fails to get the NCC
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
+        Integer().validate(volume)
+        FloatList(size=6).validate(pose)
+
         if self.verbose:
             print(f"Getting NCC for volume {volume} on pose {pose}")
+
         response = self._send_command(0x08, volume, *pose)
         ncc = []
         for i in range(0, 2):
@@ -420,8 +455,11 @@ class AutoscoperConnection:
         :raises AutoscoperServerError: If the server fails to set the background threshold
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
+        Float().validate(threshold)
+
         if self.verbose:
             print(f"Setting background threshold: {threshold}")
+
         self._send_command(0x09, threshold)
 
     def getImageCropped(self, volume: int, camera: int, pose: list[float]) -> list[float]:
@@ -439,8 +477,13 @@ class AutoscoperConnection:
         :raises AutoscoperServerError: If the server fails to get the image
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
+        Integer().validate(volume)
+        Integer().validate(camera)
+        FloatList(size=6).validate(pose)
+
         if self.verbose:
             print(f"Getting image for volume {volume} on pose {pose} from camera {camera}")
+
         response = self._send_command(0x0A, volume, camera, *pose)  # 10
         width = struct.unpack("i", response[1:5])[0]
         height = struct.unpack("i", response[5:9])[0]
@@ -497,6 +540,15 @@ class AutoscoperConnection:
 
           The `opt_init_heuristic` parameter.
         """
+        Integer().validate(volume)
+        Integer().validate(frame)
+        Integer().validate(repeats)
+        Integer().validate(max_itr)
+        Float().validate(min_lim)
+        Float().validate(max_lim)
+        Integer().validate(max_stall_itr)
+        Integer().validate(dframe)
+
         if not isinstance(opt_init_heuristic, OptimizationInitializationHeuristic):
             opt_init_heuristic = OptimizationInitializationHeuristic(opt_init_heuristic)
 
@@ -514,8 +566,8 @@ class AutoscoperConnection:
             frame,
             repeats,
             max_itr,
-            float(min_lim),
-            float(max_lim),
+            min_lim,
+            max_lim,
             max_stall_itr,
             dframe,
             opt_method.value,
