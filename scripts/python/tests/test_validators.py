@@ -1,14 +1,14 @@
+import os
+import unittest
+
 from PyAutoscoper.validators import (
-    Path,
     Boolean,
     Float,
-    Integer,
     FloatList,
+    Integer,
     IntegerList,
+    Path,
 )
-
-import unittest
-import os
 
 
 class TestValidtors(unittest.TestCase):
