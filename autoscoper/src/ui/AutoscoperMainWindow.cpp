@@ -1187,19 +1187,28 @@ bool AutoscoperMainWindow::openTrial(QString filename){
     QString tracking_path_root = default_root_path;
     QString tracking_path;
 
+    std::cout << "Tracking Data Directory: "
+              << qPrintable(tracking_path_root) << "/" << qPrintable(default_tracking_folder) << std::endl;
+
     for (int iVol = 0; iVol < tracker->trial()->num_volumes; iVol++) {
+
+      QString tracking_filename = QString("%1_%2.tra").arg(
+            QString::fromStdString(task_name_tmp),
+            volumes_widget->getVolumeName(iVol));
+
       tracking_path = tracking_path_root;
       tracking_path += "/";
       tracking_path += default_tracking_folder;
       tracking_path += "/";
-      tracking_path += QString::fromStdString(task_name_tmp);
-      tracking_path += "_";
-      tracking_path += volumes_widget->getVolumeName(iVol);
-      tracking_path += ".tra";
+      tracking_path += tracking_filename;
+
+      std::cout << "Looking for Tracking Data File: " << qPrintable(tracking_filename) << std::endl;
+      if (!std::filesystem::exists(tracking_path.toStdString())) {
+        std::cout << "  Not Found" << std::endl;
+        continue;
+      }
 
       load_tracking_results(tracking_path, 1, default_saving_format, 1, 0, 0, 0, iVol);
-
-      // std::cout << "Tracking Path is: " << tracking_path.toStdString().c_str() << std::endl;
     }
 
     on_actionInsert_Key_triggered(true);
