@@ -116,7 +116,7 @@ class AutoscoperMainWindow : public QMainWindow{
 
     //For socket
     bool openTrial(QString filename);
-    void load_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume = -1);
+    bool load_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume = -1);
     void save_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume = -1);
     void loadFilterSettings(int camera, QString filename);
     std::vector<double> getPose(unsigned int volume, unsigned int frame);
