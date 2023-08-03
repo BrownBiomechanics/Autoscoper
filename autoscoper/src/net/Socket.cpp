@@ -126,18 +126,17 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 
       std::string filename = std::string(&data[offset], length - offset);
 
-      if (!std::filesystem::exists(filename)) {
-          std::cerr << "Cannot find " << filename.c_str() << std::endl;
-          connection->write(QByteArray(1, 0));
-      }
-      else {
-          std::cerr << "load tracking data Volume " << *volume << " : " << filename.c_str() << std::endl;
-          std::cerr << "Save as matrix: " << *save_as_matrix << " save as rows: " << *save_as_rows << " save with commas: " << *save_with_commas << " convert to cm: " << *convert_to_cm << " convert to rad: " << *convert_to_rad << " interpolate: " << *interpolate << std::endl;
+      bool success = m_mainwindow->load_tracking_results(
+            QString(filename.c_str()),
+            *save_as_matrix,
+            *save_as_rows,
+            *save_with_commas,
+            *convert_to_cm,
+            *convert_to_rad,
+            *interpolate,
+            *volume);
 
-          m_mainwindow->load_tracking_results(QString(filename.c_str()), *save_as_matrix, *save_as_rows, *save_with_commas, *convert_to_cm, *convert_to_rad, *interpolate, *volume);
-
-          connection->write(QByteArray(1, 2));
-      }
+      connection->write(QByteArray(1, success ? 2 : 0));
     }
     break;
   case 3:

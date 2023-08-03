@@ -79,6 +79,7 @@
 #endif
 
 #include <iostream>
+#include "filesystem_compat.hpp"
 #include <fstream>
 #include <sstream>
 
@@ -971,7 +972,29 @@ void AutoscoperMainWindow::backup_tracking(bool backup_on)
 
 
 
-void AutoscoperMainWindow::load_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume){
+bool AutoscoperMainWindow::load_tracking_results(
+    QString filename,
+    bool save_as_matrix,
+    bool save_as_rows,
+    bool save_with_commas,
+    bool convert_to_cm,
+    bool convert_to_rad,
+    bool interpolate,
+    int volume){
+
+  if (!std::filesystem::exists(filename.toStdString())) {
+      std::cerr << "Tracking Data File Not Found: " << qPrintable(filename) << std::endl;
+      return false;
+  }
+
+  std::cout << "Load Tracking Data Volume " << volume << " : " << qPrintable(filename) << std::endl;
+  std::cout << " save as matrix   : " << save_as_matrix << "\n"
+               " save as rows     : " << save_as_rows << "\n"
+               " save with commas : " << save_with_commas << "\n"
+               " convert to cm    : " << convert_to_cm << "\n"
+               " convert to rad   : " << convert_to_rad << "\n"
+               " interpolate      : " << interpolate << std::endl;
+
   char s = save_with_commas ? ',' : ' ';
 
   int start, stop;
@@ -1068,6 +1091,8 @@ void AutoscoperMainWindow::load_tracking_results(QString filename, bool save_as_
   update_graph_min_max(timeline_widget->getPosition_graph());
 
   redrawGL();
+
+  return true;
 }
 
 void AutoscoperMainWindow::load_tracking_results(QString filename)
