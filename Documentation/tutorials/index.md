@@ -11,6 +11,7 @@ A series of tutorials are available to help you get started using AutoscoperM. T
 :caption: Contents
 
 loading-and-tracking.md
+evaluating-tracking-results.md
 custom-data.md
 filters.md
 pre-processing-module.md
