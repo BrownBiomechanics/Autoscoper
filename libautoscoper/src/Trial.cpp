@@ -183,26 +183,32 @@ namespace xromm
       std::getline(lineStream, key, ' ');
       if (key.compare("mayaCam_csv") == 0) {
         std::getline(lineStream, value);
+        trimLineEndings(value);
         mayaCams.push_back(value);
       }
       else if (key.compare("CameraRootDir") == 0) {
         std::getline(lineStream, value);
+        trimLineEndings(value);
         camRootDirs.push_back(value);
       }
       else if (key.compare("VolumeFile") == 0) {
         std::getline(lineStream, value);
+        trimLineEndings(value);
         volumeFiles.push_back(value);
       }
       else if (key.compare("VolumeFlip") == 0) {
         std::getline(lineStream, value);
+        trimLineEndings(value);
         volumeFlips.push_back(value);
       }
       else if (key.compare("VoxelSize") == 0) {
         std::getline(lineStream, value);
+        trimLineEndings(value);
         voxelSizes.push_back(value);
       }
       else if (key.compare("RenderResolution") == 0) {
         std::getline(lineStream, value);
+        trimLineEndings(value);
         renderResolution.push_back(value);
       }
       else if (key.compare("OptimizationOffsets") == 0) {
@@ -211,6 +217,7 @@ namespace xromm
       }
       else if (key.compare("Version") == 0) {
         std::getline(lineStream, value);
+        trimLineEndings(value);
         parseVersion(value, version);
         continue;
       }
@@ -224,6 +231,11 @@ namespace xromm
       std::getline(versionStream, versionNumber, '.');
       version[idx] = std::atoi(versionNumber.c_str());
     }
+  }
+
+  void Trial::trimLineEndings(std::string& str) {
+    str.erase(std::remove(str.begin(), str.end(), '\r'), str.end());
+    str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
   }
 
   void  Trial::validate(const std::vector<std::string>& mayaCams,

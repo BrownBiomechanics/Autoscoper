@@ -110,6 +110,9 @@ private:
 
     void parseVersion(const std::string& text, std::vector<int>& version);
 
+    // Trim line endings from a string
+    void trimLineEndings(std::string& str);
+
     void convertToAbsolutePaths(std::vector<std::string>& paths, const std::string& basePath);
     std::string toAbsolutePath(const std::string& path, const std::string& basePath);
 
