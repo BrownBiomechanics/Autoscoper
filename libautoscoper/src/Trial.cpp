@@ -136,6 +136,26 @@ namespace xromm
     loadRenderResolution(renderResolution);
   }
 
+  void Trial::convertToUnixSlashes(std::string& path) {
+    std::replace(path.begin(), path.end(), '\\', '/');
+    std::string doubleSlash = "//";
+    std::string singleSlash = "/";
+
+    size_t pos = 0;
+    while ((pos = path.find(doubleSlash, pos)) != std::string::npos) {
+        path.replace(pos, doubleSlash.length(), singleSlash);
+        pos += singleSlash.length();
+    }
+
+    // remove trailing slash if the path is more than a single /
+    if (path.size() > 1 && path.back() == '/') {
+        // if it is c:/ then do not remove the trailing slash
+        if (!(path.size() == 3 && path[1] == ':')) {
+            path.pop_back();
+        }
+    }
+  }
+
   void Trial::convertToAbsolutePaths(std::vector<std::string>& paths, const std::string& basePath) {
     for (size_t idx = 0; idx < paths.size(); ++idx) {
       paths[idx] = toAbsolutePath(paths[idx], basePath);
@@ -184,16 +204,19 @@ namespace xromm
       if (key.compare("mayaCam_csv") == 0) {
         std::getline(lineStream, value);
         trimLineEndings(value);
+        convertToUnixSlashes(value);
         mayaCams.push_back(value);
       }
       else if (key.compare("CameraRootDir") == 0) {
         std::getline(lineStream, value);
         trimLineEndings(value);
+        convertToUnixSlashes(value);
         camRootDirs.push_back(value);
       }
       else if (key.compare("VolumeFile") == 0) {
         std::getline(lineStream, value);
         trimLineEndings(value);
+        convertToUnixSlashes(value);
         volumeFiles.push_back(value);
       }
       else if (key.compare("VolumeFlip") == 0) {

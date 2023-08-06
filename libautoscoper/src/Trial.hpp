@@ -113,6 +113,10 @@ private:
     // Trim line endings from a string
     void trimLineEndings(std::string& str);
 
+    // Convert to path to Unix slashes and remove trailing slash if
+    // the path is more than a single /
+    static void convertToUnixSlashes(std::string& path);
+
     void convertToAbsolutePaths(std::vector<std::string>& paths, const std::string& basePath);
     std::string toAbsolutePath(const std::string& path, const std::string& basePath);
 
