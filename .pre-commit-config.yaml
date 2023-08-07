@@ -11,6 +11,12 @@ repos:
   - id: debug-statements
   - id: trailing-whitespace
 
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.0.282
+  hooks:
+  - id: ruff
+    args: ["--fix", "--show-fixes"]
+
 - repo: https://github.com/psf/black
   rev: "23.3.0" # Keep in sync with blacken-docs
   hooks:
