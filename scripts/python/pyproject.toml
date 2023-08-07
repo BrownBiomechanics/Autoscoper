@@ -7,7 +7,7 @@ authors = [
     {name = "Anthony J. Lombardi", email = "anthony.lombardi@kitware.com" }
 ]
 license = { text = "Autoscoper License" }
-requires-python = ">=3.6"
+requires-python = ">=3.8"
 keywords = []
 classifiers = []
 dependencies = []
@@ -28,7 +28,7 @@ dev = [
 
 [tool.black]
 line-length = 120
-target_version = ['py36']
+target_version = ['py38']
 include = '\.pyi?$'
 
 [tool.setuptools_scm]
