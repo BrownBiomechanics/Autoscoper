@@ -111,7 +111,7 @@ class AutoscoperConnection:
         try:
             self.socket.sendall(b)
             response = self._wait_for_server()
-        except socket.error as e:
+        except OSError as e:
             raise AutoscoperConnectionError(e) from e
         if response[0] != command:
             self.closeConnection()
@@ -526,7 +526,7 @@ class AutoscoperConnection:
         b.append(0x0D)
         try:
             self.socket.sendall(b)
-        except socket.error as e:
+        except OSError as e:
             raise AutoscoperConnectionError("Connection to server lost") from e
         self.socket.close()
 
