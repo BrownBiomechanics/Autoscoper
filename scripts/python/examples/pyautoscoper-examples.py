@@ -110,7 +110,8 @@ autoscoperSocket.closeConnection()
 
 # [Example 7 - Start]
 import subprocess as sp
-import signal, os
+import os
+import signal
 
 executable = "path/to/Autoscoper.exe"
 
