@@ -2,9 +2,9 @@ NUM_CAMERAS = 2
 # [Example 1 - Start]
 from PyAutoscoper.connect import (
     AutoscoperConnection,
-    OptimizationMethod,
     CostFunction,
     OptimizationInitializationHeuristic,
+    OptimizationMethod,
 )
 
 autoscoperSocket = AutoscoperConnection()
@@ -59,11 +59,12 @@ autoscoperSocket.trackingDialog(volume=0, start_frame=0, end_frame=10)
 
 # [Example 6 - Start]
 import random as rand
+
 from PyAutoscoper.connect import (
     AutoscoperConnection,
-    OptimizationMethod,
     CostFunction,
     OptimizationInitializationHeuristic,
+    OptimizationMethod,
 )
 
 # Create a socket connection to Autoscoper
@@ -109,9 +110,9 @@ autoscoperSocket.closeConnection()
 # [Example 6 - End]
 
 # [Example 7 - Start]
-import subprocess as sp
 import os
 import signal
+import subprocess as sp
 
 executable = "path/to/Autoscoper.exe"
 
