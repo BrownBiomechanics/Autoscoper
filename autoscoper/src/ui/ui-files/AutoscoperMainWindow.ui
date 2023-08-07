@@ -467,15 +467,15 @@ Dialog</string>
     <property name="title">
      <string>View</string>
     </property>
-    <widget class="QMenu" name="menuAccessiblity">
+    <widget class="QMenu" name="menuAccessibility">
      <property name="title">
-      <string>Accessiblity</string>
+      <string>Accessibility</string>
      </property>
      <addaction name="actionThick_Lines_Mode"/>
     </widget>
     <addaction name="actionShow_world_view"/>
     <addaction name="actionLayoutCameraViews"/>
-    <addaction name="menuAccessiblity"/>
+    <addaction name="menuAccessibility"/>
    </widget>
    <widget class="QMenu" name="menuAdvanced_Tool">
     <property name="title">

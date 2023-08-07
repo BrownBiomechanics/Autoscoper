@@ -915,7 +915,7 @@ void Manip3D::move_gimbal(const Ray<double>& ray)
     transform2_ = Mat4d(Mat3d::rot(theta,axis));
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~// Helper Funcion Definitions //~~~~~~~~~~~~~~~~~~~~~~//
+//~~~~~~~~~~~~~~~~~~~~~~// Helper Function Definitions //~~~~~~~~~~~~~~~~~~~~~~//
 
 Ray<double> create_ray(int x, int y,
                        const GLdouble* model,

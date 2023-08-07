@@ -28,7 +28,7 @@ typedef Quat<double> Quatd;
 template <typename T>
 struct Quat
 {
-    //! Defualt constructor
+    //! Default constructor
 
     Quat()
     {

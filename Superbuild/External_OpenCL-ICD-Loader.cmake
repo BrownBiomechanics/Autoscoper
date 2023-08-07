@@ -50,7 +50,7 @@ if(NOT DEFINED OpenCLICDLoader_DIR AND NOT Autoscoper_USE_SYSTEM_${proj})
       -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
       -DCMAKE_INSTALL_BINDIR:STRING=${Autoscoper_BIN_DIR}
       -DCMAKE_INSTALL_LIBDIR:STRING=${Autoscoper_LIB_DIR}
-      # Depdendencies
+      # Dependencies
       -DOpenCLHeaders_DIR:PATH=${OpenCLHeaders_DIR}
       ${EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS}
     INSTALL_COMMAND ""

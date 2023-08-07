@@ -56,7 +56,7 @@ void volume_render_kernel(__global float* buffer,
     // Clamp to near plane.
   if (near < 0.f) near = 0.f;
 
-    // Preform the ray marching from back to front.
+    // Perform the ray marching from back to front.
     float t = far;
     float density = 0.f;
     while (t > near) {

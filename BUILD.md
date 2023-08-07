@@ -36,7 +36,7 @@ NOTE: Debugging a CUDA program is not straightforward in Visual Studio, so you c
 Optionally Install the project:
 
 6. Install project `cmake --build Autoscoper-build --target install --config Release/Debug`
-7. The autoscoper.exe will be in the folder build/install/bin/Debug or build/nstall/bin/Release depending on which build was performed.
+7. The autoscoper.exe will be in the folder build/install/bin/Debug or build/install/bin/Release depending on which build was performed.
 
 ## GNU/Linux systems
 
@@ -52,10 +52,10 @@ _These instructions are untested and maybe obsolete._
 
 1. Clone the [GitHub repository](https://github.com/BrownBiomechanics/Autoscoper).
 2. Create a build folder in the autoscoper folder, open CMake and use XCode as compiler.
-3. When recieve an error, modify the fields:
+3. When receive an error, modify the fields:
   1. CMAKE_OSX_ARCHITECTURES recommended to set to x86_64
   2. CMAKE_OSX_DEPLOYMENT_TARGET to 10.15 (or your mac_os version)
-  3. If recieved an error for Qt5_DIR, search for (Qt5Config.cmake) on your hard drive and write its location in the field.
+  3. If received an error for Qt5_DIR, search for (Qt5Config.cmake) on your hard drive and write its location in the field.
 4. After generating the configured file, open XCode and compile the application
 
 ## Docker Image

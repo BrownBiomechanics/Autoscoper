@@ -388,14 +388,14 @@ void GLTimeline::paintGL()
     glLineWidth(1);
 
     // Calculate how much space needs to be left on the left of the
-    // graph in order to accomodate the labels.
+    // graph in order to accommodate the labels.
     double frame_offset = 48.0*(m_position_graph->max_frame-m_position_graph->min_frame)/
                 (double)viewdata.viewport_width;
     double min_frame = m_position_graph->min_frame-frame_offset;
     double max_frame = m_position_graph->max_frame-1.0;
 
         // Calculate how much space needs to be left on the bottom and top of the
-        // graph in order to accomodate the labels.
+        // graph in order to accommodate the labels.
     float value_offset = (float)12.0*(m_position_graph->max_value-m_position_graph->min_value)/
                 (float)viewdata.viewport_height;
     /*float value_offset_top = (float)12.0*(m_position_graph->max_value-m_position_graph->min_value)/
@@ -429,7 +429,7 @@ void GLTimeline::paintGL()
 
     // Draw grid with grid lines separated by the above frame_dist and
     // value_dist distances. Those distances are calculated each time this
-    // fucntion is called and are based on the size of the window.
+    // function is called and are based on the size of the window.
     glColor3f(0.75f,0.75f,0.75f);
 
     // This section visualizes the x-axis grid lines (vertical grid lines)

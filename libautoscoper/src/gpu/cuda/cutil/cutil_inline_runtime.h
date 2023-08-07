@@ -111,7 +111,7 @@ inline int cutGetMaxGflopsDeviceId()
   return max_perf_device;
 }
 
-// Give a little more for Windows : the console window often disapears before we can read the message
+// Give a little more for Windows : the console window often disappears before we can read the message
 #ifdef _WIN32
 # if 1//ndef UNICODE
 #  ifdef _DEBUG // Do this only in debug mode...

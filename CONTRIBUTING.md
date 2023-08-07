@@ -130,7 +130,7 @@ is the checklist:
 5. Hopefully, reach consensus at the hangout and proceed with the agreed plan.
 
 
-*The initial version of these guidelines is adapted from [3D Slicer guidlines](https://slicer.readthedocs.io/en/latest/developer_guide/contributing.html?highlight=contributing#decision-making-process)*
+*The initial version of these guidelines is adapted from [3D Slicer guidelines](https://slicer.readthedocs.io/en/latest/developer_guide/contributing.html?highlight=contributing#decision-making-process)*
 
 
 [slicer-forum]: https://discourse.slicer.org/c/community/slicerautoscoperm/30
