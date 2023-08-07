@@ -112,7 +112,7 @@ class AutoscoperConnection:
             self.socket.sendall(b)
             response = self._wait_for_server()
         except socket.error as e:
-            raise AutoscoperConnectionError(e)
+            raise AutoscoperConnectionError(e) from e
         if response[0] != command:
             self.closeConnection()
             raise AutoscoperServerError(f"received {response[0]}, expected {command}")
