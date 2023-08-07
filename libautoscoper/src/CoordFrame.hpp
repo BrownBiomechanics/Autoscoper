@@ -105,7 +105,7 @@ public:
 
     inline const double* rotation() const {return rotation_;}
 
-    // Formating
+    // Formatting
 
     std::string to_string() const;
 

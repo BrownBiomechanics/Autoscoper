@@ -88,7 +88,7 @@ public:
     bool is_visible() const { return is_visible_; }
 
     //! Sets the manipulator to be locked or not. A locked manipulator is still
-    //! visible, but will not respons to any user interaction.
+    //! visible, but will not respond to any user interaction.
 
     void set_locked(bool is_locked);
 
@@ -122,7 +122,7 @@ public:
     //! Sets the modeling transformation for the manipulator. This
     //! transformation determines the location and orientation of the
     //! manipulator in three dimensional space. This method will override any
-    //! translations or rotations that have been preformed on the manipulator
+    //! translations or rotations that have been performed on the manipulator
     //! through user interaction.
 
     void set_transform(const Mat4d& transform);

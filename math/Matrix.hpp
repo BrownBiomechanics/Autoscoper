@@ -115,7 +115,7 @@ struct Mat2
         return m;
     }
 
-    //! Returns an indentity matrix
+    //! Returns an identity matrix
 
     static const Mat2& eye()
     {
@@ -523,7 +523,7 @@ struct Mat3
         return m;
     }
 
-    //! Returns an indentity matrix
+    //! Returns an identity matrix
 
     static const Mat3& eye()
     {
@@ -1146,7 +1146,7 @@ struct Mat4
         return m;
     }
 
-    //! Returns an indentity matrix
+    //! Returns an identity matrix
 
     static const Mat4& eye()
     {

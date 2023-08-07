@@ -203,7 +203,7 @@ void cuda_volume_render_kernel(float* buffer, size_t width, size_t height,
     // Clamp to near plane.
   if (_near < 0.0f) _near = 0.0f;
 
-    // Preform the ray marching from back to front.
+    // Perform the ray marching from back to front.
     float t = _far;
     float density = 0.0f;
     while (t > _near) {

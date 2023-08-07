@@ -12,7 +12,7 @@ Before these changes were made, the MATLAB TCP client was a collection of functi
 
 ## Usage:
 
-#Sample Worflow:
+#Sample Workflow:
 *launch Autoscoper
 *pseudocode variables:  cfgFileName myVolumeList filterFileName trackDataInFileName  saveDataFileName sumberOfFrames
 ```matlab
@@ -118,7 +118,7 @@ This will load filters from the specified file. The filters file is a `.vie` fil
 This function has the following parameters:
 
 * camera: The camera index to load the filters for. (index base 0)  -1 for all
-* filter_file: The path anf fielname to the filters file.
+* filter_file: The path and filename to the filters file.
 
 ### Set Frame
 
@@ -295,7 +295,7 @@ This function has the following parameters:
 * volNum: The volume to get the NCC this frame for.
 * frameNum: The frame to get the NCC this frame at.
 
-*returns a three element double- the ncc values returned from getNCC  , and thier product
+*returns a three element double- the ncc values returned from getNCC  , and their product
 
 ### Close Connection
 

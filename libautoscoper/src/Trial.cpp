@@ -301,7 +301,7 @@ namespace xromm
   void Trial::loadVolumes(std::vector<std::string>& volumeFiles,
                           std::vector<std::string>& voxelSizes,
                           std::vector<std::string>& volumeFlips) {
-    // First load the volumes as more continous memory is required than for the videos.
+    // First load the volumes as more continuous memory is required than for the videos.
     volumes.clear();
     volumestransform.clear();
     for (unsigned int i = 0; i < volumeFiles.size(); ++i) {

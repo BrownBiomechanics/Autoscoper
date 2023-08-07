@@ -65,7 +65,7 @@ class BackgroundRenderer;
 class Filter;
 
 // This class encapsulates everything related to the rendering of the drrs and
-// radiographs. It contains the cameras, renderers, adn filters. The renderers
+// radiographs. It contains the cameras, renderers, and filters. The renderers
 // and filters have quite a few parameters that effect how the rendering looks,
 // and those can be modified at any time by the front end application.
 
