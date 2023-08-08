@@ -23,6 +23,18 @@ if(NOT DEFINED GLEW_DIR AND NOT Autoscoper_USE_SYSTEM_${proj})
 
   set(EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS)
 
+  if(UNIX AND NOT APPLE)
+    if(NOT DEFINED OpenGL_GL_PREFERENCE)
+      set(OpenGL_GL_PREFERENCE "LEGACY")
+    endif()
+    if(NOT "${OpenGL_GL_PREFERENCE}" MATCHES "^(LEGACY|GLVND)$")
+      message(FATAL_ERROR "OpenGL_GL_PREFERENCE variable is expected to be set to LEGACY or GLVND")
+    endif()
+    list(APPEND EXTERNAL_PROJECT_OPTIONAL_CMAKE_CACHE_ARGS
+      -DOpenGL_GL_PREFERENCE:STRING=${OpenGL_GL_PREFERENCE}
+      )
+  endif()
+
   ExternalProject_Add(${proj}
     ${${proj}_EP_ARGS}
     GIT_REPOSITORY https://github.com/BrownBiomechanics/glew.git
