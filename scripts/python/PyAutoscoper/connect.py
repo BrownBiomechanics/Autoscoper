@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import socket
 import struct
@@ -32,54 +34,68 @@ class OptimizationMethod(Enum):
 class AutoscoperServerError(Exception):
     """Exception raised when the server reports an error."""
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Autoscoper Server error: {super().__str__()}"
 
 
 class AutoscoperServerVersionMismatch(Exception):
     """Exception raised when the client attempt to connect to an unsupported server."""
 
-    def __init__(self, server_version):
+    def __init__(self, server_version: int):
         self.server_version = server_version
         msg = f"server_version {self.server_version}, expected_version {EXPECTED_SERVER_VERSION}"
         super().__init__(msg)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Autoscoper Server Version mismatch: {super().__str__()}"
 
 
 class AutoscoperConnectionError(Exception):
     """Exception raised when the connection to the server is lost."""
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Error communicating with Autoscoper server: {super().__str__()}"
 
 
 class AutoscoperConnection:
-    def __init__(self, address="127.0.0.1", verbose=False) -> None:
+    def __init__(self, address: str = "127.0.0.1", verbose: bool = False) -> None:
         self.address = address
         self.verbose = verbose
         self.socket = self._openConnection()
         self._checkVersion()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Autoscoper connection to {self.address}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"AutoscoperConnection('{self.address}', verbose={self.verbose})"
 
-    def _wait_for_server(self):
+    def _wait_for_server(self) -> bytes:
         """
         Internal function, should not be called by a user.
 
         Waits for the server response after sending a message
+
+        :return: The response from the server
+        :rtype: bytes
         """
         while True:
             data = self.socket.recv(1024)
             if data:
                 return data
 
-    def _pack_data(self, *args):
+    def _pack_data(self, *args: tuple) -> bytearray:
+        """
+        Internal function, should not be called by a user.
+
+        Packs the given arguments into a bytearray.
+
+        :param args: The arguments to pack
+        :type args: tuple
+        :return: The packed data
+        :rtype: bytearray
+        :raises Exception: If the argument type is invalid
+        """
         packed_data = bytearray()
         for arg in args:
             if isinstance(arg, int):
@@ -92,7 +108,7 @@ class AutoscoperConnection:
                 raise Exception(f"Invalid argument type: {type(arg)}")
         return packed_data
 
-    def _send_command(self, command, *args):
+    def _send_command(self, command: int, *args: tuple) -> bytes:
         """
         Send a command to the server and wait for the response.
 
@@ -118,7 +134,7 @@ class AutoscoperConnection:
             raise AutoscoperServerError(f"received {response[0]}, expected {command}")
         return response
 
-    def _test_connection(self):
+    def _test_connection(self) -> bool:
         """
         Test the connection to the PyAutoscoper server.
 
@@ -130,13 +146,16 @@ class AutoscoperConnection:
         self._send_command(0x00)
         return True
 
-    def _openConnection(self):
+    def _openConnection(self) -> socket.socket:
         """
         Internal function, should not be called by a user.
 
         Open a tcp connection to the given address and port.
 
         Called automatically upon init.
+
+        :return: The socket object
+        :rtype: socket.socket
         """
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((self.address, 30007))
@@ -161,10 +180,8 @@ class AutoscoperConnection:
         if self.verbose:
             print(f"Server version: {server_version}")
 
-        return
-
     @property
-    def is_connected(self):
+    def is_connected(self) -> bool:
         """
         Returns the status of the connection to the PyAutoscoper server.
 
@@ -176,7 +193,7 @@ class AutoscoperConnection:
         except (AutoscoperServerError, AutoscoperConnectionError):
             return False
 
-    def loadTrial(self, trial_file):
+    def loadTrial(self, trial_file: str):
         """
         Load a trial file into the PyAutoscoper server.
 
@@ -193,14 +210,14 @@ class AutoscoperConnection:
 
     def loadTrackingData(
         self,
-        volume,
-        tracking_data,
-        is_matrix=True,
-        is_rows=True,
-        is_with_commas=True,
-        is_cm=False,
-        is_rad=False,
-        interpolate=False,
+        volume: int,
+        tracking_data: str,
+        is_matrix: bool = True,
+        is_rows: bool = True,
+        is_with_commas: bool = True,
+        is_cm: bool = False,
+        is_rad: bool = False,
+        interpolate: bool = False,
     ):
         """
         Load tracking data into the PyAutoscoper server.
@@ -248,14 +265,14 @@ class AutoscoperConnection:
 
     def saveTracking(
         self,
-        volume,
-        tracking_file,
-        save_as_matrix=True,
-        save_as_rows=True,
-        save_with_commas=True,
-        convert_to_cm=False,
-        convert_to_rad=False,
-        interpolate=False,
+        volume: int,
+        tracking_file: str,
+        save_as_matrix: bool = True,
+        save_as_rows: bool = True,
+        save_with_commas: bool = True,
+        convert_to_cm: bool = False,
+        convert_to_rad: bool = False,
+        interpolate: bool = False,
     ):
         """
         Save tracking data from the PyAutoscoper server.
@@ -300,7 +317,7 @@ class AutoscoperConnection:
             tracking_file,
         )
 
-    def loadFilters(self, camera, settings_file):
+    def loadFilters(self, camera: int, settings_file: str):
         """
         Load filter settings into the PyAutoscoper server.
 
@@ -317,7 +334,7 @@ class AutoscoperConnection:
             raise AutoscoperServerError(f"Filter settings not found: {settings_file}")
         self._send_command(0x04, camera, settings_file)
 
-    def setFrame(self, frame):
+    def setFrame(self, frame: int):
         """
         Set the frame to be used for the next acquisition.
 
@@ -330,7 +347,7 @@ class AutoscoperConnection:
             print(f"Setting frame: {frame}")
         self._send_command(0x05, frame)
 
-    def getPose(self, volume, frame):
+    def getPose(self, volume: int, frame: int) -> list[float]:
         """
         Get the pose of the volume at the specified frame.
 
@@ -355,7 +372,7 @@ class AutoscoperConnection:
             struct.unpack("d", response[41:49])[0],
         ]
 
-    def setPose(self, volume, frame, pose):
+    def setPose(self, volume: int, frame: int, pose: list[float]):
         """
         Set the pose of the volume at the specified frame.
 
@@ -372,7 +389,7 @@ class AutoscoperConnection:
             print(f"Setting pose {pose} for volume {volume} on frame {frame}")
         self._send_command(0x07, volume, frame, *pose)
 
-    def getNCC(self, volume, pose):
+    def getNCC(self, volume: int, pose: list[float]) -> list[float]:
         """
         Get the normalized cross correlation of the volume at the specified pose.
 
@@ -394,7 +411,7 @@ class AutoscoperConnection:
             ncc.append(struct.unpack("d", val)[0])
         return ncc
 
-    def setBackground(self, threshold):
+    def setBackground(self, threshold: float):
         """
         Set the background threshold.
 
@@ -407,7 +424,7 @@ class AutoscoperConnection:
             print(f"Setting background threshold: {threshold}")
         self._send_command(0x09, threshold)
 
-    def getImageCropped(self, volume, camera, pose):
+    def getImageCropped(self, volume: int, camera: int, pose: list[float]) -> list[float]:
         """
         Get the cropped image of the volume at the specified pose.
 
@@ -432,17 +449,17 @@ class AutoscoperConnection:
 
     def optimizeFrame(
         self,
-        volume,
-        frame,
-        repeats,
-        max_itr,
-        min_lim,
-        max_lim,
-        max_stall_itr,
-        dframe,
-        opt_method,
-        cf_model,
-        opt_init_heuristic,
+        volume: int,
+        frame: int,
+        repeats: int,
+        max_itr: int,
+        min_lim: float,
+        max_lim: float,
+        max_stall_itr: int,
+        dframe: int,
+        opt_method: OptimizationMethod,
+        cf_model: CostFunction,
+        opt_init_heuristic: OptimizationInitializationHeuristic,
     ):
         """
         Optimize the pose of the volume at the specified frame.
@@ -532,18 +549,18 @@ class AutoscoperConnection:
 
     def trackingDialog(
         self,
-        volume,
-        start_frame,
-        end_frame,
-        frame_skip=1,
-        repeats=1,
-        max_itr=1000,
-        min_lim=-3.0,
-        max_lim=3.0,
-        max_stall_itr=25,
-        opt_method=OptimizationMethod.PARTICLE_SWARM_OPTIMIZATION,
-        cf_model=CostFunction.NORMALIZED_CROSS_CORRELATION,
-        opt_init_heuristic=OptimizationInitializationHeuristic.PREVIOUS_FRAME,
+        volume: int,
+        start_frame: int,
+        end_frame: int,
+        frame_skip: int = 1,
+        repeats: int = 1,
+        max_itr: int = 1000,
+        min_lim: float = -3.0,
+        max_lim: float = 3.0,
+        max_stall_itr: int = 25,
+        opt_method: OptimizationMethod = OptimizationMethod.PARTICLE_SWARM_OPTIMIZATION,
+        cf_model: CostFunction = CostFunction.NORMALIZED_CROSS_CORRELATION,
+        opt_init_heuristic: OptimizationInitializationHeuristic = OptimizationInitializationHeuristic.PREVIOUS_FRAME,
     ):
         """
         Automatically tracks the volume across the given frames.
@@ -601,7 +618,7 @@ class AutoscoperConnection:
                 opt_init_heuristic=opt_init_heuristic,
             )
 
-    def getNumVolumes(self):
+    def getNumVolumes(self) -> int:
         """
         Get the number of volumes in the scene.
 
@@ -614,7 +631,7 @@ class AutoscoperConnection:
         num_volume = struct.unpack("i", response[1:])[0]
         return num_volume
 
-    def getNumFrames(self):
+    def getNumFrames(self) -> int:
         """
         Get the number of frames in the scene.
 
