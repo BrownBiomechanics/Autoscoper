@@ -4,7 +4,7 @@ from PyAutoscoper.connect import CostFunction, OptimizationInitializationHeurist
 
 
 class TestEnums(unittest.TestCase):
-    def test_cost_function(self):
+    def test_cost_function(self) -> None:
         assert CostFunction.NORMALIZED_CROSS_CORRELATION.value == 0
         assert CostFunction.SUM_OF_ABSOLUTE_DIFFERENCES.value == 1
         assert CostFunction(0).name == "NORMALIZED_CROSS_CORRELATION"
@@ -12,7 +12,7 @@ class TestEnums(unittest.TestCase):
         self.assertRaises(ValueError, CostFunction, 2)
         self.assertRaises(ValueError, CostFunction, "0")
 
-    def test_optimization_initialization_heuristic(self):
+    def test_optimization_initialization_heuristic(self) -> None:
         assert OptimizationInitializationHeuristic.CURRENT_FRAME.value == 0
         assert OptimizationInitializationHeuristic.PREVIOUS_FRAME.value == 1
         assert OptimizationInitializationHeuristic.LINEAR_EXTRAPOLATION.value == 2
@@ -24,7 +24,7 @@ class TestEnums(unittest.TestCase):
         self.assertRaises(ValueError, OptimizationInitializationHeuristic, 4)
         self.assertRaises(ValueError, OptimizationInitializationHeuristic, "0")
 
-    def test_optimization_method(self):
+    def test_optimization_method(self) -> None:
         assert OptimizationMethod.PARTICLE_SWARM_OPTIMIZATION.value == 0
         assert OptimizationMethod.DOWNHILL_SIMPLEX.value == 1
         assert OptimizationMethod(0).name == "PARTICLE_SWARM_OPTIMIZATION"

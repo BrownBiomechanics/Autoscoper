@@ -58,6 +58,7 @@ select = [
 ]
 extend-ignore = [
     "ANN101",  # missing-type-self
+    "ANN102",  # missing-type-cls
     "G004",    # logging-f-string
     "PIE790",  # unnecessary-pass
     "PLR0913", # too many arguments to function call
