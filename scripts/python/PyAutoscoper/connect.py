@@ -91,9 +91,9 @@ class AutoscoperConnection:
         Packs the given arguments into a bytearray.
 
         :param args: The arguments to pack
-        :type args: tuple
+
         :return: The packed data
-        :rtype: bytearray
+
         :raises Exception: If the argument type is invalid
         """
         packed_data = bytearray()
@@ -113,11 +113,10 @@ class AutoscoperConnection:
         Send a command to the server and wait for the response.
 
         :param command: The command byte to send
-        :type command: int
         :param args: The arguments to send with the command
-        :type args: tuple
+
         :return: The response from the server
-        :rtype: bytes
+
         :raises Exception: If the server response is invalid
         """
         packed_data = self._pack_data(*args)
@@ -138,7 +137,6 @@ class AutoscoperConnection:
         """
         Test the connection to the PyAutoscoper server.
 
-        :rtype: Boolean
         :raises Exception: If the connection is not successful
         """
         if self.verbose:
@@ -155,7 +153,6 @@ class AutoscoperConnection:
         Called automatically upon init.
 
         :return: The socket object
-        :rtype: socket.socket
         """
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((self.address, 30007))
@@ -184,8 +181,6 @@ class AutoscoperConnection:
     def is_connected(self) -> bool:
         """
         Returns the status of the connection to the PyAutoscoper server.
-
-        :rtype: Boolean
         """
         try:
             self._test_connection()
@@ -198,7 +193,7 @@ class AutoscoperConnection:
         Load a trial file into the PyAutoscoper server.
 
         :param trial_file: The path to the trial file to load
-        :type trial_file: str
+
         :raises AutoscoperServerError: If the server fails to load the trial file
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
@@ -223,27 +218,20 @@ class AutoscoperConnection:
         Load tracking data into the PyAutoscoper server.
 
         :param volume: The volume to load the tracking data into
-        :type volume: int
         :param tracking_data: The path to the tracking data to load
-        :type tracking_data: str
         :param is_matrix: Optional - If true, the tracking data will be loaded as a 4 by 4 matrix.
           If false, the tracking data will be loaded in xyz roll pitch yaw format. Defaults to true.
-        :type is_matrix: bool
         :param is_rows: Optional - If true, the tracking data will be loaded as rows.
           If false, the tracking data will be loaded as columns. Defaults to true.
-        :type is_rows: bool
         :param is_with_commas: Optional - If true, the tracking data will be loaded with commas.
           If false, the tracking data will be loaded with spaces. Defaults to true.
-        :type is_with_commas: bool
         :param is_cm: Optional - If true, the tracking data will be loaded in cm.
           If false, the tracking data will be loaded in mm. Defaults to false.
-        :type is_cm: bool
         :param is_rad: Optional - If true, the tracking data will be loaded in radians.
           If false, the tracking data will be loaded in degrees. Defaults to false.
-        :type is_rad: bool
         :param interpolate: Optional - If true, the tracking data will be interpolated using the spline method.
           If false, the tracking data will be saved as is (with NaN values). Defaults to false.
-        :type interpolate: bool
+
         :raises AutoscoperServerError: If the server fails to load the tracking data
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
@@ -278,27 +266,20 @@ class AutoscoperConnection:
         Save tracking data from the PyAutoscoper server.
 
         :param volume: The volume to save the tracking data from
-        :type volume: int
         :param tracking_file: The path to the tracking data to save
-        :type tracking_file: str
         :param save_as_matrix: Optional - If true, the tracking data will be saved as a 4 by 4 matrix.
           If false, the tracking data will be saved in xyz roll pitch yaw format. Defaults to true.
-        :type save_as_matrix: bool
         :param save_as_rows: Optional - If true, the tracking data will be saved as rows.
           If false, the tracking data will be saved as columns. Defaults to true.
-        :type save_as_rows: bool
         :param save_with_commas: Optional - If true, the tracking data will be saved with commas.
           If false, the tracking data will be saved with spaces. Defaults to true.
-        :type save_with_commas: bool
         :param convert_to_cm: Optional - If true, the tracking data will be converted to cm.
           If false, the tracking data will be saved in mm. Defaults to false.
-        :type convert_to_cm: bool
         :param convert_to_rad: Optional - If true, the tracking data will be converted to radians.
           If false, the tracking data will be saved in degrees. Defaults to false.
-        :type convert_to_rad: bool
         :param interpolate: Optional - If true, the tracking data will be interpolated using the spline method.
           If false, the tracking data will be saved as is (with NaN values). Defaults to false.
-        :type interpolate: bool
+
         :raises AutoscoperServerError: If the server fails to save the tracking data
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
@@ -322,9 +303,8 @@ class AutoscoperConnection:
         Load filter settings into the PyAutoscoper server.
 
         :param camera: The camera to load the filter settings into
-        :type camera: int
         :param settings_file: The path to the filter settings to load
-        :type settings_file: str
+
         :raises AutoscoperServerError: If the server fails to load the filter settings
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
@@ -339,7 +319,7 @@ class AutoscoperConnection:
         Set the frame to be used for the next acquisition.
 
         :param frame: The frame to be used for the next acquisition
-        :type frame: int
+
         :raises AutoscoperServerError: If the server fails to set the frame
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
@@ -352,11 +332,10 @@ class AutoscoperConnection:
         Get the pose of the volume at the specified frame.
 
         :param volume: The volume to get the pose of
-        :type volume: int
         :param frame: The frame to get the pose at
-        :type frame: int
+
         :return: The pose of the volume at the specified frame
-        :rtype: list[float]
+
         :raises AutoscoperServerError: If the server fails to get the pose
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
@@ -377,11 +356,9 @@ class AutoscoperConnection:
         Set the pose of the volume at the specified frame.
 
         :param volume: The volume to set the pose of
-        :type volume: int
         :param frame: The frame to set the pose at
-        :type frame: int
         :param pose: The pose to set the volume to
-        :type pose: list[float]
+
         :raises AutoscoperServerError: If the server fails to set the pose
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
@@ -394,11 +371,10 @@ class AutoscoperConnection:
         Get the normalized cross correlation of the volume at the specified pose.
 
         :param volume: The volume to get the NCC of
-        :type volume: int
         :param pose: The pose to get the NCC at
-        :type pose: list[float]
+
         :return: The NCC of the volume at the specified pose
-        :rtype: list[float]
+
         :raises AutoscoperServerError: If the server fails to get the NCC
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
@@ -416,7 +392,7 @@ class AutoscoperConnection:
         Set the background threshold.
 
         :param threshold: The background threshold
-        :type threshold: float
+
         :raises AutoscoperServerError: If the server fails to set the background threshold
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
@@ -429,13 +405,11 @@ class AutoscoperConnection:
         Get the cropped image of the volume at the specified pose.
 
         :param volume: The volume to get the image of
-        :type volume: int
         :param camera: The camera to get the image from
-        :type camera: int
         :param pose: The pose to get the image at
-        :type pose: list[float]
+
         :return: The cropped image of the volume at the specified pose
-        :rtype: list[float]
+
         :raises AutoscoperServerError: If the server fails to get the image
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
@@ -465,29 +439,18 @@ class AutoscoperConnection:
         Optimize the pose of the volume at the specified frame.
 
         :param volume: The volume to optimize
-        :type volume: int
         :param frame: The frame to optimize
-        :type frame: int
         :param repeats: The number of times to repeat the optimization
-        :type repeats: int
         :param max_itr: The maximum number of iterations to run
-        :type max_itr: int
         :param min_lim: The minimum limit of the optimization
-        :type min_lim: float
         :param max_lim: The maximum limit of the optimization
-        :type max_lim: float
         :param max_stall_itr: The maximum number of iterations to stall
-        :type max_stall_itr: int
         :param dframe: The amount of frames to skip
-        :type dframe: int
         :param opt_method: The optimization method to use.
-        :type opt_method: int or :const:`~OptimizationMethod`
         :param cf_model: The cost function to use. :const:`~CostFunction.NORMALIZED_CROSS_CORRELATION`
           for Bone Models,  :const:`~CostFunction.SUM_OF_ABSOLUTE_DIFFERENCES` for Implant Models.
-        :type cf_model: int or :const:`~CostFunction`
         :param opt_init_heuristic: The heuristic to initialize the optimization.
           See :const:`~OptimizationInitializationHeuristic`.
-        :type opt_init_heuristic: int or :const:`~OptimizationInitializationHeuristic`
 
         :raises AutoscoperServerError: If the server fails to optimize the frame
         :raises AutoscoperConnectionError: If the connection to the server is lost
@@ -566,31 +529,19 @@ class AutoscoperConnection:
         Automatically tracks the volume across the given frames.
 
         :param volume: The id of the volume to be tracked
-        :type volume: int
         :param start_frame: The frame to start the tracking on
-        :type start_frame: int
         :param end_frame: The frame to end the tracking on
-        :type end_frame: int
         :param frame_skip: The amount of frames to skip over during tracking
-        :type frame_skip: int
         :param repeats: The number of times to repeat the optimization
-        :type repeats: int
         :param max_itr: The maximum number of iterations to run
-        :type max_itr: int
         :param min_lim: The minimum limit of the optimization
-        :type min_lim: float
         :param max_lim: The maximum limit of the optimization
-        :type max_lim: float
         :param max_stall_itr: The maximum number of iterations to stall
-        :type max_stall_itr: int
         :param opt_method: The optimization method to use.
-        :type opt_method: int or :const:`~OptimizationMethod`
         :param cf_model: The cost function to use. :const:`~CostFunction.NORMALIZED_CROSS_CORRELATION`
           for Bone Models,  :const:`~CostFunction.SUM_OF_ABSOLUTE_DIFFERENCES` for Implant Models.
-        :type cf_model: int or :const:`~CostFunction`
         :param opt_init_heuristic: The heuristic to initialize the optimization.
           See :const:`~OptimizationInitializationHeuristic`.
-        :type opt_init_heuristic: int or :const:`~OptimizationInitializationHeuristic`
 
         :raises AutoscoperServerError: If the server fails to track the volume
         :raises AutoscoperConnectionError: If the connection to the server is lost
@@ -623,7 +574,7 @@ class AutoscoperConnection:
         Get the number of volumes in the scene.
 
         :return: The number of volumes in the scene
-        :rtype: int
+
         :raises AutoscoperServerError: If the server fails to get the number of volumes
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
@@ -636,7 +587,7 @@ class AutoscoperConnection:
         Get the number of frames in the scene.
 
         :return: The number of frames in the scene
-        :rtype: int
+
         :raises AutoscoperServerError: If the server fails to get the number of frames
         :raises AutoscoperConnectionError: If the connection to the server is lost
         """
