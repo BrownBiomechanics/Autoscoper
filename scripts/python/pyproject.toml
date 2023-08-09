@@ -68,7 +68,6 @@ extend-ignore = [
 target-version = "py38"
 line-length = 120
 flake8-annotations.suppress-dummy-args = true
-flake8-annotations.suppress-none-returning = true
 isort.known-first-party = [
   "PyAutoscoper",
 ]
