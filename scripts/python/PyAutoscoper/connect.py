@@ -41,7 +41,7 @@ class AutoscoperServerError(Exception):
 class AutoscoperServerVersionMismatch(Exception):
     """Exception raised when the client attempt to connect to an unsupported server."""
 
-    def __init__(self, server_version: int):
+    def __init__(self, server_version: int) -> None:
         self.server_version = server_version
         msg = f"server_version {self.server_version}, expected_version {EXPECTED_SERVER_VERSION}"
         super().__init__(msg)
@@ -161,7 +161,7 @@ class AutoscoperConnection:
         s.connect((self.address, 30007))
         return s
 
-    def _checkVersion(self):
+    def _checkVersion(self) -> None:
         """
         Internal function, should not be called by a user.
 
@@ -193,7 +193,7 @@ class AutoscoperConnection:
         except (AutoscoperServerError, AutoscoperConnectionError):
             return False
 
-    def loadTrial(self, trial_file: str):
+    def loadTrial(self, trial_file: str) -> None:
         """
         Load a trial file into the PyAutoscoper server.
 
@@ -218,7 +218,7 @@ class AutoscoperConnection:
         is_cm: bool = False,
         is_rad: bool = False,
         interpolate: bool = False,
-    ):
+    ) -> None:
         """
         Load tracking data into the PyAutoscoper server.
 
@@ -273,7 +273,7 @@ class AutoscoperConnection:
         convert_to_cm: bool = False,
         convert_to_rad: bool = False,
         interpolate: bool = False,
-    ):
+    ) -> None:
         """
         Save tracking data from the PyAutoscoper server.
 
@@ -317,7 +317,7 @@ class AutoscoperConnection:
             tracking_file,
         )
 
-    def loadFilters(self, camera: int, settings_file: str):
+    def loadFilters(self, camera: int, settings_file: str) -> None:
         """
         Load filter settings into the PyAutoscoper server.
 
@@ -334,7 +334,7 @@ class AutoscoperConnection:
             raise AutoscoperServerError(f"Filter settings not found: {settings_file}")
         self._send_command(0x04, camera, settings_file)
 
-    def setFrame(self, frame: int):
+    def setFrame(self, frame: int) -> None:
         """
         Set the frame to be used for the next acquisition.
 
@@ -372,7 +372,7 @@ class AutoscoperConnection:
             struct.unpack("d", response[41:49])[0],
         ]
 
-    def setPose(self, volume: int, frame: int, pose: list[float]):
+    def setPose(self, volume: int, frame: int, pose: list[float]) -> None:
         """
         Set the pose of the volume at the specified frame.
 
@@ -411,7 +411,7 @@ class AutoscoperConnection:
             ncc.append(struct.unpack("d", val)[0])
         return ncc
 
-    def setBackground(self, threshold: float):
+    def setBackground(self, threshold: float) -> None:
         """
         Set the background threshold.
 
@@ -460,7 +460,7 @@ class AutoscoperConnection:
         opt_method: OptimizationMethod,
         cf_model: CostFunction,
         opt_init_heuristic: OptimizationInitializationHeuristic,
-    ):
+    ) -> None:
         """
         Optimize the pose of the volume at the specified frame.
 
@@ -523,7 +523,7 @@ class AutoscoperConnection:
             opt_init_heuristic.value,
         )
 
-    def saveFullDRR(self):
+    def saveFullDRR(self) -> None:
         """
         Save the full DRR.
 
@@ -532,7 +532,7 @@ class AutoscoperConnection:
         """
         self._send_command(0x0C)  # 12
 
-    def closeConnection(self):
+    def closeConnection(self) -> None:
         """
         Close the connection to the server.
 
@@ -561,7 +561,7 @@ class AutoscoperConnection:
         opt_method: OptimizationMethod = OptimizationMethod.PARTICLE_SWARM_OPTIMIZATION,
         cf_model: CostFunction = CostFunction.NORMALIZED_CROSS_CORRELATION,
         opt_init_heuristic: OptimizationInitializationHeuristic = OptimizationInitializationHeuristic.PREVIOUS_FRAME,
-    ):
+    ) -> None:
         """
         Automatically tracks the volume across the given frames.
 
