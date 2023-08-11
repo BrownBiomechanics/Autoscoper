@@ -78,6 +78,9 @@ isort.known-first-party = [
     "E402",  # Module level import not at top of file
     "S603",  # `subprocess` call: check for execution of untrusted input"
 ]
+"tests/**.py" = [
+    "S101", # Allow the use of assert within the test directory
+]
 
 [tool.setuptools_scm]
 root = "../.."
