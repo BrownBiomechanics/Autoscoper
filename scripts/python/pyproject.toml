@@ -80,6 +80,7 @@ isort.known-first-party = [
 ]
 "tests/**.py" = [
     "S101", # Allow the use of assert within the test directory
+    "PLR2004", # Allow the use of magic values in comparisons within the test directory
 ]
 
 [tool.setuptools_scm]
