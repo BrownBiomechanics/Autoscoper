@@ -90,7 +90,7 @@ namespace xromm
     void load(const Trial& trial);
     Trial* trial() { return &trial_; }
     void optimize(int frame, int dframe, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int max_stall_iter);
-    double minimizationFunc(const double* values) const;
+    double minimizationFunc(double* values) const;
     std::vector <double> trackFrame(unsigned int volumeID, double* xyzpr) const;
     std::vector<gpu::View*>& views() { return views_; }
     const std::vector<gpu::View*>& views() const { return views_; }
@@ -107,6 +107,7 @@ namespace xromm
 
     void getFullDRR(unsigned int volumeID) const;
 
+    
 
   private:
     void calculate_viewport(const CoordFrame& modelview, double* viewport) const;
@@ -123,6 +124,7 @@ namespace xromm
     vtkTransform* transformB;
 
     vtkCollisionDetectionFilter* collide;
+    std::vector < std::pair<std::pair<int, int>, vtkCollisionDetectionFilter*>> colliders;
 
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
     Buffer* rendered_drr_;
