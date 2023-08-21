@@ -171,6 +171,18 @@ endif()
 mark_as_superbuild(Autoscoper_COLLISION_DETECTION)
 
 #-----------------------------------------------------------------------------
+# Collision Detection
+#-----------------------------------------------------------------------------
+if(Autoscoper_BUILD_VTK OR (DEFINED VTK_DIR AND EXISTS ${VTK_DIR}))
+  message(STATUS "Configuring with collision detection")
+  set(Autoscoper_COLLISION_DETECTION 1)
+else()
+  message(STATUS "Configuring without collision detection. If you want to enable collision detection, please set either Autoscoper_BUILD_VTK (if you want to build VTK as apart of the Superbuild) or VTK_DIR (If you want to use a pre-built version of VTK).")
+  set(Autoscoper_COLLISION_DETECTION 0)
+endif()
+mark_as_superbuild(Autoscoper_COLLISION_DETECTION)
+
+#-----------------------------------------------------------------------------
 # Dependencies
 #-----------------------------------------------------------------------------
 find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)

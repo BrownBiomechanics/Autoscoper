@@ -242,6 +242,7 @@ namespace xromm
         getline(lineStream, value);
         meshFiles.push_back(value);
       }
+
       else if (key.compare("Version") == 0) {
         std::getline(lineStream, value);
         trimLineEndings(value);
@@ -297,6 +298,7 @@ namespace xromm
     }
   }
 
+
   void Trial::loadCameras(std::vector<std::string>& mayaCams) {
     cameras.clear();
     for (unsigned int i = 0; i < mayaCams.size(); ++i) {
@@ -340,7 +342,6 @@ namespace xromm
     // load in mesh files if they exist
     if (meshFiles.size() > 0) {
 #ifdef Autoscoper_COLLISION_DETECTION
-<<<<<<< HEAD
       meshes.clear();
       for (unsigned int i = 0; i < meshFiles.size(); ++i) {
         try {
@@ -351,21 +352,7 @@ namespace xromm
           std::cerr << e.what() << std::endl;
         }
       }
-=======
-        meshes.clear();
-        for (unsigned int i = 0; i < meshFiles.size(); ++i) {
-            try {
-                Mesh mesh(meshFiles[i]);
-                std::cout << "Loading mesh " << meshFiles[i] << std::endl;
 
-                // Calculate and store OBB 
-
-                meshes.push_back(mesh);
-            }
-            catch (std::exception& e) {
-                std::cerr << e.what() << std::endl;
-            }
-        }
         /*int numMeshPairs = 0;
         for (unsigned int i = 0; i < meshFiles.size(); ++i) {
             for (unsigned int j = 0; j < meshFiles.size(); ++j) {
@@ -392,7 +379,6 @@ namespace xromm
 
         std::cout << "Num Pairs =  " << numMeshPairs << std::endl;*/
 
->>>>>>> c486fc5 (PERF: Moving creation and initialization of vtkCollisionDetectionFilter, WIP)
 #else
       std::cerr << "WARNING: Autoscoper was not compiled with collision detection support.  No mesh files will be loaded." << std::endl;
 #endif // Autoscoper_COLLISION_DETECTION

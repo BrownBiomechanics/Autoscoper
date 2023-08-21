@@ -15,11 +15,11 @@ public:
 
 	void Write(const std::string& filename) const;
 
-    void Mesh::Transform(double xAngle, double yAngle, double zAngle, double shiftX, double shiftY, double shiftZ);
+  void Mesh::Transform(double xAngle, double yAngle, double zAngle, double shiftX, double shiftY, double shiftZ);
 
-    double getBoundingRadius() const { return boundingRadius; }
+  double getBoundingRadius() const { return boundingRadius; }
 
-    std::string fileName;
+  std::string fileName;
 
 private:
 

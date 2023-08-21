@@ -17,6 +17,12 @@ if(Autoscoper_BUILD_VTK)
    )
 endif()
 
+if(Autoscoper_BUILD_VTK)
+  list(APPEND Autoscoper_DEPENDENCIES
+    VTK
+   )
+endif()
+
 set(proj ${SUPERBUILD_TOPLEVEL_PROJECT})
 
 ExternalProject_Include_Dependencies(${proj}

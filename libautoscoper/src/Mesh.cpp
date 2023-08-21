@@ -88,9 +88,9 @@ void Mesh::Transform(double xAngle, double yAngle, double zAngle, double shiftX,
 //}
 
 void Mesh::Write(const std::string& filename) const {
-  vtkSTLWriter* writer = vtkSTLWriter::New();
-  writer->SetFileName(filename.c_str());
-  writer->SetInputData(this->polyData);
-  writer->Write();
-  writer->Delete();
+	vtkSTLWriter* writer = vtkSTLWriter::New();
+	writer->SetFileName(filename.c_str());
+	writer->SetInputData(this->polyData);
+	writer->Write();
+	writer->Delete();
 }
