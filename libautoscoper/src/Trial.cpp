@@ -98,7 +98,8 @@ namespace xromm
           voxelSizes,
           volumeFlips,
           renderResolution,
-          optimizationOffsets);
+          optimizationOffsets,
+          meshFiles);
 
     file.close();
 
@@ -124,6 +125,7 @@ namespace xromm
              camRootDirs,
              volumeFiles,
              voxelSizes,
+             meshFiles,
              filename);
 
     loadCameras(mayaCams);
@@ -190,7 +192,8 @@ namespace xromm
                     std::vector<std::string>& voxelSizes,
                     std::vector<std::string>& volumeFlips,
                     std::vector<std::string>& renderResolution,
-                    std::vector<std::string>& optimizationOffsets) {
+                    std::vector<std::string>& optimizationOffsets,
+                    std::vector<std::string>& meshFiles) {
     std::string line, key, value;
     while (std::getline(file, line)) {
 
@@ -270,6 +273,7 @@ namespace xromm
     const std::vector<std::string>& camRootDirs,
     const std::vector<std::string>& volumeFiles,
     const std::vector<std::string>& voxelSizes,
+    const std::vector<std::string>& meshFiles,
     const std::string& filename) {
 
     // Check that this is a valid trial
@@ -309,7 +313,8 @@ namespace xromm
 
   void Trial::loadVolumes(std::vector<std::string>& volumeFiles,
                           std::vector<std::string>& voxelSizes,
-                          std::vector<std::string>& volumeFlips) {
+                          std::vector<std::string>& volumeFlips,
+                          std::vector<std::string>& meshFiles) {
     // First load the volumes as more continuous memory is required than for the videos.
     volumes.clear();
     volumestransform.clear();

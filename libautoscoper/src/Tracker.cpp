@@ -963,15 +963,6 @@ bool Tracker::computeCollisions(std::vector<Mesh> meshes, unsigned int current_v
 
     return false;
 
-
-
-
-
-
-
-
-
-
 //        // BEGIN COLLIDE IMPLEMENTATION
 //    collide->SetCollisionModeToFirstContact();
 //    collide->SetNumberOfCellsPerNode(2);

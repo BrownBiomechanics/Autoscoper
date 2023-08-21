@@ -115,7 +115,8 @@ private:
                std::vector<std::string>& voxelSizes,
                std::vector<std::string>& volumeFlips,
                std::vector<std::string>& renderResolution,
-               std::vector<std::string>& optimizationOffsets);
+               std::vector<std::string>& optimizationOffsets,
+               std::vector<std::string>& meshFiles);
 
     void parseVersion(const std::string& text, std::vector<int>& version);
 
@@ -136,6 +137,7 @@ private:
                   const std::vector<std::string>& camRootDirs,
                   const std::vector<std::string>& volumeFiles,
                   const std::vector<std::string>& voxelSizes,
+                  const std::vector<std::string>& meshFiles,
                   const std::string& filename);
 
     void loadCameras(std::vector<std::string>& mayaCams);
@@ -144,7 +146,8 @@ private:
 
     void loadVolumes(std::vector<std::string>& volumeFiles,
                      std::vector<std::string>& voxelSizes,
-                     std::vector<std::string>& volumeFlips);
+                     std::vector<std::string>& volumeFlips,
+                     std::vector<std::string>& meshFiles);
 
     void loadOffsets(std::vector<std::string>& offsets);
 
