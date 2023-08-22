@@ -45,7 +45,12 @@
 #include <vector>
 #include <string>
 
+#include <vtkPolyData.h>
+#include <vtkTransform.h>
+#include <vtkCollisionDetectionFilter.h>
+
 #include "Filter.hpp"
+#include "Mesh.hpp"
 
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
 #include "gpu/cuda/RayCaster.hpp"
@@ -85,7 +90,7 @@ namespace xromm
     void load(const Trial& trial);
     Trial* trial() { return &trial_; }
     void optimize(int frame, int dframe, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int max_stall_iter);
-    double minimizationFunc(const double* values) const;
+    double minimizationFunc(double* values) const;
     std::vector <double> trackFrame(unsigned int volumeID, double* xyzpr) const;
     std::vector<gpu::View*>& views() { return views_; }
     const std::vector<gpu::View*>& views() const { return views_; }
@@ -94,13 +99,14 @@ namespace xromm
     void updateBackground();
     void setBackgroundThreshold(float threshold);
     std::vector<unsigned char> getImageData(unsigned volumeID, unsigned camera, double* xyzpr, unsigned& width, unsigned& height);
-
+    bool computeCollisions(std::vector<Mesh> meshes, unsigned int current_volume, double* xyzypr, std::vector<std::vector<double>> poses) const;
 
     // Bardiya Cost Function for Implants
     //double implantMinFunc(const double* values) const;
     //std::vector<double> trackImplantFrame(unsigned int volumeID, double * xyzypr) const;
 
     void getFullDRR(unsigned int volumeID) const;
+
 
 
   private:
@@ -111,6 +117,15 @@ namespace xromm
     Trial trial_;
     std::vector <gpu::VolumeDescription*> volumeDescription_;
     std::vector <gpu::View*> views_;
+
+    // Collision Detection filter and transforms
+
+    vtkTransform* transformA;
+    vtkTransform* transformB;
+
+    vtkCollisionDetectionFilter* collide;
+    std::vector < std::pair<std::pair<int, int>, vtkCollisionDetectionFilter*>> colliders;
+
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
     Buffer* rendered_drr_;
     Buffer* rendered_rad_;

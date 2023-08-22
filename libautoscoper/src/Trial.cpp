@@ -88,6 +88,7 @@ namespace xromm
     std::vector<std::string> volumeFlips;
     std::vector<std::string> renderResolution;
     std::vector<std::string> optimizationOffsets;
+    std::vector<std::string> meshFiles;
 
     parse(file,
           version,
@@ -97,7 +98,8 @@ namespace xromm
           voxelSizes,
           volumeFlips,
           renderResolution,
-          optimizationOffsets);
+          optimizationOffsets,
+          meshFiles);
 
     file.close();
 
@@ -123,11 +125,12 @@ namespace xromm
              camRootDirs,
              volumeFiles,
              voxelSizes,
+             meshFiles,
              filename);
 
     loadCameras(mayaCams);
 
-    loadVolumes(volumeFiles, voxelSizes, volumeFlips);
+    loadVolumes(volumeFiles, voxelSizes, volumeFlips, meshFiles);
 
     loadVideos(camRootDirs);
 
@@ -189,8 +192,8 @@ namespace xromm
                     std::vector<std::string>& voxelSizes,
                     std::vector<std::string>& volumeFlips,
                     std::vector<std::string>& renderResolution,
-                    std::vector<std::string>& optimizationOffsets) {
-
+                    std::vector<std::string>& optimizationOffsets,
+                    std::vector<std::string>& meshFiles) {
     std::string line, key, value;
     while (std::getline(file, line)) {
 
@@ -229,6 +232,11 @@ namespace xromm
         trimLineEndings(value);
         voxelSizes.push_back(value);
       }
+      else if (key.compare("MeshFile") == 0) {
+        std::getline(lineStream, value);
+        trimLineEndings(value);
+        meshFiles.push_back(value);
+      }
       else if (key.compare("RenderResolution") == 0) {
         std::getline(lineStream, value);
         trimLineEndings(value);
@@ -262,33 +270,38 @@ namespace xromm
   }
 
   void  Trial::validate(const std::vector<std::string>& mayaCams,
-                        const std::vector<std::string>& camRootDirs,
-                        const std::vector<std::string>& volumeFiles,
-                        const std::vector<std::string>& voxelSizes,
-                        const std::string& filename) {
+    const std::vector<std::string>& camRootDirs,
+    const std::vector<std::string>& volumeFiles,
+    const std::vector<std::string>& voxelSizes,
+    const std::vector<std::string>& meshFiles,
+    const std::string& filename) {
 
     // Check that this is a valid trial
     if (mayaCams.size() < 1) {
       throw std::runtime_error(
-            trialReadingError(filename, "There must be at least one mayacam files."));
+        trialReadingError(filename, "There must be at least one mayacam files."));
     }
     if (mayaCams.size() != camRootDirs.size()) {
       throw std::runtime_error(
-            trialReadingError(filename, std::string("The number of cameras and videos must match.\n") +
-                        "Found " + std::to_string(mayaCams.size()) + " cameras "
-                        "and " + std::to_string(camRootDirs.size()) + " videos."));
+        trialReadingError(filename, std::string("The number of cameras and videos must match.\n") +
+          "Found " + std::to_string(mayaCams.size()) + " cameras "
+          "and " + std::to_string(camRootDirs.size()) + " videos."));
     }
     if (volumeFiles.size() < 1) {
       throw std::runtime_error(
-            trialReadingError(filename, "There must be at least one volume file."));
+        trialReadingError(filename, "There must be at least one volume file."));
     }
     if (volumeFiles.size() != voxelSizes.size()) {
       throw std::runtime_error(
-            trialReadingError(filename, std::string("Each volume must be associated with its corresponding voxel sizes.\n") +
-                               "Found " + std::to_string(volumeFiles.size()) + " volumes "
-                               "and " + std::to_string(voxelSizes.size()) + " voxel sizes."));
+        trialReadingError(filename, std::string("Each volume must be associated with its corresponding voxel sizes.\n") +
+          "Found " + std::to_string(volumeFiles.size()) + " volumes "
+          "and " + std::to_string(voxelSizes.size()) + " voxel sizes."));
+    }
+    if (meshFiles.size() != 0 && volumeFiles.size() != meshFiles.size()) {
+      throw std::runtime_error("You must specify a mesh file for each volume or none at all.");
     }
   }
+
 
   void Trial::loadCameras(std::vector<std::string>& mayaCams) {
     cameras.clear();
@@ -300,7 +313,8 @@ namespace xromm
 
   void Trial::loadVolumes(std::vector<std::string>& volumeFiles,
                           std::vector<std::string>& voxelSizes,
-                          std::vector<std::string>& volumeFlips) {
+                          std::vector<std::string>& volumeFlips,
+                          std::vector<std::string>& meshFiles) {
     // First load the volumes as more continuous memory is required than for the videos.
     volumes.clear();
     volumestransform.clear();
@@ -329,6 +343,23 @@ namespace xromm
         volumes.push_back(volume);
         volumestransform.push_back(VolumeTransform());
         num_volumes++;
+    }
+    // load in mesh files if they exist
+    if (meshFiles.size() > 0) {
+#ifdef Autoscoper_COLLISION_DETECTION
+      meshes.clear();
+      for (unsigned int i = 0; i < meshFiles.size(); ++i) {
+        try {
+          Mesh mesh(meshFiles[i]);
+          meshes.push_back(mesh);
+        }
+        catch (std::exception& e) {
+          std::cerr << e.what() << std::endl;
+        }
+      }
+#else
+      std::cerr << "WARNING: Autoscoper was not compiled with collision detection support.  No mesh files will be loaded." << std::endl;
+#endif // Autoscoper_COLLISION_DETECTION
     }
   }
 

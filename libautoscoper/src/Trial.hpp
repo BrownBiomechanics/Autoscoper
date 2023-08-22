@@ -52,6 +52,11 @@
 #include "Volume.hpp"
 #include "VolumeTransform.hpp"
 
+#ifdef Autoscoper_COLLISION_DETECTION
+#include "Mesh.hpp"
+#endif // Autoscoper_COLLISION_DETECTION
+
+
 namespace xromm
 {
 // The trial class contains all of the state information for an autoscoper run.
@@ -63,28 +68,32 @@ class Trial
 {
 public:
 
-    // Loads a trial file
+  // Loads a trial file
 
-    Trial(const std::string& filename = "");
+  Trial(const std::string& filename = "");
 
-    void save(const std::string& filename);
+  void save(const std::string& filename);
 
-    std::vector<Camera> cameras;
-    std::vector<Video>  videos;
-    std::vector<Volume> volumes;
+  std::vector<Camera> cameras;
+  std::vector<Video>  videos;
+  std::vector<Volume> volumes;
   std::vector<VolumeTransform> volumestransform;
+#ifdef Autoscoper_COLLISION_DETECTION
+  std::vector<Mesh> meshes;
+#endif // Autoscoper_COLLISION_DETECTION
 
-    // State information
-    int frame;
-    int num_frames;
+
+  // State information
+  int frame;
+  int num_frames;
   int current_volume;
   int num_volumes;
 
-    //Controls for the optimization process
-    int guess;
-    double offsets[6];
-    int render_width;
-    int render_height;
+  //Controls for the optimization process
+  int guess;
+  double offsets[6];
+  int render_width;
+  int render_height;
 
   KeyCurve * getXCurve(int volumeID);
   KeyCurve * getYCurve(int volumeID);
@@ -106,7 +115,8 @@ private:
                std::vector<std::string>& voxelSizes,
                std::vector<std::string>& volumeFlips,
                std::vector<std::string>& renderResolution,
-               std::vector<std::string>& optimizationOffsets);
+               std::vector<std::string>& optimizationOffsets,
+               std::vector<std::string>& meshFiles);
 
     void parseVersion(const std::string& text, std::vector<int>& version);
 
@@ -127,6 +137,7 @@ private:
                   const std::vector<std::string>& camRootDirs,
                   const std::vector<std::string>& volumeFiles,
                   const std::vector<std::string>& voxelSizes,
+                  const std::vector<std::string>& meshFiles,
                   const std::string& filename);
 
     void loadCameras(std::vector<std::string>& mayaCams);
@@ -135,7 +146,8 @@ private:
 
     void loadVolumes(std::vector<std::string>& volumeFiles,
                      std::vector<std::string>& voxelSizes,
-                     std::vector<std::string>& volumeFlips);
+                     std::vector<std::string>& volumeFlips,
+                     std::vector<std::string>& meshFiles);
 
     void loadOffsets(std::vector<std::string>& offsets);
 
