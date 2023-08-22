@@ -25,30 +25,30 @@ const float c2 = 1.2f; // Attraction towards this best position of all particles
 
 ///
 /// \brief Function that calls minimization function
-/// 
+///
 double PSO_FUNC(double *P);
 
 ///
 /// \brief Initialize seed for PSO optimization
-/// 
+///
 void intializeRandom();
 
 ///
 /// \brief Generate a random number between low and high
-/// 
+///
 float getRandom(float low, float high);
 
 
 ///
 /// \brief Generate a random number between 0 and 1
-/// 
+///
 float getRandomClamped();
 
 
 ///
 /// \brief Minimization function wrapper
 /// \param x[] particle pose
-/// 
+///
 float host_fitness_function(float x[]);
 
 

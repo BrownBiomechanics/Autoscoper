@@ -298,7 +298,7 @@ namespace xromm
           "and " + std::to_string(voxelSizes.size()) + " voxel sizes."));
     }
     if (meshFiles.size() != 0 && volumeFiles.size() != meshFiles.size()) {
-      throw std::runtime_error("You must sepcify a mesh file for each volume or none at all.");
+      throw std::runtime_error("You must specify a mesh file for each volume or none at all.");
     }
   }
 

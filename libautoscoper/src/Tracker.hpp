@@ -107,7 +107,7 @@ namespace xromm
 
     void getFullDRR(unsigned int volumeID) const;
 
-    
+
 
   private:
     void calculate_viewport(const CoordFrame& modelview, double* viewport) const;

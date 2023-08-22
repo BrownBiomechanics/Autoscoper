@@ -274,7 +274,7 @@ void Tracker::load(const Trial& trial)
         }
       }
     }
-    
+
     std::vector<gpu::View*>::iterator viewIter;
     for (viewIter = views_.begin(); viewIter != views_.end(); ++viewIter) {
         delete *viewIter;
@@ -473,13 +473,13 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
       {
         if (i >= NUM_OF_DIMENSIONS) {
           // Note: For better performance, consider replacing with Sobol sequences (Initialising PSO with randomised low-discrepancy sequences: the comparative results)
-          positions[i] = getRandom(START_RANGE_MIN, START_RANGE_MAX); 
+          positions[i] = getRandom(START_RANGE_MIN, START_RANGE_MAX);
         }
         // First point will be the initial position
         else {
           //if (j > 1)
           //{
-            positions[i] = (float)0.0;  
+            positions[i] = (float)0.0;
           //}
           //else
           //{
@@ -746,7 +746,7 @@ double Tracker::minimizationFunc(double* values) const
     }
   }
 #endif // Autoscoper_COLLISION_DETECTION
-      
+
 #endif // Autoscoper_RENDERING_USE_OpenCL_BACKEND
 
   std::vector <double> correlations = trackFrame(idx, &xyzypr[0]);
@@ -865,67 +865,67 @@ bool Tracker::computeCollisions(std::vector<Mesh> meshes, unsigned int current_v
   // current_volume is the index of the volume we are currently tracking
   // xyzypr is the possible new pose of the current volume
   // poses is a vector of poses for all volumes
-    
-    
+
+
   // BEGIN COLLIDER BASED IMPLEMENTATION
   int meshA = current_volume;
   int meshB = -1;
-  
+
   // Set up transformA
   transformA->Identity();
-  
+
   // Apply Translation
   transformA->Translate(xyzypr[0], xyzypr[1], xyzypr[2]);
-  
+
   // Apply Rotation
   transformA->RotateZ(xyzypr[3]);
   transformA->RotateY(xyzypr[4]);
   transformA->RotateX(xyzypr[5]);
-  
-  
+
+
   // Get bounding box to generate spherical sweep
   double centerA[3];
   meshes[meshA].GetPolyData()->GetCenter(centerA);
-  
+
   double radiusA = meshes[meshA].getBoundingRadius();
-  
+
   transformA->TransformVector(centerA, centerA);
-  
+
   centerA[0] += xyzypr[0];
   centerA[1] += xyzypr[1];
   centerA[2] += xyzypr[2];
-  
+
   for (int i = 0; i < colliders.size(); i++) {
-  
+
     if (colliders[i].first.first != current_volume && colliders[i].first.second != current_volume) {
       continue;
     }
-  
+
     // Set meshB to be the non current volume mesh
     meshB = (colliders[i].first.first == current_volume) ? meshB = colliders[i].first.second : meshB = colliders[i].first.first;
-  
+
     // Set up transformB
     transformB->Identity();
-  
+
     // Translate to pose position
     transformB->Translate(poses[meshB][0], poses[meshB][1], poses[meshB][2]);
     // Apply Rotation
     transformB->RotateZ(poses[meshB][3]);
     transformB->RotateY(poses[meshB][4]);
     transformB->RotateX(poses[meshB][5]);
-  
+
     double centerB[3];
     meshes[meshB].GetPolyData()->GetCenter(centerB);
     double radiusB = meshes[meshB].getBoundingRadius();
-  
+
     transformB->TransformVector(centerB, centerB);
     centerB[0] += poses[meshB][0];
     centerB[1] += poses[meshB][1];
     centerB[2] += poses[meshB][2];
-  
+
     // Check for intersection of spherical representation
     double distance = sqrt(pow(centerA[0] - centerB[0], 2) + pow(centerA[1] - centerB[1], 2) + pow(centerA[2] - centerB[2], 2));
-  
+
     if (distance > radiusA + radiusB) {
   #if DEBUG
       std::cout << "Skipped in CD in spherical sweep" << std::endl;
@@ -934,19 +934,19 @@ bool Tracker::computeCollisions(std::vector<Mesh> meshes, unsigned int current_v
   #endif
       return false;
     }
-  
+
     if (colliders[i].first.first == current_volume) {
       colliders[i].second->SetTransform(0, transformA);
       colliders[i].second->SetTransform(1, transformB);
     }
-  
+
     if (colliders[i].first.second == current_volume) {
       colliders[i].second->SetTransform(0, transformB);
       colliders[i].second->SetTransform(1, transformA);
     }
-  
+
     colliders[i].second->Update();
-    
+
     m_numBoxTest += colliders[i].second->GetNumberOfBoxTests();
 
     if (colliders[i].second->GetNumberOfContacts() != 0) {
@@ -955,7 +955,7 @@ bool Tracker::computeCollisions(std::vector<Mesh> meshes, unsigned int current_v
   #endif
       return true;
     }
-  }// END COLLIDER IMPLEMENTATION  
+  }// END COLLIDER IMPLEMENTATION
 
     return false;
 }

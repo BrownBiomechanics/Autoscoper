@@ -7,7 +7,7 @@
 
 Mesh::Mesh(const std::string& filename) {
 
-	fileName = filename; 
+	fileName = filename;
 
 	vtkSTLReader* reader = vtkSTLReader::New();
 	this->polyData = vtkPolyData::New();
@@ -21,13 +21,13 @@ Mesh::Mesh(const std::string& filename) {
 	this->meshOBB = vtkOBBTree::New();
 	// this->meshOBB->SetDataSet(this->polyData);
 	this->meshOBB->SetMaxLevel(1);
-	
+
 	double corner[3];
 	double maxAxis[3];
 	double midAxis[3];
 	double minAxis[3];
 	double size[3];
-	
+
 	this->meshOBB->ComputeOBB(this->polyData, corner, maxAxis, midAxis, minAxis, size);
 
 	/*std::cout << "corner = " << corner[0] << ", " << corner[1] << ", " << corner[2] << std::endl;
@@ -36,7 +36,7 @@ Mesh::Mesh(const std::string& filename) {
 	std::cout << "minAxis = " << minAxis[0] << ", " << minAxis[1] << ", " << minAxis[2] << std::endl;
 	std::cout << "size = " << size[0] << ", " << size[1] << ", " << size[2] << std::endl;*/
 
-	
+
 	/*this->meshOBB->Update();
 	this->meshOBB->PrintSelf(std::cout, vtkIndent(2));*/
 
@@ -54,7 +54,7 @@ Mesh::Mesh(const std::string& filename) {
 		(bounds[1] - centerA[0]) * (bounds[1] - centerA[0]) +
 		(bounds[3] - centerA[1]) * (bounds[3] - centerA[1]) +
 		(bounds[5] - centerA[2]) * (bounds[5] - centerA[2]);
-	
+
 	boundingRadius = sqrt(boundingRadius);
 
 	std::cout << "Mesh " << filename << ", has a bounding radius of: " << boundingRadius << std::endl;
@@ -64,7 +64,7 @@ Mesh::Mesh(const std::string& filename) {
 }
 
 // Helper function to transform mesh after reading it in.  Physically moves the mesh to the new transformed position.
-void Mesh::Transform(double xAngle, double yAngle, double zAngle, double shiftX, double shiftY, double shiftZ) 
+void Mesh::Transform(double xAngle, double yAngle, double zAngle, double shiftX, double shiftY, double shiftZ)
 {
 	vtkNew<vtkTransform> transform;
 	// Shift in Y to overlay tiff (double bounding box center
@@ -72,7 +72,7 @@ void Mesh::Transform(double xAngle, double yAngle, double zAngle, double shiftX,
 	transform->RotateX(xAngle);
 	transform->RotateY(yAngle);
 	transform->RotateZ(zAngle);
-	
+
 	vtkNew<vtkTransformPolyDataFilter> transformFilter;
 	transformFilter->SetInputData(this->polyData);
 	transformFilter->SetTransform(transform);

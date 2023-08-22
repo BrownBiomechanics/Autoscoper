@@ -61,8 +61,8 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
 
   float velClamp = 0.2;
 
-  // Inertial weight of PSO. Measure of how likley a particle is to remain
-  // traveling in the same direciton it has been traveling (momentum like)
+  // Inertial weight of PSO. Measure of how likely a particle is to remain
+  // traveling in the same direction it has been traveling (momentum like)
   float OMEGA = 0.8f;
 
   float OMEGA_MIN = 0.0001; // Note: Currently unused. Needed for adaptive PSO
@@ -116,7 +116,7 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
       avgNonCollidedPosition[j] = 0.0;
       avgCollidedPosition[j] = 0.0;
     }
-    
+
     for (int j = 0; j < NUM_OF_PARTICLES; j++)
     {
       collided[j] = false;
@@ -144,9 +144,9 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
           avgCollidedPosition[j] += tempParticle1[j];
         }
       }
-      
+
       if (nccP < 1.0E4){
-        
+
         for (int j = 0; j < NUM_OF_DIMENSIONS; j++) {
           avgNonCollidedPosition[j] += tempParticle1[j];
         }
@@ -182,7 +182,7 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
 
         avgNonCollidedPosition[j] /= (float)NUM_OF_PARTICLES - (float)collidedCount;
         avgCollidedPosition[j] /= (float)collidedCount;
-        
+
         correctionVec[j] = avgNonCollidedPosition[j] - avgCollidedPosition[j];
 
       }
@@ -208,11 +208,11 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
     }
 #endif
 
-    float epochBest = globalBest; 
+    float epochBest = globalBest;
     // float epochBest = host_fitness_function(gBest);
 
-    
-    
+
+
     if (counter % 5 == 0) {
       std::cout << "Current Best NCC: " << epochBest
         << "   on iteration:" << counter
@@ -222,7 +222,7 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
     {
       //std::cout << "Increased Stall Iter" << std::endl;
       stall_iter++;
-    } 
+    }
     else if (abs(epochBest - currentBest) > 0.001f)
     {
       //std::cout << "Zeroed Stall Iter" << std::endl;
