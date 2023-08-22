@@ -3,7 +3,7 @@
 #include <string>
 
 #define VELOCITY_FILTER 0
-#define COLLISION_REPONSE 0
+#define COLLISION_RESPONSE 0
 
 // New Particle Swarm Optimization
 float host_fitness_function(float x[])
@@ -58,27 +58,23 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
 
   bool do_this = true;
   unsigned int counter = 0;
-  //for (int iter = 0; iter < (signed int)MAX_EPOCHS; iter++)
 
-
-  float clamp = 0.2;
+  float velClamp = 0.2;
 
   // Inertial weight of PSO. Measure of how likley a particle is to remain
   // traveling in the same direciton it has been traveling (momentum like)
   float OMEGA = 0.8f;
 
-  float OMEGA_MIN = 0.0001;
+  float OMEGA_MIN = 0.0001; // Note: Currently unused. Needed for adaptive PSO
 
-
+  // Arrays for collision response
   float avgNonCollidedPosition[NUM_OF_DIMENSIONS];
   float avgCollidedPosition[NUM_OF_DIMENSIONS];
   float correctionVec[NUM_OF_DIMENSIONS];
-
   bool collided[NUM_OF_PARTICLES];
 
   while (do_this)
   {
-    //std::cout << "OMEGA: " << OMEGA << std::endl;
     if (counter >= MAX_EPOCHS)
     {
       do_this = false;
@@ -93,7 +89,17 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
 
       velocities[i] = OMEGA * velocities[i] + c1 * rp*(pBests[i] - positions[i]) + c2 * rg*(gBest[i%NUM_OF_DIMENSIONS] - positions[i]);
 #if VELOCITY_FILTER
-      velocities[i] = std::max(-clamp, std::min(velocities[i], clamp));
+      float speed = 0.0;
+      for(int i=0; i< NUM_OF_DIMENSIONS; i++){
+        speed += velocities[i] * velocities[i];
+      }
+      speed = sqrt(speed);
+      if (speed > velClamp) {
+        for (int i = 0; i < NUM_OF_DIMENSIONS; i++) {
+          velocities[i] /= speed;
+          velocities[i] *= velClamp;
+        }
+      }
 #endif
 
 
@@ -156,8 +162,6 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
         {
           pBests[i + j] = positions[i + j];
         }
-
-        // if (host_fitness_function(tempParticle1) < host_fitness_function(gBest))
         if (nccP < globalBest)
         {
           //cout << "Current Best is: " ;
@@ -173,7 +177,6 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
 #if COLLISION_RESPONSE
     if (collidedCount != 0 && collidedCount != 100) {
 
-      // std::cout << "Correction Vector: ";
       for (int j = 0; j < NUM_OF_DIMENSIONS; j++) {
 
 
@@ -190,8 +193,9 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
       for (int i = 0; i < NUM_OF_PARTICLES * NUM_OF_DIMENSIONS; i += NUM_OF_DIMENSIONS)
       {
         if (collided[particleId] == true) {
-
-          // std::cout << "Shifted particles = " << particleId << std::endl;
+#if DEBUG
+          std::cout << "Shifted particle = " << particleId << std::endl;
+#endif
           for (int j = 0; j < NUM_OF_DIMENSIONS; j++)
           {
             positions[i + j] += ((float)collidedCount/(float)NUM_OF_PARTICLES)*correctionVec[j];
@@ -209,8 +213,11 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
 
     
     
-    if (counter % 5 == 0) std::cout << "Current Best NCC: " << epochBest << "   on iteration:"<< counter <<" and stall = "<< stall_iter << std::endl;
-    //std::cout << "Stall: " << stall_iter << std::endl;
+    if (counter % 5 == 0) {
+      std::cout << "Current Best NCC: " << epochBest
+        << "   on iteration:" << counter
+        << " and stall = " << stall_iter << std::endl;
+    }
     if (abs(epochBest - currentBest) < 1e-4f)
     {
       //std::cout << "Increased Stall Iter" << std::endl;

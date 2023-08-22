@@ -246,8 +246,15 @@ void Tracker::load(const Trial& trial)
 {
     trial_ = trial;
 
-    for (int i = 0; i < trial_.meshes.size(); i++) {
-      for (int j = i+1; j < trial_.meshes.size(); j++) {
+    // If meshes are present, create colliders
+    std::cout <<  std::endl;
+    std::cout << "Before creation of colliders" << std::endl;
+    std::cout << std::endl;
+    std::cout << "trial_.meshes.size() = "<< trial_.meshes.size() << std::endl;
+
+    if (trial_.meshes.size() > 0) {
+      for (int i = 0; i < trial_.meshes.size(); i++) {
+        for (int j = i + 1; j < trial_.meshes.size(); j++) {
 
           vtkCollisionDetectionFilter* collide = vtkCollisionDetectionFilter::New();
           collide->SetInputData(0, trial_.meshes[i].GetPolyData());
@@ -264,12 +271,10 @@ void Tracker::load(const Trial& trial)
           std::cout << "Creating collider between mesh " << i << " and mesh " << j << std::endl;
 
           colliders.push_back(collider);
+        }
       }
     }
-
-
-
-
+    
     std::vector<gpu::View*>::iterator viewIter;
     for (viewIter = views_.begin(); viewIter != views_.end(); ++viewIter) {
         delete *viewIter;
@@ -344,7 +349,7 @@ void Tracker::load(const Trial& trial)
 void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int max_stall_iter)
 {
   intializeRandom();
-
+  std::cout << "Inside top of Tracker::optimize " << std::endl;
   /*
   // Test code for low discrepancy sequence
   float g = 2.0;
@@ -705,7 +710,7 @@ double Tracker::minimizationFunc(double* values) const
     (*(const_cast<Trial&>(trial_)).getYawCurve(-1))(trial_.frame),
     (*(const_cast<Trial&>(trial_)).getPitchCurve(-1))(trial_.frame),
     (*(const_cast<Trial&>(trial_)).getRollCurve(-1))(trial_.frame) };
-    CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
+  CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
 
   CoordFrame manip = CoordFrame::from_xyzAxis_angle(values);
@@ -718,32 +723,29 @@ double Tracker::minimizationFunc(double* values) const
 #ifdef Autoscoper_RENDERING_USE_OpenCL_BACKEND
   // get the current pose of each volume for the current frame
   std::vector<std::vector<double>> poses;
-  
-  for (unsigned int i = 0; i < trial_.meshes.size(); ++i) {
-    poses.push_back(std::vector<double>(6));
-    poses[i][0] = (*(const_cast<Trial&>(trial_)).getXCurve(i))(trial_.frame);
-    poses[i][1] = (*(const_cast<Trial&>(trial_)).getYCurve(i))(trial_.frame);
-    poses[i][2] = (*(const_cast<Trial&>(trial_)).getZCurve(i))(trial_.frame);
-    poses[i][3] = (*(const_cast<Trial&>(trial_)).getYawCurve(i))(trial_.frame);
-    poses[i][4] = (*(const_cast<Trial&>(trial_)).getPitchCurve(i))(trial_.frame);
-    poses[i][5] = (*(const_cast<Trial&>(trial_)).getRollCurve(i))(trial_.frame);
+  if (trial_.meshes.size() > 0) {
+    for (unsigned int i = 0; i < trial_.meshes.size(); ++i) {
+      poses.push_back(std::vector<double>(6));
+      poses[i][0] = (*(const_cast<Trial&>(trial_)).getXCurve(i))(trial_.frame);
+      poses[i][1] = (*(const_cast<Trial&>(trial_)).getYCurve(i))(trial_.frame);
+      poses[i][2] = (*(const_cast<Trial&>(trial_)).getZCurve(i))(trial_.frame);
+      poses[i][3] = (*(const_cast<Trial&>(trial_)).getYawCurve(i))(trial_.frame);
+      poses[i][4] = (*(const_cast<Trial&>(trial_)).getPitchCurve(i))(trial_.frame);
+      poses[i][5] = (*(const_cast<Trial&>(trial_)).getRollCurve(i))(trial_.frame);
+    }
   }
-  
-  // std::cout << "Num Volumes = " << trial_.num_volumes << std::endl;
-  // check for collisions
 
-  if (computeCollisions(trial_.meshes, trial_.current_volume, xyzypr, poses)) 
-  {
+#ifdef Autoscoper_COLLISION_DETECTION
+  if (trial_.meshes.size() > 0) {
+    if (computeCollisions(trial_.meshes, trial_.current_volume, xyzypr, poses))
+    {
 #if DEBUG
       std::cout << "****************  Collision  ****************" << std::endl; //return 9999;
 #endif
-      // std::cout << "****************  Collision  ****************" << std::endl; //return 9999;
-      // for (int i = 0; i < 6; i++) values[i] *= -1.0;
-
       return 1.0E6;
-
-      // collisionMultiplier = 2.0;
+    }
   }
+#endif // Autoscoper_COLLISION_DETECTION
       
 #endif // Autoscoper_RENDERING_USE_OpenCL_BACKEND
 
@@ -947,14 +949,8 @@ bool Tracker::computeCollisions(std::vector<Mesh> meshes, unsigned int current_v
     
     m_numBoxTest += colliders[i].second->GetNumberOfBoxTests();
 
-    // std::cout << "Num Box test = " << m_numBoxTest << std::endl;
-
-    /*std::cout << "Num Box Test =  " << m_numBoxTest << std::endl;*/
     if (colliders[i].second->GetNumberOfContacts() != 0) {
-
-      
   #if DEBUG
-      
       std::cout << "Collision using " << colliders[i].second->GetNumberOfBoxTests() << " box test**" << std::endl;
   #endif
       return true;
@@ -962,99 +958,6 @@ bool Tracker::computeCollisions(std::vector<Mesh> meshes, unsigned int current_v
   }// END COLLIDER IMPLEMENTATION  
 
     return false;
-
-//        // BEGIN COLLIDE IMPLEMENTATION
-//    collide->SetCollisionModeToFirstContact();
-//    collide->SetNumberOfCellsPerNode(2);
-//    int meshA = current_volume;
-//
-//    transformA->Identity();
-//
-//    // Apply Translation
-//    transformA->Translate(xyzypr[0], xyzypr[1], xyzypr[2]);
-//
-//    // Apply Rotation
-//    transformA->RotateZ(xyzypr[3]);
-//    transformA->RotateY(xyzypr[4]);
-//    transformA->RotateX(xyzypr[5]);
-//
-//
-//    // Get bounding box to generate spherical sweep
-//    double centerA[3];
-//    meshes[meshA].GetPolyData()->GetCenter(centerA);
-//
-//    double radiusA = meshes[meshA].getBoundingRadius();
-//
-//    transformA->TransformVector(centerA, centerA);
-//
-//    centerA[0] += xyzypr[0];
-//    centerA[1] += xyzypr[1];
-//    centerA[2] += xyzypr[2];
-//
-//
-//    for (int meshB = 0; meshB < meshes.size(); meshB++)
-//    {
-//      if (meshB != meshA) {
-//
-//        transformB->Identity();
-//
-//        // Translate to pose position
-//        transformB->Translate(poses[meshB][0], poses[meshB][1], poses[meshB][2]);
-//        // Apply Rotation
-//        transformB->RotateZ(poses[meshB][3]);
-//        transformB->RotateY(poses[meshB][4]);
-//        transformB->RotateX(poses[meshB][5]);
-//
-//        double centerB[3];
-//        meshes[meshB].GetPolyData()->GetCenter(centerB);
-//        double radiusB = meshes[meshB].getBoundingRadius();
-//
-//        transformB->TransformVector(centerB, centerB);
-//        centerB[0] += poses[meshB][0];
-//        centerB[1] += poses[meshB][1];
-//        centerB[2] += poses[meshB][2];
-//
-//        // Check for intersection of spherical representation
-//        double distance = sqrt(pow(centerA[0] - centerB[0], 2) + pow(centerA[1] - centerB[1], 2) + pow(centerA[2] - centerB[2], 2));
-//
-//        if (distance > radiusA + radiusB) {
-//#if DEBUG
-//          std::cout << "Skipped in CD in spherical sweep" << std::endl;
-//          std::cout << "Distance = " << distance << std::endl;
-//          std::cout << "Radius sum = " << radiusA + radiusB << std::endl;
-//#endif
-//          return false;
-//        }
-//
-//#if DEBUG
-//        std::cout << std::endl;
-//        std::cout << "****************** Printing Transforms ******************" << std::endl;
-//        transformA->PrintSelf(std::cout, vtkIndent(2));
-//        transformB->PrintSelf(std::cout, vtkIndent(2));
-//#endif
-//
-//        collide->SetInputData(0, meshes[meshA].GetPolyData());
-//        collide->SetTransform(0, transformA);
-//        collide->SetInputData(1, meshes[meshB].GetPolyData());
-//        collide->SetTransform(1, transformB);
-//        /*collide->SetBoxTolerance(0.001);
-//        collide->SetCellTolerance(0.0);*/
-//
-//        collide->Update();
-//#if DEBUG
-//        std::cout << std::endl;
-//        std::cout << "Printing Collision Detection ******************" << std::endl;
-//        collide->PrintSelf(std::cout, vtkIndent(2));
-//#endif
-//
-//        if (collide->GetNumberOfContacts() != 0) {
-//#if DEBUG
-//          std::cout << "Collision between mesh " << meshA << " and mesh " << meshB << std::endl;
-//#endif
-//          return true;
-//        }
-//      }
-//    }// END COLLIDE IMPLEMENTATION
 }
 
 

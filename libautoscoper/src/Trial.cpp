@@ -130,7 +130,7 @@ namespace xromm
 
     loadCameras(mayaCams);
 
-    loadVolumes(volumeFiles, voxelSizes, volumeFlips);
+    loadVolumes(volumeFiles, voxelSizes, volumeFlips, meshFiles);
 
     loadVideos(camRootDirs);
 
@@ -232,6 +232,11 @@ namespace xromm
         trimLineEndings(value);
         voxelSizes.push_back(value);
       }
+      else if (key.compare("MeshFile") == 0) {
+        std::getline(lineStream, value);
+        trimLineEndings(value);
+        meshFiles.push_back(value);
+      }
       else if (key.compare("RenderResolution") == 0) {
         std::getline(lineStream, value);
         trimLineEndings(value);
@@ -241,11 +246,6 @@ namespace xromm
         std::getline(lineStream, value);
         optimizationOffsets.push_back(value);
       }
-      else if (key.compare("MeshFile") == 0) {
-        getline(lineStream, value);
-        meshFiles.push_back(value);
-      }
-
       else if (key.compare("Version") == 0) {
         std::getline(lineStream, value);
         trimLineEndings(value);
@@ -357,33 +357,6 @@ namespace xromm
           std::cerr << e.what() << std::endl;
         }
       }
-
-        /*int numMeshPairs = 0;
-        for (unsigned int i = 0; i < meshFiles.size(); ++i) {
-            for (unsigned int j = 0; j < meshFiles.size(); ++j) {
-                
-                if (i != j) {
-
-                    vtkCollisionDetectionFilter* collider = vtkCollisionDetectionFilter::New();
-
-                    collider->SetCollisionModeToAllContacts();
-                    collider->SetInputData(0, meshes[i].GetPolyData());
-                    collider->SetInputData(1, meshes[j].GetPolyData());
-                    collider->SetBoxTolerance(0.0);
-                    collider->SetCellTolerance(0.0);
-                    collider->Update();
-
-                    colliders.push_back(collider);
-
-                    meshIds.push_back(std::make_pair(i, j));
-
-                    numMeshPairs++;
-                }
-            }
-        }
-
-        std::cout << "Num Pairs =  " << numMeshPairs << std::endl;*/
-
 #else
       std::cerr << "WARNING: Autoscoper was not compiled with collision detection support.  No mesh files will be loaded." << std::endl;
 #endif // Autoscoper_COLLISION_DETECTION
