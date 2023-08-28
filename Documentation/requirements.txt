@@ -3,6 +3,6 @@ myst-parser
 sphinx
 sphinx-issues
 sphinx-notfound-page
-sphinx-rtd-theme
+sphinx-rtd-theme == 1.0.0rc1
 sphinxcontrib-autoprogram
 sphinxcontrib-bibtex
