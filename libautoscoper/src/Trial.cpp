@@ -178,37 +178,7 @@ namespace xromm
   }
 
   std::string Trial::toRelativePath(const std::string& path, const std::string& basePath) {
-#if Autoscoper_HAS_FILESYSTEM == 1
     return fs::relative(path, basePath).string();
-#else
-    // Experimental filesystem compliant version where there is no fs::relative
-    fs::path fsPath = fs::path(path);
-    fs::path fsBasePath = fs::path(basePath);
-
-    // find the first mismatched element and the shared root
-    auto mismatched = std::mismatch(fsPath.begin(), fsPath.end(), fsBasePath.begin(), fsBasePath.end());
-
-    // If the paths are the same, return "."
-    if (mismatched.first == fsPath.end() && mismatched.second == fsBasePath.end()) {
-      return ".";
-    }
-
-    fs::path relativePath;
-    auto pathIt = mismatched.first;
-    auto baseIt = mismatched.second;
-
-    // Move the base to the shared root
-    for (; baseIt != fsBasePath.end(); ++baseIt) {
-      relativePath /= "..";
-    }
-
-    // Add the remaining path
-    for (; pathIt != fsPath.end(); ++pathIt) {
-      relativePath /= *pathIt;
-    }
-
-    return relativePath.string();
-#endif
   }
 
   void Trial::parse(std::ifstream& file,

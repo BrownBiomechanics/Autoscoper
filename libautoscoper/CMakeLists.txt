@@ -43,6 +43,21 @@ if(Autoscoper_BUILD_TESTING)
   )
 endif()
 
+find_package(Filesystem COMPONENTS Experimental Final)
+if(CXX_FILESYSTEM_HEADER STREQUAL "experimental/filesystem")
+  set(Autoscoper_HAS_EXPERIMENTAL_FILESYSTEM 1)
+elseif(CXX_FILESYSTEM_HEADER STREQUAL "filesystem")
+  set(Autoscoper_HAS_FILESYSTEM 1)
+endif()
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/filesystem_compat.hpp.in
+  ${CMAKE_CURRENT_BINARY_DIR}/filesystem_compat.hpp
+  @ONLY
+  )
+list(APPEND libautoscoper_SOURCES
+  src/filesystem_compat.cpp
+  )
+
 if(Autoscoper_RENDERING_BACKEND STREQUAL "CUDA")
   find_package(CUDA REQUIRED)
   include(${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/cuda/CMakeLists.txt)
@@ -84,17 +99,6 @@ set_target_properties(libautoscoper PROPERTIES
   ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_LIB_DIR}"
   )
 
-find_package(Filesystem COMPONENTS Experimental Final)
-if(CXX_FILESYSTEM_HEADER STREQUAL "experimental/filesystem")
-  set(Autoscoper_HAS_EXPERIMENTAL_FILESYSTEM 1)
-elseif(CXX_FILESYSTEM_HEADER STREQUAL "filesystem")
-  set(Autoscoper_HAS_FILESYSTEM 1)
-endif()
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/filesystem_compat.hpp.in
-  ${CMAKE_CURRENT_BINARY_DIR}/filesystem_compat.hpp
-  @ONLY
-  )
 target_link_libraries(libautoscoper PUBLIC std::filesystem)
 
 find_package(TIFF REQUIRED MODULE)
