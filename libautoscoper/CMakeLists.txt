@@ -112,3 +112,6 @@ install(TARGETS libautoscoper
   ARCHIVE DESTINATION ${Autoscoper_LIB_DIR} COMPONENT Development
 )
 
+if(Autoscoper_BUILD_TESTING)
+  add_subdirectory(tests)
+endif()
