@@ -596,16 +596,22 @@ void Camera::loadMayaCam1(const std::string& mayacam)
     focal_lengths[1] = size_[1] / (2 * std::tan(angle_rad / 2));
   }
 
-  void Camera::lookAt(Vec3d& eye, Vec3d& center, Vec3d& up, double matrix[9]) {
+  void Camera::lookAt(const Vec3d& eye, const Vec3d& center, const Vec3d& up, double matrix[9]) {
     // Implementation based off of:
     // https://www.khronos.org/opengl/wiki/GluLookAt_code
     Vec3d forward = unit(center - eye);
+    // This vector points to the right-hand side of the camera's orientation.
     Vec3d side = unit(cross(forward, up));
-    up = cross(side, forward);
-    double matrix[9];
-    matrix[0] = side.x; matrix[1] = side.y; matrix[2] = side.z;
-    matrix[3] = up.x; matrix[4] = up.y; matrix[5] = up.z;
-    matrix[6] = -forward.x; matrix[7] = -forward.y; matrix[8] = -forward.z;
+    Vec3d perpendicularUp = cross(side, forward);
+    matrix[0] = side.x;
+    matrix[1] = side.y;
+    matrix[2] = side.z;
+    matrix[3] = perpendicularUp.x;
+    matrix[4] = perpendicularUp.y;
+    matrix[5] = perpendicularUp.z;
+    matrix[6] = -forward.x;
+    matrix[7] = -forward.y;
+    matrix[8] = -forward.z;
   }
 
 } // namespace XROMM
