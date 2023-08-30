@@ -501,7 +501,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
     Vec3d focal(focal_point);
     Vec3d up(view_up);
     double rot[9] = { 0.0 };
-    lookAt(cam_pos, focal, up, rot);
+    calculateLookAtMatrix(cam_pos, focal, up, rot);
     coord_frame_ = CoordFrame(rot, cam_pos);
 
     // Calculate the focal length
@@ -596,7 +596,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
     focal_lengths[1] = size_[1] / (2 * std::tan(angle_rad / 2));
   }
 
-  void Camera::lookAt(const Vec3d& eye, const Vec3d& center, const Vec3d& up, double matrix[9]) {
+  void Camera::calculateLookAtMatrix(const Vec3d& eye, const Vec3d& center, const Vec3d& up, double matrix[9]) {
     // Implementation based off of:
     // https://www.khronos.org/opengl/wiki/GluLookAt_code
     Vec3d forward = unit(center - eye);
