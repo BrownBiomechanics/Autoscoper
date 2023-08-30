@@ -97,7 +97,6 @@ private:
   // helper functions
   void calculateViewport(const double &cx, const double &cy, const double &fx, const double &fy);
   void calculateImagePlane(const double &cx, const double &cy, const double &z);
-  double* calculateRotationMatrix(const double* camera_pos, const double* focal_point);
   void calculateFocalLength(const double& view_angle, double focal_lengths[2]);
   void calculateLookAtMatrix(const Vec3d& eye, const Vec3d& center, const Vec3d& up, double matrix[9]);
 
