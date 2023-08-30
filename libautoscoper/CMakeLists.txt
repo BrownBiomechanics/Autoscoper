@@ -33,6 +33,16 @@ set(libautoscoper_SOURCES
   src/VolumeTransform.cpp
 )
 
+if(Autoscoper_BUILD_TESTING)
+  list(APPEND libautoscoper_HEADERS
+    src/vtkAddonTestingUtilities.h
+  )
+  list(APPEND libautoscoper_SOURCES
+    src/vtkAddonTestingUtilities.cpp
+    src/vtkAddonTestingUtilities.tpp
+  )
+endif()
+
 if(Autoscoper_RENDERING_BACKEND STREQUAL "CUDA")
   find_package(CUDA REQUIRED)
   include(${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/cuda/CMakeLists.txt)
