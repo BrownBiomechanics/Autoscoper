@@ -98,8 +98,8 @@ private:
   void calculateViewport(const double &cx, const double &cy, const double &fx, const double &fy);
   void calculateImagePlane(const double &cx, const double &cy, const double &z);
   double* calculateRotationMatrix(const double* camera_pos, const double* focal_point);
-  double* calculateFocalLength(const double& view_angle);
-  double* lookAt(Vec3d eye, Vec3d center, Vec3d up);
+  void calculateFocalLength(const double& view_angle, double focal_lengths[2]);
+  void lookAt(const Vec3d& eye, const Vec3d& center, const Vec3d& up, double matrix[9]);
 
 };
 
