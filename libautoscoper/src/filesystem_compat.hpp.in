@@ -1,3 +1,6 @@
+#ifndef filesystem_compat_hpp
+#define filesystem_compat_hpp
+
 #cmakedefine01 Autoscoper_HAS_EXPERIMENTAL_FILESYSTEM
 #cmakedefine01 Autoscoper_HAS_FILESYSTEM
 
@@ -10,4 +13,25 @@ namespace std {
 #    include <filesystem>
 #else
 #    error Could not find system header "<filesystem>" or "<experimental/filesystem>"
+#endif
+
+namespace xromm {
+    namespace filesystem {
+        // Experimental filesystem compliant version to be used when there is no fs::relative
+        std::filesystem::path relative(
+          const std::filesystem::path& path,
+          const std::filesystem::path& basePath);
+    }
+}
+
+#if Autoscoper_HAS_EXPERIMENTAL_FILESYSTEM
+namespace std {
+    namespace experimental::filesystem {
+        std::filesystem::path relative(
+          const std::filesystem::path& path,
+          const std::filesystem::path& basePath = std::filesystem::current_path());
+    }
+}
+#endif
+
 #endif
