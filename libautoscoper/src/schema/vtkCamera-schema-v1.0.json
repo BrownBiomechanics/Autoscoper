@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://autoscoperm.slicer.org/vtk-schema-1.0.json",
+  "title": "VTK Camera",
+  "description": "Parameters for recreating a VTK Camera Object",
+  "type": "object",
+  "properties": {
+    "version": {
+      "description": "The version of the file",
+      "type": "number"
+    },
+    "focal-point": {
+      "description": "The point the camera is looking at",
+      "type": "array",
+      "items" : {
+        "type": "number"
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "camera-position": {
+      "description": "The point the camera is at",
+      "type": "array",
+      "items" : {
+        "type": "number"
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "view-up": {
+      "description": "The up vector of the camera",
+      "type": "array",
+      "items" : {
+        "type": "number"
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "view-angle" : {
+      "description": "The viewing angle",
+      "type": "number"
+    },
+    "image-width": {
+      "description": "The width of the DRR image",
+      "type": "integer"
+    },
+    "image-height": {
+      "description": "The height of the DRR image",
+      "type": "integer"
+    }
+  },
+  "required": [ "version","focal-point","camera-position","view-up","view-angle","image-width","image-height" ]
+}
