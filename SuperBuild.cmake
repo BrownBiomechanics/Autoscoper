@@ -2,6 +2,7 @@
 set(Autoscoper_DEPENDENCIES
   GLEW
   TIFF
+  JsonCpp
   )
 if(Autoscoper_RENDERING_BACKEND STREQUAL "OpenCL")
   if(Autoscoper_OPENCL_USE_ICD_LOADER)

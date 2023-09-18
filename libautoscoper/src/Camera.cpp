@@ -44,11 +44,14 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+#define VTK_CAMERA_SCHEMA_URL "https://autoscoperm.slicer.org/vtkCamera-schema-1.0.json"
+
 #include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <json/json.h>
 
 #include "Camera.hpp"
 
@@ -131,7 +134,7 @@ Camera::Camera(const std::string& mayacam) : mayacam_(mayacam)
     }
     std::string ext = mayacam_.substr(ext_pos + 1);
     // if its a yaml file load it as a vtk camera
-    if (ext.compare("yaml") == 0) {
+    if (ext.compare("json") == 0) {
         loadVTKCamera(mayacam_);
     }
     else {
@@ -384,133 +387,45 @@ void Camera::loadMayaCam1(const std::string& mayacam)
   }
 
   void Camera::loadVTKCamera(const std::string& filename) {
-    // Open and parse the file
-    double version = -1.0, view_angle = -1.0, image_width = -1.0 , image_height = -1.0;
-    double focal_point[3] = {-1.0, -1.0, -1.0}, camera_position[3] = { -1.0, -1.0, -1.0 }, view_up[3] = { -1.0, -1.0, -1.0 };
+    std::cout << "Loading VTKCam file: " << filename << std::endl;
     std::fstream file(filename.c_str(), std::ios::in);
     if (!file.is_open()) {
       throw std::runtime_error("Error opening VTKCam file: " + filename);
     }
-    std::string line;
-    // The file is a series of key value pairs separated by a colon, # denotes a comment
-    int line_num = 1;
-    while (safeGetline(file, line)) {
-      // Ignore comments and empty lines
-      if (line.empty() || line[0] == '#') {
-        line_num++;
-        continue;
-      }
-      // Split the line into key and value
-      std::string key, value;
-      std::istringstream line_stream(line);
-      if (!getline(line_stream, key, ':')) {
-        file.close();
-        throw std::runtime_error(vtkCamReadingError("1", line_num, filename, "Error parsing key."));
-      }
-      if (!getline(line_stream, value, ':')) {
-        file.close();
-        throw std::runtime_error(vtkCamReadingError("1", line_num, filename, "Error parsing value."));
-      }
-      // Parse the key value pair
-      if (key == "version") {
-        std::istringstream value_stream(value);
-        if (!(value_stream >> version)) {
-          file.close();
-          throw std::runtime_error(vtkCamReadingError("1", line_num, filename, "Error parsing version number."));
-        }
-      }
-      else if (key == "focal-point") {
-        if (!parseArray(value, focal_point, 3)) {
-          file.close();
-          throw std::runtime_error(vtkCamReadingError("1", line_num, filename, "Error parsing focal-point."));
-        }
-      }
-      else if (key == "camera-position") {
-        if (!parseArray(value, camera_position, 3)) {
-          file.close();
-          throw std::runtime_error(vtkCamReadingError("1", line_num, filename, "Error parsing camera-position."));
-        }
-      }
-      else if (key == "view-up") {
-        if (!parseArray(value, view_up, 3)) {
-          file.close();
-          throw std::runtime_error(vtkCamReadingError("1", line_num, filename, "Error parsing view-up."));
-        }
-      }
-      else if (key == "view-angle") {
-        std::istringstream value_stream(value);
-        if (!(value_stream >> view_angle)) {
-          file.close();
-          throw std::runtime_error(vtkCamReadingError("1", line_num, filename, "Error parsing view-angle."));
-        }
-      }
-      else if (key == "image-width") {
-        std::istringstream value_stream(value);
-        if (!(value_stream >> image_width)) {
-          file.close();
-          throw std::runtime_error(vtkCamReadingError("1", line_num, filename, "Error parsing image-width."));
-        }
-      }
-      else if (key == "image-height") {
-        std::istringstream value_stream(value);
-        if (!(value_stream >> image_height)) {
-          file.close();
-          throw std::runtime_error(vtkCamReadingError("1", line_num, filename, "Error parsing image-height."));
-        }
-      }
-      line_num++;
-    }
 
-    // Close the file
+    Json::Value calibrationFile;
+    file >> calibrationFile;
     file.close();
 
-    // Check that all the values were read
-    if (version == -1.0) {
-      throw std::runtime_error(vtkCamReadingError("1", -1, filename, "Missing version number."));
-    }
-    if (view_angle == -1.0) {
-      throw std::runtime_error(vtkCamReadingError("1", -1, filename, "Missing view-angle."));
-    }
-    if (image_width == -1.0) {
-      throw std::runtime_error(vtkCamReadingError("1", -1, filename, "Missing image-width."));
-    }
-    if (image_height == -1.0) {
-      throw std::runtime_error(vtkCamReadingError("1", -1, filename, "Missing image-height."));
-    }
-    if (focal_point[0] == -1.0) {
-      throw std::runtime_error(vtkCamReadingError("1", -1, filename, "Missing focal-point."));
-    }
-    if (camera_position[0] == -1.0) {
-      throw std::runtime_error(vtkCamReadingError("1", -1, filename, "Missing camera-position."));
-    }
-    if (view_up[0] == -1.0) {
-      throw std::runtime_error(vtkCamReadingError("1", -1, filename, "Missing view-up."));
+    // Check the schema
+    if (calibrationFile["@schema"].asString() != VTK_CAMAERA_SCHEMA_URL) {
+      throw std::runtime_error(vtkCamReadingError("1", -1, filename, "Unsupported schema. " + calibrationFile["@schema"].asString() + " is not " + VTK_CAMERA_SCHEMA_URL));
     }
 
     // Check the version number
-    if (version != 1.0) {
-      throw std::runtime_error(vtkCamReadingError("1", -1, filename, "Unsupported version number."));
+    if (calibrationFile["version"].asDouble() != 1.0) {
+      throw std::runtime_error(vtkCamReadingError("1", -1, filename, "Unsupported version number. "+ calibrationFile["version"].asString() + " is not 1.0"));
     }
 
 
     // Set the size
-    size_[0] = image_width;
-    size_[1] = image_height;
+    size_[0] = calibrationFile["image-width"].asDouble();
+    size_[1] = calibrationFile["image-height"].asDouble();
 
-    Vec3d cam_pos(camera_position);
-    Vec3d focal(focal_point);
-    Vec3d up(view_up);
+    Vec3d cam_pos(calibrationFile["camera-position"][0].asDouble(), calibrationFile["camera-position"][1].asDouble(), calibrationFile["camera-position"][2].asDouble());
+    Vec3d focal(calibrationFile["focal-point"][0].asDouble(), calibrationFile["focal-point"][1].asDouble(), calibrationFile["focal-point"][2].asDouble());
+    Vec3d up(calibrationFile["view-up"][0].asDouble(), calibrationFile["view-up"][1].asDouble(), calibrationFile["view-up"][2].asDouble());
     double rot[9] = { 0.0 };
     calculateLookAtMatrix(cam_pos, focal, up, rot);
     coord_frame_ = CoordFrame(rot, cam_pos);
 
     // Calculate the focal length
     double focal_lengths[2] = { 0.0 };
-    calculateFocalLength(view_angle, focal_lengths);
+    calculateFocalLength(calibrationFile["view-angle"].asDouble(), focal_lengths);
 
     // Calculate the principal point
-    double cx = image_width / 2.0;
-    double cy = image_height / 2.0;
+    double cx = size_[0] / 2.0;
+    double cy = size_[1] / 2.0;
 
     // Calculate the viewport
     calculateViewport(cx, cy , focal_lengths[0], focal_lengths[1]);
