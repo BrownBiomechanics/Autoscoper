@@ -125,8 +125,8 @@ namespace xromm
     return true;
   }
 
-Camera::Camera(const std::string& mayacam) : mayacam_(mayacam)
-{
+  Camera::Camera(const std::string& mayacam) : mayacam_(mayacam)
+  {
     // Check the file extension
     std::string::size_type ext_pos = mayacam_.find_last_of('.');
     if (ext_pos == std::string::npos) {
@@ -155,9 +155,9 @@ Camera::Camera(const std::string& mayacam) : mayacam_(mayacam)
         loadMayaCam1(mayacam);
       }
     }
-}
+  }
 
-void Camera::loadMayaCam1(const std::string& mayacam)
+  void Camera::loadMayaCam1(const std::string& mayacam)
   {
     std::cout << "Reading MayaCam 1.0 file: " << mayacam << std::endl;
 
