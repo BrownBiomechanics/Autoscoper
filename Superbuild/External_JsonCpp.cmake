@@ -47,8 +47,8 @@ if((NOT DEFINED JsonCpp_INCLUDE_DIR
       -DJSONCPP_WITH_WARNING_AS_ERROR:BOOL=OFF
       -DJSONCPP_WITH_PKGCONFIG_SUPPORT:BOOL=OFF
       -DJSONCPP_WITH_CMAKE_PACKAGE:BOOL=ON
-      -DBUILD_SHARED_LIBS:BOOL=ON
-      -DBUILD_STATIC_LIBS:BOOL=OFF
+      -DBUILD_SHARED_LIBS:BOOL=OFF
+      -DBUILD_STATIC_LIBS:BOOL=ON
       # Install directories
       -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
       -DCMAKE_INSTALL_BINDIR:STRING=${Autoscoper_BIN_DIR}
@@ -57,10 +57,19 @@ if((NOT DEFINED JsonCpp_INCLUDE_DIR
     DEPENDS
       ${${proj}_DEPENDENCIES}
     )
-  set(JSONCPP_DIR ${EP_INSTALL_DIR})
-  set(JSONCPP_SOURCE_DIR ${EP_SOURCE_DIR})
-  set(JSONCPP_INCLUDE_DIR ${JSONCPP_DIR}/include)
-  set(JSONCPP_LIBRARY ${JSONCPP_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}jsoncpp${CMAKE_SHARED_LIBRARY_SUFFIX})
-
-  mark_as_superbuild(JSONCPP_DIR JSONCPP_SOURCE_DIR JSONCPP_INCLUDE_DIR JSONCPP_LIBRARY)
+  set(${proj}_INCLUDE_DIR ${EP_INSTALL_DIR}/include)
+  set(${proj}_LIBRARY ${EP_INSTALL_DIR}/${Autoscoper_LIB_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}jsoncpp${CMAKE_STATIC_LIBRARY_SUFFIX})
+else()
+  ExternalProject_Add_Empty(${proj} DEPENDS ${${proj}_DEPENDENCIES})
 endif()
+
+# For sake of consistency with how Slicer integrates JsonCpp, we ignore the "jsoncppConfig.cmake" file provided by jsoncpp and
+# instead set JsonCpp_INCLUDE_DIR and JsonCpp_LIBRARY expected by the "FindJsonCpp" CMake module.
+mark_as_superbuild(
+  VARS
+    ${proj}_INCLUDE_DIR:PATH
+    ${proj}_LIBRARY:FILEPATH
+)
+
+ExternalProject_Message(${proj} "${proj}_INCLUDE_DIR:${${proj}_INCLUDE_DIR}")
+ExternalProject_Message(${proj} "${proj}_LIBRARY:${${proj}_LIBRARY}")

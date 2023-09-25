@@ -106,7 +106,8 @@ target_link_libraries(libautoscoper PUBLIC TIFF::TIFF)
 target_compile_definitions(libautoscoper PUBLIC -DUSE_LIBTIFF)
 
 find_package(JsonCpp REQUIRED)
-target_link_libraries(libautoscoper PUBLIC JsonCpp::JsonCpp)
+target_link_libraries(libautoscoper PRIVATE ${JsonCpp_LIBRARY})
+target_include_directories(libautoscoper PRIVATE ${JsonCpp_INCLUDE_DIR})
 
 target_include_directories(libautoscoper PUBLIC
   ${CMAKE_CURRENT_BINARY_DIR}
