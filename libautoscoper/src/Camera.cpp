@@ -398,7 +398,7 @@ namespace xromm
     file.close();
 
     // Check the schema
-    if (calibrationFile["@schema"].asString() != VTK_CAMAERA_SCHEMA_URL) {
+    if (calibrationFile["@schema"].asString() != VTK_CAMERA_SCHEMA_URL) {
       throw std::runtime_error(vtkCamReadingError("1", -1, filename, "Unsupported schema. " + calibrationFile["@schema"].asString() + " is not " + VTK_CAMERA_SCHEMA_URL));
     }
 
