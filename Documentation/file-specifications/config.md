@@ -26,22 +26,22 @@ Given a directory structure like this:
 ```
 Main Directory
 ├───Calibration
-│   ├───cam01.csv
-│   └───cam02.csv
+│   ├───{task prefix}-cam01.csv
+│   └───{task prefix}-cam02.csv
 ├───RadiographImages
-│   ├───cam01
+│   ├───{task prefix}-cam01
 │   │   ├───0001.tif
 │   │   ├───0002.tif
 │   │   ├───...
 │   │   └───n.tif
-│   └───cam02
+│   └───{task prefix}-cam02
 │       ├───0001.tif
 │       ├───0002.tif
 │       ├───...
 │       └───n.tif
 ├───VolumeImages
 │   └───radius.tif
-└───config.cfg
+└───{task prefix}.cfg
 ```
 
 The config file would be placed in the `Main Directory` and would look like this:
@@ -57,11 +57,11 @@ Any relative paths that are in the format `/path/to/something/` will fail to loa
 # This is a comment
 Version 1.1
 
-mayaCam_csv Calibration/cam01.csv
-mayaCam_csv Calibration/cam02.csv
+mayaCam_csv Calibration/{task prefix}-cam01.csv
+mayaCam_csv Calibration/{task prefix}-cam02.csv
 
-CameraRootDir RadiographImages/cam01/
-CameraRootDir RadiographImages/cam02/
+CameraRootDir RadiographImages/{task prefix}-cam01/
+CameraRootDir RadiographImages/{task prefix}-cam02/
 
 VolumeFile VolumeImages/radius.tif
 VolumeFlip 0 0 0
@@ -100,11 +100,11 @@ The configuration file is a CFG file that contains all of the information to loa
 
 ```
 # This is a comment
-mayaCam_csv C:/Users/username/Documents/Autoscoper/Calibration/cam01.csv
-mayaCam_csv C:/Users/username/Documents/Autoscoper/Calibration/cam02.csv
+mayaCam_csv C:/Users/username/Documents/Autoscoper/Calibration/{task prefix}-cam01.csv
+mayaCam_csv C:/Users/username/Documents/Autoscoper/Calibration/{task prefix}-cam02.csv
 
-CameraRootDir C:/Users/username/Documents/Autoscoper/RadiographImages/cam01/
-CameraRootDir C:/Users/username/Documents/Autoscoper/RadiographImages/cam02/
+CameraRootDir C:/Users/username/Documents/Autoscoper/RadiographImages/{task prefix}-cam01/
+CameraRootDir C:/Users/username/Documents/Autoscoper/RadiographImages/{task prefix}-cam02/
 
 VolumeFile C:/Users/username/Documents/Autoscoper/VolumeImages/radius.tif
 VolumeFlip 0 0 0
