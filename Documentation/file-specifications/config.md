@@ -16,7 +16,7 @@ The configuration file is a CFG file that contains all of the information to loa
 | `VolumeFile` | The path to the volume file. |
 | `VolumeFlip` | The flip of the volume. |
 | `VoxelSize` | The voxel size of the volume. |
-| `RenderingResolution` | The resolution of the 2D rendering. |
+| `RenderResolution` | The resolution of the 2D rendering. |
 | `OptimizationOffsets` | The offsets for the optimization. |
 
 ### Example
@@ -67,7 +67,7 @@ VolumeFile VolumeImages/radius.tif
 VolumeFlip 0 0 0
 VoxelSize 0.1 0.1 0.1
 
-RenderingResolution 512 512
+RenderResolution 512 512
 
 OptimizationOffsets 0.1 0.1 0.1 0.1 0.1 0.1
 ```
@@ -91,7 +91,7 @@ The configuration file is a CFG file that contains all of the information to loa
 | `VolumeFile` | The path to the volume file. |
 | `VolumeFlip` | The flip of the volume. |
 | `VoxelSize` | The voxel size of the volume. |
-| `RenderingResolution` | The resolution of the 2D rendering. |
+| `RenderResolution` | The resolution of the 2D rendering. |
 | `OptimizationOffsets` | The offsets for the optimization. |
 
 
@@ -110,7 +110,7 @@ VolumeFile C:/Users/username/Documents/Autoscoper/VolumeImages/radius.tif
 VolumeFlip 0 0 0
 VoxelSize 0.1 0.1 0.1
 
-RenderingResolution 512 512
+RenderResolution 512 512
 
 OptimizationOffsets 0.1 0.1 0.1 0.1 0.1 0.1
 ```
