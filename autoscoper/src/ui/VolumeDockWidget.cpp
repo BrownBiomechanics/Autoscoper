@@ -5,9 +5,11 @@
 #include "ui_VolumeDockWidget.h"
 #include "ui/VolumeDockWidget.h"
 #include "ui/AutoscoperMainWindow.h"
+#include "ui/VolumeListWidgetItem.h"
 
 #include "Tracker.hpp"
 #include "Trial.hpp"
+#include "View.hpp"
 
 #include <QFileInfo>
 
@@ -42,12 +44,15 @@ void VolumeDockWidget::clearVol(){
   n = dock->listWidget->count();*/
 }
 
-void VolumeDockWidget::addVolume(const std::string& filename){
-  QListWidgetItem* volumeItem = new QListWidgetItem();
+void VolumeDockWidget::addVolume(const std::string& filename, int idx){
   QFileInfo fi (QString::fromStdString(filename));
 
-  volumeItem->setText(fi.completeBaseName());
+  std::vector<xromm::gpu::RayCaster*> renderers = {};
+  for (xromm::gpu::View *view : mainwindow->getTracker()->views()) {
+    renderers.push_back(view->drrRenderer(idx));
+  }
 
+  QListWidgetItem* volumeItem = new VolumeListWidgetItem(dock->listWidget, fi.completeBaseName() ,mainwindow, &renderers);
   dock->listWidget->addItem(volumeItem);
   dock->listWidget->setCurrentItem(volumeItem);
 
