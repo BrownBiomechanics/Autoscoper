@@ -60,6 +60,10 @@ public:
     void setViewport(float x, float y, float width, float height);
     void render(const Buffer* buffer, unsigned width, unsigned height);
 
+    void setVisible(bool visible) {
+        visible_ = visible;
+    }
+
     float getSampleDistance() const {
         return sampleDistance_;
     }
@@ -109,6 +113,7 @@ private:
     float rayIntensity_;
     float cutoff_;
     std::string name_;
+    bool visible_;
 };
 
 } } // namespace xromm::opencl

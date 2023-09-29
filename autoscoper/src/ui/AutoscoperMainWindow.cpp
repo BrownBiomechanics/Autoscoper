@@ -594,7 +594,7 @@ void AutoscoperMainWindow::setupUI()
   //Add Volumes
   for (unsigned int i = 0; i < tracker->trial()->volumes.size(); i++) {
     std::cout << "Volume Name: " << tracker->trial()->volumes[i].name() << std::endl;
-    volumes_widget->addVolume(tracker->trial()->volumes[i].name());
+    volumes_widget->addVolume(tracker->trial()->volumes[i].name(), i);
   }
 
     //Add the new cameras

@@ -33,6 +33,7 @@ set(autoscoper_FORMS_HEADERS
   src/ui/VolumeDockWidget.h
   src/ui/WorldViewWindow.h
   src/ui/VolumeBox.h
+  src/ui/VolumeListWidgetItem.h
   src/net/Socket.h
   src/ui/AboutAutoscoper.h
 )
@@ -62,6 +63,7 @@ set(autoscoper_FORMS_SOURCES
   src/ui/WorldViewWindow.cpp
   src/ui/VolumeDockWidget.cpp
   src/ui/VolumeBox.cpp
+  src/ui/VolumeListWidgetItem.cpp
   src/net/Socket.cpp
 )
 

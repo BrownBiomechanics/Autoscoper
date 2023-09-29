@@ -74,6 +74,7 @@ RayCaster::RayCaster() : volumeDescription_(0),
 
   b_viewport_ = new Buffer(4*sizeof(float), CL_MEM_READ_ONLY);
   b_viewport_->read(viewport_);
+  visible_ = true;
 }
 
 RayCaster::~RayCaster()
@@ -159,6 +160,11 @@ RayCaster::render(const Buffer* buffer, unsigned width, unsigned height)
         std::cerr << "RayCaster: WARNING: No volume loaded." << std::endl;
         return;
     }
+
+  if (!visible_) {
+    buffer->fill((char)0x00);
+    return;
+  }
 
   Kernel* kernel = raycaster_program_.compile(
                   RayCaster_cl, "volume_render_kernel");
