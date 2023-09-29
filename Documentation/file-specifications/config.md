@@ -39,7 +39,7 @@ Main Directory
 │       ├───0002.tif
 │       ├───...
 │       └───n.tif
-├───VolumeImages
+├───Volumes
 │   └───radius.tif
 └───{task prefix}.cfg
 ```
@@ -63,7 +63,7 @@ mayaCam_csv Calibration/{task prefix}-cam02.csv
 CameraRootDir RadiographImages/{task prefix}-cam01/
 CameraRootDir RadiographImages/{task prefix}-cam02/
 
-VolumeFile VolumeImages/radius.tif
+VolumeFile Volumes/radius.tif
 VolumeFlip 0 0 0
 VoxelSize 0.1 0.1 0.1
 
@@ -106,7 +106,7 @@ mayaCam_csv C:/Users/username/Documents/Autoscoper/Calibration/{task prefix}-cam
 CameraRootDir C:/Users/username/Documents/Autoscoper/RadiographImages/{task prefix}-cam01/
 CameraRootDir C:/Users/username/Documents/Autoscoper/RadiographImages/{task prefix}-cam02/
 
-VolumeFile C:/Users/username/Documents/Autoscoper/VolumeImages/radius.tif
+VolumeFile C:/Users/username/Documents/Autoscoper/Volumes/radius.tif
 VolumeFlip 0 0 0
 VoxelSize 0.1 0.1 0.1
 
