@@ -88,6 +88,8 @@ namespace xromm
     std::vector<std::string> volumeFlips;
     std::vector<std::string> renderResolution;
     std::vector<std::string> optimizationOffsets;
+    std::string trackingFolder = "Tracking";
+    std::string filterFolder = "xParameters";
 
     parse(file,
           version,
@@ -97,7 +99,9 @@ namespace xromm
           voxelSizes,
           volumeFlips,
           renderResolution,
-          optimizationOffsets);
+          optimizationOffsets,
+          trackingFolder,
+          filterFolder);
 
     file.close();
 
@@ -118,6 +122,9 @@ namespace xromm
       convertToAbsolutePaths(camRootDirs, configLocation);
       convertToAbsolutePaths(volumeFiles, configLocation);
     }
+
+    tracking_folder = trackingFolder;
+    filter_folder = filterFolder;
 
     validate(mayaCams,
              camRootDirs,
@@ -189,7 +196,9 @@ namespace xromm
                     std::vector<std::string>& voxelSizes,
                     std::vector<std::string>& volumeFlips,
                     std::vector<std::string>& renderResolution,
-                    std::vector<std::string>& optimizationOffsets) {
+                    std::vector<std::string>& optimizationOffsets,
+                    std::string& trackingFolder,
+                    std::string& filterFolder) {
 
     std::string line, key, value;
     while (std::getline(file, line)) {
@@ -243,6 +252,19 @@ namespace xromm
         trimLineEndings(value);
         parseVersion(value, version);
         continue;
+      }
+      else if (key.compare("TrackingFolder") == 0) {
+        std::getline(lineStream, value);
+        trimLineEndings(value);
+        trackingFolder = value;
+      }
+      else if (key.compare("FilterFolder") == 0) {
+        std::getline(lineStream, value);
+        trimLineEndings(value);
+        filterFolder = value;
+      }
+      else {
+        std::cout << "Unknown key: " << key << std::endl;
       }
     }
   }

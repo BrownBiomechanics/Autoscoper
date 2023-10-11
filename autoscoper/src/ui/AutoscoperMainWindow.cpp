@@ -1158,24 +1158,39 @@ bool AutoscoperMainWindow::openTrial(QString filename){
 
     std::cout << "Root Path is: " << test << std::endl;
 
-    // Store Default Values:
-    default_filter_folder = "xParameters";
-    default_filter_name   = "control_settings";
-    default_tracking_folder = "Tracking";
+    // Find filter files
+    std::string filter_dir = default_root_path.toStdString();
+    filter_dir += "/";
+    filter_dir += tracker->trial()->filter_folder;
+    std::string ext = ".vie";
 
-    /////// FILTER PATH:
-    QString filter_path = default_root_path;
-    filter_path += "/";
-    filter_path += default_filter_folder;
-    filter_path += "/";
-    filter_path += default_filter_name;
-    filter_path += ".vie";
+    std::cerr << "Filter directory: " << filter_dir << std::endl;
 
-    // std::cerr << "Filter Path is: " << filter_path.toStdString().c_str() << std::endl;
-
-    for (int j = 0; j < cameraViews.size(); j++) {
-      loadFilterSettings(j, filter_path);
+    std::vector<std::string> filter_files;
+    for (auto & file : std::filesystem::directory_iterator(filter_dir)) {
+      if (file.path().extension() == ext) {
+        std::cerr << "\tFilter found: " << file.path().filename() << std::endl;
+        filter_files.push_back(file.path().string());
+      }
     }
+
+    if (filter_files.size() != cameraViews.size() && filter_files.size() != 1 && filter_files.size() != 0) {
+      std::cerr << "Mismatch between number of filter files and number of cameras!\n"
+        << "Number of filter files: " << filter_files.size() << "\n"
+        << "Number of cameras: " << cameraViews.size()  << "\n"
+        << "Number of cameras should be equal to number of filter files or 1 or 0." << std::endl;
+    }
+
+    // Load filter files
+    for (int j = 0; j < cameraViews.size(); j++) {
+      if (filter_files.size() == 1) { // If trial has only one filter file, load it for all cameras
+        loadFilterSettings(j, QString::fromStdString(filter_files[0]));
+      }
+      else if (filter_files.size() == cameraViews.size()) { // If trial has a filter file for each camera, load it
+        loadFilterSettings(j, QString::fromStdString(filter_files[j]));
+      } // If there is a mismatch or zero files, don't load any filter files
+    }
+
 
     /////// TRACKED PATH:
     size_t pos_trck = trial_filename.find(".cfg");
@@ -1186,9 +1201,10 @@ bool AutoscoperMainWindow::openTrial(QString filename){
 
     QString tracking_path_root = default_root_path;
     QString tracking_path;
+    QString tracking_folder = QString::fromStdString(tracker->trial()->tracking_folder);
 
     std::cout << "Tracking Data Directory: "
-              << qPrintable(tracking_path_root) << "/" << qPrintable(default_tracking_folder) << std::endl;
+              << qPrintable(tracking_path_root) << "/" << qPrintable(tracking_folder) << std::endl;
 
     for (int iVol = 0; iVol < tracker->trial()->num_volumes; iVol++) {
 
@@ -1198,7 +1214,7 @@ bool AutoscoperMainWindow::openTrial(QString filename){
 
       tracking_path = tracking_path_root;
       tracking_path += "/";
-      tracking_path += default_tracking_folder;
+      tracking_path += tracking_folder;
       tracking_path += "/";
       tracking_path += tracking_filename;
 
