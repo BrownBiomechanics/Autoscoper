@@ -422,6 +422,10 @@ namespace xromm
 
     file << "Version 1.1" << std::endl;
 
+    file << "FilterFolder " << filter_folder << std::endl;
+
+    file << "TrackingFolder " << tracking_folder << std::endl;
+
     for (const std::string& mayaCamsFile: mayaCamsFiles) {
       file << "mayaCam_csv " << mayaCamsFile << std::endl;
     }
