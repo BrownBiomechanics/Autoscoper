@@ -101,6 +101,7 @@ namespace xromm
     //std::vector<double> trackImplantFrame(unsigned int volumeID, double * xyzypr) const;
 
     void getFullDRR(unsigned int volumeID) const;
+    void SetViewportLogic(bool use_new);
 
 
   private:
@@ -111,6 +112,7 @@ namespace xromm
     Trial trial_;
     std::vector <gpu::VolumeDescription*> volumeDescription_;
     std::vector <gpu::View*> views_;
+    bool use_new_viewport_2_pixel_calculations_ = false;
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
     Buffer* rendered_drr_;
     Buffer* rendered_rad_;

@@ -1130,6 +1130,7 @@ bool AutoscoperMainWindow::openTrial(QString filename){
   try {
     Trial * trial = new Trial(filename.toStdString().c_str());
     tracker->load(*trial);
+    tracker->SetViewportLogic(this->use_new_viewport_2_pixel_calculations_);
     delete trial;
 
     trial_filename = filename.toStdString().c_str();
@@ -1719,6 +1720,13 @@ void AutoscoperMainWindow::on_actionLoad_xml_batch_triggered(bool checked){
     fprintf(stderr,"%s\n",inputfile.toStdString().c_str());
     runBatch(inputfile);
     }
+}
+
+void AutoscoperMainWindow::on_actionUse_New_Viewport_Logic_triggered(bool checked) {
+  this->use_new_viewport_2_pixel_calculations_ = checked;
+  if (tracker != NULL) {
+    tracker->SetViewportLogic(checked);
+  }
 }
 
 

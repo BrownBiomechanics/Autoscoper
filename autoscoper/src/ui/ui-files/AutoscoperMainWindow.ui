@@ -432,6 +432,8 @@ Dialog</string>
     <addaction name="separator"/>
     <addaction name="actionSave_Test_Sequence"/>
     <addaction name="separator"/>
+    <addaction name="actionUse_New_Viewport_Logic"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -715,6 +717,14 @@ Dialog</string>
    </property>
    <property name="text">
     <string>Thick Line Mode</string>
+   </property>
+  </action>
+  <action name="actionUse_New_Viewport_Logic">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use New Viewport Logic</string>
    </property>
   </action>
  </widget>

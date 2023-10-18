@@ -159,6 +159,7 @@ class AutoscoperMainWindow : public QMainWindow{
     Tracker * tracker;
     GLTracker * gltracker;
     QOpenGLContext* shared_glcontext;
+    bool use_new_viewport_2_pixel_calculations_ = false;
 
     //Manipulator
     std::vector <Manip3D *> manipulator;
@@ -222,6 +223,7 @@ class AutoscoperMainWindow : public QMainWindow{
     void on_actionSave_Test_Sequence_triggered(bool checked);
     void on_actionSaveForBatch_triggered(bool checked);
     void on_actionLoad_xml_batch_triggered(bool checked);
+    void on_actionUse_New_Viewport_Logic_triggered(bool checked);
 
     //Edit
     void on_actionUndo_triggered(bool checked);
