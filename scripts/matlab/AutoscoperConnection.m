@@ -493,5 +493,20 @@ classdef AutoscoperConnection
             ncc_out  = [ncc(1), ncc(2), ncc(1) * ncc(2)];
         end
 
+        function toggleViewportConversionMethod(obj, method)
+            % Toggles the viewport conversion method to either
+            % 0 for the default method
+            % 1 for the new method
+
+            if nargin < 2
+                error('Not enough input arguments');
+            end
+            fwrite(obj.socket_descriptor, [ ...
+                                           17 ...
+                                           typecast(int32(method), 'uint8') ...
+                                          ]);
+
+        end
+
     end
 end

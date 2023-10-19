@@ -418,9 +418,26 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
     }
     break;
 
+  case 17:
+    // Toggle between the viewport 2 pixel calculation methods
+  {
+    size_t offset = preamble_offset;
+
+    SocketReadValuePointerMacro(method, qint32); // 0 for old method, 1 for new method
+    this->m_mainwindow->on_actionUse_New_Viewport_Logic_triggered((bool)(*method));
+    std::cout << "Toggled viewport logic to " << *method << std::endl;
+    connection->write(QByteArray(1, 17));
+
+  }
+  break;
+
   default:
     std::cerr << "Cannot handle message" << std::endl;
+    for (int i = 0; i < length; ++i)
+      std::cout << data[i];
+    std::cout << std::endl;
     connection->write(QByteArray(1,0));
+
     break;
   }
 }

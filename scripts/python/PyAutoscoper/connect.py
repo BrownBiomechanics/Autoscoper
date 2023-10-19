@@ -594,3 +594,13 @@ class AutoscoperConnection:
         response = self._send_command(0x0F)  # 15
         num_frames = struct.unpack("i", response[1:])[0]
         return num_frames
+
+    def toggleViewportConversionMethod(self, method: bool) -> None:
+        """
+        Toggle the viewport conversion method.
+
+        False for the default method, True for the new method.
+
+        :param method: The viewport conversion method to use.
+        """
+        self._send_command(0x11, int(method))  # 17
