@@ -307,6 +307,20 @@ void Tracker::load(const Trial& trial)
 
 void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int max_stall_iter)
 {
+
+  // Upon a call to the Tracker::optimize method, the following steps are performed:
+  //
+  // 1) Set the heuristic to determine the initial guess for the volume pose
+  // 2) Start the particle swarm optimization (PSO) based on the initial guess
+  // 3) For each iteration of the PSO:
+  //  a) Generate 100 random particles around the current best guess
+  //  b) Evaluate the fitness of each particle using normalized cross correlation (NCC)
+  //  c) Update the best guess based on the best particle
+  //  d) Repeat until the maximum number of iterations without change (MAX_STALL) is
+  //     reached and return the best guess
+  // 4) Run Downhill Simplex (Nelder-Mead) on the best guess from the PSO
+  // 5) Update the volume pose based on the best guess
+
   intializeRandom();
 
   optimization_method = opt_method;
@@ -585,21 +599,39 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
 
 // Calculate Correlation for Bone Matching
 std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) const
-  {
+{
+
+    // Upon a call to the Tracker::trackFrame() function, the following steps are performed:
+    //
+    // 1) Given a new pose, for each camera view:
+    //  a) Compute the modelView matrix
+    //  b) Project the volume onto the film plane and calculate the 2D bounding box top left corner location,
+    //    and pixel dimension
+    //  c) Compute the size of the bounding box in pixels, based on the render resolution
+    //  d) Pass the bounding box (image space) and pixel size to the DRR, radiograph, mask, and background renderers
+    //  e) Render the DRR, radiograph, mask, and background images
+    //  f) Use the DRR mask to "blank out" the areas of the radiograph not covered by the DRR
+    //  g) Compute the normalized cross correlation (NCC) between the radiograph and DRR
+    //  h) Compute (1.0 - NCC) value, this turns the problem from a maximization to a minimization one
+    // 2) Return an NCC value for each camera view (used in minimizationFunc())
+
     std::vector<double> correlations;
     CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
     for (unsigned int i = 0; i < views_.size(); ++i) {
       // Set the modelview matrix for DRR rendering
+      // (1a)
       CoordFrame modelview = views_[i]->camera()->coord_frame().inverse()*xcframe;
       double imv[16]; modelview.inverse().to_matrix_row_order(imv);
       views_[i]->drrRenderer(volumeID)->setInvModelView(imv);
 
       // Calculate the viewport surrounding the volume
+      // (1b)
       double viewport[4];
       this->calculate_viewport(modelview, viewport);
 
       // Calculate the size of the image to render based on the viewport
+      // (1c)
       unsigned render_width = viewport[2] * trial_.render_width / views_[i]->camera()->viewport()[2];
       unsigned render_height = viewport[3] * trial_.render_height / views_[i]->camera()->viewport()[3];
 
@@ -608,10 +640,114 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
       }
 
       // Set the viewports
+      // (1d)
       views_[i]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1],
         viewport[2], viewport[3]);
       views_[i]->radRenderer()->set_viewport(viewport[0], viewport[1],
         viewport[2], viewport[3]);
+
+      // DRR projection
+      // Performed by the RayCaster class
+      // called by the Tracker::trackFrame() method
+      // @ = DRR pixel with some intensity value
+      // -------------------------------
+      // |                             |
+      // |             ^               |
+      // |            /@\              |
+      // |           /@@@\             |
+      // |          /@@@@@\            |
+      // |          \@@@@@/            |
+      // |           \@@@/             |
+      // |            \@/              |
+      // |             v               |
+      // |                             |
+      // -------------------------------
+      //
+      // Crop the radiograph to the bounds of the DRR
+      // Performed by the RadiographRenderer class
+      // called by the Tracker::trackFrame() method
+      //
+      // Radiograph before cropping:
+      // $ = some pixel with some intensity value, inside the region of interest
+      // & = some pixel with some intensity value, outside the region of interest
+      // ! = some pixel with some intensity value, inside the object of interset
+      // -----------------------------------------
+      // |&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&|
+      // |&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&|
+      // |&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&|
+      // |&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&|
+      // |&&&&&&&&$$$$$$$$$$$$$$$$$$$$$$$$$$$$&&&|
+      // |&&&&&&&&$$$$$$$$$$$$$^$$$$$$$$$$$$$$&&&|
+      // |&&&&&&&&$$$$$$$$$$$$/!\$$$$$$$$$$$$$&&&|
+      // |&&&&&&&&$$$$$$$$$$$/!!!\$$$$$$$$$$$$&&&|
+      // |&&&&&&&&$$$$$$$$$$/!!!!!\$$$$$$$$$$$&&&|
+      // |&&&&&&&&$$$$$$$$$$\!!!!!/$$$$$$$$$$$&&&|
+      // |&&&&&&&&$$$$$$$$$$$\!!!/$$$$$$$$$$$$&&&|
+      // |&&&&&&&&$$$$$$$$$$$$\!/$$$$$$$$$$$$$&&&|
+      // |&&&&&&&&$$$$$$$$$$$$$v$$$$$$$$$$$$$$&&&|
+      // |&&&&&&&&$$$$$$$$$$$$$$$$$$$$$$$$$$$$&&&|
+      // |&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&|
+      // |&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&|
+      // |&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&|
+      // -----------------------------------------
+      //
+      // Radiograph after cropping:
+      // -------------------------------
+      // |$$$$$$$$$$$$$$$$$$$$$$$$$$$$$|
+      // |$$$$$$$$$$$$$^$$$$$$$$$$$$$$$|
+      // |$$$$$$$$$$$$/!\$$$$$$$$$$$$$$|
+      // |$$$$$$$$$$$/!!!\$$$$$$$$$$$$$|
+      // |$$$$$$$$$$/!!!!!\$$$$$$$$$$$$|
+      // |$$$$$$$$$$\!!!!!/$$$$$$$$$$$$|
+      // |$$$$$$$$$$$\!!!/$$$$$$$$$$$$$|
+      // |$$$$$$$$$$$$\!/$$$$$$$$$$$$$$|
+      // |$$$$$$$$$$$$$v$$$$$$$$$$$$$$$|
+      // |$$$$$$$$$$$$$$$$$$$$$$$$$$$$$|
+      // -------------------------------
+      //
+      // Create the background mask
+      // Performed by the backgoundRenderer class
+      // called by the Tracker::trackFrame() method
+      // This just contains the background pixels
+      // 255 / white
+      //
+      // Create the binary DRR mask
+      // -------------------------------
+      // |11111111111111111111111111111|
+      // |11111111111110111111111111111|
+      // |11111111111100011111111111111|
+      // |11111111111000001111111111111|
+      // |11111111110000000111111111111|
+      // |11111111110000000111111111111|
+      // |11111111111000001111111111111|
+      // |11111111111100011111111111111|
+      // |11111111111110111111111111111|
+      // |11111111111111111111111111111|
+      // -------------------------------
+      //
+      // Mask the radiograph with the DRR mask
+      // Performed by multiplying the DRR mask by the radiograph
+      // See the gpu::multiply function in the gpu namespace
+      // called by the Tracker::trackFrame() method
+      // We are assigning 1 to be 255 and 0 to
+      // be the value of the radiograph pixel
+      // -------------------------------
+      // |                             |
+      // |             ^               |
+      // |            /!\              |
+      // |           /!!!\             |
+      // |          /!!!!!\            |
+      // |          \!!!!!/            |
+      // |           \!!!/             |
+      // |            \!/              |
+      // |             v               |
+      // |                             |
+      // -------------------------------
+      //
+      // Calculate the NCC between the DRR and the masked radiograph
+      //
+
+      // (1e)
 
       // Render the DRR and Radiograph
       views_[i]->renderDrrSingle(volumeID, rendered_drr_, render_width, render_height);
@@ -624,6 +760,7 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
       views_[i]->renderBackground(background_mask_, render_width, render_height);
       views_[i]->renderDRRMask(rendered_drr_, drr_mask_, render_width, render_height);
 
+      // (1f)
       gpu::multiply(background_mask_, drr_mask_, drr_mask_, render_width, render_height);
       gpu::multiply(rendered_rad_, drr_mask_, rendered_rad_, render_width, render_height);
       gpu::multiply(rendered_drr_, drr_mask_, rendered_drr_, render_width, render_height);
@@ -644,6 +781,7 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
       }
       else { // If 0, we do bone model
         // Calculate the correlation for ncc
+        // (1g) and (1h)
         correlations.push_back(1.0 - gpu::ncc(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
       }
 
@@ -779,8 +917,19 @@ std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned cam
 
 void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) const
 {
-    // Calculate the minimum and maximum values of the bounding box
-    // corners after they have been projected onto the view plane
+  //
+  // Despite being called a viewport, the output is actually the 2D bounding box of
+  // the volume after it has been projected onto the film/view plane.
+  //
+  // The term viewport refers to the coordinate system the bounding box is returned in.
+  //
+  // The film plane sits at z = -2.
+  // The bounding box (viewport) is returned as {x_min, y_min, x_max, y_max}
+  //
+  // Calculate the minimum and maximum values of the bounding box
+  // corners after they have been projected onto the view plane
+  //
+
     double min_max[4] = {1.0,1.0,-1.0,-1.0};
     double corners[24] = {0,0,-1,0,0,0, 0,1,-1,0,1,0, 1,0,-1,1,0,0,1,1,-1,1,1,0};
 
@@ -798,6 +947,9 @@ void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) c
         modelview.point_to_world_space(&corners[3*j],corner);
 
         // Calculate its projection onto the film plane, where z = -2
+        // xfp = - f * xc / zc
+        // yfp = - f * yc / zc
+        // Where, (f)ocal length = 2, *c refers to camera coordinates, and *fp refers to film plane coordinates
         double film_plane[3];
         film_plane[0] = -2*corner[0]/corner[2];
         film_plane[1] = -2*corner[1]/corner[2];
