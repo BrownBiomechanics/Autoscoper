@@ -600,9 +600,8 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
       this->calculate_viewport(modelview, viewport);
 
       // Calculate the size of the image to render based on the viewport
-      // For more information, see https://github.com/BrownBiomechanics/Autoscoper/issues/203
-      unsigned render_width = (trial_.render_width * (viewport[2] + 1)) / 2;
-      unsigned render_height = (trial_.render_height * (viewport[3] + 1)) / 2;
+      unsigned render_width = viewport[2] * trial_.render_width / views_[i]->camera()->viewport()[2];
+      unsigned render_height = viewport[3] * trial_.render_height / views_[i]->camera()->viewport()[3];
 
       if (render_width > trial_.render_width || render_height > trial_.render_height) {
         throw std::runtime_error("Tracker::trackFrame(): Rendered image is larger than the viewport buffer!\n" + std::to_string(render_width) + " > " + std::to_string(trial_.render_width) + " || " + std::to_string(render_height) + " > " + std::to_string(trial_.render_height));
