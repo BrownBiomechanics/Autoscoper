@@ -38,7 +38,7 @@ void intializeRandom()
 
 float getRandom(float low, float high)
 {
-  return low + (high - low) * getRandomClamped();
+  return low + getRandomClamped() * (high - low);
 }
 
 float getRandomClamped()
