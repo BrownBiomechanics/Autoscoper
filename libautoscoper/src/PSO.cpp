@@ -1,10 +1,10 @@
 #include "PSO.hpp"
 #include <iostream>
 #include <string>
-
+#include <vector>
 
 // New Particle Swarm Optimization
-float host_fitness_function(float x[])
+float host_fitness_function(std::vector<float> x)
 {
   double xyzypr_manip[6] = { 0 };
   for (int i = 0; i <= NUM_OF_DIMENSIONS - 1; i++)
@@ -46,18 +46,30 @@ float getRandomClamped()
   return (float)rand() / (float)RAND_MAX;
 }
 
-void pso(float *positions, float *velocities, float *pBests, float *gBest, unsigned int MAX_EPOCHS, unsigned int MAX_STALL)
+void pso(std::vector<Particle*>* particles, Particle* gBest, unsigned int MAX_EPOCHS, unsigned int MAX_STALL)
 {
   int stall_iter = 0;
-  float tempParticle1[NUM_OF_DIMENSIONS];
-  float tempParticle2[NUM_OF_DIMENSIONS];
-
   bool do_this = true;
   unsigned int counter = 0;
-  //for (int iter = 0; iter < (signed int)MAX_EPOCHS; iter++)
-
   float OMEGA = 0.8f;
 
+  // Make a copy of the particles, this will be the initial pBest
+  std::vector<Particle*> pBest;
+  Particle* pBestTemp = new Particle();
+  for (Particle* p : *particles) {
+    *pBestTemp = *p;
+    pBest.push_back(pBestTemp);
+  }
+  pBestTemp = nullptr;
+  delete pBestTemp;
+
+  // Calc NCC for gBest
+  gBest->ncc_val = host_fitness_function(gBest->position);
+
+  // Init pointers
+  Particle* currentBest = new Particle();
+  Particle* p = new Particle();
+  Particle* curPBest = new Particle();
   while (do_this)
   {
     //std::cout << "OMEGA: " << OMEGA << std::endl;
@@ -66,55 +78,39 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
       do_this = false;
     }
 
-    float currentBest = host_fitness_function(gBest);
+    *currentBest = *gBest; // We want this to be a copy not a pointer
 
-    for (int i = 0; i < NUM_OF_PARTICLES*NUM_OF_DIMENSIONS; i++)
+    for (int i = 0; i < NUM_OF_PARTICLES; i++)
     {
-      float rp = getRandomClamped();
-      float rg = getRandomClamped();
+      p = particles->at(i); // We want these to be pointers not copies
+      curPBest = pBest.at(i);
 
-      velocities[i] = OMEGA * velocities[i] + c1 * rp*(pBests[i] - positions[i]) + c2 * rg*(gBest[i%NUM_OF_DIMENSIONS] - positions[i]);
+      // Update the velocities and positions
+      p->updateVelocityAndPosition(curPBest, gBest, OMEGA);
 
-      positions[i] += velocities[i];
+      // Get the NCC of the current particle
+      p->ncc_val = host_fitness_function(p->position);
+
+      // Update the pBest if the current particle is better
+      if (p->ncc_val < curPBest->ncc_val) {
+        *curPBest = *p;
+      }
+
+      // Update the gBest if the current particle is better
+      if (p->ncc_val < gBest->ncc_val) {
+        *gBest = *p;
+      }
     }
 
     OMEGA = OMEGA * 0.9f;
 
-    for (int i = 0; i < NUM_OF_PARTICLES*NUM_OF_DIMENSIONS; i += NUM_OF_DIMENSIONS)
-    {
-      for (int j = 0; j < NUM_OF_DIMENSIONS; j++)
-      {
-        tempParticle1[j] = positions[i + j];
-        tempParticle2[j] = pBests[i + j];
-      }
-
-      if (host_fitness_function(tempParticle1) < host_fitness_function(tempParticle2))
-      {
-        for (int j = 0; j < NUM_OF_DIMENSIONS; j++)
-        {
-          pBests[i + j] = positions[i + j];
-        }
-
-        if (host_fitness_function(tempParticle1) < host_fitness_function(gBest))
-        {
-          //cout << "Current Best is: " ;
-          for (int j = 0; j < NUM_OF_DIMENSIONS; j++)
-          {
-            gBest[j] = pBests[i + j];
-          }
-        }
-      }
-    }
-
-    float epochBest = host_fitness_function(gBest);
-
-    std::cout << "Current Best NCC: " << epochBest << std::endl;
+    std::cout << "Current Best NCC: " << gBest->ncc_val << std::endl;
     //std::cout << "Stall: " << stall_iter << std::endl;
-    if (abs(epochBest - currentBest) < 1e-4f)
+    if (abs(gBest->ncc_val - currentBest->ncc_val) < 1e-4f)
     {
       //std::cout << "Increased Stall Iter" << std::endl;
       stall_iter++;
-    } else if (abs(epochBest - currentBest) > 0.001f)
+    } else if (abs(gBest->ncc_val - currentBest->ncc_val) > 0.001f)
     {
       //std::cout << "Zeroed Stall Iter" << std::endl;
       stall_iter = 0;
@@ -127,5 +123,13 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
 
     counter++;
   }
+  // Clean up pointers
+  p = nullptr;
+  delete p;
+  curPBest = nullptr;
+  delete curPBest;
+  currentBest = nullptr;
+  delete currentBest;
+
   std::cout << "Total #Epoch of: " << counter << std::endl;
 }
