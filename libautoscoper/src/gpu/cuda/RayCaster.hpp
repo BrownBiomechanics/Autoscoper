@@ -103,6 +103,9 @@ public:
         name_ = name;
     }
 
+    void setVisible(bool visible) {
+        visible_ = visible;
+    }
 private:
 
     VolumeDescription* volumeDescription_;
@@ -118,6 +121,8 @@ private:
     float cutoff_;
 
     std::string name_;
+
+    bool visible_;
 };
 
 } } // namespace xromm::cuda
