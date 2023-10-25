@@ -419,61 +419,37 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
       unsigned int MAX_EPOCHS = max_iter;
       unsigned int MAX_STALL = max_stall_iter;
 
-      float positions[NUM_OF_PARTICLES*NUM_OF_DIMENSIONS];
-      float velocities[NUM_OF_PARTICLES*NUM_OF_DIMENSIONS];
-      float pBests[NUM_OF_PARTICLES*NUM_OF_DIMENSIONS];
-      float gBest[NUM_OF_DIMENSIONS];
+      std::vector<Particle> particles;
+      Particle gBest;
 
       srand((unsigned)time(NULL));
 
-      for (int i = 0; i < NUM_OF_PARTICLES*NUM_OF_DIMENSIONS; i++)
-      {
-        if (i >= NUM_OF_DIMENSIONS) {
-          positions[i] = getRandom(START_RANGE_MIN, START_RANGE_MAX);
-        }
-        // First point will be the initial position
-        else {
-          //if (j > 1)
-          //{
-            positions[i] = (float)0.0;
-          //}
-          //else
-          //{
-          //  positions[i] = (float)0.2; // Noise for refinements
-          //}
-        }
-        pBests[i] = positions[i];
-        velocities[i] = 0;
-      }
+      Particle p({ 0.f, 0.f, 0.f, 0.f, 0.f, 0.f });
+      particles.push_back(p); // First particle is the initial position
+      gBest = p; // gBest is initially the initial position
 
-      for (int i = 0; i < NUM_OF_DIMENSIONS; i++)
+      for (int i = 0; i < NUM_OF_PARTICLES-1; i++)
       {
-        gBest[i] = pBests[i];
+        p = Particle();
+        p.InitializePosition(START_RANGE_MIN, START_RANGE_MAX);
+        particles.push_back(p);
       }
 
       clock_t cpu_begin = clock();
-
-      pso(positions, velocities, pBests, gBest, MAX_EPOCHS, MAX_STALL);
-      //cuda_pso(positions, velocities, pBests, gBest, MAX_EPOCHS);
-
+      pso(&particles, &gBest, MAX_EPOCHS, MAX_STALL);
       clock_t cpu_end = clock();
 
       printf("Time elapsed:%10.3lf s\n", (double)(cpu_end - cpu_begin) / CLOCKS_PER_SEC);
 
       std::cout << "Pose change from initial position: ";
-      for (int i = 0; i < NUM_OF_DIMENSIONS; i++)
-      {
-        if (i == NUM_OF_DIMENSIONS - 1)
-        {
-          std::cout << gBest[i] << std::endl;
-        }
-        else {
-          std::cout << gBest[i] << ",";
-        }
-        xyzypr_manip[i] = gBest[i];
+      for (int i = 0; i < NUM_OF_DIMENSIONS-1; i++) {
+        std::cout << gBest.position[i] << ", ";
+        xyzypr_manip[i] = gBest.position[i];
       }
+      std::cout << gBest.position[NUM_OF_DIMENSIONS-1] << std::endl;
+      xyzypr_manip[NUM_OF_DIMENSIONS-1] = gBest.position[NUM_OF_DIMENSIONS-1];
 
-      printf("Minimum NCC from PSO = %f\n", host_fitness_function(gBest));
+      printf("Minimum NCC from PSO = %f\n", gBest.ncc_val);
 
       manip = CoordFrame::from_xyzAxis_angle(xyzypr_manip);
       // PSO End

@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <vector>
 const int NUM_OF_PARTICLES = 100;
 const int NUM_OF_DIMENSIONS = 6;
 const float c1 = 1.5f;
@@ -24,6 +25,22 @@ void intializeRandom();
 
 float getRandom(float low, float high);
 float getRandomClamped();
-float host_fitness_function(float x[]);
+float host_fitness_function(std::vector<float> x);
 
-void pso(float *positions, float *velocities, float *pBests, float *gBest, unsigned int MAX_EPOCHS, unsigned int MAX_STALL);
+struct Particle {
+  float ncc_val;
+  std::vector<float> position;
+  std::vector<float> velocity;
+
+  // Copy constructor
+  Particle(const Particle& p);
+  // Default constructor
+  Particle();
+  Particle(const std::vector<float>& pos);
+  // Assignment operator
+  Particle& operator=(const Particle& p);
+  void updateVelocityAndPosition(Particle* pBest, Particle* gBest, float OMEGA);
+  void InitializePosition(float START_RANGE_MIN, float START_RANGE_MAX);
+};
+
+void pso(std::vector<Particle>* particles, Particle* gBest, unsigned int MAX_EPOCHS, unsigned int MAX_STALL);

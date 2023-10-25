@@ -2,9 +2,49 @@
 #include <iostream>
 #include <string>
 
+// Particle Struct Function Definitions
+Particle::Particle(const Particle& p) {
+  ncc_val = p.ncc_val;
+  position = p.position;
+  velocity = p.velocity;
+}
+
+Particle::Particle() {
+  ncc_val = FLT_MAX;
+  velocity = *(new std::vector<float>(NUM_OF_DIMENSIONS, 0.f));
+}
+
+Particle::Particle(const std::vector<float>& pos) {
+  ncc_val = FLT_MAX;
+  position = pos;
+  velocity = *(new std::vector<float>(NUM_OF_DIMENSIONS, 0.f));
+}
+
+Particle& Particle::operator=(const Particle& p) {
+  ncc_val = p.ncc_val;
+  position = p.position;
+  velocity = p.velocity;
+  return *this;
+}
+
+void Particle::updateVelocityAndPosition(Particle* pBest, Particle* gBest, float OMEGA) {
+  for (int i = 0; i < NUM_OF_DIMENSIONS; i++) {
+    float rp = getRandomClamped();
+    float rg = getRandomClamped();
+
+    this->velocity.at(i) = OMEGA * velocity.at(i) + c1 * rp * (pBest->position.at(i) - this->position.at(i)) + c2 * rg * (gBest->position.at(i) - this->position.at(i));
+    this->position.at(i) += this->velocity.at(i);
+  }
+}
+
+void Particle::InitializePosition(float START_RANGE_MIN, float START_RANGE_MAX) {
+  for (int i = 0; i < NUM_OF_DIMENSIONS; i++) {
+    this->position.push_back(getRandom(START_RANGE_MIN, START_RANGE_MAX));
+  }
+}
 
 // New Particle Swarm Optimization
-float host_fitness_function(float x[])
+float host_fitness_function(std::vector<float> x)
 {
   double xyzypr_manip[6] = { 0 };
   for (int i = 0; i <= NUM_OF_DIMENSIONS - 1; i++)
@@ -46,18 +86,25 @@ float getRandomClamped()
   return (float)rand() / (float)RAND_MAX;
 }
 
-void pso(float *positions, float *velocities, float *pBests, float *gBest, unsigned int MAX_EPOCHS, unsigned int MAX_STALL)
+void pso(std::vector<Particle>* particles, Particle* gBest, unsigned int MAX_EPOCHS, unsigned int MAX_STALL)
 {
   int stall_iter = 0;
-  float tempParticle1[NUM_OF_DIMENSIONS];
-  float tempParticle2[NUM_OF_DIMENSIONS];
-
   bool do_this = true;
   unsigned int counter = 0;
-  //for (int iter = 0; iter < (signed int)MAX_EPOCHS; iter++)
-
   float OMEGA = 0.8f;
 
+  // Make a copy of the particles, this will be the initial pBest
+  std::vector<Particle> pBest;
+  Particle pBestTemp;
+  for (Particle p : *particles) {
+    pBestTemp = p;
+    pBest.push_back(pBestTemp);
+  }
+
+  // Calc NCC for gBest
+  gBest->ncc_val = host_fitness_function(gBest->position);
+
+  Particle currentBest;
   while (do_this)
   {
     //std::cout << "OMEGA: " << OMEGA << std::endl;
@@ -66,55 +113,37 @@ void pso(float *positions, float *velocities, float *pBests, float *gBest, unsig
       do_this = false;
     }
 
-    float currentBest = host_fitness_function(gBest);
+    currentBest = *gBest;
 
-    for (int i = 0; i < NUM_OF_PARTICLES*NUM_OF_DIMENSIONS; i++)
+    for (int i = 0; i < NUM_OF_PARTICLES; i++)
     {
-      float rp = getRandomClamped();
-      float rg = getRandomClamped();
 
-      velocities[i] = OMEGA * velocities[i] + c1 * rp*(pBests[i] - positions[i]) + c2 * rg*(gBest[i%NUM_OF_DIMENSIONS] - positions[i]);
+      // Update the velocities and positions
+      particles->at(i).updateVelocityAndPosition(&pBest.at(i), gBest, OMEGA);
 
-      positions[i] += velocities[i];
+      // Get the NCC of the current particle
+      particles->at(i).ncc_val = host_fitness_function(particles->at(i).position);
+
+      // Update the pBest if the current particle is better
+      if (particles->at(i).ncc_val < pBest.at(i).ncc_val) {
+        pBest.at(i) = particles->at(i);
+      }
+
+      // Update the gBest if the current particle is better
+      if (particles->at(i).ncc_val < gBest->ncc_val) {
+        *gBest = particles->at(i);
+      }
     }
 
     OMEGA = OMEGA * 0.9f;
 
-    for (int i = 0; i < NUM_OF_PARTICLES*NUM_OF_DIMENSIONS; i += NUM_OF_DIMENSIONS)
-    {
-      for (int j = 0; j < NUM_OF_DIMENSIONS; j++)
-      {
-        tempParticle1[j] = positions[i + j];
-        tempParticle2[j] = pBests[i + j];
-      }
-
-      if (host_fitness_function(tempParticle1) < host_fitness_function(tempParticle2))
-      {
-        for (int j = 0; j < NUM_OF_DIMENSIONS; j++)
-        {
-          pBests[i + j] = positions[i + j];
-        }
-
-        if (host_fitness_function(tempParticle1) < host_fitness_function(gBest))
-        {
-          //cout << "Current Best is: " ;
-          for (int j = 0; j < NUM_OF_DIMENSIONS; j++)
-          {
-            gBest[j] = pBests[i + j];
-          }
-        }
-      }
-    }
-
-    float epochBest = host_fitness_function(gBest);
-
-    std::cout << "Current Best NCC: " << epochBest << std::endl;
+    std::cout << "Current Best NCC: " << gBest->ncc_val << std::endl;
     //std::cout << "Stall: " << stall_iter << std::endl;
-    if (abs(epochBest - currentBest) < 1e-4f)
+    if (abs(gBest->ncc_val - currentBest.ncc_val) < 1e-4f)
     {
       //std::cout << "Increased Stall Iter" << std::endl;
       stall_iter++;
-    } else if (abs(epochBest - currentBest) > 0.001f)
+    } else if (abs(gBest->ncc_val - currentBest.ncc_val) > 0.001f)
     {
       //std::cout << "Zeroed Stall Iter" << std::endl;
       stall_iter = 0;
