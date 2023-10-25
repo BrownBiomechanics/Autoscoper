@@ -46,6 +46,7 @@
 #include "RayCaster.hpp"
 #include "RayCaster_kernels.h"
 #include "VolumeDescription.hpp"
+#include <cuda_runtime_api.h>
 
 namespace xromm { namespace gpu {
 
@@ -133,6 +134,11 @@ RayCaster::render(float* buffer, size_t width, size_t height)
 {
     if (!volumeDescription_) {
         std::cerr << "RayCaster: WARNING: No volume loaded. " << std::endl;
+        return;
+    }
+
+    if (!visible_) {
+        cudaMemset(buffer, 0, width * height * sizeof(float));
         return;
     }
 
