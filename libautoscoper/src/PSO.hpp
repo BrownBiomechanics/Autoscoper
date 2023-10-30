@@ -39,8 +39,9 @@ struct Particle {
   Particle(const std::vector<float>& pos);
   // Assignment operator
   Particle& operator=(const Particle& p);
-  void updateVelocityAndPosition(Particle* pBest, Particle* gBest, float omega);
+
+  void updateVelocityAndPosition(const Particle& pBest, const Particle& gBest, float omega);
   void initializePosition(float start_range_min, float start_range_max);
 };
 
-void pso(std::vector<Particle>* particles, Particle* gBest, unsigned int MAX_EPOCHS, unsigned int MAX_STALL);
+void pso(std::vector<Particle>& particles, Particle& gBest, unsigned int MAX_EPOCHS, unsigned int MAX_STALL);

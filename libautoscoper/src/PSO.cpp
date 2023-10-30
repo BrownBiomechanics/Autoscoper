@@ -28,17 +28,17 @@ Particle& Particle::operator=(const Particle& p) {
   return *this;
 }
 
-void Particle::updateVelocityAndPosition(Particle* pBest, Particle* gBest, float omega) {
+void Particle::updateVelocityAndPosition(const Particle& pBest, const Particle& gBest, float omega) {
   for (int dim = 0; dim < NUM_OF_DIMENSIONS; dim++) {
     float rp = getRandomClamped();
     float rg = getRandomClamped();
 
-    this->Velocity.at(dim) =
-        omega * this->Velocity.at(dim)
-        + c1 * rp * (pBest->Position.at(dim) - this->Position.at(dim))
-        + c2 * rg * (gBest->Position.at(dim) - this->Position.at(dim));
+    this->Velocity[dim] =
+        omega * this->Velocity[dim]
+        + c1 * rp * (pBest.Position[dim] - this->Position[dim])
+        + c2 * rg * (gBest.Position[dim] - this->Position[dim]);
 
-    this->Position.at(dim) += this->Velocity.at(dim);
+    this->Position[dim] += this->Velocity[dim];
   }
 }
 
@@ -51,7 +51,7 @@ void Particle::initializePosition(float start_range_min, float start_range_max) 
 // New Particle Swarm Optimization
 float host_fitness_function(const std::vector<float>& x)
 {
-  double xyzypr_manip[6] = { 0.0 };
+  double xyzypr_manip[NUM_OF_DIMENSIONS] = { 0.0 };
   for (int dim = 0; dim <= NUM_OF_DIMENSIONS - 1; dim++) {
     xyzypr_manip[dim] = (double)x[dim];
   }
@@ -90,7 +90,7 @@ float getRandomClamped()
   return (float)rand() / (float)RAND_MAX;
 }
 
-void pso(std::vector<Particle>* particles, Particle* gBest, unsigned int MAX_EPOCHS, unsigned int MAX_STALL)
+void pso(std::vector<Particle>& particles, Particle& gBest, unsigned int MAX_EPOCHS, unsigned int MAX_STALL)
 {
   int stall_iter = 0;
   bool do_this = true;
@@ -100,13 +100,13 @@ void pso(std::vector<Particle>* particles, Particle* gBest, unsigned int MAX_EPO
   // Make a copy of the particles, this will be the initial pBest
   std::vector<Particle> pBest;
   Particle pBestTemp;
-  for (const Particle& p : *particles) {
+  for (const Particle& p : particles) {
     pBestTemp = p;
     pBest.push_back(pBestTemp);
   }
 
   // Calc NCC for gBest
-  gBest->NCC = host_fitness_function(gBest->Position);
+  gBest.NCC = host_fitness_function(gBest.Position);
 
   Particle currentBest;
   while (do_this)
@@ -116,34 +116,35 @@ void pso(std::vector<Particle>* particles, Particle* gBest, unsigned int MAX_EPO
       do_this = false;
     }
 
-    currentBest = *gBest;
+    currentBest = gBest;
+
     for (int idx = 0; idx < NUM_OF_PARTICLES; idx++) {
 
       // Update the velocities and positions
-      particles->at(idx).updateVelocityAndPosition(&pBest.at(idx), gBest, OMEGA);
+      particles[idx].updateVelocityAndPosition(pBest[idx], gBest, OMEGA);
 
       // Get the NCC of the current particle
-      particles->at(idx).NCC = host_fitness_function(particles->at(idx).Position);
+      particles[idx].NCC = host_fitness_function(particles[idx].Position);
 
       // Update the pBest if the current particle is better
-      if (particles->at(idx).NCC < pBest.at(idx).NCC) {
-        pBest.at(idx) = particles->at(idx);
+      if (particles[idx].NCC < pBest[idx].NCC) {
+        pBest[idx] = particles[idx];
       }
 
       // Update the gBest if the current particle is better
-      if (particles->at(idx).NCC < gBest->NCC) {
-        *gBest = particles->at(idx);
+      if (particles[idx].NCC < gBest.NCC) {
+        gBest = particles[idx];
       }
     }
 
     OMEGA = OMEGA * 0.9f;
 
-    std::cout << "Current Best NCC: " << gBest->NCC << std::endl;
+    std::cout << "Current Best NCC: " << gBest.NCC << std::endl;
     //std::cout << "Stall: " << stall_iter << std::endl;
-    if (abs(gBest->NCC - currentBest.NCC) < 1e-4f) {
+    if (abs(gBest.NCC - currentBest.NCC) < 1e-4f) {
       //std::cout << "Increased Stall Iter" << std::endl;
       stall_iter++;
-    } else if (abs(gBest->NCC - currentBest.NCC) > 0.001f) {
+    } else if (abs(gBest.NCC - currentBest.NCC) > 0.001f) {
       //std::cout << "Zeroed Stall Iter" << std::endl;
       stall_iter = 0;
     }
