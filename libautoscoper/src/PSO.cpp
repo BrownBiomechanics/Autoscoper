@@ -98,12 +98,7 @@ void pso(std::vector<Particle>& particles, Particle& gBest, unsigned int MAX_EPO
   float OMEGA = 0.8f;
 
   // Make a copy of the particles, this will be the initial pBest
-  std::vector<Particle> pBest;
-  Particle pBestTemp;
-  for (const Particle& p : particles) {
-    pBestTemp = p;
-    pBest.push_back(pBestTemp);
-  }
+  std::vector<Particle> pBest = particles;
 
   // Calc NCC for gBest
   gBest.NCC = host_fitness_function(gBest.Position);
@@ -140,6 +135,7 @@ void pso(std::vector<Particle>& particles, Particle& gBest, unsigned int MAX_EPO
     OMEGA = OMEGA * 0.9f;
 
     std::cout << "Current Best NCC: " << gBest.NCC << std::endl;
+
     //std::cout << "Stall: " << stall_iter << std::endl;
     if (abs(gBest.NCC - currentBest.NCC) < 1e-4f) {
       //std::cout << "Increased Stall Iter" << std::endl;
@@ -148,6 +144,7 @@ void pso(std::vector<Particle>& particles, Particle& gBest, unsigned int MAX_EPO
       //std::cout << "Zeroed Stall Iter" << std::endl;
       stall_iter = 0;
     }
+
     if (stall_iter == MAX_STALL) {
       std::cout << "Maximum Stall Iteration was reached" << std::endl;
       do_this = false;
