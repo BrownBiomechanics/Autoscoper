@@ -1,5 +1,6 @@
 #include "PSO.hpp"
 #include <iostream>
+#include <cfloat> // For FLT_MAX
 #include <string>
 
 // Particle Struct Function Definitions
