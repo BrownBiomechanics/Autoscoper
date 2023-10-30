@@ -52,7 +52,7 @@ void Particle::initializePosition(float start_range_min, float start_range_max) 
 float host_fitness_function(const std::vector<float>& x)
 {
   double xyzypr_manip[NUM_OF_DIMENSIONS] = { 0.0 };
-  for (int dim = 0; dim <= NUM_OF_DIMENSIONS - 1; dim++) {
+  for (int dim = 0; dim < NUM_OF_DIMENSIONS; dim++) {
     xyzypr_manip[dim] = (double)x[dim];
   }
 
