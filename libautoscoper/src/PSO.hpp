@@ -28,9 +28,9 @@ float getRandomClamped();
 float host_fitness_function(std::vector<float> x);
 
 struct Particle {
-  float ncc_val;
-  std::vector<float> position;
-  std::vector<float> velocity;
+  float NCC;
+  std::vector<float> Position;
+  std::vector<float> Velocity;
 
   // Copy constructor
   Particle(const Particle& p);
@@ -39,8 +39,8 @@ struct Particle {
   Particle(const std::vector<float>& pos);
   // Assignment operator
   Particle& operator=(const Particle& p);
-  void updateVelocityAndPosition(Particle* pBest, Particle* gBest, float OMEGA);
-  void InitializePosition(float START_RANGE_MIN, float START_RANGE_MAX);
+  void updateVelocityAndPosition(Particle* pBest, Particle* gBest, float omega);
+  void initializePosition(float start_range_min, float start_range_max);
 };
 
 void pso(std::vector<Particle>* particles, Particle* gBest, unsigned int MAX_EPOCHS, unsigned int MAX_STALL);

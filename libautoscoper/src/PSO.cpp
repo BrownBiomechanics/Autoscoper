@@ -5,42 +5,45 @@
 
 // Particle Struct Function Definitions
 Particle::Particle(const Particle& p) {
-  ncc_val = p.ncc_val;
-  position = p.position;
-  velocity = p.velocity;
+  this->NCC = p.NCC;
+  this->Position = p.Position;
+  this->Velocity = p.Velocity;
 }
 
 Particle::Particle() {
-  ncc_val = FLT_MAX;
-  velocity = *(new std::vector<float>(NUM_OF_DIMENSIONS, 0.f));
+  this->NCC = FLT_MAX;
+  this->Velocity = *(new std::vector<float>(NUM_OF_DIMENSIONS, 0.f));
 }
 
 Particle::Particle(const std::vector<float>& pos) {
-  ncc_val = FLT_MAX;
-  position = pos;
-  velocity = *(new std::vector<float>(NUM_OF_DIMENSIONS, 0.f));
+  this->NCC = FLT_MAX;
+  this->Position = pos;
+  this->Velocity = *(new std::vector<float>(NUM_OF_DIMENSIONS, 0.f));
 }
 
 Particle& Particle::operator=(const Particle& p) {
-  ncc_val = p.ncc_val;
-  position = p.position;
-  velocity = p.velocity;
+  this->NCC = p.NCC;
+  this->Position = p.Position;
+  this->Velocity = p.Velocity;
   return *this;
 }
 
-void Particle::updateVelocityAndPosition(Particle* pBest, Particle* gBest, float OMEGA) {
+void Particle::updateVelocityAndPosition(Particle* pBest, Particle* gBest, float omega) {
   for (int i = 0; i < NUM_OF_DIMENSIONS; i++) {
     float rp = getRandomClamped();
     float rg = getRandomClamped();
 
-    this->velocity.at(i) = OMEGA * velocity.at(i) + c1 * rp * (pBest->position.at(i) - this->position.at(i)) + c2 * rg * (gBest->position.at(i) - this->position.at(i));
-    this->position.at(i) += this->velocity.at(i);
+    this->Velocity.at(i) =
+        omega * this->Velocity.at(i)
+        + c1 * rp * (pBest->Position.at(i) - this->Position.at(i))
+        + c2 * rg * (gBest->Position.at(i) - this->Position.at(i));
+    this->Position.at(i) += this->Velocity.at(i);
   }
 }
 
-void Particle::InitializePosition(float START_RANGE_MIN, float START_RANGE_MAX) {
+void Particle::initializePosition(float start_range_min, float start_range_max) {
   for (int i = 0; i < NUM_OF_DIMENSIONS; i++) {
-    this->position.push_back(getRandom(START_RANGE_MIN, START_RANGE_MAX));
+    this->Position.push_back(getRandom(start_range_min, start_range_max));
   }
 }
 
@@ -103,7 +106,7 @@ void pso(std::vector<Particle>* particles, Particle* gBest, unsigned int MAX_EPO
   }
 
   // Calc NCC for gBest
-  gBest->ncc_val = host_fitness_function(gBest->position);
+  gBest->NCC = host_fitness_function(gBest->Position);
 
   Particle currentBest;
   while (do_this)
@@ -123,28 +126,28 @@ void pso(std::vector<Particle>* particles, Particle* gBest, unsigned int MAX_EPO
       particles->at(i).updateVelocityAndPosition(&pBest.at(i), gBest, OMEGA);
 
       // Get the NCC of the current particle
-      particles->at(i).ncc_val = host_fitness_function(particles->at(i).position);
+      particles->at(i).NCC = host_fitness_function(particles->at(i).Position);
 
       // Update the pBest if the current particle is better
-      if (particles->at(i).ncc_val < pBest.at(i).ncc_val) {
+      if (particles->at(i).NCC < pBest.at(i).NCC) {
         pBest.at(i) = particles->at(i);
       }
 
       // Update the gBest if the current particle is better
-      if (particles->at(i).ncc_val < gBest->ncc_val) {
+      if (particles->at(i).NCC < gBest->NCC) {
         *gBest = particles->at(i);
       }
     }
 
     OMEGA = OMEGA * 0.9f;
 
-    std::cout << "Current Best NCC: " << gBest->ncc_val << std::endl;
+    std::cout << "Current Best NCC: " << gBest->NCC << std::endl;
     //std::cout << "Stall: " << stall_iter << std::endl;
-    if (abs(gBest->ncc_val - currentBest.ncc_val) < 1e-4f)
+    if (abs(gBest->NCC - currentBest.NCC) < 1e-4f)
     {
       //std::cout << "Increased Stall Iter" << std::endl;
       stall_iter++;
-    } else if (abs(gBest->ncc_val - currentBest.ncc_val) > 0.001f)
+    } else if (abs(gBest->NCC - currentBest.NCC) > 0.001f)
     {
       //std::cout << "Zeroed Stall Iter" << std::endl;
       stall_iter = 0;

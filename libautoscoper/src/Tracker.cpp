@@ -431,7 +431,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
       for (int i = 0; i < NUM_OF_PARTICLES-1; i++)
       {
         p = Particle();
-        p.InitializePosition(START_RANGE_MIN, START_RANGE_MAX);
+        p.initializePosition(START_RANGE_MIN, START_RANGE_MAX);
         particles.push_back(p);
       }
 
@@ -443,13 +443,13 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
 
       std::cout << "Pose change from initial position: ";
       for (int i = 0; i < NUM_OF_DIMENSIONS-1; i++) {
-        std::cout << gBest.position[i] << ", ";
-        xyzypr_manip[i] = gBest.position[i];
+          std::cout << gBest.Position[i] << ", ";
+          xyzypr_manip[i] = gBest.Position[i];
       }
-      std::cout << gBest.position[NUM_OF_DIMENSIONS-1] << std::endl;
-      xyzypr_manip[NUM_OF_DIMENSIONS-1] = gBest.position[NUM_OF_DIMENSIONS-1];
+      std::cout << gBest.Position[NUM_OF_DIMENSIONS-1] << std::endl;
+      xyzypr_manip[NUM_OF_DIMENSIONS-1] = gBest.Position[NUM_OF_DIMENSIONS-1];
 
-      printf("Minimum NCC from PSO = %f\n", gBest.ncc_val);
+      printf("Minimum NCC from PSO = %f\n", gBest.NCC);
 
       manip = CoordFrame::from_xyzAxis_angle(xyzypr_manip);
       // PSO End
