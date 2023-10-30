@@ -25,7 +25,7 @@ void intializeRandom();
 
 float getRandom(float low, float high);
 float getRandomClamped();
-float host_fitness_function(std::vector<float> x);
+float host_fitness_function(const std::vector<float>& x);
 
 struct Particle {
   float NCC;

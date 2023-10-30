@@ -48,7 +48,7 @@ void Particle::initializePosition(float start_range_min, float start_range_max) 
 }
 
 // New Particle Swarm Optimization
-float host_fitness_function(std::vector<float> x)
+float host_fitness_function(const std::vector<float>& x)
 {
   double xyzypr_manip[6] = { 0 };
   for (int i = 0; i <= NUM_OF_DIMENSIONS - 1; i++)
@@ -100,7 +100,7 @@ void pso(std::vector<Particle>* particles, Particle* gBest, unsigned int MAX_EPO
   // Make a copy of the particles, this will be the initial pBest
   std::vector<Particle> pBest;
   Particle pBestTemp;
-  for (Particle p : *particles) {
+  for (const Particle& p : *particles) {
     pBestTemp = p;
     pBest.push_back(pBestTemp);
   }
