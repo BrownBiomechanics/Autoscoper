@@ -112,15 +112,13 @@ void pso(std::vector<Particle>* particles, Particle* gBest, unsigned int MAX_EPO
   while (do_this)
   {
     //std::cout << "OMEGA: " << OMEGA << std::endl;
-    if (counter >= MAX_EPOCHS)
-    {
+    if (counter >= MAX_EPOCHS) {
       do_this = false;
     }
 
     currentBest = *gBest;
+    for (int idx = 0; idx < NUM_OF_PARTICLES; idx++) {
 
-    for (int idx = 0; idx < NUM_OF_PARTICLES; idx++)
-    {
       // Update the velocities and positions
       particles->at(idx).updateVelocityAndPosition(&pBest.at(idx), gBest, OMEGA);
 
@@ -142,17 +140,14 @@ void pso(std::vector<Particle>* particles, Particle* gBest, unsigned int MAX_EPO
 
     std::cout << "Current Best NCC: " << gBest->NCC << std::endl;
     //std::cout << "Stall: " << stall_iter << std::endl;
-    if (abs(gBest->NCC - currentBest.NCC) < 1e-4f)
-    {
+    if (abs(gBest->NCC - currentBest.NCC) < 1e-4f) {
       //std::cout << "Increased Stall Iter" << std::endl;
       stall_iter++;
-    } else if (abs(gBest->NCC - currentBest.NCC) > 0.001f)
-    {
+    } else if (abs(gBest->NCC - currentBest.NCC) > 0.001f) {
       //std::cout << "Zeroed Stall Iter" << std::endl;
       stall_iter = 0;
     }
-    if (stall_iter == MAX_STALL)
-    {
+    if (stall_iter == MAX_STALL) {
       std::cout << "Maximum Stall Iteration was reached" << std::endl;
       do_this = false;
     }
