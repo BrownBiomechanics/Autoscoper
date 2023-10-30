@@ -12,13 +12,13 @@ Particle::Particle(const Particle& p) {
 
 Particle::Particle() {
   this->NCC = FLT_MAX;
-  this->Velocity = *(new std::vector<float>(NUM_OF_DIMENSIONS, 0.f));
+  this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
 }
 
 Particle::Particle(const std::vector<float>& pos) {
   this->NCC = FLT_MAX;
   this->Position = pos;
-  this->Velocity = *(new std::vector<float>(NUM_OF_DIMENSIONS, 0.f));
+  this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
 }
 
 Particle& Particle::operator=(const Particle& p) {
