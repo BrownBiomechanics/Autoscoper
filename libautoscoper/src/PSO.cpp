@@ -29,20 +29,21 @@ Particle& Particle::operator=(const Particle& p) {
 }
 
 void Particle::updateVelocityAndPosition(Particle* pBest, Particle* gBest, float omega) {
-  for (int i = 0; i < NUM_OF_DIMENSIONS; i++) {
+  for (int dim = 0; dim < NUM_OF_DIMENSIONS; dim++) {
     float rp = getRandomClamped();
     float rg = getRandomClamped();
 
-    this->Velocity.at(i) =
-        omega * this->Velocity.at(i)
-        + c1 * rp * (pBest->Position.at(i) - this->Position.at(i))
-        + c2 * rg * (gBest->Position.at(i) - this->Position.at(i));
-    this->Position.at(i) += this->Velocity.at(i);
+    this->Velocity.at(dim) =
+        omega * this->Velocity.at(dim)
+        + c1 * rp * (pBest->Position.at(dim) - this->Position.at(dim))
+        + c2 * rg * (gBest->Position.at(dim) - this->Position.at(dim));
+
+    this->Position.at(dim) += this->Velocity.at(dim);
   }
 }
 
 void Particle::initializePosition(float start_range_min, float start_range_max) {
-  for (int i = 0; i < NUM_OF_DIMENSIONS; i++) {
+  for (int dim = 0; dim < NUM_OF_DIMENSIONS; dim++) {
     this->Position.push_back(getRandom(start_range_min, start_range_max));
   }
 }
@@ -50,11 +51,10 @@ void Particle::initializePosition(float start_range_min, float start_range_max) 
 // New Particle Swarm Optimization
 float host_fitness_function(const std::vector<float>& x)
 {
-  double xyzypr_manip[6] = { 0 };
-  for (int i = 0; i <= NUM_OF_DIMENSIONS - 1; i++)
-  {
-    xyzypr_manip[i] = (double)x[i];
-  } // i
+  double xyzypr_manip[6] = { 0.0 };
+  for (int dim = 0; dim <= NUM_OF_DIMENSIONS - 1; dim++) {
+    xyzypr_manip[dim] = (double)x[dim];
+  }
 
   double total = PSO_FUNC(xyzypr_manip);
 
@@ -119,23 +119,22 @@ void pso(std::vector<Particle>* particles, Particle* gBest, unsigned int MAX_EPO
 
     currentBest = *gBest;
 
-    for (int i = 0; i < NUM_OF_PARTICLES; i++)
+    for (int idx = 0; idx < NUM_OF_PARTICLES; idx++)
     {
-
       // Update the velocities and positions
-      particles->at(i).updateVelocityAndPosition(&pBest.at(i), gBest, OMEGA);
+      particles->at(idx).updateVelocityAndPosition(&pBest.at(idx), gBest, OMEGA);
 
       // Get the NCC of the current particle
-      particles->at(i).NCC = host_fitness_function(particles->at(i).Position);
+      particles->at(idx).NCC = host_fitness_function(particles->at(idx).Position);
 
       // Update the pBest if the current particle is better
-      if (particles->at(i).NCC < pBest.at(i).NCC) {
-        pBest.at(i) = particles->at(i);
+      if (particles->at(idx).NCC < pBest.at(idx).NCC) {
+        pBest.at(idx) = particles->at(idx);
       }
 
       // Update the gBest if the current particle is better
-      if (particles->at(i).NCC < gBest->NCC) {
-        *gBest = particles->at(i);
+      if (particles->at(idx).NCC < gBest->NCC) {
+        *gBest = particles->at(idx);
       }
     }
 
