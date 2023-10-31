@@ -430,9 +430,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
 
       for (int i = 0; i < NUM_OF_PARTICLES-1; i++)
       {
-        p = Particle();
-        p.initializePosition(START_RANGE_MIN, START_RANGE_MAX);
-        particles.push_back(p);
+        particles.push_back(Particle(START_RANGE_MIN, START_RANGE_MAX));
       }
 
       clock_t cpu_begin = clock();

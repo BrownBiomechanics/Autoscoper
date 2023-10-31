@@ -37,6 +37,7 @@ struct Particle {
   // Default constructor
   Particle();
   Particle(const std::vector<float>& pos);
+  Particle(float start_range_min, float start_range_max);
   // Assignment operator
   Particle& operator=(const Particle& p);
 

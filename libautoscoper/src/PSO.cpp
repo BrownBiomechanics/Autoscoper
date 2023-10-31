@@ -21,6 +21,12 @@ Particle::Particle(const std::vector<float>& pos) {
   this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
 }
 
+Particle::Particle(float start_range_min, float start_range_max) {
+  this->NCC = FLT_MAX;
+  this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
+  this->initializePosition(start_range_min, start_range_max);
+}
+
 Particle& Particle::operator=(const Particle& p) {
   this->NCC = p.NCC;
   this->Position = p.Position;
