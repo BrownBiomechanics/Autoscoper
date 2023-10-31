@@ -50,4 +50,4 @@ struct Particle {
 extern std::ostream& operator<<(std::ostream& os, const std::vector<float>& values);
 extern std::ostream& operator<<(std::ostream& os, const Particle& p);
 
-void pso(std::vector<Particle>& particles, Particle& gBest, unsigned int MAX_EPOCHS, unsigned int MAX_STALL);
+Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOCHS, unsigned int MAX_STALL);

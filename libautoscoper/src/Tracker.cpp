@@ -419,24 +419,8 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
       unsigned int MAX_EPOCHS = max_iter;
       unsigned int MAX_STALL = max_stall_iter;
 
-      // Pre-allocate particles
-      std::vector<Particle> particles(NUM_OF_PARTICLES);
-
-      srand((unsigned)time(NULL));
-
-      // First particle is the initial position
-      particles[0] = Particle({ 0.f, 0.f, 0.f, 0.f, 0.f, 0.f });
-
-      // ... and the other particles positions are randomly iniialized
-      for (int idx = 1; idx < NUM_OF_PARTICLES; idx++)
-      {
-        particles[idx] = Particle(START_RANGE_MIN, START_RANGE_MAX);
-      }
-
-      Particle gBest;
-
       clock_t cpu_begin = clock();
-      pso(particles, gBest, MAX_EPOCHS, MAX_STALL);
+      Particle gBest = pso(START_RANGE_MIN, START_RANGE_MAX, MAX_EPOCHS, MAX_STALL);
       clock_t cpu_end = clock();
 
       printf("Time elapsed:%10.3lf s\n", (double)(cpu_end - cpu_begin) / CLOCKS_PER_SEC);

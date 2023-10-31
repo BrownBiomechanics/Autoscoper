@@ -115,12 +115,28 @@ float getRandomClamped()
   return (float)rand() / (float)RAND_MAX;
 }
 
-void pso(std::vector<Particle>& particles, Particle& gBest, unsigned int MAX_EPOCHS, unsigned int MAX_STALL)
+Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOCHS, unsigned int MAX_STALL)
 {
   int stall_iter = 0;
   bool do_this = true;
   unsigned int counter = 0;
   float OMEGA = 0.8f;
+
+  // Pre-allocate particles
+  std::vector<Particle> particles(NUM_OF_PARTICLES);
+
+  // First particle is the initial position
+  particles[0] = Particle({ 0.f, 0.f, 0.f, 0.f, 0.f, 0.f });
+
+  srand((unsigned)time(NULL));
+
+  // ... and the other particles positions are randomly iniialized
+  for (int idx = 1; idx < NUM_OF_PARTICLES; idx++)
+  {
+    particles[idx] = Particle(start_range_min, start_range_max);
+  }
+
+  Particle gBest;
 
   // Make a copy of the particles, this will be the initial pBest
   std::vector<Particle> pBest = particles;
@@ -175,4 +191,6 @@ void pso(std::vector<Particle>& particles, Particle& gBest, unsigned int MAX_EPO
     counter++;
   }
   std::cout << "Total #Epoch of: " << counter << std::endl;
+
+  return gBest;
 }
