@@ -419,18 +419,20 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
       unsigned int MAX_EPOCHS = max_iter;
       unsigned int MAX_STALL = max_stall_iter;
 
-      std::vector<Particle> particles;
-      Particle gBest;
+      // Pre-allocate particles
+      std::vector<Particle> particles(NUM_OF_PARTICLES);
 
       srand((unsigned)time(NULL));
 
-      Particle p({ 0.f, 0.f, 0.f, 0.f, 0.f, 0.f });
-      particles.push_back(p); // First particle is the initial position
-      gBest = p; // gBest is initially the initial position
+      // First particle is the initial position
+      particles[0] = Particle({ 0.f, 0.f, 0.f, 0.f, 0.f, 0.f });
 
-      for (int i = 0; i < NUM_OF_PARTICLES-1; i++)
+      Particle gBest = particles[0];
+
+      // ... and the other particles positions are randomly iniialized
+      for (int idx = 1; idx < NUM_OF_PARTICLES; idx++)
       {
-        particles.push_back(Particle(START_RANGE_MIN, START_RANGE_MAX));
+        particles[idx] = Particle(START_RANGE_MIN, START_RANGE_MAX);
       }
 
       clock_t cpu_begin = clock();
