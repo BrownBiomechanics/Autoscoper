@@ -441,13 +441,12 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
 
       printf("Time elapsed:%10.3lf s\n", (double)(cpu_end - cpu_begin) / CLOCKS_PER_SEC);
 
-      std::cout << "Pose change from initial position: ";
-      for (int i = 0; i < NUM_OF_DIMENSIONS-1; i++) {
-          std::cout << gBest.Position[i] << ", ";
-          xyzypr_manip[i] = gBest.Position[i];
+      using ::operator<<; // Access the stream operator from the global namespace
+      std::cout << "Pose change from initial position: " << gBest.Position << std::endl;
+
+      for (int dim = 0; dim < NUM_OF_DIMENSIONS; dim++) {
+          xyzypr_manip[dim] = gBest.Position[dim];
       }
-      std::cout << gBest.Position[NUM_OF_DIMENSIONS-1] << std::endl;
-      xyzypr_manip[NUM_OF_DIMENSIONS-1] = gBest.Position[NUM_OF_DIMENSIONS-1];
 
       printf("Minimum NCC from PSO = %f\n", gBest.NCC);
 

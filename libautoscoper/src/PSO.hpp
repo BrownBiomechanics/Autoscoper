@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <ostream>
 #include <vector>
 const int NUM_OF_PARTICLES = 100;
 const int NUM_OF_DIMENSIONS = 6;
@@ -44,5 +45,9 @@ struct Particle {
   void updateVelocityAndPosition(const Particle& pBest, const Particle& gBest, float omega);
   void initializePosition(float start_range_min, float start_range_max);
 };
+
+// Stream operator
+extern std::ostream& operator<<(std::ostream& os, const std::vector<float>& values);
+extern std::ostream& operator<<(std::ostream& os, const Particle& p);
 
 void pso(std::vector<Particle>& particles, Particle& gBest, unsigned int MAX_EPOCHS, unsigned int MAX_STALL);

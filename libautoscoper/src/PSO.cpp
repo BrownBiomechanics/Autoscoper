@@ -34,6 +34,25 @@ Particle& Particle::operator=(const Particle& p) {
   return *this;
 }
 
+std::ostream& operator<<(std::ostream& os, const std::vector<float>& values)
+{
+  auto it = std::begin(values);
+  for (auto value: values) {
+    os << value;
+    ++it;
+    os << (it != std::end(values) ? ", " : "");
+    }
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const Particle& p)
+{
+  os << "Position: " << p.Position << std::endl;
+  os << "Velocity: " << p.Velocity << std::endl;
+  os << "NCC: " << p.NCC;
+  return os;
+}
+
 void Particle::updateVelocityAndPosition(const Particle& pBest, const Particle& gBest, float omega) {
   for (int dim = 0; dim < NUM_OF_DIMENSIONS; dim++) {
     float rp = getRandomClamped();
