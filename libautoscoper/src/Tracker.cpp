@@ -469,15 +469,6 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
       trial_.getPitchCurve(-1)->insert(trial_.frame, xyzypr[4]);
       trial_.getRollCurve(-1)->insert(trial_.frame, xyzypr[5]);
 
-
-      // Get Current Pose
-      double xyzypr[6] = { (*trial_.getXCurve(-1))(trial_.frame),
-        (*trial_.getYCurve(-1))(trial_.frame),
-        (*trial_.getZCurve(-1))(trial_.frame),
-        (*trial_.getYawCurve(-1))(trial_.frame),
-        (*trial_.getPitchCurve(-1))(trial_.frame),
-        (*trial_.getRollCurve(-1))(trial_.frame) };
-
       // DOWNHILL SIMPLEX
       // Generate the 7 vertices that form the initial simplex. Because
       // the independent variables of the function we are optimizing over
