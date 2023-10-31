@@ -427,13 +427,13 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
       // First particle is the initial position
       particles[0] = Particle({ 0.f, 0.f, 0.f, 0.f, 0.f, 0.f });
 
-      Particle gBest = particles[0];
-
       // ... and the other particles positions are randomly iniialized
       for (int idx = 1; idx < NUM_OF_PARTICLES; idx++)
       {
         particles[idx] = Particle(START_RANGE_MIN, START_RANGE_MAX);
       }
+
+      Particle gBest;
 
       clock_t cpu_begin = clock();
       pso(particles, gBest, MAX_EPOCHS, MAX_STALL);

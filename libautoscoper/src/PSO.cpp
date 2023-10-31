@@ -125,9 +125,6 @@ void pso(std::vector<Particle>& particles, Particle& gBest, unsigned int MAX_EPO
   // Make a copy of the particles, this will be the initial pBest
   std::vector<Particle> pBest = particles;
 
-  // Calc NCC for gBest
-  gBest.NCC = host_fitness_function(gBest.Position);
-
   Particle currentBest;
   while (do_this)
   {
