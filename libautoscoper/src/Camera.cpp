@@ -442,8 +442,10 @@ namespace xromm
     if (fx == 0 || fy == 0) {
       throw std::runtime_error("Invalid camera parameters (fx or fy is zero)");
     }
+    // viewport_[0] and viewport[1] approximately describe the x and y viewport coordinates of the (0,0) pixel
     viewport_[0] = -(2.0f*cx - size_[0]) / fx;
     viewport_[1] = -(2.0f*cy - size_[1]) / fy;
+    // viewport_[2] and viewport[3] approximately describe the width and height of the viewport
     viewport_[2] = 2.0f* size_[0] / fx;
     viewport_[3] = 2.0f* size_[1] / fy;
   }
@@ -462,7 +464,7 @@ namespace xromm
 
     // Calculate the coordinates of the four corners of the image plane in world space.
     double image_plane_center[3];
-    coord_frame_.point_to_world_space(image_plane_trans, image_plane_center);
+    coord_frame_.point_to_world_space(image_plane_trans, image_plane_center); // Convert from camera space to world space
 
     double half_width = scale * size_[0] / 2.0;
     double half_height = scale * size_[1] / 2.0;
