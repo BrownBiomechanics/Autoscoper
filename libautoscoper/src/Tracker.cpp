@@ -128,7 +128,7 @@ namespace xromm {
     #ifdef __APPLE__
   sprintf(filename,"/Users/bardiya/autoscoper-v2/debug/image_cam%02d.pgm",count++);
     #elif _WIN32
-    sprintf(filename,"C:/Autoscoper-v2.7/build/install/bin/Release/debug/image_cam%02d.pgm",count++);
+    sprintf(filename,"C:/Users/anthony.lombardi/Desktop/viewport-clip-test/image_cam%02d.pgm",count++);
     #endif
 
     std::cout << filename << std::endl;
@@ -628,7 +628,11 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
       // Calculate the viewport surrounding the volume
       // (1b)
       double viewport[4];
-      this->calculate_viewport(modelview, viewport);
+      if (!this->calculate_viewport(modelview, *views_[i]->camera(), viewport)) {
+        std::cerr << "Tracker::trackFrame(): Volume " << volumeID << " is not in view of camera " << i << std::endl;
+        correlations.push_back(0.0);
+        continue;
+      }
 
       // Calculate the size of the image to render based on the viewport
       // (1c)
@@ -915,7 +919,7 @@ std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned cam
     return out_data;
 }
 
-void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) const
+bool Tracker::calculate_viewport(const CoordFrame& modelview, const Camera& camera, double* viewport) const
 {
   //
   // Despite being called a viewport, the output is actually the 2D bounding box of
@@ -969,10 +973,54 @@ void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) c
         }
     }
 
+    double rad_min_x_y_cam_coords[3] = { 0.0, 0.0, 0.0 };
+    camera.coord_frame().inverse().point_to_world_space(&(camera.image_plane()[3]), rad_min_x_y_cam_coords);
+    double rad_max_x_y_cam_coords[3] = { 0.0, 0.0, 0.0 };
+    camera.coord_frame().inverse().point_to_world_space(&(camera.image_plane()[9]), rad_max_x_y_cam_coords);
+    double rad_min_max_film[4]{
+      -2 * rad_min_x_y_cam_coords[0] / rad_min_x_y_cam_coords[2],
+      -2 * rad_min_x_y_cam_coords[1] / rad_min_x_y_cam_coords[2],
+      -2 * rad_max_x_y_cam_coords[0] / rad_max_x_y_cam_coords[2],
+      -2 * rad_max_x_y_cam_coords[1] / rad_max_x_y_cam_coords[2]
+    };
+
+    // Need to make sure that the bounding box falls within, at least part of, the rad image bounds
+    if (min_max[0] > rad_min_max_film[2] && min_max[2] > rad_min_max_film[2]) {
+      // This means that the min_max bbox is greater than the rad image bounds in the x direction
+      return false;
+     }
+    if (min_max[1] > rad_min_max_film[3] && min_max[3] > rad_min_max_film[3]) {
+      // This means that the min_max bbox is greater than the rad image bounds in the y direction
+      return false;
+    }
+    if (min_max[0] < rad_min_max_film[0] && min_max[2] < rad_min_max_film[0]) {
+      // This means that the min_max bbox is less than the rad image bounds in the x direction
+      return false;
+    }
+    if (min_max[1] < rad_min_max_film[1] && min_max[3] < rad_min_max_film[1]) {
+      // This means that the min_max bbox is less than the rad image bounds in the y direction
+      return false;
+    }
+
+    // clip min_max to rad_min_max_film
+    if (min_max[0] < rad_min_max_film[0]) {
+        min_max[0] = rad_min_max_film[0];
+    }
+    if (min_max[1] < rad_min_max_film[1]) {
+        min_max[1] = rad_min_max_film[1];
+    }
+    if (min_max[2] > rad_min_max_film[2]) {
+        min_max[2] = rad_min_max_film[2];
+    }
+    if (min_max[3] > rad_min_max_film[3]) {
+        min_max[3] = rad_min_max_film[3];
+    }
+
     viewport[0] = min_max[0];
     viewport[1] = min_max[1];
     viewport[2] = min_max[2]-min_max[0];
     viewport[3] = min_max[3]-min_max[1];
+    return true;
 }
 
 

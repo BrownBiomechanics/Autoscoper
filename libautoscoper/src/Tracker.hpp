@@ -104,7 +104,7 @@ namespace xromm
 
 
   private:
-    void calculate_viewport(const CoordFrame& modelview, double* viewport) const;
+    bool calculate_viewport(const CoordFrame& modelview, const Camera& camera, double* viewport) const;
 
     int optimization_method = (int)0;
     int cf_model_select = (int)0;
