@@ -136,7 +136,7 @@ Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOC
     particles[idx] = Particle(start_range_min, start_range_max);
   }
 
-  Particle gBest;
+  Particle gBest = particles[0];
 
   // Make a copy of the particles, this will be the initial pBest
   std::vector<Particle> pBest = particles;
