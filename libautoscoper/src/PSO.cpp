@@ -12,6 +12,7 @@ Particle::Particle(const Particle& p) {
 
 Particle::Particle() {
   this->NCC = FLT_MAX;
+  this->Position = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
   this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
 }
 
@@ -23,6 +24,7 @@ Particle::Particle(const std::vector<float>& pos) {
 
 Particle::Particle(float start_range_min, float start_range_max) {
   this->NCC = FLT_MAX;
+  this->Position = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
   this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
   this->initializePosition(start_range_min, start_range_max);
 }
@@ -136,7 +138,7 @@ Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOC
     particles[idx] = Particle(start_range_min, start_range_max);
   }
 
-  Particle gBest = particles[0];
+  Particle gBest;
 
   // Make a copy of the particles, this will be the initial pBest
   std::vector<Particle> pBest = particles;
