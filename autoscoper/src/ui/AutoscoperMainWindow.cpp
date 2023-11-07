@@ -1211,7 +1211,7 @@ bool AutoscoperMainWindow::openTrial(QString filename){
       load_tracking_results(tracking_path, 1, default_saving_format, 1, 0, 0, 0, iVol);
     }
 
-    on_actionInsert_Key_triggered(true);
+    //on_actionInsert_Key_triggered(true);
     // on_actionDelete_triggered(true);
     //
     return true;

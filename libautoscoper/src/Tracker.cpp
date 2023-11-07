@@ -128,7 +128,7 @@ namespace xromm {
     #ifdef __APPLE__
   sprintf(filename,"/Users/bardiya/autoscoper-v2/debug/image_cam%02d.pgm",count++);
     #elif _WIN32
-    sprintf(filename,"C:/Autoscoper-v2.7/build/install/bin/Release/debug/image_cam%02d.pgm",count++);
+    sprintf(filename,"C:/S/debug/image_cam%02d.pgm",count++);
     #endif
 
     std::cout << filename << std::endl;
@@ -579,21 +579,73 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
       double viewport[4];
       this->calculate_viewport(modelview, viewport);
 
+      // RAD SPAn     // Export Full Images
+      double rad_viewport[4];
+      rad_viewport[0] = -views_[i]->camera()->viewport()[2] / 2;
+      rad_viewport[1] = -views_[i]->camera()->viewport()[3] / 2;
+      rad_viewport[2] = views_[i]->camera()->viewport()[2];
+      rad_viewport[3] = views_[i]->camera()->viewport()[3];
+
+      //intersect of 
+      double union_viewport[4];
+
+        // maximum X min corner
+      if (viewport[0] > rad_viewport[0]) {
+          union_viewport[0] = viewport[0];
+      }
+      if (rad_viewport[0] > viewport[0]) {
+          union_viewport[0] = rad_viewport[0];
+      }
+      // maximum Y min corner
+      if (viewport[1] > rad_viewport[1]) {
+          union_viewport[1] = viewport[1];
+      }
+      if (rad_viewport[1] > viewport[1]) {
+          union_viewport[1] = rad_viewport[1];
+      }
+
+      // min X max corner
+      if (viewport[0]+ viewport[2] < rad_viewport[0]+ rad_viewport[2]) {
+          // end at viewport[0]+ viewport[2]
+          //span is end - start
+          union_viewport[2] =  (viewport[0] + viewport[2]) - union_viewport[0] ;
+      }
+      // min X max corner
+      if (rad_viewport[0] + rad_viewport[2] < viewport[0] + viewport[2]) {
+          // end at viewport[0]+ viewport[2]
+          //span is end - start
+          union_viewport[2] = (rad_viewport[0] + rad_viewport[2]) - union_viewport[0];
+      }
+      // minof Y max corner
+      if (viewport[1] + viewport[3] < rad_viewport[1] + rad_viewport[3]) {
+          // end at viewport[0]+ viewport[2]
+          //span is end - start
+          union_viewport[3] = (viewport[1] + viewport[3]) - union_viewport[1];
+      }
+      // min Y max corner
+      if (rad_viewport[1] + rad_viewport[3] < viewport[1] + viewport[3]) {
+          // end at viewport[0]+ viewport[2]
+          //span is end - start
+          union_viewport[3] = (rad_viewport[1] + rad_viewport[3]) - union_viewport[1];
+      }
+
+
       // Calculate the size of the image to render based on the viewport
       // (1c)
-      unsigned render_width = viewport[2] * trial_.render_width / views_[i]->camera()->viewport()[2];
-      unsigned render_height = viewport[3] * trial_.render_height / views_[i]->camera()->viewport()[3];
+      unsigned render_width = union_viewport[2] * trial_.render_width / views_[i]->camera()->viewport()[2];
+      unsigned render_height = union_viewport[3] * trial_.render_height / views_[i]->camera()->viewport()[3];
 
       if (render_width > trial_.render_width || render_height > trial_.render_height) {
         throw std::runtime_error("Tracker::trackFrame(): Rendered image is larger than the viewport buffer!\n" + std::to_string(render_width) + " > " + std::to_string(trial_.render_width) + " || " + std::to_string(render_height) + " > " + std::to_string(trial_.render_height));
       }
 
+
       // Set the viewports
       // (1d)
-      views_[i]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1],
-        viewport[2], viewport[3]);
-      views_[i]->radRenderer()->set_viewport(viewport[0], viewport[1],
-        viewport[2], viewport[3]);
+      views_[i]->drrRenderer(volumeID)->setViewport(union_viewport[0], union_viewport[1],
+          union_viewport[2], union_viewport[3]);
+      views_[i]->radRenderer()->set_viewport(union_viewport[0], union_viewport[1],
+          union_viewport[2], union_viewport[3]);
 
       // DRR projection
       // Performed by the RayCaster class
@@ -708,18 +760,18 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
 
       views_[i]->renderBackground(background_mask_, render_width, render_height);
       views_[i]->renderDRRMask(rendered_drr_, drr_mask_, render_width, render_height);
-
+#if DEBUG
+      save_full_drr(rendered_drr_, render_width, render_height);
+      save_debug_image(rendered_rad_, render_width, render_height);
+      //save_debug_image(drr_mask_, render_width, render_height);
+      //save_debug_image(background_mask_, render_width, render_height);
+#endif
       // (1f)
       gpu::multiply(background_mask_, drr_mask_, drr_mask_, render_width, render_height);
       gpu::multiply(rendered_rad_, drr_mask_, rendered_rad_, render_width, render_height);
       gpu::multiply(rendered_drr_, drr_mask_, rendered_drr_, render_width, render_height);
 
-#if DEBUG
-      save_debug_image(rendered_drr_, render_width, render_height);
-      //save_debug_image(rendered_rad_, render_width, render_height);
-      //save_debug_image(drr_mask_, render_width, render_height);
-      //save_debug_image(background_mask_, render_width, render_height);
-#endif
+
       if (cf_model_select) // If 1, we do Implant
       {
         // Calculate the correlation for implant
@@ -882,6 +934,8 @@ void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) c
     double min_max[4] = {1.0,1.0,-1.0,-1.0};
     double corners[24] = {0,0,-1,0,0,0, 0,1,-1,0,1,0, 1,0,-1,1,0,0,1,1,-1,1,1,0};
 
+    double world_corners[24];
+
   int idx = trial_.current_volume;
 
     for (int j = 0; j < 8; j++) {
@@ -894,6 +948,12 @@ void Tracker::calculate_viewport(const CoordFrame& modelview,double* viewport) c
         // Calculate the location of the corner in camera space
         double corner[3];
         modelview.point_to_world_space(&corners[3*j],corner);
+
+        world_corners[3 * j + 0] = corner[0];
+        world_corners[3 * j + 1] = corner[1];
+        world_corners[3 * j + 2] = corner[2]; 
+
+
 
         // Calculate its projection onto the film plane, where z = -2
         // xfp = - f * xc / zc
