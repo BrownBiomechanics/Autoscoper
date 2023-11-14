@@ -460,7 +460,7 @@ namespace xromm
     image_plane_trans[1] = scale * (size_[1] / 2.0 - cy);
     image_plane_trans[2] = scale * z;
 
-    // Calculate the vertices at the corner of the image plane.
+    // Calculate the coordinates of the four corners of the image plane in world space.
     double image_plane_center[3];
     coord_frame_.point_to_world_space(image_plane_trans, image_plane_center);
 
@@ -474,6 +474,7 @@ namespace xromm
       coord_frame_.rotation()[4],
       coord_frame_.rotation()[5] };
 
+    // Top-left corner of the image plane
     image_plane_[0] = image_plane_center[0] - half_width * right[0] +
       half_height * up[0];
     image_plane_[1] = image_plane_center[1] - half_width * right[1] +
@@ -481,6 +482,7 @@ namespace xromm
     image_plane_[2] = image_plane_center[2] - half_width * right[2] +
       half_height * up[2];
 
+    // Bottom-left corner of the image plane
     image_plane_[3] = image_plane_center[0] - half_width * right[0] -
       half_height * up[0];
     image_plane_[4] = image_plane_center[1] - half_width * right[1] -
@@ -488,6 +490,7 @@ namespace xromm
     image_plane_[5] = image_plane_center[2] - half_width * right[2] -
       half_height * up[2];
 
+    // Bottom-right corner of the image plane
     image_plane_[6] = image_plane_center[0] + half_width * right[0] -
       half_height * up[0];
     image_plane_[7] = image_plane_center[1] + half_width * right[1] -
@@ -495,6 +498,7 @@ namespace xromm
     image_plane_[8] = image_plane_center[2] + half_width * right[2] -
       half_height * up[2];
 
+    // Top-right corner of the image plane
     image_plane_[9] = image_plane_center[0] + half_width * right[0] +
       half_height * up[0];
     image_plane_[10] = image_plane_center[1] + half_width * right[1] +
