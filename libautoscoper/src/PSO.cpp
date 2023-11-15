@@ -71,7 +71,7 @@ void Particle::updateVelocityAndPosition(const Particle& pBest, const Particle& 
 
 void Particle::initializePosition(float start_range_min, float start_range_max) {
   for (int dim = 0; dim < NUM_OF_DIMENSIONS; dim++) {
-    this->Position.push_back(getRandom(start_range_min, start_range_max));
+    this->Position[dim] = getRandom(start_range_min, start_range_max);
   }
 }
 
