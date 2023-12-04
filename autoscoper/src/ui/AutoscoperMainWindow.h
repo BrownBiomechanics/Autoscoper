@@ -278,6 +278,8 @@ class AutoscoperMainWindow : public QMainWindow{
     void on_toolButtonTrackCurrent_clicked();
     //void on_toolButtonRetrack_clicked();
 
+    void on_toolButtonFilterTuning_clicked();
+
 
     //Shortcuts
     void key_w_pressed();

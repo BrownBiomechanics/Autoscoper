@@ -868,6 +868,21 @@ std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned cam
     return out_data;
 }
 
+void Tracker::optimizeFilters() {
+  std::cout << "This is not yet implemented" << std::endl;
+  return;
+  // Function stub for the filter optimization
+  unsigned int current_frame = trial_.frame; // current frame
+  double xyzypr[6] = { (*trial_.getXCurve(-1))(trial_.frame),
+     (*trial_.getYCurve(-1))(trial_.frame),
+     (*trial_.getZCurve(-1))(trial_.frame),
+     (*trial_.getYawCurve(-1))(trial_.frame),
+     (*trial_.getPitchCurve(-1))(trial_.frame),
+     (*trial_.getRollCurve(-1))(trial_.frame) };
+  CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr); // current R,t of the volume
+  // Filters located in views_[i]->drrFilters() and views_[i]->radFilters()
+}
+
 bool Tracker::calculate_viewport(const CoordFrame& modelview, const Camera& camera, double* viewport) const
 {
   //

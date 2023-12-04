@@ -2107,6 +2107,13 @@ void AutoscoperMainWindow::on_toolButtonTrackCurrent_clicked() {
   tracking_dialog->retrack();
 }*/
 
+void AutoscoperMainWindow::on_toolButtonFilterTuning_clicked() {
+  if (tracker) {
+    tracker->optimizeFilters();
+    // Once completed update the filters in the UI
+  }
+}
+
 void AutoscoperMainWindow::on_actionExport_NCC_as_csv_triggered(bool checked) {
   QString filename = get_filename(true, "*.ncc");
   if (filename.compare("") != 0) {

@@ -94,6 +94,7 @@ namespace xromm
     void updateBackground();
     void setBackgroundThreshold(float threshold);
     std::vector<unsigned char> getImageData(unsigned volumeID, unsigned camera, double* xyzpr, unsigned& width, unsigned& height);
+    void optimizeFilters();
 
 
     // Bardiya Cost Function for Implants
