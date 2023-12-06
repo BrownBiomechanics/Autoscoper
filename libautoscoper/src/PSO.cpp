@@ -1,40 +1,7 @@
 #include "PSO.hpp"
 #include <iostream>
-#include <cfloat> // For FLT_MAX
 #include <string>
-
-// Particle Struct Function Definitions
-Particle::Particle(const Particle& p) {
-  this->NCC = p.NCC;
-  this->Position = p.Position;
-  this->Velocity = p.Velocity;
-}
-
-Particle::Particle() {
-  this->NCC = FLT_MAX;
-  this->Position = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
-  this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
-}
-
-Particle::Particle(const std::vector<float>& pos) {
-  this->NCC = FLT_MAX;
-  this->Position = pos;
-  this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
-}
-
-Particle::Particle(float start_range_min, float start_range_max) {
-  this->NCC = FLT_MAX;
-  this->Position = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
-  this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
-  this->initializePosition(start_range_min, start_range_max);
-}
-
-Particle& Particle::operator=(const Particle& p) {
-  this->NCC = p.NCC;
-  this->Position = p.Position;
-  this->Velocity = p.Velocity;
-  return *this;
-}
+#include "PositionParticle.hpp"
 
 std::ostream& operator<<(std::ostream& os, const std::vector<float>& values)
 {
@@ -45,34 +12,6 @@ std::ostream& operator<<(std::ostream& os, const std::vector<float>& values)
     os << (it != std::end(values) ? ", " : "");
     }
   return os;
-}
-
-std::ostream& operator<<(std::ostream& os, const Particle& p)
-{
-  os << "Position: " << p.Position << std::endl;
-  os << "Velocity: " << p.Velocity << std::endl;
-  os << "NCC: " << p.NCC;
-  return os;
-}
-
-void Particle::updateVelocityAndPosition(const Particle& pBest, const Particle& gBest, float omega) {
-  for (int dim = 0; dim < NUM_OF_DIMENSIONS; dim++) {
-    float rp = getRandomClamped();
-    float rg = getRandomClamped();
-
-    this->Velocity[dim] =
-        omega * this->Velocity[dim]
-        + c1 * rp * (pBest.Position[dim] - this->Position[dim])
-        + c2 * rg * (gBest.Position[dim] - this->Position[dim]);
-
-    this->Position[dim] += this->Velocity[dim];
-  }
-}
-
-void Particle::initializePosition(float start_range_min, float start_range_max) {
-  for (int dim = 0; dim < NUM_OF_DIMENSIONS; dim++) {
-    this->Position[dim] = getRandom(start_range_min, start_range_max);
-  }
 }
 
 // New Particle Swarm Optimization
@@ -107,17 +46,17 @@ void intializeRandom()
   }
 }
 
-float getRandom(float low, float high)
+void intializePositionParticles(std::vector<Particle*>& particles, float start_range_min, float start_range_max)
 {
-  return low + getRandomClamped() * (high - low);
+  // First particle is the initial position
+  particles[0] = new PositionParticle({ 0.f, 0.f, 0.f, 0.f, 0.f, 0.f });
+  for (int idx = 0; idx < NUM_OF_PARTICLES; idx++)
+  {
+    particles[idx] = new PositionParticle(start_range_min, start_range_max);
+  }
 }
 
-float getRandomClamped()
-{
-  return (float)rand() / (float)RAND_MAX;
-}
-
-Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOCHS, unsigned int MAX_STALL)
+Particle* pso(float start_range_min, float start_range_max, unsigned int MAX_EPOCHS, unsigned int MAX_STALL)
 {
   int stall_iter = 0;
   bool do_this = true;
@@ -125,25 +64,22 @@ Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOC
   float OMEGA = 0.8f;
 
   // Pre-allocate particles
-  std::vector<Particle> particles(NUM_OF_PARTICLES);
+  std::vector<Particle*> particles(NUM_OF_PARTICLES);
 
-  // First particle is the initial position
-  particles[0] = Particle({ 0.f, 0.f, 0.f, 0.f, 0.f, 0.f });
+  intializePositionParticles(particles, start_range_min, start_range_max);
 
   srand((unsigned)time(NULL));
 
-  // ... and the other particles positions are randomly iniialized
-  for (int idx = 1; idx < NUM_OF_PARTICLES; idx++)
-  {
-    particles[idx] = Particle(start_range_min, start_range_max);
-  }
-
-  Particle gBest;
+  Particle* gBest = new PositionParticle();
+  *gBest = *particles[0];
 
   // Make a copy of the particles, this will be the initial pBest
-  std::vector<Particle> pBest = particles;
+  std::vector<Particle*> pBest(NUM_OF_PARTICLES);
+  for (int idx = 0; idx < NUM_OF_PARTICLES; idx++) {
+    pBest[idx] = new PositionParticle(*dynamic_cast<PositionParticle*>(particles[idx]));
+  }
 
-  Particle currentBest;
+  Particle* currentBest = new PositionParticle();
   while (do_this)
   {
     //std::cout << "OMEGA: " << OMEGA << std::endl;
@@ -151,36 +87,36 @@ Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOC
       do_this = false;
     }
 
-    currentBest = gBest;
+    *currentBest = *gBest;
 
     for (int idx = 0; idx < NUM_OF_PARTICLES; idx++) {
 
       // Update the velocities and positions
-      particles[idx].updateVelocityAndPosition(pBest[idx], gBest, OMEGA);
+      particles[idx]->updateParticle(*pBest[idx], *gBest, OMEGA);
 
       // Get the NCC of the current particle
-      particles[idx].NCC = host_fitness_function(particles[idx].Position);
+      particles[idx]->NCC = host_fitness_function(dynamic_cast<PositionParticle*>(particles[idx])->Position);
 
       // Update the pBest if the current particle is better
-      if (particles[idx].NCC < pBest[idx].NCC) {
-        pBest[idx] = particles[idx];
+      if (particles[idx]->NCC < pBest[idx]->NCC) {
+        *pBest[idx] = *particles[idx];
       }
 
       // Update the gBest if the current particle is better
-      if (particles[idx].NCC < gBest.NCC) {
-        gBest = particles[idx];
+      if (particles[idx]->NCC < gBest->NCC) {
+        *gBest = *particles[idx];
       }
     }
 
     OMEGA = OMEGA * 0.9f;
 
-    std::cout << "Current Best NCC: " << gBest.NCC << std::endl;
+    std::cout << "Current Best NCC: " << gBest->NCC << std::endl;
 
     //std::cout << "Stall: " << stall_iter << std::endl;
-    if (abs(gBest.NCC - currentBest.NCC) < 1e-4f) {
+    if (abs(gBest->NCC - currentBest->NCC) < 1e-4f) {
       //std::cout << "Increased Stall Iter" << std::endl;
       stall_iter++;
-    } else if (abs(gBest.NCC - currentBest.NCC) > 0.001f) {
+    } else if (abs(gBest->NCC - currentBest->NCC) > 0.001f) {
       //std::cout << "Zeroed Stall Iter" << std::endl;
       stall_iter = 0;
     }

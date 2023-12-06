@@ -73,6 +73,7 @@
 #include "Camera.hpp"
 #include "CoordFrame.hpp"
 #include "PSO.hpp"
+#include "PositionParticle.hpp"
 
 static bool firstRun = true;
 
@@ -420,18 +421,18 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
       unsigned int MAX_STALL = max_stall_iter;
 
       clock_t cpu_begin = clock();
-      Particle gBest = pso(START_RANGE_MIN, START_RANGE_MAX, MAX_EPOCHS, MAX_STALL);
+      Particle* gBest = pso(START_RANGE_MIN, START_RANGE_MAX, MAX_EPOCHS, MAX_STALL);
       clock_t cpu_end = clock();
 
       printf("Time elapsed:%10.3lf s\n", (double)(cpu_end - cpu_begin) / CLOCKS_PER_SEC);
 
       using ::operator<<; // Access the stream operator from the global namespace
-      std::cout << "Pose change from initial position: " << gBest.Position << std::endl;
+      std::cout << "Pose change from initial position: " << dynamic_cast<PositionParticle*>(gBest)->Position << std::endl;
 
-      printf("Minimum NCC from PSO = %f\n", gBest.NCC);
+      printf("Minimum NCC from PSO = %f\n", gBest->NCC);
 
       double xyzypr_manip[NUM_OF_DIMENSIONS] = { 0 };
-      std::copy(gBest.Position.begin(), gBest.Position.begin() + NUM_OF_DIMENSIONS, xyzypr_manip);
+      std::copy(dynamic_cast<PositionParticle*>(gBest)->Position.begin(), dynamic_cast<PositionParticle*>(gBest)->Position.begin() + dynamic_cast<PositionParticle*>(gBest)->NUM_OF_DIMENSIONS, xyzypr_manip);
 
       manip = CoordFrame::from_xyzAxis_angle(xyzypr_manip);
       // PSO End
