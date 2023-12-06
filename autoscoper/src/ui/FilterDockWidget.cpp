@@ -91,3 +91,11 @@ void FilterDockWidget::loadFilterSettings(int camera, QString filename)
 void FilterDockWidget::addCamera(View * view){
   dock->treeWidget->addCamera(view);
 }
+
+void FilterDockWidget::clearFilters() {
+  dock->treeWidget->clearFilters();
+}
+
+void FilterDockWidget::setupFilterTuning() {
+  dock->treeWidget->setupFilterTuning();
+}

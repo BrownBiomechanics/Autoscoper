@@ -308,6 +308,42 @@ void FilterTreeWidget::loadFilterSettings(int camera, QString filename)
   }
 }
 
+void FilterTreeWidget::clearFilters() {
+  for (int i = 0; i < this->topLevelItemCount(); ++i) {
+    CameraTreeWidgetItem* camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));
+    if (camera) {
+      for (int j = 0; j < camera->childCount(); ++j) {
+        ModelViewTreeWidgetItem* model = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(j));
+        if (model) {
+          model->clearFilters();
+        }
+      }
+    }
+  }
+}
+
+void FilterTreeWidget::setupFilterTuning() {
+  // Right now we want to add a sobel filter to each drr renderer and to each rad renderer
+  for (int i = 0; i < this->topLevelItemCount(); ++i) {
+    CameraTreeWidgetItem* camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));
+    if (camera) {
+      for (int j = 0; j < camera->childCount(); ++j) {
+        ModelViewTreeWidgetItem* model = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(j));
+        if (model) {
+          if (model->getType() == 1) { // DRR
+            FilterTreeWidgetItem* filter = new FilterTreeWidgetItem(0); // Sobel
+            filter->addToModelViewTreeWidgetItem(this, model);
+          }
+          else if (model->getType() == 0) { // RAD
+            FilterTreeWidgetItem* filter = new FilterTreeWidgetItem(0); // Sobel
+            filter->addToModelViewTreeWidgetItem(this, model);
+          }
+        }
+      }
+    }
+  }
+}
+
 void FilterTreeWidget::toggle_drrs(){
   for(int i=0;i<this->topLevelItemCount(); ++i){
     CameraTreeWidgetItem * camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));

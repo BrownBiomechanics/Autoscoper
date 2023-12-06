@@ -84,6 +84,7 @@ public:
   void loadSettings(std::ifstream & file);
   void loadFilters(std::ifstream & file);
   void toggleVisible();
+  void clearFilters();
 
 private:
   void init();

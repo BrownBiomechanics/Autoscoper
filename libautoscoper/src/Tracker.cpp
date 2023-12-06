@@ -60,9 +60,11 @@
   #include "gpu/cuda/Compositor_kernels.h"
   #include "gpu/cuda/Mult_kernels.h"
   #include <cuda_runtime_api.h>
+  #include "gpu/cuda/SobelFilter.hpp"
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   #include "gpu/opencl/Ncc.hpp"
   #include "gpu/opencl/Mult.hpp"
+  #include "gpu/opencl/SobelFilter.hpp"
 #endif
 
 #include "VolumeDescription.hpp"
@@ -74,6 +76,7 @@
 #include "CoordFrame.hpp"
 #include "PSO.hpp"
 #include "PositionParticle.hpp"
+#include "FilterParticle.hpp"
 
 static bool firstRun = true;
 
@@ -89,6 +92,27 @@ static xromm::Tracker* g_markerless = NULL;
 double FUNC(double* P) { return g_markerless->minimizationFunc(P+1); }
 // This is for PSO. P is the 6-DOF manipulator handle.
 double PSO_FUNC(double* P) { return g_markerless->minimizationFunc(P); }
+
+// Filter PSO call back
+double FILTER_FUNC(double* F) {
+  // Update the filters with the new values
+  // F is organized as [cam0_rad_scale, cam0_rad_blend, cam0_drr_scale, cam0_drr_blend, cam1_rad_scale, cam1_rad_blend, cam1_drr_scale, cam1_drr_blend]
+
+  for (int i = 0; i < 2; i++) {
+    xromm::gpu::SobelFilter* filter = dynamic_cast<xromm::gpu::SobelFilter*>(g_markerless->views().at(i)->radFilters().at(0));
+    // Add the value in F to the current value in the filter, clamp scale to [0.0, 1.0] and blend to [0.0, 10.0]
+    filter->setScale(max(0.0f, min(1.0f, filter->getScale() + F[i*4])));
+    filter->setBlend(max(0.0f, min(10.0f, filter->getBlend() + F[i*4+1])));
+    filter = dynamic_cast<xromm::gpu::SobelFilter *>(g_markerless->views().at(i)->drrFilters().at(0));
+    filter->setScale(max(0.0f, min(1.0f, filter->getScale() + F[i*4+2])));
+    filter->setBlend(max(0.0f, min(10.0f, filter->getBlend() + F[i*4+3])));
+
+  }
+
+  // Call the minimization function
+  double P[6] = { 0.0 }; // Current Position
+  return g_markerless->minimizationFunc(P);
+}
 
 
 namespace xromm {
@@ -431,7 +455,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
 
       printf("Minimum NCC from PSO = %f\n", gBest->NCC);
 
-      double xyzypr_manip[NUM_OF_DIMENSIONS] = { 0 };
+      double xyzypr_manip[NUM_OF_POS_DIMENSIONS] = { 0 };
       std::copy(dynamic_cast<PositionParticle*>(gBest)->Position.begin(), dynamic_cast<PositionParticle*>(gBest)->Position.begin() + dynamic_cast<PositionParticle*>(gBest)->NUM_OF_DIMENSIONS, xyzypr_manip);
 
       manip = CoordFrame::from_xyzAxis_angle(xyzypr_manip);
@@ -870,18 +894,19 @@ std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned cam
 }
 
 void Tracker::optimizeFilters() {
-  std::cout << "This is not yet implemented" << std::endl;
-  return;
-  // Function stub for the filter optimization
-  unsigned int current_frame = trial_.frame; // current frame
-  double xyzypr[6] = { (*trial_.getXCurve(-1))(trial_.frame),
-     (*trial_.getYCurve(-1))(trial_.frame),
-     (*trial_.getZCurve(-1))(trial_.frame),
-     (*trial_.getYawCurve(-1))(trial_.frame),
-     (*trial_.getPitchCurve(-1))(trial_.frame),
-     (*trial_.getRollCurve(-1))(trial_.frame) };
-  CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr); // current R,t of the volume
-  // Filters located in views_[i]->drrFilters() and views_[i]->radFilters()
+  std::cerr << "Optimizing Filters" << std::endl;
+  Particle* gBest = pso(-3.0, 3.0, 1000, 10, false);
+  FilterParticle* gBestFilter = dynamic_cast<FilterParticle*>(gBest);
+  std::cerr << "Found NCC value of " << gBest->NCC << "\n" <<
+    "Change from original filters:\nCamera 1 - Rad - Sobel:\n" <<
+    "   scale: " << gBestFilter->Filter_Settings[0] << " blend: " << gBestFilter->Filter_Settings[1] << "\n" <<
+    "Camera 1 - DRR - Sobel:\n" <<
+    "   scale: " << gBestFilter->Filter_Settings[2] << " blend: " << gBestFilter->Filter_Settings[3] << "\n" <<
+    "Camera 2 - Rad - Sobel:\n" <<
+    "   scale: " << gBestFilter->Filter_Settings[4] << " blend: " << gBestFilter->Filter_Settings[5] << "\n" <<
+    "Camera 2 - DRR - Sobel:\n" <<
+    "   scale: " << gBestFilter->Filter_Settings[6] << " blend: " << gBestFilter->Filter_Settings[7] << "\n" <<
+    std::endl;
 }
 
 bool Tracker::calculate_viewport(const CoordFrame& modelview, const Camera& camera, double* viewport) const

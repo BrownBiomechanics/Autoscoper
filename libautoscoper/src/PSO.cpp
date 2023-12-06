@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include "PositionParticle.hpp"
+#include "FilterParticle.hpp"
 
 std::ostream& operator<<(std::ostream& os, const std::vector<float>& values)
 {
@@ -15,15 +16,36 @@ std::ostream& operator<<(std::ostream& os, const std::vector<float>& values)
 }
 
 // New Particle Swarm Optimization
-float host_fitness_function(const std::vector<float>& x)
+float host_fitness_function(Particle* p)
 {
-  double xyzypr_manip[NUM_OF_DIMENSIONS] = { 0.0 };
-  for (int dim = 0; dim < NUM_OF_DIMENSIONS; dim++) {
-    xyzypr_manip[dim] = (double)x[dim];
+  // For position particles
+  const PositionParticle* pos_p = dynamic_cast<PositionParticle*>(p);
+  if (pos_p == nullptr) {
+    std::cerr << "ERROR: p is not a PositionParticle" << std::endl;
+    return FLT_MAX;
+  }
+  double xyzypr_manip[NUM_OF_POS_DIMENSIONS] = {0.0};
+  for (int dim = 0; dim < NUM_OF_POS_DIMENSIONS; dim++) {
+    xyzypr_manip[dim] = (double)pos_p->Position[dim];
   }
 
   double total = PSO_FUNC(xyzypr_manip);
 
+  return (float)total;
+}
+
+float filter_fitness_function(Particle* p) {
+  // For filter particles
+  const FilterParticle* filter_p = dynamic_cast<FilterParticle*>(p);
+  if (filter_p == nullptr) {
+    std::cerr << "ERROR: p is not a FilterParticle" << std::endl;
+    return FLT_MAX;
+  }
+  double xyzypr_manip[NUM_OF_FILTER_DIMENSIONS] = {0.0};
+  for (int dim = 0; dim < NUM_OF_FILTER_DIMENSIONS; dim++) {
+    xyzypr_manip[dim] = (double)filter_p->Filter_Settings[dim];
+  }
+  double total = FILTER_FUNC(xyzypr_manip);
   return (float)total;
 }
 
@@ -56,7 +78,17 @@ void intializePositionParticles(std::vector<Particle*>& particles, float start_r
   }
 }
 
-Particle* pso(float start_range_min, float start_range_max, unsigned int MAX_EPOCHS, unsigned int MAX_STALL)
+void intializeFilterParticles(std::vector<Particle*>& particles, float start_range_min, float start_range_max)
+{
+  // First particle is the initial position
+  particles[0] = new FilterParticle({ 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f});
+  for (int idx = 0; idx < NUM_OF_PARTICLES; idx++)
+  {
+    particles[idx] = new FilterParticle(start_range_min, start_range_max);
+  }
+}
+
+Particle* pso(float start_range_min, float start_range_max, unsigned int MAX_EPOCHS, unsigned int MAX_STALL, bool position)
 {
   int stall_iter = 0;
   bool do_this = true;
@@ -66,20 +98,34 @@ Particle* pso(float start_range_min, float start_range_max, unsigned int MAX_EPO
   // Pre-allocate particles
   std::vector<Particle*> particles(NUM_OF_PARTICLES);
 
-  intializePositionParticles(particles, start_range_min, start_range_max);
+  if (position)
+    intializePositionParticles(particles, start_range_min, start_range_max);
+  else
+    intializeFilterParticles(particles, start_range_min, start_range_max);
 
   srand((unsigned)time(NULL));
 
-  Particle* gBest = new PositionParticle();
+  Particle* gBest;
+  Particle* currentBest;
+  if (position) {
+    gBest = new PositionParticle();
+    currentBest = new PositionParticle();
+  }
+  else {
+    gBest = new FilterParticle();
+    currentBest = new FilterParticle();
+  }
   *gBest = *particles[0];
 
   // Make a copy of the particles, this will be the initial pBest
   std::vector<Particle*> pBest(NUM_OF_PARTICLES);
   for (int idx = 0; idx < NUM_OF_PARTICLES; idx++) {
-    pBest[idx] = new PositionParticle(*dynamic_cast<PositionParticle*>(particles[idx]));
+    if (position)
+      pBest[idx] = new PositionParticle(*dynamic_cast<PositionParticle*>(particles[idx]));
+    else
+      pBest[idx] = new FilterParticle(*dynamic_cast<FilterParticle*>(particles[idx]));
   }
 
-  Particle* currentBest = new PositionParticle();
   while (do_this)
   {
     //std::cout << "OMEGA: " << OMEGA << std::endl;
@@ -95,7 +141,10 @@ Particle* pso(float start_range_min, float start_range_max, unsigned int MAX_EPO
       particles[idx]->updateParticle(*pBest[idx], *gBest, OMEGA);
 
       // Get the NCC of the current particle
-      particles[idx]->NCC = host_fitness_function(dynamic_cast<PositionParticle*>(particles[idx])->Position);
+      if (position)
+        particles[idx]->NCC = host_fitness_function(particles[idx]);
+      else
+        particles[idx]->NCC = filter_fitness_function(particles[idx]);
 
       // Update the pBest if the current particle is better
       if (particles[idx]->NCC < pBest[idx]->NCC) {

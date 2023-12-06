@@ -9,6 +9,9 @@ const float c2 = 1.5f;
 struct Particle {
   float NCC;
   std::vector<float> Velocity;
+  const int NUM_OF_DIMENSIONS;
+
+  Particle(int dims) : NUM_OF_DIMENSIONS(dims), NCC(FLT_MAX) {};
 
   virtual void updateParticle(const Particle& pBest, const Particle& gBest, float omega) = 0;
 

@@ -4,6 +4,7 @@ set(libautoscoper_HEADERS
   src/CoordFrame.hpp
   src/DownhillSimplex.hpp
   src/Filter.hpp
+  src/FilterParticle.hpp
   src/KeyCurve.hpp
   src/Particle.hpp
   src/PositionParticle.hpp
@@ -23,6 +24,7 @@ set(libautoscoper_SOURCES
   src/Camera.cpp
   src/CoordFrame.cpp
   src/DownhillSimplex.cpp
+  src/FilterParticle.cpp
   src/PositionParticle.cpp
   src/PSO.cpp
   src/KeyCurve.cpp

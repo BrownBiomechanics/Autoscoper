@@ -71,6 +71,9 @@ class FilterDockWidget : public QDockWidget{
     void loadAllSettings(QString directory);
     void loadFilterSettings(int camera, QString filename);
 
+    void clearFilters();
+    void setupFilterTuning();
+
     AutoscoperMainWindow * getMainWindow(){return mainwindow;};
 
   private:

@@ -70,6 +70,9 @@ class FilterTreeWidget : public QTreeWidget{
     void saveAllSettings(QString directory);
     void loadAllSettings(QString directory);
     void loadFilterSettings(int camera, QString filename);
+
+    void clearFilters();
+    void setupFilterTuning();
   private:
     void printTree();
     void resetFilterTree();

@@ -291,6 +291,14 @@ void ModelViewTreeWidgetItem::removeFilter(FilterTreeWidgetItem* filterItem, boo
   if(removeFromTree)this->removeChild(filterItem);
 }
 
+void ModelViewTreeWidgetItem::clearFilters() {
+  for (auto filterItem : filterTreeWidgets) {
+    this->removeChild(filterItem);
+  }
+  filterTreeWidgets.clear();
+  m_filters->clear();
+}
+
 void ModelViewTreeWidgetItem::printFilters(){
   for(int i = 0; i < filterTreeWidgets.size(); i++){
     fprintf(stderr,"          Filter%d %s\n",i,filterTreeWidgets[i]->getName().toStdString().c_str());

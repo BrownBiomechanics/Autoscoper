@@ -3,7 +3,6 @@
 
 struct PositionParticle : public Particle {
   std::vector<float> Position;
-  const int NUM_OF_DIMENSIONS = 6;
 
   // Copy constructor
   PositionParticle(const PositionParticle& p);

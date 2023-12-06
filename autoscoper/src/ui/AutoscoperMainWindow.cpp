@@ -2108,7 +2108,12 @@ void AutoscoperMainWindow::on_toolButtonTrackCurrent_clicked() {
 }*/
 
 void AutoscoperMainWindow::on_toolButtonFilterTuning_clicked() {
+  // Probably should prompt the user to save the current filters if they want
   if (tracker) {
+    this->filters_widget->clearFilters();
+    this->filters_widget->setupFilterTuning();
+    redrawGL();
+    // Clear the filters
     tracker->optimizeFilters();
     // Once completed update the filters in the UI
   }

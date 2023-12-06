@@ -1,26 +1,23 @@
 #include "PositionParticle.hpp"
 
 // PositionParticle Struct Function Definitions
-PositionParticle::PositionParticle(const PositionParticle& p) {
+PositionParticle::PositionParticle(const PositionParticle& p) : Particle(6) {
   this->NCC = p.NCC;
   this->Position = p.Position;
   this->Velocity = p.Velocity;
 }
 
-PositionParticle::PositionParticle() {
-  this->NCC = FLT_MAX;
+PositionParticle::PositionParticle() : Particle(6) {
   this->Position = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
   this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
 }
 
-PositionParticle::PositionParticle(const std::vector<float>& pos) {
-  this->NCC = FLT_MAX;
+PositionParticle::PositionParticle(const std::vector<float>& pos) : Particle(6) {
   this->Position = pos;
   this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
 }
 
-PositionParticle::PositionParticle(float start_range_min, float start_range_max) {
-  this->NCC = FLT_MAX;
+PositionParticle::PositionParticle(float start_range_min, float start_range_max) : Particle(6) {
   this->Position = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
   this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
   this->initializePosition(start_range_min, start_range_max);
