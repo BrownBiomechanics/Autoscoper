@@ -203,8 +203,6 @@ class AutoscoperMainWindow : public QMainWindow{
     void save_ncc_results(QString filename);
     void save_nearby_nccs(QString filename);
 
-    double rand_gen_main(double fMin, double fMax);
-
     void load_tracking_results(QString filename);
 
     protected:

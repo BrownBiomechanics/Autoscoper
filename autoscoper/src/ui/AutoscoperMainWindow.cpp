@@ -2409,18 +2409,6 @@ void AutoscoperMainWindow::save_nearby_nccs(QString filename) {
   std::cout << "All NCCs were saved nearby this pose..." << std::endl;
 }
 
-
-double AutoscoperMainWindow::rand_gen_main(double fMin, double fMax)
-{
-  double f = (double)rand() / RAND_MAX;
-  return fMin + f * (fMax - fMin);
-}
-
-
-
-
-
-
 void AutoscoperMainWindow::key_w_pressed(){
   ui->toolButtonTranslate->click();
 }
