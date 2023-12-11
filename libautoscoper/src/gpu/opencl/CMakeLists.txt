@@ -14,6 +14,7 @@ set(opencl_HEADERS
   src/gpu/opencl/BackgroundRenderer.hpp
   src/gpu/opencl/DRRBackground.hpp
   src/gpu/opencl/Mult.hpp
+  src/gpu/opencl/EOSRayCaster.hpp
 )
 
 set(opencl_SOURCES
@@ -30,6 +31,7 @@ set(opencl_SOURCES
   src/gpu/opencl/BackgroundRenderer.cpp
   src/gpu/opencl/DRRBackground.cpp
   src/gpu/opencl/Mult.cpp
+  src/gpu/opencl/EOSRayCaster.cpp
 )
 
 

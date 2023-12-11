@@ -63,6 +63,7 @@
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   #include "gpu/opencl/Ncc.hpp"
   #include "gpu/opencl/Mult.hpp"
+  #include "gpu/opencl/EOSRayCaster.hpp"
 #endif
 
 #include "VolumeDescription.hpp"
@@ -76,7 +77,7 @@
 
 static bool firstRun = true;
 
-#define DEBUG 0
+#define DEBUG 1
 
 // XXX
 // Set callback for Downhill Simplex. This is really a hack so that we can use
@@ -719,7 +720,7 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
       gpu::multiply(rendered_drr_, drr_mask_, rendered_drr_, render_width, render_height);
 
 #if DEBUG
-      save_debug_image(rendered_drr_, render_width, render_height);
+      //save_debug_image(rendered_drr_, render_width, render_height);
       //save_debug_image(rendered_rad_, render_width, render_height);
       //save_debug_image(drr_mask_, render_width, render_height);
       //save_debug_image(background_mask_, render_width, render_height);
@@ -1030,7 +1031,36 @@ void Tracker::getFullDRR(unsigned int volumeID) const
   }
 }
 
-
+void Tracker::projectEOS(unsigned int volumeID) const
+{
+  std::cerr << "Projecting EOS" << std::endl;
+  double xyzypr[6] = { (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame),
+          (*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame),
+          (*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame),
+          (*(const_cast<Trial&>(trial_)).getYawCurve(-1))(trial_.frame),
+          (*(const_cast<Trial&>(trial_)).getPitchCurve(-1))(trial_.frame),
+          (*(const_cast<Trial&>(trial_)).getRollCurve(-1))(trial_.frame) };
+  CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
+  gpu::EOSRayCaster frontal_renderer = gpu::EOSRayCaster();
+  frontal_renderer.setVolume(*volumeDescription_.at(volumeID));
+  frontal_renderer.setGeometry(987.f, 1300.f, 0.179363f, 0.179363f, 0.f, 1.f, false, 2173, 1896);
+  double worldToModel[16] = { 0.0 };
+  worldToModel[0] = 1.0;
+  worldToModel[5] = 1.0;
+  worldToModel[10] = 1.0;
+  worldToModel[12] = 0.0;
+  worldToModel[13] = 0.0;
+  worldToModel[14] = 0.0;
+  worldToModel[15] = 1.0;
+  CoordFrame worldToModelFrame = CoordFrame::from_matrix(worldToModel);
+  frontal_renderer.setWorldToModelMatrix(worldToModelFrame);
+  frontal_renderer.calculateViewport();
+  gpu::Buffer* rendered_eos = new gpu::Buffer(frontal_renderer.viewport()[2]*frontal_renderer.viewport()[3] * sizeof(float));
+  rendered_eos->fill((char)0x00);
+  frontal_renderer.render(rendered_eos, frontal_renderer.viewport()[2], frontal_renderer.viewport()[3]);
+  // Save the image to a file
+  save_debug_image(rendered_eos, frontal_renderer.viewport()[2], frontal_renderer.viewport()[3]);
+}
 
 
 

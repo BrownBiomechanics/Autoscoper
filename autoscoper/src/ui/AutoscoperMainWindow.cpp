@@ -1214,6 +1214,7 @@ bool AutoscoperMainWindow::openTrial(QString filename){
     on_actionInsert_Key_triggered(true);
     // on_actionDelete_triggered(true);
     //
+    this->tracker->projectEOS(0);
     return true;
   }
   catch (std::exception& e) {

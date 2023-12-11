@@ -102,6 +102,8 @@ namespace xromm
 
     void getFullDRR(unsigned int volumeID) const;
 
+    void projectEOS(unsigned int volumeID) const;
+
 
   private:
     bool calculate_viewport(const CoordFrame& modelview, const Camera& camera, double* viewport) const;
