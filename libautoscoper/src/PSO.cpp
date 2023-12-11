@@ -90,11 +90,12 @@ float host_fitness_function(const std::vector<float>& x)
 
 void initializeRandom()
 {
+  unsigned int seed = (unsigned)time(NULL);
+
   if (char* randomSeed = std::getenv("Autoscoper_RANDOM_SEED")) {
     try {
-      std::cout << "Setting to Autoscoper_RANDOM_SEED to " << randomSeed << std::endl;
-      unsigned int seed = std::stoi(std::string(randomSeed));
-      srand(seed);
+      std::cout << "Autoscoper_RANDOM_SEED env. variable is set to " << randomSeed << std::endl;
+      seed = std::stoi(std::string(randomSeed));
     }
     catch (const std::invalid_argument &e) {
       std::cerr << "Autoscoper_RANDOM_SEED is not a valid integer" << std::endl;
@@ -105,6 +106,8 @@ void initializeRandom()
       exit(1);
     }
   }
+  std::cout << "Initializing Autoscoper random number generator with " << seed << std::endl;
+  srand(seed);
 }
 
 float getRandom(float low, float high)
@@ -129,8 +132,6 @@ Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOC
 
   // First particle is the initial position
   particles[0] = Particle({ 0.f, 0.f, 0.f, 0.f, 0.f, 0.f });
-
-  srand((unsigned)time(NULL));
 
   // ... and the other particles positions are randomly iniialized
   for (int idx = 1; idx < NUM_OF_PARTICLES; idx++)
