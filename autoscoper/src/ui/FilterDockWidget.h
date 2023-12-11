@@ -73,6 +73,7 @@ class FilterDockWidget : public QDockWidget{
 
     void clearFilters();
     void setupFilterTuning();
+    void updateFiltersAfterTuning(std::vector<float> & filter_params);
 
     AutoscoperMainWindow * getMainWindow(){return mainwindow;};
 

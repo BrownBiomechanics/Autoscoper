@@ -54,17 +54,17 @@
 #endif
 
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
-  #include "gpu/cuda/CudaWrap.hpp"
-  #include "gpu/cuda/Ncc_kernels.h"
-  #include "gpu/cuda/HDist_kernels.h"
-  #include "gpu/cuda/Compositor_kernels.h"
-  #include "gpu/cuda/Mult_kernels.h"
-  #include <cuda_runtime_api.h>
-  #include "gpu/cuda/SobelFilter.hpp"
+#include "gpu/cuda/CudaWrap.hpp"
+#include "gpu/cuda/Ncc_kernels.h"
+#include "gpu/cuda/HDist_kernels.h"
+#include "gpu/cuda/Compositor_kernels.h"
+#include "gpu/cuda/Mult_kernels.h"
+#include <cuda_runtime_api.h>
+#include "gpu/cuda/SobelFilter.hpp"
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-  #include "gpu/opencl/Ncc.hpp"
-  #include "gpu/opencl/Mult.hpp"
-  #include "gpu/opencl/SobelFilter.hpp"
+#include "gpu/opencl/Ncc.hpp"
+#include "gpu/opencl/Mult.hpp"
+#include "gpu/opencl/SobelFilter.hpp"
 #endif
 
 #include "VolumeDescription.hpp"
@@ -89,29 +89,83 @@ static bool firstRun = true;
 static xromm::Tracker* g_markerless = NULL;
 
 // This is for Downhill Simplex
-double FUNC(double* P) { return g_markerless->minimizationFunc(P+1); }
+double FUNC(double* P) { return g_markerless->minimizationFunc(P + 1); }
 // This is for PSO. P is the 6-DOF manipulator handle.
 double PSO_FUNC(double* P) { return g_markerless->minimizationFunc(P); }
+
+void reset_filters(std::vector<float> original_values) {
+  // just incase we fall outside the bounds of the filter, we need to reset them all
+  for (int i = 0; i < 2; i++) {
+    xromm::gpu::SobelFilter* filter = dynamic_cast<xromm::gpu::SobelFilter*>(g_markerless->views().at(i)->radFilters().at(0));
+    if (original_values.at(i * 4) == -1.0f)
+      return;
+    filter->setScale(original_values.at(i * 4));
+    if (original_values.at(i * 4 + 1) == -1.0f)
+      return;
+    filter->setBlend(original_values.at(i * 4 + 1));
+
+    filter = dynamic_cast<xromm::gpu::SobelFilter*>(g_markerless->views().at(i)->drrFilters().at(0));
+    if (original_values.at(i * 4 + 2) == -1.0f)
+      return;
+    filter->setScale(original_values.at(i * 4 + 2));
+    if (original_values.at(i * 4 + 3) == -1.0f)
+      return;
+    filter->setBlend(original_values.at(i * 4 + 3));
+  }
+}
 
 // Filter PSO call back
 double FILTER_FUNC(double* F) {
   // Update the filters with the new values
   // F is organized as [cam0_rad_scale, cam0_rad_blend, cam0_drr_scale, cam0_drr_blend, cam1_rad_scale, cam1_rad_blend, cam1_drr_scale, cam1_drr_blend]
 
+  std::vector<float> original_values(8,-1.0f); // Initialize to -1.0f (invalid value)
+  float new_value;
   for (int i = 0; i < 2; i++) {
+    // Get the filter and save the original values
     xromm::gpu::SobelFilter* filter = dynamic_cast<xromm::gpu::SobelFilter*>(g_markerless->views().at(i)->radFilters().at(0));
-    // Add the value in F to the current value in the filter, clamp scale to [0.0, 1.0] and blend to [0.0, 10.0]
-    filter->setScale(max(0.0f, min(1.0f, filter->getScale() + F[i*4])));
-    filter->setBlend(max(0.0f, min(10.0f, filter->getBlend() + F[i*4+1])));
-    filter = dynamic_cast<xromm::gpu::SobelFilter *>(g_markerless->views().at(i)->drrFilters().at(0));
-    filter->setScale(max(0.0f, min(1.0f, filter->getScale() + F[i*4+2])));
-    filter->setBlend(max(0.0f, min(10.0f, filter->getBlend() + F[i*4+3])));
+    original_values.at(i*4) = filter->getScale();
+    original_values.at(i*4+1) = filter->getBlend();
 
+    new_value = filter->getScale() + F[i * 4];
+    if (new_value > 10.0f || new_value < 0.0f) {
+      reset_filters(original_values);
+      return 9999; // Return a large value to indicate that this is a bad solution
+    }
+    filter->setScale(new_value);
+    new_value = filter->getBlend() + F[i*4+1];
+    if (new_value > 1.0f || new_value < 0.0f) {
+      reset_filters(original_values);
+      return 9999; // Return a large value to indicate that this is a bad solution
+    }
+    filter->setBlend(new_value);
+
+    filter = dynamic_cast<xromm::gpu::SobelFilter *>(g_markerless->views().at(i)->drrFilters().at(0));
+    original_values.at(i*4+2) = filter->getScale();
+    original_values.at(i*4+3) = filter->getBlend();
+
+    new_value = filter->getScale() + F[i*4+2];
+    if (new_value > 10.0f || new_value < 0.0f) {
+      reset_filters(original_values);
+      return 9999; // Return a large value to indicate that this is a bad solution
+    }
+    filter->setScale(new_value);
+    new_value = filter->getBlend() + F[i*4+3];
+    if (new_value > 1.0f || new_value < 0.0f) {
+      reset_filters(original_values);
+      return 9999; // Return a large value to indicate that this is a bad solution
+    }
+    filter->setBlend(new_value);
   }
 
   // Call the minimization function
   double P[6] = { 0.0 }; // Current Position
-  return g_markerless->minimizationFunc(P);
+  float ncc = g_markerless->minimizationFunc(P);
+
+  // Reset the filters
+  reset_filters(original_values);
+
+  return ncc;
 }
 
 
@@ -153,7 +207,7 @@ namespace xromm {
     #ifdef __APPLE__
   sprintf(filename,"/Users/bardiya/autoscoper-v2/debug/image_cam%02d.pgm",count++);
     #elif _WIN32
-    sprintf(filename,"C:/Users/anthony.lombardi/Desktop/viewport-clip-test/image_cam%02d.pgm",count++);
+    sprintf(filename,"C:/Users/anthony.lombardi/Desktop/filter-opt/image_cam%02d.pgm",count++);
     #endif
 
     std::cout << filename << std::endl;
@@ -745,7 +799,7 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
 
 #if DEBUG
       save_debug_image(rendered_drr_, render_width, render_height);
-      //save_debug_image(rendered_rad_, render_width, render_height);
+      save_debug_image(rendered_rad_, render_width, render_height);
       //save_debug_image(drr_mask_, render_width, render_height);
       //save_debug_image(background_mask_, render_width, render_height);
 #endif
@@ -893,9 +947,9 @@ std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned cam
     return out_data;
 }
 
-void Tracker::optimizeFilters() {
+std::vector<float> Tracker::optimizeFilters() {
   std::cerr << "Optimizing Filters" << std::endl;
-  Particle* gBest = pso(-3.0, 3.0, 1000, 10, false);
+  Particle* gBest = pso(-0.15, 0.15, 1000, 25, false);
   FilterParticle* gBestFilter = dynamic_cast<FilterParticle*>(gBest);
   std::cerr << "Found NCC value of " << gBest->NCC << "\n" <<
     "Change from original filters:\nCamera 1 - Rad - Sobel:\n" <<
@@ -907,6 +961,28 @@ void Tracker::optimizeFilters() {
     "Camera 2 - DRR - Sobel:\n" <<
     "   scale: " << gBestFilter->Filter_Settings[6] << " blend: " << gBestFilter->Filter_Settings[7] << "\n" <<
     std::endl;
+  // return the new filter settings and update the filters
+  std::vector<float> newFilters;
+  for (int i = 0; i < 2; i++) {
+    xromm::gpu::SobelFilter* filter = dynamic_cast<xromm::gpu::SobelFilter*>(this->views().at(i)->radFilters().at(0));
+    newFilters.push_back(filter->getScale() + gBestFilter->Filter_Settings[i * 4]);
+    newFilters.push_back(filter->getBlend() + gBestFilter->Filter_Settings[i*  4 + 1]);
+    filter->setScale(newFilters[i*4]);
+    filter->setBlend(newFilters[i*4 + 1]);
+
+    filter = dynamic_cast<xromm::gpu::SobelFilter*>(this->views().at(i)->drrFilters().at(0));
+    newFilters.push_back(filter->getScale() + gBestFilter->Filter_Settings[i*  4 + 2]);
+    newFilters.push_back(filter->getBlend() + gBestFilter->Filter_Settings[i*  4 + 3]);
+    filter->setScale(newFilters[i*4 + 2]);
+    filter->setBlend(newFilters[i*4 + 3]);
+
+    std::cerr << "Camera " << i << " - Rad - Sobel:\n" <<
+      "   scale: " << newFilters[i*4] << " blend: " << newFilters[i*4 + 1] << "\n" <<
+      "Camera " << i << " - DRR - Sobel:\n" <<
+      "   scale: " << newFilters[i*4 + 2] << " blend: " << newFilters[i*4 + 3] << "\n" <<
+      std::endl;
+  }
+  return newFilters;
 }
 
 bool Tracker::calculate_viewport(const CoordFrame& modelview, const Camera& camera, double* viewport) const

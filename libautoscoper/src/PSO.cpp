@@ -41,11 +41,11 @@ float filter_fitness_function(Particle* p) {
     std::cerr << "ERROR: p is not a FilterParticle" << std::endl;
     return FLT_MAX;
   }
-  double xyzypr_manip[NUM_OF_FILTER_DIMENSIONS] = {0.0};
+  double filter_settings[NUM_OF_FILTER_DIMENSIONS] = {0.0};
   for (int dim = 0; dim < NUM_OF_FILTER_DIMENSIONS; dim++) {
-    xyzypr_manip[dim] = (double)filter_p->Filter_Settings[dim];
+    filter_settings[dim] = (double)filter_p->Filter_Settings[dim];
   }
-  double total = FILTER_FUNC(xyzypr_manip);
+  double total = FILTER_FUNC(filter_settings);
   return (float)total;
 }
 

@@ -2114,7 +2114,7 @@ void AutoscoperMainWindow::on_toolButtonFilterTuning_clicked() {
     this->filters_widget->setupFilterTuning();
     redrawGL();
     // Clear the filters
-    tracker->optimizeFilters();
+    this->filters_widget->updateFiltersAfterTuning(this->tracker->optimizeFilters());
     // Once completed update the filters in the UI
   }
 }

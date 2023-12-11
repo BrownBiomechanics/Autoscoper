@@ -73,6 +73,7 @@ class FilterTreeWidget : public QTreeWidget{
 
     void clearFilters();
     void setupFilterTuning();
+    void updateFiltersAfterTuning(std::vector<float>& filter_params);
   private:
     void printTree();
     void resetFilterTree();

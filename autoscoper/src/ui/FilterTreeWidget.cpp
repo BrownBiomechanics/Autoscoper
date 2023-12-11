@@ -51,6 +51,7 @@
 #include "ui/FilterTreeWidgetItem.h"
 #include "ui/FilterDockWidget.h"
 #include "ui/AutoscoperMainWindow.h"
+#include "ui/FilterTreeWidgetParameter.h"
 
 #include "View.hpp"
 #include <math.h>
@@ -342,6 +343,39 @@ void FilterTreeWidget::setupFilterTuning() {
       }
     }
   }
+}
+
+void FilterTreeWidget::updateFiltersAfterTuning(std::vector<float>& filter_params) {
+   //Vector is organized as [cam0_rad_scale, cam0_rad_blend, cam0_drr_scale, cam0_drr_blend, cam1_rad_scale, cam1_rad_blend, cam1_drr_scale, cam1_drr_blend]
+   //Right now we want to add a sobel filter to each drr renderer and to each rad renderer
+  for (int i = 0; i < this->topLevelItemCount(); ++i) {
+    CameraTreeWidgetItem* camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));
+    if (camera) {
+      for (int j = 0; j < camera->childCount(); ++j) {
+        ModelViewTreeWidgetItem* model = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(j));
+        if (model) {
+          if (model->getType() == 1) { // DRR
+            FilterTreeWidgetItem* filter = dynamic_cast<FilterTreeWidgetItem*> (model->child(0));
+            if (filter) {
+              std::vector<FilterTreeWidgetParameter*>* fp = filter->getParameters();
+              fp->at(1)->value = filter_params.at(4 * i + 2 * j + 1);
+              fp->at(0)->value = filter_params.at(4 * i + 2 * j);
+              filter->updateFilter();
+            }
+          }
+          else if (model->getType() == 0) { // RAD
+            FilterTreeWidgetItem* filter = dynamic_cast<FilterTreeWidgetItem*> (model->child(0));
+            if (filter) {
+              std::vector<FilterTreeWidgetParameter*>* fp = filter->getParameters();
+              fp->at(1)->value = filter_params.at(4 * i + 2 * j + 1);
+              fp->at(0)->value = filter_params.at(4 * i + 2 * j);
+              filter->updateFilter();
+            }
+          }
+          }
+        }
+      }
+    }
 }
 
 void FilterTreeWidget::toggle_drrs(){

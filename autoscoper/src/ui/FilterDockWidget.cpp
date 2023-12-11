@@ -99,3 +99,7 @@ void FilterDockWidget::clearFilters() {
 void FilterDockWidget::setupFilterTuning() {
   dock->treeWidget->setupFilterTuning();
 }
+
+void FilterDockWidget::updateFiltersAfterTuning(std::vector<float> & filter_params) {
+  dock->treeWidget->updateFiltersAfterTuning(filter_params);
+}

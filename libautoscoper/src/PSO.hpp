@@ -17,7 +17,7 @@
 #include "Particle.hpp"
 const int NUM_OF_PARTICLES = 100;
 const int NUM_OF_POS_DIMENSIONS = 6;
-const int NUM_OF_FILTER_DIMENSIONS = 6;
+const int NUM_OF_FILTER_DIMENSIONS = 8;
 // END: NEW PSO
 
 double PSO_FUNC(double *P);
