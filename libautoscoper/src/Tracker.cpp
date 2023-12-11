@@ -207,7 +207,7 @@ Tracker::Tracker()
     g_markerless = this;
   optimization_method = 0; // initialize cost function
   cf_model_select = 0; //cost function selector
-  intializeRandom();
+  initializeRandom();
 }
 
 Tracker::~Tracker()
@@ -321,7 +321,7 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
   // 4) Run Downhill Simplex (Nelder-Mead) on the best guess from the PSO
   // 5) Update the volume pose based on the best guess
 
-  intializeRandom();
+  initializeRandom();
 
   optimization_method = opt_method;
   cf_model_select = cf_model;

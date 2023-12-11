@@ -88,7 +88,7 @@ float host_fitness_function(const std::vector<float>& x)
   return (float)total;
 }
 
-void intializeRandom()
+void initializeRandom()
 {
   if (char* randomSeed = std::getenv("Autoscoper_RANDOM_SEED")) {
     try {

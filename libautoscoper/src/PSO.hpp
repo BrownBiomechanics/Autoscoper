@@ -22,7 +22,7 @@ const float c2 = 1.5f;
 
 double PSO_FUNC(double *P);
 
-void intializeRandom();
+void initializeRandom();
 
 float getRandom(float low, float high);
 float getRandomClamped();
