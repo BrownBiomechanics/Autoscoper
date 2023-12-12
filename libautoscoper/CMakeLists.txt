@@ -59,14 +59,22 @@ list(APPEND libautoscoper_SOURCES
   )
 
 if(Autoscoper_RENDERING_BACKEND STREQUAL "CUDA")
-  find_package(CUDA REQUIRED)
+  # CUDA 10.2 supports C++ up to version 14
+  # See https://docs.nvidia.com/cuda/archive/10.2/cuda-c-programming-guide/index.html#c-cplusplus-language-support
+  set(CMAKE_CUDA_STANDARD 14)
+  set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
+  enable_language(CUDA)
+  find_package(CUDAToolkit REQUIRED)
   include(${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/cuda/CMakeLists.txt)
-  # Ensure calls to "target_link_libraries()" used in "CUDA_ADD_LIBRARY()" also
-  # specify a scope keyword.
-  set(CUDA_LINK_LIBRARIES_KEYWORD "PUBLIC")
-  CUDA_ADD_LIBRARY(libautoscoper STATIC ${libautoscoper_SOURCES} ${libautoscoper_HEADERS} ${cuda_HEADERS} ${cuda_SOURCES} ${cuda_KERNEL_HEADERS} ${cuda_KERNEL})
+  add_library(libautoscoper STATIC ${libautoscoper_SOURCES} ${libautoscoper_HEADERS} ${cuda_HEADERS} ${cuda_SOURCES} ${cuda_KERNEL_HEADERS} ${cuda_KERNEL})
   target_include_directories(libautoscoper PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/cuda/cutil)
-  # Explicitly linking against CUDA_LIBRARIES is already done in "CUDA_ADD_LIBRARY()".
+  target_link_libraries(libautoscoper PUBLIC
+    CUDA::cudart_static
+  )
+  # The use of multiple .h and .cu files implies separate compilation units
+  set_target_properties(libautoscoper PROPERTIES
+    CMAKE_CUDA_SEPARABLE_COMPILATION ON
+  )
 elseif(Autoscoper_RENDERING_BACKEND STREQUAL "OpenCL")
   if(Autoscoper_OPENCL_USE_ICD_LOADER)
     find_package(OpenCLHeaders REQUIRED)
