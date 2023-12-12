@@ -128,6 +128,11 @@ if(Autoscoper_RENDERING_BACKEND STREQUAL "OpenCL")
   message(STATUS "Setting Autoscoper_OPENCL_USE_ICD_LOADER to ${Autoscoper_OPENCL_USE_ICD_LOADER}")
 endif()
 
+set(Autoscoper_ARTIFACT_SUFFIX "" CACHE STRING "Suffix for Autoscoper artifact names")
+mark_as_advanced(Autoscoper_ARTIFACT_SUFFIX)
+mark_as_superbuild(Autoscoper_ARTIFACT_SUFFIX)
+message(STATUS "Setting Autoscoper_ARTIFACT_SUFFIX to '${Autoscoper_ARTIFACT_SUFFIX}'")
+
 #-----------------------------------------------------------------------------
 # Set a default build type if none was specified
 #-----------------------------------------------------------------------------
