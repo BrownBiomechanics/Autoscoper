@@ -94,6 +94,12 @@ target_compile_definitions(libautoscoper PUBLIC
 )
 
 set_target_properties(libautoscoper PROPERTIES
+  RUNTIME_OUTPUT_NAME "libautoscoper${Autoscoper_ARTIFACT_SUFFIX}"
+  LIBRARY_OUTPUT_NAME "libautoscoper${Autoscoper_ARTIFACT_SUFFIX}"
+  ARCHIVE_OUTPUT_NAME "libautoscoper${Autoscoper_ARTIFACT_SUFFIX}"
+)
+
+set_target_properties(libautoscoper PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_BIN_DIR}"
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_BIN_DIR}"
   ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_LIB_DIR}"

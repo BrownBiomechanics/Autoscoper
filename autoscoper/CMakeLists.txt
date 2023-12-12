@@ -115,6 +115,10 @@ if(Autoscoper_CONFIGURE_LAUCHER_SCRIPT AND CMAKE_VERSION VERSION_LESS "3.20" AND
 endif()
 
 set_target_properties(autoscoper PROPERTIES
+  OUTPUT_NAME "autoscoper${Autoscoper_ARTIFACT_SUFFIX}"
+)
+
+set_target_properties(autoscoper PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_BIN_DIR}"
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_BIN_DIR}"
   ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${Autoscoper_LIB_DIR}"
