@@ -18,7 +18,9 @@
 
 #include <cuda.h>
 #include <cutil.h>
+#ifdef HAVE_CUFFT
 #include <cufft.h>
+#endif
 #include <cuda_runtime_api.h>
 #include <cuda_gl_interop.h>
 
