@@ -26,14 +26,18 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef HAVE_CUFFT
 #include <cufft.h>
+#endif
 
 // We define these calls here, so the user doesn't need to include __FILE__ and __LINE__
 // The advantage is the developers gets to use the inline function so they can debug
 #define cutilSafeCallNoSync(err)     __cudaSafeCallNoSync(err, __FILE__, __LINE__)
 #define cutilSafeCall(err)           __cudaSafeCall      (err, __FILE__, __LINE__)
 #define cutilSafeThreadSync()        __cudaSafeThreadSync(__FILE__, __LINE__)
+#ifdef HAVE_CUFFT
 #define cufftSafeCall(err)           __cufftSafeCall     (err, __FILE__, __LINE__)
+#endif
 #define cutilCheckError(err)         __cutilCheckError   (err, __FILE__, __LINE__)
 #define cutilCheckMsg(msg)           __cutilCheckMsg     (msg, __FILE__, __LINE__)
 #define cutilSafeMalloc(mallocCall)  __cutilSafeMalloc   ((mallocCall), __FILE__, __LINE__)
@@ -175,6 +179,7 @@ inline void __cudaSafeThreadSync( const char *file, const int line )
     }
 }
 
+#ifdef HAVE_CUFFT
 inline void __cufftSafeCall( cufftResult err, const char *file, const int line )
 {
     if( CUFFT_SUCCESS != err) {
@@ -183,6 +188,7 @@ inline void __cufftSafeCall( cufftResult err, const char *file, const int line )
         exit(-1);
     }
 }
+#endif
 
 inline void __cutilCheckError( CUTBoolean err, const char *file, const int line )
 {
