@@ -110,6 +110,13 @@ if(UNIX AND NOT APPLE)
   message(STATUS "Setting OpenGL_GL_PREFERENCE to ${OpenGL_GL_PREFERENCE}")
 endif()
 
+if(Autoscoper_RENDERING_BACKEND STREQUAL "CUDA")
+  # Variable expected by find_package(CUDA)
+  if(DEFINED CUDA_TOOLKIT_ROOT_DIR)
+    mark_as_superbuild(CUDA_TOOLKIT_ROOT_DIR:PATH)
+  endif()
+endif()
+
 if(Autoscoper_RENDERING_BACKEND STREQUAL "OpenCL")
   set(Autoscoper_OpenCL_MINIMUM_REQUIRED_VERSION "1.2.0")
   mark_as_superbuild(Autoscoper_OpenCL_MINIMUM_REQUIRED_VERSION:STRING)
