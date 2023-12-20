@@ -97,6 +97,7 @@ public:
   const float* background() const { return background_; }
 
 private:
+    template <typename T> void create_background_image_internal(TiffImage* tmp_img, unsigned int normalization_factor);
 
     std::string dirname_;
 

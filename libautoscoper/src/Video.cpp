@@ -142,9 +142,10 @@ Video::operator=(const Video& video)
 
 int Video::create_background_image()
 {
-  if (filenames_.size() < 2)
+  if (filenames_.size() < 2) {
+    std::cerr << "Video::create_background_image(): Not enough images to create background image." << std::endl;
     return -1;
-
+  }
 
   if (background_) delete[] background_;
   background_ = new float[width()*height()];
@@ -158,7 +159,7 @@ int Video::create_background_image()
   for (int i = 0; i < filenames_.size(); i++){
     tif = TIFFOpen(filenames_.at(i).c_str(), "r");
     if (!tif) {
-      std::cerr << "Video::frame(): Unable to open image. " << std::endl;
+      std::cerr << "Video::create_background_image(): Unable to open image. " << std::endl;
       return -2;
     }
 
@@ -166,26 +167,17 @@ int Video::create_background_image()
     tiffImageRead(tif, tmp_image);
     TIFFClose(tif);
 
-    if (tmp_image->bitsPerSample == 8){
-      unsigned char * ptr = reinterpret_cast<unsigned char*> (tmp_image->data);
-      float* ptr_b = background_;
-      for (; ptr < reinterpret_cast<unsigned char*>(tmp_image->data) + tmp_image->dataSize; ptr++, ptr_b++)
-      {
-        float val = *ptr;
-        if (val / 255 > *ptr_b)
-          *ptr_b = val / 255;
-      }
-    }
-    else
+    switch (tmp_image->bitsPerSample)
     {
-      unsigned short * ptr = static_cast<unsigned short*> (tmp_image->data);
-      float * ptr_b = background_;
-      for (; ptr < reinterpret_cast<unsigned short*>(tmp_image->data) + tmp_image->dataSize; ptr++, ptr_b++)
-      {
-        float val = *ptr;
-        if (val / 65535  > *ptr_b)
-          *ptr_b = val / 65535;
-      }
+    case 8: create_background_image_internal<unsigned char>(tmp_image, 255);
+      break;
+    case 16: create_background_image_internal<unsigned short>(tmp_image, 65535);
+      break;
+    case 32: create_background_image_internal<unsigned int>(tmp_image, 4294967295);
+      break;
+     default:
+        std::cerr << "Video::create_background_image(): Unsupported bits per sample. " << std::endl;
+        return -3;
     }
   }
 
@@ -194,6 +186,20 @@ int Video::create_background_image()
   return 1;
 }
 
+template <typename T> void Video::create_background_image_internal(TiffImage* tmp_img, unsigned int normalization_factor) {
+  static_assert(std::is_same<T, unsigned char>::value || std::is_same<T, unsigned short>::value || std::is_same<T, unsigned int>::value, "T must be of type unsigned char, unsigned short, or unsigned int");
+  T* start = reinterpret_cast<T*>(tmp_img->data);
+  T* end = start + (tmp_img->dataSize / sizeof(T));
+  T* iter = start;
+  float* bg = background_;
+  while(iter < end) {
+    float val = *iter;
+    if (val / normalization_factor > *bg)
+      *bg = val / normalization_factor;
+    iter++;
+    bg++;
+  }
+}
 
 
   void
