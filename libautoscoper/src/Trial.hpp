@@ -86,6 +86,10 @@ public:
     int render_width;
     int render_height;
 
+    // Trial file info
+    std::string filter_folder;
+    std::string tracking_folder;
+
   KeyCurve * getXCurve(int volumeID);
   KeyCurve * getYCurve(int volumeID);
   KeyCurve * getZCurve(int volumeID);
@@ -106,7 +110,9 @@ private:
                std::vector<std::string>& voxelSizes,
                std::vector<std::string>& volumeFlips,
                std::vector<std::string>& renderResolution,
-               std::vector<std::string>& optimizationOffsets);
+               std::vector<std::string>& optimizationOffsets,
+               std::string& trackingFolder,
+               std::string& filterFolder);
 
     void parseVersion(const std::string& text, std::vector<int>& version);
 
