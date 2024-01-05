@@ -61,6 +61,11 @@ void VolumeDockWidget::addVolume(const std::string& filename, int idx){
 
 }
 
+void VolumeDockWidget::setVolumeVisibility(unsigned int volume_index, bool visible) {
+  VolumeListWidgetItem* item = dynamic_cast<VolumeListWidgetItem*>(dock->listWidget->item(volume_index));
+  item->setVisibility(visible);
+}
+
 void VolumeDockWidget::on_listWidget_currentItemChanged (QListWidgetItem* current, QListWidgetItem* previous) {
   if (current != NULL)
   {

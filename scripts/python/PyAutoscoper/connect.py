@@ -594,3 +594,15 @@ class AutoscoperConnection:
         response = self._send_command(0x0F)  # 15
         num_frames = struct.unpack("i", response[1:])[0]
         return num_frames
+
+    def setVolumeVisibility(self, volume: int, visible: bool) -> None:
+        """
+        Sets the visibility of the given volume
+
+        :param volume: The ID of the volume.
+        :param visible: If True makes the volume visible. If False make the volume invisible.
+
+        :raises AutoscoperServerError: If the server fails to get the number of frames
+        :raises AutoscoperConnectionError: If the connection to the server is lost
+        """
+        self._send_command(0x11, volume, int(visible))  # 17

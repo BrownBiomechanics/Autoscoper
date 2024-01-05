@@ -2503,3 +2503,7 @@ int AutoscoperMainWindow::getNumVolumes() {
 int AutoscoperMainWindow::getNumFrames() {
     return tracker->trial()->num_frames;
 }
+
+void AutoscoperMainWindow::setVolumeVisibility(int volume, bool visible) {
+  volumes_widget->setVolumeVisibility(volume, visible);
+}
