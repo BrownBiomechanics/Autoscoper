@@ -17,6 +17,7 @@ class VolumeListWidgetItem : public QObject, public QListWidgetItem {
   Q_OBJECT
 public:
   VolumeListWidgetItem(QListWidget* listWidget, const QString& name, AutoscoperMainWindow* main_window, std::vector< xromm::gpu::RayCaster*>* renderers);
+  void setVisibility(bool visible);
 private:
   std::vector< xromm::gpu::RayCaster*> renderers_;
   QCheckBox *visibilityCheckBox_;

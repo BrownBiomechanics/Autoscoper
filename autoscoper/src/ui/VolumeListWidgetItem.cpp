@@ -38,6 +38,10 @@ void VolumeListWidgetItem::setup(QListWidget* listWidget) {
   QObject::connect(visibilityCheckBox_, SIGNAL(toggled(bool)), this, SLOT(on_visiblilityCheckBox__toggled(bool)));
 }
 
+void VolumeListWidgetItem::setVisibility(bool visible) {
+  visibilityCheckBox_->setChecked(visible);
+}
+
 void VolumeListWidgetItem::on_visiblilityCheckBox__toggled(bool checked) {
   if (renderers_.size() > 0) {
     for (xromm::gpu::RayCaster* renderer : renderers_) {

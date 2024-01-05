@@ -23,6 +23,7 @@ class VolumeDockWidget : public QDockWidget{
 
     void clearVol();
     void addVolume(const std::string& filename, int idx);
+    void setVolumeVisibility(unsigned int volume_index, bool visible);
 
 
     QString getVolumeName(int volume_index);

@@ -418,6 +418,22 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
     }
     break;
 
+  case 17:
+    // Set the visablity of a volume
+    {
+      size_t offset = preamble_offset;
+
+      SocketReadValuePointerMacro(volumeID, qint32);
+      SocketReadValuePointerMacro(visible, qint32);
+
+      std::cerr << "Setting volume " << (int)*volumeID << " to have a visablity: " << (int)*visible << std::endl;
+
+      m_mainwindow->setVolumeVisibility(*volumeID, (bool)*visible);
+
+      connection->write(QByteArray(1, 17));
+    }
+    break;
+
   default:
     std::cerr << "Cannot handle message" << std::endl;
     connection->write(QByteArray(1,0));

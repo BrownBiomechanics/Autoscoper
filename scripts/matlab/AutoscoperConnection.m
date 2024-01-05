@@ -381,6 +381,17 @@ classdef AutoscoperConnection
             data = fread(obj.socket_descriptor, obj.socket_descriptor.BytesAvailable);
         end
 
+        function setVolumeVisibility(obj, volNum, visible)
+            if nargin < 3
+                error('Not enough input arguments');
+            end
+            fwrite(obj.socket_descriptor, [ ...
+                                           17 ...
+                                           typecast(int32(volNum), 'uint8') ...
+                                           typecast(int32(visible), 'uint8') ...
+                                          ]);
+        end
+
         function trackingDialog(obj, volNum, startframe, endframe, repeats, max_itr, min_lim, max_lim, max_stall_itr, dframe, opt_method, cf_model, opt_init_heuristic)
             % Performs optimization on a range of frames
             % Only obj, volNum, startframe, and endframe are required

@@ -128,6 +128,7 @@ class AutoscoperMainWindow : public QMainWindow{
     void optimizeFrame(int volumeID, int frame, int dframe, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int stall_iter);
     int getNumVolumes();
     int getNumFrames();
+    void setVolumeVisibility(int volumeID, bool visible);
 
 
     // Backup Save
