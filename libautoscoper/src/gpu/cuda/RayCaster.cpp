@@ -66,6 +66,7 @@ RayCaster::RayCaster() : volumeDescription_(0),
     std::stringstream name_stream;
     name_stream << "DrrRenderer" << (++num_ray_casters);
     name_ = name_stream.str();
+    visible_ = true;
 
     viewport_[0] = -1.0f;
     viewport_[1] = -1.0f;
