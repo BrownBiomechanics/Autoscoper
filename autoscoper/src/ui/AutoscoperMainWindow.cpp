@@ -1850,63 +1850,27 @@ void AutoscoperMainWindow::on_actionPaste_triggered(bool checked)
 
 void AutoscoperMainWindow::on_actionDelete_triggered(bool checked)
 {
-  // Old Method
-  /*if (!timeline_widget->getSelectedNodes()->empty()) {
-     push_state();
-
-     std::cout << "Size\n: " << timeline_widget->getSelectedNodes()->size();
-     for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
-      if ((*timeline_widget->getSelectedNodes())[i].second == NODE) {
-        if
-     (!timeline_widget->getPosition_graph()->frame_locks.at((int)(*timeline_widget->getSelectedNodes())[i].first.first->time((*timeline_widget->getSelectedNodes())[i].first.second)))
-     {
-          (*timeline_widget->getSelectedNodes())[i].first.first->erase((*timeline_widget->getSelectedNodes())[i].first.second);
-        }
-      }
-     }
-     timeline_widget->getSelectedNodes()->clear();
-
-     update_xyzypr_and_coord_frame();
-     update_graph_min_max(timeline_widget->getPosition_graph());
-
-     redrawGL();
-
-     }*/
-
   if (timeline_widget->getSelectedNodes()->empty()) {
-    return; // If there are no nodes to be deleted, exit the method
+    return;
   }
-
-  // Bardiya's Circumvention for Deleting
-  // Insert Key First
   push_state();
+
+  // std::cout << "Size\n: " << timeline_widget->getSelectedNodes()->size();
+  for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
+    if ((*timeline_widget->getSelectedNodes())[i].second == NODE) {
+      if (!timeline_widget->getPosition_graph()->frame_locks.at(
+            (int)(*timeline_widget->getSelectedNodes())[i].first.first->time(
+              (*timeline_widget->getSelectedNodes())[i].first.second))) {
+        (*timeline_widget->getSelectedNodes())[i].first.first->erase(
+          (*timeline_widget->getSelectedNodes())[i].first.second);
+      }
+    }
+  }
   timeline_widget->getSelectedNodes()->clear();
-
-  double xyzypr[6];
-  double manip_0[6] = { 0 };
-  (CoordFrame::from_matrix(trans(getManipulator()->transform())) * *tracker->trial()->getVolumeMatrix(-1))
-    .to_xyzypr(xyzypr);
-  getTracker()->trial()->getXCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[0]);
-  getTracker()->trial()->getYCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[1]);
-  getTracker()->trial()->getZCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[2]);
-  getTracker()->trial()->getYawCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[3]);
-  getTracker()->trial()->getPitchCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[4]);
-  getTracker()->trial()->getRollCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[5]);
-
-  // Now Remove the Key
-  int curFrame = getCurrentFrame();
-  // auto it_frame = tracker->trial()->getXCurve(-1)->end();
-  // it_frame = tracker->trial()->getXCurve(-1)->find(curFrame);
-
-  tracker->trial()->getXCurve(-1)->erase(tracker->trial()->getXCurve(-1)->find(curFrame));
-  tracker->trial()->getYCurve(-1)->erase(tracker->trial()->getYCurve(-1)->find(curFrame));
-  tracker->trial()->getZCurve(-1)->erase(tracker->trial()->getZCurve(-1)->find(curFrame));
-  tracker->trial()->getYawCurve(-1)->erase(tracker->trial()->getYawCurve(-1)->find(curFrame));
-  tracker->trial()->getPitchCurve(-1)->erase(tracker->trial()->getPitchCurve(-1)->find(curFrame));
-  tracker->trial()->getRollCurve(-1)->erase(tracker->trial()->getRollCurve(-1)->find(curFrame));
 
   update_xyzypr_and_coord_frame();
   update_graph_min_max(timeline_widget->getPosition_graph());
+
   redrawGL();
 }
 
