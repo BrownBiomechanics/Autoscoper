@@ -151,19 +151,18 @@ bool Video::create_background_image()
   background_ = new float[width()*height()];
   memset(background_, 0, width()*height()*sizeof(float));
 
-  //Read tmp_image
-  TiffImage* tmp_image = new TiffImage();
-  TIFFSetWarningHandler(0);
-  TIFF* tif;
+  for (size_t i = 0; i < filenames_.size(); i++){
 
-  for (int i = 0; i < filenames_.size(); i++){
-    tif = TIFFOpen(filenames_.at(i).c_str(), "r");
+    // Read tmp_image
+    TIFFSetWarningHandler(0);
+    TIFF* tif = TIFFOpen(filenames_.at(i).c_str(), "r");
+
     if (!tif) {
       std::cerr << "Video::create_background_image(): Unable to open image. " << std::endl;
       return false;
     }
 
-    tiffImageFree(tmp_image);
+    TiffImage* tmp_image = new TiffImage();
     tiffImageRead(tif, tmp_image);
     TIFFClose(tif);
 
@@ -171,20 +170,22 @@ bool Video::create_background_image()
     {
     case 8:
       create_background_image_internal<unsigned char>(tmp_image);
+      tiffImageFree(tmp_image);
       break;
     case 16:
       create_background_image_internal<unsigned short>(tmp_image);
+      tiffImageFree(tmp_image);
       break;
     case 32:
       create_background_image_internal<unsigned int>(tmp_image);
+      tiffImageFree(tmp_image);
       break;
-     default:
+    default:
       std::cerr << "Video::create_background_image(): Unsupported bits per sample." << std::endl;
+      tiffImageFree(tmp_image);
       return false;
     }
   }
-
-  tiffImageFree(tmp_image);
 
   return true;
 }
@@ -212,7 +213,6 @@ template <typename T> void Video::create_background_image_internal(TiffImage* tm
     bg++;
   }
 }
-
 
   void
 Video::set_frame(size_type i)
