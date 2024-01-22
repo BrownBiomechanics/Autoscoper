@@ -169,11 +169,14 @@ bool Video::create_background_image()
 
     switch (tmp_image->bitsPerSample)
     {
-    case 8: create_background_image_internal<unsigned char>(tmp_image, 255);
+    case 8:
+      create_background_image_internal<unsigned char>(tmp_image);
       break;
-    case 16: create_background_image_internal<unsigned short>(tmp_image, 65535);
+    case 16:
+      create_background_image_internal<unsigned short>(tmp_image);
       break;
-    case 32: create_background_image_internal<unsigned int>(tmp_image, 4294967295);
+    case 32:
+      create_background_image_internal<unsigned int>(tmp_image);
       break;
      default:
       std::cerr << "Video::create_background_image(): Unsupported bits per sample." << std::endl;
@@ -186,16 +189,25 @@ bool Video::create_background_image()
   return true;
 }
 
-template <typename T> void Video::create_background_image_internal(TiffImage* tmp_img, unsigned int normalization_factor) {
-  static_assert(std::is_same<T, unsigned char>::value || std::is_same<T, unsigned short>::value || std::is_same<T, unsigned int>::value, "T must be of type unsigned char, unsigned short, or unsigned int");
+template <typename T> void Video::create_background_image_internal(TiffImage* tmp_img) {
+  static_assert(
+    std::is_same<T, unsigned char>::value
+    || std::is_same<T, unsigned short>::value
+    || std::is_same<T, unsigned int>::value, "T must be of type unsigned char, unsigned short, or unsigned int");
+  constexpr unsigned int normalization_factor = std::numeric_limits<T>::max();
+  static_assert(
+    normalization_factor == 255
+    || normalization_factor == 65535
+    || normalization_factor == 4294967295, "normalization_factor must be one of 255, 65535 or 4294967295");
   T* start = reinterpret_cast<T*>(tmp_img->data);
   T* end = start + (tmp_img->dataSize / sizeof(T));
   T* iter = start;
   float* bg = background_;
   while(iter < end) {
     float val = *iter;
-    if (val / normalization_factor > *bg)
+    if (val / normalization_factor > *bg) {
       *bg = val / normalization_factor;
+    }
     iter++;
     bg++;
   }
