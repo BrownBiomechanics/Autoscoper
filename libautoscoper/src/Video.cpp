@@ -158,7 +158,7 @@ bool Video::create_background_image()
     TIFF* tif = TIFFOpen(filenames_.at(i).c_str(), "r");
 
     if (!tif) {
-      std::cerr << "Video::create_background_image(): Unable to open image. " << std::endl;
+      std::cerr << "Video::create_background_image(): Unable to open image: " << filenames_.at(i) << std::endl;
       return false;
     }
 
