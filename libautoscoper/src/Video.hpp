@@ -72,7 +72,7 @@ public:
 
     // Accessors
 
-  int create_background_image();
+  bool create_background_image();
 
     const std::string& dirname() const { return dirname_; }
 

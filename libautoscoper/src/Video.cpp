@@ -140,11 +140,11 @@ Video::operator=(const Video& video)
     return *this;
 }
 
-int Video::create_background_image()
+bool Video::create_background_image()
 {
   if (filenames_.size() < 2) {
     std::cerr << "Video::create_background_image(): Not enough images to create background image." << std::endl;
-    return -1;
+    return false;
   }
 
   if (background_) delete[] background_;
@@ -160,7 +160,7 @@ int Video::create_background_image()
     tif = TIFFOpen(filenames_.at(i).c_str(), "r");
     if (!tif) {
       std::cerr << "Video::create_background_image(): Unable to open image. " << std::endl;
-      return -2;
+      return false;
     }
 
     tiffImageFree(tmp_image);
@@ -176,14 +176,14 @@ int Video::create_background_image()
     case 32: create_background_image_internal<unsigned int>(tmp_image, 4294967295);
       break;
      default:
-        std::cerr << "Video::create_background_image(): Unsupported bits per sample. " << std::endl;
-        return -3;
+      std::cerr << "Video::create_background_image(): Unsupported bits per sample." << std::endl;
+      return false;
     }
   }
 
   tiffImageFree(tmp_image);
 
-  return 1;
+  return true;
 }
 
 template <typename T> void Video::create_background_image_internal(TiffImage* tmp_img, unsigned int normalization_factor) {
