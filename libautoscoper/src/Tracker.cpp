@@ -63,6 +63,7 @@
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   #include "gpu/opencl/Ncc.hpp"
   #include "gpu/opencl/Mult.hpp"
+  #include "gpu/opencl/Hdist.hpp"
 #endif
 
 #include "VolumeDescription.hpp"
@@ -269,9 +270,9 @@ void Tracker::load(const Trial& trial)
 #endif
 
     gpu::ncc_init(npixels);
-  #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND) // trying another cost function (Housdorff)
+  //#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND) // trying another cost function (Housdorff)
     gpu::hdist_init(npixels);
-  #endif
+  //#endif
 
     for (unsigned int i = 0; i < trial_.cameras.size(); ++i) {
 
@@ -728,9 +729,9 @@ std::vector <double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) 
       {
         // Calculate the correlation for implant
         // Calculate Hausdorff Distance for Implant Matching _ FUTURE
-        #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
+        //#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
           correlations.push_back(gpu::hdist(rendered_drr_, rendered_rad_, drr_mask_, render_width*render_height));
-        #endif
+        //#endif
       }
       else { // If 0, we do bone model
         // Calculate the correlation for ncc
