@@ -43,6 +43,9 @@
 #include <algorithm>
 #include <iostream>
 #ifdef WIN32
+#ifndef NOMINMAX // Otherwise windows.h defines min/max macros
+#define NOMINMAX
+#endif // NOMINMAX
 #include <windows.h>
 #include "Win32/dirent.h"
 #elif __APPLE__
