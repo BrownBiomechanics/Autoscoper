@@ -78,6 +78,7 @@
 #include <gpu/opencl/OpenCL.hpp>
 #endif
 
+#include <ctime>
 #include <iostream>
 #include "filesystem_compat.hpp"
 #include <fstream>
@@ -952,13 +953,38 @@ void AutoscoperMainWindow::save_tracking_results(QString filename)
     bool interpolate = diag->diag->radioButton_InterpolationSpline->isChecked();
     int volume = -1;
     if (diag->diag->radioButton_VolumeCurrent->isChecked()) volume = tracker->trial()->current_volume;
+    logTrackingParameters();
     save_tracking_results(filename, save_as_matrix,save_as_rows,save_with_commas,convert_to_cm,convert_to_rad,interpolate, volume);
-
     is_tracking_saved = true;
   }
   delete diag;
 }
 
+void AutoscoperMainWindow::logTrackingParameters() {
+  // Create logs directory and set up filename
+  QDir defaultRootDir(default_root_path);
+  defaultRootDir.mkpath("Logs");
+  QString filename = defaultRootDir.filePath(QString("Logs/%1_%2.log").arg(std::time(nullptr)).arg(default_task_name));
+  std::cout << "Exporting log file to: " << filename.toStdString() << std::endl;
+
+  std::ofstream file(filename.toStdString(), std::ios::out);
+  if (!file.is_open()) {
+    std::cerr << "Error: Could not open file " << filename.toStdString() << " for writing." << std::endl;
+    return;
+  }
+
+
+  file << "Task Name: " << default_task_name.toStdString() << "\n";
+  file << "\n";
+
+  tracker->printLatestOptimizationParameters(file);
+  file << "\n";
+
+  filters_widget->printAllSettings(file);
+  file << "\n";
+
+  file.close();
+}
 
 
 void AutoscoperMainWindow::backup_tracking(bool backup_on)

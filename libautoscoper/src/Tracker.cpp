@@ -543,6 +543,9 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
 
     std::cerr << "Tracker::optimize(): Frame " << trial_.frame
          << " done in " << totalIter << " total iterations" << std::endl;
+
+    // Log the optimization parameters
+    this->latest_optimization_parameters_ = OptimizationParameters(repeats, dFrame, opt_method, max_iter, min_limit, max_limit, cf_model, max_stall_iter, trial_.guess);
 }
 
 

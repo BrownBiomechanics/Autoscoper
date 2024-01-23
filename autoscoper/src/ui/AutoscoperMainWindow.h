@@ -193,7 +193,8 @@ class AutoscoperMainWindow : public QMainWindow{
     std::vector<unsigned int> textures;
     void reset_graph();
 
-
+    // Log file
+    void logTrackingParameters();
 
 
     void save_tracking_prompt();

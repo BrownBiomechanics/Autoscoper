@@ -74,6 +74,56 @@ namespace xromm
 
   } // namespace gpu
 
+  struct OptimizationParameters
+  {
+    OptimizationParameters() :
+      repeats(0),
+      dframe(0),
+      method(0),
+      max_iter(0),
+      min_limit(0.0),
+      max_limit(0.0),
+      cf_model(0),
+      max_stall_iter(0),
+      opt_init_heuristic(0)
+    {
+    }
+    OptimizationParameters(unsigned int repeats, int dframe, unsigned int method, unsigned int max_iter, double min_limit, double max_limit, unsigned int cf_model, unsigned int max_stall_iter, unsigned int opt_init_heuristic) :
+      repeats(repeats),
+      dframe(dframe),
+      method(method),
+      max_iter(max_iter),
+      min_limit(min_limit),
+      max_limit(max_limit),
+      cf_model(cf_model),
+      max_stall_iter(max_stall_iter),
+      opt_init_heuristic(opt_init_heuristic)
+    {
+    }
+    void PrintSelf(std::ostream& os) const
+    {
+      os << "OptimizationParameters: " << std::endl;
+      os << "repeats: " << repeats << std::endl;
+      os << "dframe: " << dframe << std::endl;
+      os << "method: " << method << std::endl;
+      os << "max_iter: " << max_iter << std::endl;
+      os << "min_limit: " << min_limit << std::endl;
+      os << "max_limit: " << max_limit << std::endl;
+      os << "cf_model: " << cf_model << std::endl;
+      os << "max_stall_iter: " << max_stall_iter << std::endl;
+      os << "opt_init_heuristic: " << opt_init_heuristic << std::endl;
+    }
+    unsigned int repeats;
+    int dframe;
+    unsigned int method;
+    unsigned int max_iter;
+    double min_limit;
+    double max_limit;
+    unsigned int cf_model;
+    unsigned int max_stall_iter;
+    unsigned int opt_init_heuristic;
+  };
+
 
   class Tracker
   {
@@ -94,6 +144,8 @@ namespace xromm
     void updateBackground();
     void setBackgroundThreshold(float threshold);
     std::vector<unsigned char> getImageData(unsigned volumeID, unsigned camera, double* xyzpr, unsigned& width, unsigned& height);
+    OptimizationParameters& getLatestOptimizationParameters() { return latest_optimization_parameters_; }
+    void printLatestOptimizationParameters(std::ostream& os) const { latest_optimization_parameters_.PrintSelf(os); }
 
 
     // Bardiya Cost Function for Implants
@@ -111,6 +163,7 @@ namespace xromm
     Trial trial_;
     std::vector <gpu::VolumeDescription*> volumeDescription_;
     std::vector <gpu::View*> views_;
+    OptimizationParameters latest_optimization_parameters_;
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
     Buffer* rendered_drr_;
     Buffer* rendered_rad_;
