@@ -60,12 +60,10 @@ public:
   VolumeTransform();
   ~VolumeTransform();
 
-  KeyCurve x_curve;
-  KeyCurve y_curve;
-  KeyCurve z_curve;
-  KeyCurve yaw_curve;
-  KeyCurve pitch_curve;
-  KeyCurve roll_curve;
+  KeyCurve<float> x_curve;
+  KeyCurve<float> y_curve;
+  KeyCurve<float> z_curve;
+  KeyCurve<Quatf> quat_curve;
 
   // CoordFrame volumeTrans; //FromWorldToVolume
   CoordFrame volumeMatrix; // FromWorldToPivot

@@ -89,16 +89,16 @@ public:
   void setFramesRange(int firstFrame, int lastFrame);
   GraphData* getPosition_graph() { return position_graph; }
   AutoscoperMainWindow* getMainWindow() { return mainwindow; };
-  std::vector<std::pair<std::pair<KeyCurve*, KeyCurve::iterator>, Selection_type>>* getSelectedNodes()
+  std::vector<std::pair<std::pair<IKeyCurve*, IKeyCurve::iterator>, Selection_type>>* getSelectedNodes()
   {
     return &selected_nodes;
   }
-  void setSelectedNodes(std::vector<std::pair<std::pair<KeyCurve*, KeyCurve::iterator>, Selection_type>> new_nodes)
+  void setSelectedNodes(std::vector<std::pair<std::pair<IKeyCurve*, IKeyCurve::iterator>, Selection_type>> new_nodes)
   {
     selected_nodes = new_nodes;
   }
 
-  std::vector<std::pair<KeyCurve*, KeyCurve::iterator>>* getCopiedNodes() { return &copied_nodes; }
+  std::vector<std::pair<IKeyCurve*, IKeyCurve::iterator>>* getCopiedNodes() { return &copied_nodes; }
 
   void getValues(double* xyzypr);
   void setValues(double* xyzypr);
@@ -118,8 +118,8 @@ private:
   AutoscoperMainWindow* mainwindow;
   bool m_spinButtonUpdate;
 
-  std::vector<std::pair<std::pair<KeyCurve*, KeyCurve::iterator>, Selection_type>> selected_nodes;
-  std::vector<std::pair<KeyCurve*, KeyCurve::iterator>> copied_nodes;
+  std::vector<std::pair<std::pair<IKeyCurve*, IKeyCurve::iterator>, Selection_type>> selected_nodes;
+  std::vector<std::pair<IKeyCurve*, IKeyCurve::iterator>> copied_nodes;
 
   // Video play
   int play_tag;

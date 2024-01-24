@@ -357,16 +357,21 @@ void Tracker::optimize(int frame,
   int framesBehind = (dFrame > 0) ? (int)trial_.frame : (int)trial_.num_frames - trial_.frame - 1;
 
   if (trial_.guess == 2 && framesBehind > 1) {
-    double xyzypr1[6] = {
-      (*trial_.getXCurve(-1))(trial_.frame - 2 * dFrame),     (*trial_.getYCurve(-1))(trial_.frame - 2 * dFrame),
-      (*trial_.getZCurve(-1))(trial_.frame - 2 * dFrame),     (*trial_.getYawCurve(-1))(trial_.frame - 2 * dFrame),
-      (*trial_.getPitchCurve(-1))(trial_.frame - 2 * dFrame), (*trial_.getRollCurve(-1))(trial_.frame - 2 * dFrame)
-    };
-    double xyzypr2[6] = {
-      (*trial_.getXCurve(-1))(trial_.frame - dFrame),     (*trial_.getYCurve(-1))(trial_.frame - dFrame),
-      (*trial_.getZCurve(-1))(trial_.frame - dFrame),     (*trial_.getYawCurve(-1))(trial_.frame - dFrame),
-      (*trial_.getPitchCurve(-1))(trial_.frame - dFrame), (*trial_.getRollCurve(-1))(trial_.frame - dFrame)
-    };
+    float x_val = (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame - 2 * dFrame);
+    float y_val = (*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame - 2 * dFrame);
+    float z_val = (*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame - 2 * dFrame);
+    Quatf quat_val = (*(const_cast<Trial&>(trial_)).getQuatCurve(-1))(trial_.frame - 2 * dFrame);
+    Vec3f eulers = quat_val.toEuler();
+
+    double xyzypr1[6] = { x_val, y_val, z_val, eulers.z, eulers.y, eulers.x };
+
+    x_val = (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame - dFrame);
+    y_val = (*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame - dFrame);
+    z_val = (*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame - dFrame);
+    quat_val = (*(const_cast<Trial&>(trial_)).getQuatCurve(-1))(trial_.frame - dFrame);
+    eulers = quat_val.toEuler();
+
+    double xyzypr2[6] = { x_val, y_val, z_val, eulers.z, eulers.y, eulers.x };
 
     CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr1).linear_extrap(CoordFrame::from_xyzypr(xyzypr2));
 
@@ -374,25 +379,33 @@ void Tracker::optimize(int frame,
     trial_.getXCurve(-1)->insert(trial_.frame, xyzypr1[0]);
     trial_.getYCurve(-1)->insert(trial_.frame, xyzypr1[1]);
     trial_.getZCurve(-1)->insert(trial_.frame, xyzypr1[2]);
-    trial_.getYawCurve(-1)->insert(trial_.frame, xyzypr1[3]);
-    trial_.getPitchCurve(-1)->insert(trial_.frame, xyzypr1[4]);
-    trial_.getRollCurve(-1)->insert(trial_.frame, xyzypr1[5]);
+    trial_.getQuatCurve(-1)->insert(trial_.frame, Quatf(xyzypr1[3], xyzypr1[4], xyzypr1[5]));
   } else if (trial_.guess == 1 && framesBehind > 0) {
-    trial_.getXCurve(-1)->insert(trial_.frame, (*trial_.getXCurve(-1))(trial_.frame - dFrame));
-    trial_.getYCurve(-1)->insert(trial_.frame, (*trial_.getYCurve(-1))(trial_.frame - dFrame));
-    trial_.getZCurve(-1)->insert(trial_.frame, (*trial_.getZCurve(-1))(trial_.frame - dFrame));
-    trial_.getYawCurve(-1)->insert(trial_.frame, (*trial_.getYawCurve(-1))(trial_.frame - dFrame));
-    trial_.getPitchCurve(-1)->insert(trial_.frame, (*trial_.getPitchCurve(-1))(trial_.frame - dFrame));
-    trial_.getRollCurve(-1)->insert(trial_.frame, (*trial_.getRollCurve(-1))(trial_.frame - dFrame));
+    float x_val = (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame - dFrame);
+    float y_val = (*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame - dFrame);
+    float z_val = (*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame - dFrame);
+    Quatf quat_val = (*(const_cast<Trial&>(trial_)).getQuatCurve(-1))(trial_.frame - dFrame);
+    Vec3f eulers = quat_val.toEuler();
+
+    double xyzypr[6] = { x_val, y_val, z_val, eulers.z, eulers.y, eulers.x };
+
+    trial_.getXCurve(-1)->insert(trial_.frame, xyzypr[0]);
+    trial_.getYCurve(-1)->insert(trial_.frame, xyzypr[1]);
+    trial_.getZCurve(-1)->insert(trial_.frame, xyzypr[2]);
+    trial_.getQuatCurve(-1)->insert(trial_.frame, Quatf(xyzypr[3], xyzypr[4], xyzypr[5]));
   }
 
   int totalIter = 0;
   for (int j = 0; j < repeats; j++) {
 
     // Get Current Pose
-    double xyzypr[6] = { (*trial_.getXCurve(-1))(trial_.frame),     (*trial_.getYCurve(-1))(trial_.frame),
-                         (*trial_.getZCurve(-1))(trial_.frame),     (*trial_.getYawCurve(-1))(trial_.frame),
-                         (*trial_.getPitchCurve(-1))(trial_.frame), (*trial_.getRollCurve(-1))(trial_.frame) };
+    float x_val = (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame - dFrame);
+    float y_val = (*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame - dFrame);
+    float z_val = (*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame - dFrame);
+    Quatf quat_val = (*(const_cast<Trial&>(trial_)).getQuatCurve(-1))(trial_.frame - dFrame);
+    Vec3f eulers = quat_val.toEuler();
+
+    double xyzypr[6] = { x_val, y_val, z_val, eulers.z, eulers.y, eulers.x };
 
     // Init Manip for saving final optimum
     double init_manip[6] = { 0 };
@@ -442,9 +455,7 @@ void Tracker::optimize(int frame,
       trial_.getXCurve(-1)->insert(trial_.frame, xyzypr[0]);
       trial_.getYCurve(-1)->insert(trial_.frame, xyzypr[1]);
       trial_.getZCurve(-1)->insert(trial_.frame, xyzypr[2]);
-      trial_.getYawCurve(-1)->insert(trial_.frame, xyzypr[3]);
-      trial_.getPitchCurve(-1)->insert(trial_.frame, xyzypr[4]);
-      trial_.getRollCurve(-1)->insert(trial_.frame, xyzypr[5]);
+      trial_.getQuatCurve(-1)->insert(trial_.frame, Quatf(xyzypr[3], xyzypr[4], xyzypr[5]));
 
       // DOWNHILL SIMPLEX
       // Generate the 7 vertices that form the initial simplex. Because
@@ -525,9 +536,7 @@ void Tracker::optimize(int frame,
     trial_.getXCurve(-1)->insert(trial_.frame, xyzypr[0]);
     trial_.getYCurve(-1)->insert(trial_.frame, xyzypr[1]);
     trial_.getZCurve(-1)->insert(trial_.frame, xyzypr[2]);
-    trial_.getYawCurve(-1)->insert(trial_.frame, xyzypr[3]);
-    trial_.getPitchCurve(-1)->insert(trial_.frame, xyzypr[4]);
-    trial_.getRollCurve(-1)->insert(trial_.frame, xyzypr[5]);
+    trial_.getQuatCurve(-1)->insert(trial_.frame, Quatf(xyzypr[3], xyzypr[4], xyzypr[5]));
   }
   totalIter += ITER;
 
@@ -735,13 +744,13 @@ std::vector<double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) c
 double Tracker::minimizationFunc(const double* values) const
 {
   // Construct a coordinate frame from the given values
+  float x_val = (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame);
+  float y_val = (*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame);
+  float z_val = (*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame);
+  Quatf quat_val = (*(const_cast<Trial&>(trial_)).getQuatCurve(-1))(trial_.frame);
+  Vec3f eulers = quat_val.toEuler();
 
-  double xyzypr[6] = { (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame),
-                       (*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame),
-                       (*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame),
-                       (*(const_cast<Trial&>(trial_)).getYawCurve(-1))(trial_.frame),
-                       (*(const_cast<Trial&>(trial_)).getPitchCurve(-1))(trial_.frame),
-                       (*(const_cast<Trial&>(trial_)).getRollCurve(-1))(trial_.frame) };
+  double xyzypr[6] = { x_val, y_val, z_val, eulers.z, eulers.y, eulers.x };
   CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
   CoordFrame manip = CoordFrame::from_xyzAxis_angle(values);
@@ -967,13 +976,12 @@ bool Tracker::calculate_viewport(const CoordFrame& modelview, const Camera& came
 // Save Full DRR Image
 void Tracker::getFullDRR(unsigned int volumeID) const
 {
-  double xyzypr[6] = { (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame),
-                       (*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame),
-                       (*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame),
-                       (*(const_cast<Trial&>(trial_)).getYawCurve(-1))(trial_.frame),
-                       (*(const_cast<Trial&>(trial_)).getPitchCurve(-1))(trial_.frame),
-                       (*(const_cast<Trial&>(trial_)).getRollCurve(-1))(trial_.frame) };
-
+  float x_val = (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame);
+  float y_val = (*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame);
+  float z_val = (*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame);
+  Quatf quat_val = (*(const_cast<Trial&>(trial_)).getQuatCurve(-1))(trial_.frame);
+  Vec3f eulers = quat_val.toEuler();
+  double xyzypr[6] = { x_val, y_val, z_val, eulers.z, eulers.y, eulers.x };
   CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
   for (unsigned int i = 0; i < views_.size(); ++i) {
@@ -1018,4 +1026,5 @@ void Tracker::getFullDRR(unsigned int volumeID) const
     save_full_drr(rendered_drr_, render_width, render_height);
   }
 }
+
 } // namespace xromm

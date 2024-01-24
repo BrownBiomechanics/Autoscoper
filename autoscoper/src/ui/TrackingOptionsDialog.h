@@ -43,6 +43,8 @@
 #define TRACKINGOPTIONSDIALOG_H_
 
 #include <QDialog>
+#include <Quaternion.hpp>
+#include <KeyCurve.hpp>
 
 namespace Ui {
 class TrackingOptionsDialog;

@@ -12,6 +12,10 @@ _make_installer/*
 .vs/
 CMakeSettings.json
 
+# Nvim
+compile_commands.json
+.cache/
+
 # PyCharm
 out/
 

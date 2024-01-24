@@ -179,8 +179,8 @@ void GLTimeline::mouseMoveEvent(QMouseEvent* e)
       double dy = y - marquee[3];
 
       for (unsigned i = 0; i < timelineDockWidget->getSelectedNodes()->size(); i++) {
-        KeyCurve& curve = *(*timelineDockWidget->getSelectedNodes())[i].first.first;
-        KeyCurve::iterator it = (*timelineDockWidget->getSelectedNodes())[i].first.second;
+        IKeyCurve& curve = *(*timelineDockWidget->getSelectedNodes())[i].first.first;
+        IKeyCurve::iterator it = (*timelineDockWidget->getSelectedNodes())[i].first.second;
         Selection_type type = (*timelineDockWidget->getSelectedNodes())[i].second;
 
         if (timelineDockWidget->getPosition_graph()->frame_locks.at((int)curve.time(it))) {
@@ -190,7 +190,22 @@ void GLTimeline::mouseMoveEvent(QMouseEvent* e)
         if (type == NODE) {
           // node.set_x(node.get_x()+dx); // Prevent x from begin
           // modified
-          curve.set_value(it, curve.value(it) + dy);
+          if (curve.type != IKeyCurve::QUAT_CURVE) {
+            KeyCurve<float>* pos_curve = dynamic_cast<KeyCurve<float>*>(&curve);
+            if (pos_curve != nullptr) {
+              pos_curve->set_value(it, pos_curve->value(it) + dy);
+            }
+          } else {
+            KeyCurve<Quatf>* quat_curve = dynamic_cast<KeyCurve<Quatf>*>(&curve);
+            if (quat_curve != nullptr) {
+              Vec3f eulers = quat_curve->value(it).toEuler();
+              eulers.x += dy;
+              eulers.y += dy;
+              eulers.z += dy;
+              quat_curve->set_value(it, Quatf(eulers.z, eulers.y, eulers.x));
+            }
+          }
+          // Figure out best way to handle quat curves here
         } else if (type == IN_TANGENT) {
           double in = curve.in_tangent(it) - dy;
           curve.set_in_tangent(it, in);
@@ -250,23 +265,29 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent* e)
         (max_frame + 1 - min_frame) / (max_value - min_value) * viewdata.viewport_height / viewdata.viewport_width;
       float tan_scale = 40.0f * (max_frame + 1 - min_frame) / viewdata.viewport_width;
 
-      std::vector<std::pair<std::pair<KeyCurve*, KeyCurve::iterator>, Selection_type>> new_nodes;
+      std::vector<std::pair<std::pair<IKeyCurve*, IKeyCurve::iterator>, Selection_type>> new_nodes;
 
       for (unsigned i = 0; i < timelineDockWidget->getSelectedNodes()->size(); i++) {
-        KeyCurve& curve = *(*timelineDockWidget->getSelectedNodes())[i].first.first;
-        KeyCurve::iterator it = (*timelineDockWidget->getSelectedNodes())[i].first.second;
+        IKeyCurve& curve = *(*timelineDockWidget->getSelectedNodes())[i].first.first;
+        IKeyCurve::iterator it = (*timelineDockWidget->getSelectedNodes())[i].first.second;
 
         float s_in = tan_scale / sqrt(1.0f + a * a * curve.in_tangent(it) * curve.in_tangent(it));
         float s_out = tan_scale / sqrt(1.0f + a * a * curve.out_tangent(it) * curve.out_tangent(it));
 
-        bool in_selected = curve.time(it) - s_in > min_x && curve.time(it) - s_in < max_x
-                           && curve.value(it) - s_in * curve.in_tangent(it) > min_y
-                           && curve.value(it) - s_in * curve.in_tangent(it) < max_y;
-        bool node_selected =
-          curve.time(it) > min_x && curve.time(it) < max_x && curve.value(it) > min_y && curve.value(it) < max_y;
-        bool out_selected = curve.time(it) + s_out > min_x && curve.time(it) + s_out < max_x
-                            && curve.value(it) + s_out * curve.out_tangent(it) > min_y
-                            && curve.value(it) + s_out * curve.out_tangent(it) < max_y;
+        bool in_selected = false;
+        bool out_selected = false;
+        bool node_selected = false;
+        if (curve.type != IKeyCurve::QUAT_CURVE) {
+          KeyCurve<float> pos_curve = *dynamic_cast<KeyCurve<float>*>(&curve);
+          in_selected = pos_curve.time(it) - s_in > min_x && pos_curve.time(it) - s_in < max_x
+                        && pos_curve.value(it) - s_in * pos_curve.in_tangent(it) > min_y
+                        && pos_curve.value(it) - s_in * pos_curve.in_tangent(it) < max_y;
+          node_selected = pos_curve.time(it) > min_x && pos_curve.time(it) < max_x && pos_curve.value(it) > min_y
+                          && pos_curve.value(it) < max_y;
+          out_selected = pos_curve.time(it) + s_out > min_x && pos_curve.time(it) + s_out < max_x
+                         && pos_curve.value(it) + s_out * pos_curve.out_tangent(it) > min_y
+                         && pos_curve.value(it) + s_out * pos_curve.out_tangent(it) < max_y;
+        }
 
         if (in_selected && !node_selected && !out_selected) {
           new_nodes.push_back(std::make_pair(std::make_pair(&curve, it), IN_TANGENT));
@@ -280,7 +301,7 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent* e)
       // double y_sense = (max_value-min_value)/viewdata.viewport_height;
 
       if (timelineDockWidget->getPosition_graph()->show_x) {
-        KeyCurve::iterator it = mainwindow->getTracker()->trial()->getXCurve(-1)->begin();
+        IKeyCurve::iterator it = mainwindow->getTracker()->trial()->getXCurve(-1)->begin();
         while (it != mainwindow->getTracker()->trial()->getXCurve(-1)->end()) {
           if (mainwindow->getTracker()->trial()->getXCurve(-1)->time(it) > min_x
               && mainwindow->getTracker()->trial()->getXCurve(-1)->time(it) < max_x
@@ -293,7 +314,7 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent* e)
         }
       }
       if (timelineDockWidget->getPosition_graph()->show_y) {
-        KeyCurve::iterator it = mainwindow->getTracker()->trial()->getYCurve(-1)->begin();
+        IKeyCurve::iterator it = mainwindow->getTracker()->trial()->getYCurve(-1)->begin();
         while (it != mainwindow->getTracker()->trial()->getYCurve(-1)->end()) {
           if (mainwindow->getTracker()->trial()->getYCurve(-1)->time(it) > min_x
               && mainwindow->getTracker()->trial()->getYCurve(-1)->time(it) < max_x
@@ -306,7 +327,7 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent* e)
         }
       }
       if (timelineDockWidget->getPosition_graph()->show_z) {
-        KeyCurve::iterator it = mainwindow->getTracker()->trial()->getZCurve(-1)->begin();
+        IKeyCurve::iterator it = mainwindow->getTracker()->trial()->getZCurve(-1)->begin();
         while (it != mainwindow->getTracker()->trial()->getZCurve(-1)->end()) {
           if (mainwindow->getTracker()->trial()->getZCurve(-1)->time(it) > min_x
               && mainwindow->getTracker()->trial()->getZCurve(-1)->time(it) < max_x
@@ -318,41 +339,28 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent* e)
           ++it;
         }
       }
-      if (timelineDockWidget->getPosition_graph()->show_yaw) {
-        KeyCurve::iterator it = mainwindow->getTracker()->trial()->getYawCurve(-1)->begin();
-        while (it != mainwindow->getTracker()->trial()->getYawCurve(-1)->end()) {
-          if (mainwindow->getTracker()->trial()->getYawCurve(-1)->time(it) > min_x
-              && mainwindow->getTracker()->trial()->getYawCurve(-1)->time(it) < max_x
-              && mainwindow->getTracker()->trial()->getYawCurve(-1)->value(it) > min_y
-              && mainwindow->getTracker()->trial()->getYawCurve(-1)->value(it) < max_y) {
-            new_nodes.push_back(
-              std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getYawCurve(-1), it), NODE));
-          }
-          ++it;
-        }
-      }
-      if (timelineDockWidget->getPosition_graph()->show_pitch) {
-        KeyCurve::iterator it = mainwindow->getTracker()->trial()->getPitchCurve(-1)->begin();
-        while (it != mainwindow->getTracker()->trial()->getPitchCurve(-1)->end()) {
-          if (mainwindow->getTracker()->trial()->getPitchCurve(-1)->time(it) > min_x
-              && mainwindow->getTracker()->trial()->getPitchCurve(-1)->time(it) < max_x
-              && mainwindow->getTracker()->trial()->getPitchCurve(-1)->value(it) > min_y
-              && mainwindow->getTracker()->trial()->getPitchCurve(-1)->value(it) < max_y) {
-            new_nodes.push_back(
-              std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getPitchCurve(-1), it), NODE));
-          }
-          ++it;
-        }
-      }
-      if (timelineDockWidget->getPosition_graph()->show_roll) {
-        KeyCurve::iterator it = mainwindow->getTracker()->trial()->getRollCurve(-1)->begin();
-        while (it != mainwindow->getTracker()->trial()->getRollCurve(-1)->end()) {
-          if (mainwindow->getTracker()->trial()->getRollCurve(-1)->time(it) > min_x
-              && mainwindow->getTracker()->trial()->getRollCurve(-1)->time(it) < max_x
-              && mainwindow->getTracker()->trial()->getRollCurve(-1)->value(it) > min_y
-              && mainwindow->getTracker()->trial()->getRollCurve(-1)->value(it) < max_y) {
-            new_nodes.push_back(
-              std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getRollCurve(-1), it), NODE));
+      if (timelineDockWidget->getPosition_graph()->show_roll || timelineDockWidget->getPosition_graph()->show_pitch
+          || timelineDockWidget->getPosition_graph()->show_yaw) {
+        IKeyCurve::iterator it = mainwindow->getTracker()->trial()->getQuatCurve(-1)->begin();
+        while (it != mainwindow->getTracker()->trial()->getQuatCurve(-1)->end()) {
+          Quatf q = mainwindow->getTracker()->trial()->getQuatCurve(-1)->value(it);
+          Vec3f euler = q.toEuler();
+          int time = mainwindow->getTracker()->trial()->getQuatCurve(-1)->time(it);
+          if (timelineDockWidget->getPosition_graph()->show_roll) {
+            if (time > min_x && time < max_x && euler.x > min_y && euler.x < max_y) {
+              new_nodes.push_back(
+                std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getQuatCurve(-1), it), NODE));
+            }
+          } else if (timelineDockWidget->getPosition_graph()->show_pitch) {
+            if (time > min_x && time < max_x && euler.y > min_y && euler.y < max_y) {
+              new_nodes.push_back(
+                std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getQuatCurve(-1), it), NODE));
+            }
+          } else if (timelineDockWidget->getPosition_graph()->show_yaw) {
+            if (time > min_x && time < max_x && euler.z > min_y && euler.z < max_y) {
+              new_nodes.push_back(
+                std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getQuatCurve(-1), it), NODE));
+            }
           }
           ++it;
         }
@@ -562,33 +570,23 @@ void GLTimeline::paintGL()
 
       if (m_position_graph->show_x) {
         glColor3f(1.0f, 0.0f, 0.0f);
-        draw_curve(*m_trial->getXCurve(-1));
+        draw_curve(m_trial->getXCurve(-1));
       }
 
       if (m_position_graph->show_y) {
         glColor3f(0.0f, 1.0f, 0.0f);
-        draw_curve(*m_trial->getYCurve(-1));
+        draw_curve(m_trial->getYCurve(-1));
       }
 
       if (m_position_graph->show_z) {
         glColor3f(0.0f, 0.0f, 1.0f);
-        draw_curve(*m_trial->getZCurve(-1));
+        draw_curve(m_trial->getZCurve(-1));
       }
 
-      if (m_position_graph->show_yaw) {
-        glColor3f(1.0f, 1.0f, 0.0f);
-        draw_curve(*m_trial->getYawCurve(-1));
-      }
-
-      if (m_position_graph->show_pitch) {
-        glColor3f(1.0f, 0.0f, 1.0f);
-        draw_curve(*m_trial->getPitchCurve(-1));
-      }
-
-      if (m_position_graph->show_roll) {
-        glColor3f(0.0f, 1.0f, 1.0f);
-        draw_curve(*m_trial->getRollCurve(-1));
-      }
+      draw_curve_quat(m_trial->getQuatCurve(-1),
+                      m_position_graph->show_yaw,
+                      m_position_graph->show_pitch,
+                      m_position_graph->show_roll);
     }
     float a =
       (max_frame + 1 - min_frame) / (max_value - min_value) * viewdata.viewport_height / viewdata.viewport_width;
@@ -597,59 +595,101 @@ void GLTimeline::paintGL()
     TimelineDockWidget* timelineDockWidget = dynamic_cast<TimelineDockWidget*>(this->parent()->parent());
 
     for (unsigned i = 0; i < timelineDockWidget->getSelectedNodes()->size(); i++) {
-      KeyCurve& curve = *(*timelineDockWidget->getSelectedNodes())[i].first.first;
-      KeyCurve::iterator it = (*timelineDockWidget->getSelectedNodes())[i].first.second;
+      IKeyCurve& icurve = *(*timelineDockWidget->getSelectedNodes())[i].first.first;
+      IKeyCurve::iterator it = (*timelineDockWidget->getSelectedNodes())[i].first.second;
       Selection_type type = (*timelineDockWidget->getSelectedNodes())[i].second;
 
-      float s_in = tan_scale / sqrt(1.0f + a * a * curve.in_tangent(it) * curve.in_tangent(it));
-      float s_out = tan_scale / sqrt(1.0f + a * a * curve.out_tangent(it) * curve.out_tangent(it));
+      if (icurve.type == IKeyCurve::QUAT_CURVE) {
+        {
+          if (type == NODE) {
+            KeyCurve<Quatf> curve = *dynamic_cast<KeyCurve<Quatf>*>(&icurve);
+            Vec3f euler = curve.value(it).toEuler();
+            // Estimation for the "tangents" so that the highlighted area is similar to the pos curves
+            float s_in = tan_scale / sqrt(1.0f + a * a);
+            float s_out = tan_scale / sqrt(1.0f + a * a);
+            glBegin(GL_POINTS);
+            glColor3f(1.0f, 1.0f, 0.0f);
+            if (m_position_graph->show_roll) {
+              // glVertex2f(curve.time(it) - s_in, euler.x);
+              glVertex2f(curve.time(it), euler.x);
+              // glVertex2f(curve.time(it) + s_out, euler.x);
+            }
 
-      glBegin(GL_LINES);
+            if (m_position_graph->show_pitch) {
+              // glVertex2f(curve.time(it) - s_in, euler.y);
+              glVertex2f(curve.time(it), euler.y);
+              // glVertex2f(curve.time(it) + s_out, euler.y);
+            }
 
-      if (type == NODE || type == IN_TANGENT) {
-        glColor3f(1.0f, 1.0f, 0.0f);
+            if (m_position_graph->show_yaw) {
+              // glVertex2f(curve.time(it) - s_in, euler.z);
+              glVertex2f(curve.time(it), euler.z);
+              // glVertex2f(curve.time(it) + s_out, euler.z);
+            }
+
+            glEnd();
+          }
+        }
+
       } else {
-        glColor3f(0.0f, 0.0f, 0.0f);
+        KeyCurve<float> curve = *dynamic_cast<KeyCurve<float>*>(&icurve);
+        if (curve.type == IKeyCurve::X_CURVE && !m_position_graph->show_x)
+          continue;
+        if (curve.type == IKeyCurve::Y_CURVE && !m_position_graph->show_y)
+          continue;
+        if (curve.type == IKeyCurve::Z_CURVE && !m_position_graph->show_z)
+          continue;
+
+        float s_in = tan_scale / sqrt(1.0f + a * a * curve.in_tangent(it) * curve.in_tangent(it));
+        float s_out = tan_scale / sqrt(1.0f + a * a * curve.out_tangent(it) * curve.out_tangent(it));
+
+        glBegin(GL_LINES);
+
+        if (type == NODE || type == IN_TANGENT) {
+          glColor3f(1.0f, 1.0f, 0.0f);
+        } else {
+          glColor3f(0.0f, 0.0f, 0.0f);
+        }
+
+        glVertex2f(curve.time(it) - s_in, curve.value(it) - s_in * curve.in_tangent(it));
+        glVertex2f(curve.time(it), curve.value(it));
+
+        if (type == NODE || type == OUT_TANGENT) {
+          glColor3f(1.0f, 1.0f, 0.0f);
+        } else {
+          glColor3f(0.0f, 0.0f, 0.0f);
+        }
+
+        glVertex2f(curve.time(it), curve.value(it));
+        glVertex2f(curve.time(it) + s_out, curve.value(it) + s_out * curve.out_tangent(it));
+
+        glEnd();
+
+        glBegin(GL_POINTS);
+
+        if (type == NODE || type == IN_TANGENT) {
+          glColor3f(1.0f, 1.0f, 0.0f);
+        } else {
+          glColor3f(0.0f, 0.0f, 0.0f);
+        }
+        glVertex2f(curve.time(it) - s_in, curve.value(it) - s_in * curve.in_tangent(it));
+
+        if (type == NODE) {
+          glColor3f(1.0f, 1.0f, 0.0f);
+        } else {
+          glColor3f(0.0f, 0.0f, 0.0f);
+        }
+        glVertex2f(curve.time(it), curve.value(it));
+
+        if (type == NODE || type == OUT_TANGENT) {
+          glColor3f(1.0f, 1.0f, 0.0f);
+        } else {
+          glColor3f(0.0f, 0.0f, 0.0f);
+        }
+        glVertex2f(curve.time(it) + s_out, curve.value(it) + s_out * curve.out_tangent(it));
+
+        glEnd();
       }
-
-      glVertex2f(curve.time(it) - s_in, curve.value(it) - s_in * curve.in_tangent(it));
-      glVertex2f(curve.time(it), curve.value(it));
-
-      if (type == NODE || type == OUT_TANGENT) {
-        glColor3f(1.0f, 1.0f, 0.0f);
-      } else {
-        glColor3f(0.0f, 0.0f, 0.0f);
-      }
-
-      glVertex2f(curve.time(it), curve.value(it));
-      glVertex2f(curve.time(it) + s_out, curve.value(it) + s_out * curve.out_tangent(it));
-
-      glEnd();
-
-      glBegin(GL_POINTS);
-
-      if (type == NODE || type == IN_TANGENT) {
-        glColor3f(1.0f, 1.0f, 0.0f);
-      } else {
-        glColor3f(0.0f, 0.0f, 0.0f);
-      }
-      glVertex2f(curve.time(it) - s_in, curve.value(it) - s_in * curve.in_tangent(it));
-
-      if (type == NODE) {
-        glColor3f(1.0f, 1.0f, 0.0f);
-      } else {
-        glColor3f(0.0f, 0.0f, 0.0f);
-      }
-      glVertex2f(curve.time(it), curve.value(it));
-
-      if (type == NODE || type == OUT_TANGENT) {
-        glColor3f(1.0f, 1.0f, 0.0f);
-      } else {
-        glColor3f(0.0f, 0.0f, 0.0f);
-      }
-      glVertex2f(curve.time(it) + s_out, curve.value(it) + s_out * curve.out_tangent(it));
-
-      glEnd();
     }
 
     glPopMatrix();
@@ -659,20 +699,29 @@ void GLTimeline::paintGL()
   }
 }
 
-void GLTimeline::draw_curve(const KeyCurve& curve)
+void GLTimeline::draw_curve(const IKeyCurve* icurve)
 {
   // Get the minimum and maximum x-values
 
-  float min_x, max_x;
-  KeyCurve::const_iterator it = curve.begin();
-  if (it == curve.end()) {
+  if (icurve->type == IKeyCurve::QUAT_CURVE) {
     return;
   }
 
-  min_x = curve.time(it);
-  it = curve.end();
+  const KeyCurve<float>* curve = dynamic_cast<const KeyCurve<float>*>(icurve);
+
+  if (curve == nullptr)
+    throw std::runtime_error("GLTimeline::draw_curve: Failed to cast pointer to KeyCurve<float>");
+
+  float min_x, max_x;
+  IKeyCurve::const_iterator it = curve->begin();
+  if (it == curve->end()) {
+    return;
+  }
+
+  min_x = curve->time(it);
+  it = curve->end();
   it--;
-  max_x = curve.time(it);
+  max_x = curve->time(it);
 
   // Clamp the values to the extents of the graph
 
@@ -694,9 +743,9 @@ void GLTimeline::draw_curve(const KeyCurve& curve)
 
   glBegin(GL_LINE_STRIP);
   for (float x = min_x; x < max_x; x += dx) {
-    glVertex2f(x, curve(x));
+    glVertex2f(x, curve->operator()(x));
   }
-  glVertex2f(max_x, curve(max_x));
+  glVertex2f(max_x, curve->operator()(max_x));
   glEnd();
 
   // Draw the curve points
@@ -707,20 +756,132 @@ void GLTimeline::draw_curve(const KeyCurve& curve)
   glGetFloatv(GL_CURRENT_COLOR, current_color);
 
   glBegin(GL_POINTS);
-  it = curve.begin();
-  while (it != curve.end()) {
-    if (curve.time(it) < min_x || curve.time(it) > max_x) {
+  it = curve->begin();
+  while (it != curve->end()) {
+    if (curve->time(it) < min_x || curve->time(it) > max_x) {
       it++;
       continue;
     }
 
-    if (m_position_graph->frame_locks.at((int)curve.time(it))) {
+    if (m_position_graph->frame_locks.at((int)curve->time(it))) {
       glColor3fv(current_color);
     } else {
       glColor3f(0.0f, 0.0f, 0.0f);
     }
 
-    glVertex2f(curve.time(it), curve.value(it));
+    glVertex2f(curve->time(it), curve->value(it));
+    it++;
+  }
+  glEnd();
+
+  glPopAttrib();
+}
+
+void GLTimeline::draw_curve_quat(const IKeyCurve* curve, bool show_yaw, bool show_pitch, bool show_roll)
+{
+  if (curve->type != IKeyCurve::QUAT_CURVE)
+    return;
+
+  const KeyCurve<Quatf>* qcurve = dynamic_cast<const KeyCurve<Quatf>*>(curve);
+  if (qcurve == nullptr)
+    throw std::runtime_error("GLTimeline::draw_curve_quat: Failed to cast pointer to KeyCurve<Quatf>");
+
+  float min_x, max_x;
+  IKeyCurve::const_iterator it = qcurve->begin();
+  if (it == qcurve->end()) {
+    return;
+  }
+
+  min_x = qcurve->time(it);
+  it = qcurve->end();
+  it--;
+  max_x = qcurve->time(it);
+
+  // Clamp the values to the extents of the graph
+  if (min_x < m_position_graph->min_frame) {
+    min_x = m_position_graph->min_frame;
+  }
+  if (max_x > m_position_graph->max_frame) {
+    max_x = m_position_graph->max_frame;
+  }
+
+  // Calculate the number of curve segments to draw
+  int num_segments = viewdata.window_width / 8;
+  float dx = (max_x - min_x) / num_segments;
+  dx = 1.0f / (int)(1.0f + 1.0f / dx);
+
+  // Prevent run away if min_x == max_x
+  if (min_x >= max_x)
+    return;
+
+  // Load all of the euler angles into a vector
+  std::vector<Vec3f> euler_angles;
+  for (float x = min_x; x <= max_x; x += dx) {
+    Quatf q = qcurve->operator()(x);
+    euler_angles.push_back(q.toEuler());
+  }
+
+  float yaw_color[4] = { 1.0f, 1.0f, 0.0f, 1.0f };
+  float pitch_color[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
+  float roll_color[4] = { 0.0f, 1.0f, 1.0f, 1.0f };
+
+  // Draw the curve
+  if (show_yaw) {
+    glColor3fv(yaw_color);
+    glBegin(GL_LINE_STRIP);
+    for (float x = min_x; x <= max_x; x += dx) {
+      glVertex2f(x, euler_angles.at(x - min_x).z);
+    }
+    glEnd();
+  }
+  if (show_pitch) {
+    glColor3fv(pitch_color);
+    glBegin(GL_LINE_STRIP);
+    for (float x = min_x; x <= max_x; x += dx) {
+      glVertex2f(x, euler_angles.at(x - min_x).y);
+    }
+    glEnd();
+  }
+  if (show_roll) {
+    glColor3fv(roll_color);
+    glBegin(GL_LINE_STRIP);
+    for (float x = min_x; x <= max_x; x += dx) {
+      glVertex2f(x, euler_angles.at(x - min_x).x);
+    }
+    glEnd();
+  }
+
+  // Draw the curve points
+  glPushAttrib(GL_CURRENT_BIT);
+
+  glBegin(GL_POINTS);
+  it = qcurve->begin();
+  while (it != qcurve->end()) {
+    if (qcurve->time(it) < min_x || qcurve->time(it) > max_x) {
+      it++;
+      continue;
+    }
+    if (show_yaw) {
+      glColor3f(0.0f, 0.0f, 0.0f);
+      if (m_position_graph->frame_locks.at((int)qcurve->time(it))) {
+        glColor3fv(yaw_color);
+      }
+      glVertex2f(qcurve->time(it), euler_angles.at(qcurve->time(it) - min_x).z);
+    }
+    if (show_pitch) {
+      glColor3f(0.0f, 0.0f, 0.0f);
+      if (m_position_graph->frame_locks.at((int)qcurve->time(it))) {
+        glColor3fv(pitch_color);
+      }
+      glVertex2f(qcurve->time(it), euler_angles.at(qcurve->time(it) - min_x).y);
+    }
+    if (show_roll) {
+      glColor3f(0.0f, 0.0f, 0.0f);
+      if (m_position_graph->frame_locks.at((int)qcurve->time(it))) {
+        glColor3fv(roll_color);
+      }
+      glVertex2f(qcurve->time(it), euler_angles.at(qcurve->time(it) - min_x).x);
+    }
     it++;
   }
   glEnd();
