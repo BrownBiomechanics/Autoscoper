@@ -76,18 +76,7 @@ namespace xromm
 
   struct OptimizationParameters
   {
-    OptimizationParameters() :
-      repeats(0),
-      dframe(0),
-      method(0),
-      max_iter(0),
-      min_limit(0.0),
-      max_limit(0.0),
-      cf_model(0),
-      max_stall_iter(0),
-      opt_init_heuristic(0)
-    {
-    }
+    OptimizationParameters() = default;
     OptimizationParameters(unsigned int repeats, int dframe, unsigned int method, unsigned int max_iter, double min_limit, double max_limit, unsigned int cf_model, unsigned int max_stall_iter, unsigned int opt_init_heuristic) :
       repeats(repeats),
       dframe(dframe),
@@ -113,15 +102,15 @@ namespace xromm
       os << "max_stall_iter: " << max_stall_iter << std::endl;
       os << "opt_init_heuristic: " << opt_init_heuristic << std::endl;
     }
-    unsigned int repeats;
-    int dframe;
-    unsigned int method;
-    unsigned int max_iter;
-    double min_limit;
-    double max_limit;
-    unsigned int cf_model;
-    unsigned int max_stall_iter;
-    unsigned int opt_init_heuristic;
+    unsigned int repeats{0};
+    int dframe{0};
+    unsigned int method{0};
+    unsigned int max_iter{0};
+    double min_limit{0.0};
+    double max_limit{0.0};
+    unsigned int cf_model{0};
+    unsigned int max_stall_iter{0};
+    unsigned int opt_init_heuristic{0};
   };
 
 
@@ -146,7 +135,6 @@ namespace xromm
     std::vector<unsigned char> getImageData(unsigned volumeID, unsigned camera, double* xyzpr, unsigned& width, unsigned& height);
     OptimizationParameters& getLatestOptimizationParameters() { return latest_optimization_parameters_; }
     void printLatestOptimizationParameters(std::ostream& os) const { latest_optimization_parameters_.PrintSelf(os); }
-
 
     // Bardiya Cost Function for Implants
     //double implantMinFunc(const double* values) const;

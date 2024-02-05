@@ -953,14 +953,14 @@ void AutoscoperMainWindow::save_tracking_results(QString filename)
     bool interpolate = diag->diag->radioButton_InterpolationSpline->isChecked();
     int volume = -1;
     if (diag->diag->radioButton_VolumeCurrent->isChecked()) volume = tracker->trial()->current_volume;
-    logTrackingParameters();
+    logTrackingParametersToFile();
     save_tracking_results(filename, save_as_matrix,save_as_rows,save_with_commas,convert_to_cm,convert_to_rad,interpolate, volume);
     is_tracking_saved = true;
   }
   delete diag;
 }
 
-void AutoscoperMainWindow::logTrackingParameters() {
+void AutoscoperMainWindow::logTrackingParametersToFile() {
   // Create logs directory and set up filename
   QDir defaultRootDir(default_root_path);
   defaultRootDir.mkpath("Logs");
@@ -973,7 +973,6 @@ void AutoscoperMainWindow::logTrackingParameters() {
     return;
   }
 
-
   file << "Task Name: " << default_task_name.toStdString() << "\n";
   file << "\n";
 
@@ -985,7 +984,6 @@ void AutoscoperMainWindow::logTrackingParameters() {
 
   file.close();
 }
-
 
 void AutoscoperMainWindow::backup_tracking(bool backup_on)
 {
