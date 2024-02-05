@@ -72,7 +72,7 @@ public:
 
     // Accessors
 
-  int create_background_image();
+  bool create_background_image();
 
     const std::string& dirname() const { return dirname_; }
 
@@ -97,6 +97,7 @@ public:
   const float* background() const { return background_; }
 
 private:
+    template <typename T> void create_background_image_internal(TiffImage* tmp_img);
 
     std::string dirname_;
 

@@ -902,8 +902,13 @@ void AutoscoperMainWindow::setPose(std::vector<double> pose, unsigned int volume
 void AutoscoperMainWindow::setBackground(double threshold)
 {
   if (background_threshold_ < 0){
-    for (xromm::Video &vi : tracker->trial()->videos)
-      vi.create_background_image();
+    for (xromm::Video& vi : tracker->trial()->videos) {
+      if (!vi.create_background_image()) {
+        std::cerr << "Error creating background image for video " << vi.dirname() << "\n"
+          << "Failed to set background threshold" << std::endl;
+        return;
+      }
+    }
 
     tracker->updateBackground();
   }
