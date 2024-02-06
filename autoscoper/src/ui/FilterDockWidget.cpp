@@ -79,6 +79,10 @@ void FilterDockWidget::saveAllSettings(QString directory){
   dock->treeWidget->saveAllSettings(directory);
 }
 
+void FilterDockWidget::printAllSettings(std::ofstream& os) {
+  dock->treeWidget->printAllSettings(os);
+}
+
 void FilterDockWidget::loadAllSettings(QString directory){
   dock->treeWidget->loadAllSettings(directory);
 }

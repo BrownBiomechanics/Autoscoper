@@ -68,6 +68,7 @@ class FilterTreeWidget : public QTreeWidget{
     void toggle_drrs();
 
     void saveAllSettings(QString directory);
+    void printAllSettings(std::ofstream& os);
     void loadAllSettings(QString directory);
     void loadFilterSettings(int camera, QString filename);
   private:

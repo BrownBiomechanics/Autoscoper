@@ -229,6 +229,22 @@ void FilterTreeWidget::saveAllSettings(QString directory){
   }
 }
 
+void FilterTreeWidget::printAllSettings(std::ofstream& os) {
+  for (int i = 0; i < this->topLevelItemCount(); ++i) {
+    CameraTreeWidgetItem * camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));
+    if (camera) {
+      os << "camera_begin " << i << std::endl;
+      for (int j = 0; j < camera->childCount(); ++j) {
+        ModelViewTreeWidgetItem* model = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(j));
+        if (model) {
+          model->save(os);
+        }
+      }
+      os << "camera_end " << i << std::endl;
+    }
+  }
+}
+
 void FilterTreeWidget::loadAllSettings(QString directory){
   for(int i=0;i<this->topLevelItemCount(); ++i){
     CameraTreeWidgetItem * camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));

@@ -194,8 +194,18 @@ class AutoscoperMainWindow : public QMainWindow{
     std::vector<unsigned int> textures;
     void reset_graph();
 
-
-
+    /// \brief Log tracking parameter to file
+    ///
+    /// The file is created based on the following pattern:
+    /// <current-working-directory>/Logs/<unix-timestamp>_<taskname>.log
+    ///
+    /// It contains the latest optimization parameters as well as the
+    /// filters and their parameters for the DRR and radiograph renderers associated
+    /// with each camera.
+    ///
+    /// \sa xromm::Tracker::printLatestOptimizationParameters()
+    /// \sa FilterDockWidget::printAllSettings()
+    void logTrackingParametersToFile();
 
     void save_tracking_prompt();
     void save_trial_prompt();
