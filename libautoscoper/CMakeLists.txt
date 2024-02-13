@@ -63,6 +63,28 @@ if(Autoscoper_RENDERING_BACKEND STREQUAL "CUDA")
   # See https://docs.nvidia.com/cuda/archive/10.2/cuda-c-programming-guide/index.html#c-cplusplus-language-support
   set(CMAKE_CUDA_STANDARD 14)
   set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
+  if("$ENV{CUDAARCHS}" STREQUAL "" AND NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.23")
+      set(_cuda_achitectures "all")
+    else()
+      # Adapted from https://github.com/Kitware/CMake/blob/v3.29.0-rc1/Modules/Internal/CMakeCUDAArchitecturesAll.cmake
+      set(_cuda_achitectures
+        50 52 53
+        60 61 62 # >= 8.0
+        70 72 # >= 9.0
+        75 # >= 10.0
+        80 # >= 11.0
+        # 86 # >= 11.1
+        # 87 # >= 11.4
+        # 88 89 # >= 11.8
+        )
+      # only generate jit code for the newest arch
+      list(POP_BACK _cuda_achitectures _latest_arch)
+      list(TRANSFORM _cuda_achitectures APPEND "-real")
+      list(APPEND _cuda_achitectures ${_latest_arch})
+    endif()
+    set(ENV{CUDAARCHS} "${_cuda_achitectures}")
+  endif()
   enable_language(CUDA)
   find_package(CUDAToolkit REQUIRED)
   include(${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/cuda/CMakeLists.txt)
