@@ -25,14 +25,13 @@ VolumeListWidgetItem::VolumeListWidgetItem(QListWidget* listWidget,const QString
 void VolumeListWidgetItem::setup(QListWidget* listWidget) {
   // add a layout
   QFrame* pFrame = new QFrame(listWidget);
-  pFrame->setMinimumHeight(32);
   QGridLayout* pLayout = new QGridLayout(pFrame);
   pLayout->addWidget(new QLabel(name_), 0, 1);
   visibilityCheckBox_ = new QCheckBox();
   visibilityCheckBox_->setChecked(true);
   pLayout->addWidget(visibilityCheckBox_, 0, 0);
   pLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum), 0, 2);
-  pLayout->setMargin(5);
+  pLayout->setMargin(1);
   pFrame->setLayout(pLayout);
   listWidget->setItemWidget(this, pFrame);
   QObject::connect(visibilityCheckBox_, SIGNAL(toggled(bool)), this, SLOT(on_visiblilityCheckBox__toggled(bool)));
