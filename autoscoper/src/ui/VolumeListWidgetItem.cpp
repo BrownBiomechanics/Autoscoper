@@ -13,7 +13,8 @@
 #include <gpu/opencl/RayCaster.hpp>
 #endif
 
-VolumeListWidgetItem::VolumeListWidgetItem(QListWidget* listWidget,const QString& name, AutoscoperMainWindow* main_window, std::vector< xromm::gpu::RayCaster*>* renderers) : QListWidgetItem(listWidget) {
+VolumeListWidgetItem::VolumeListWidgetItem(QListWidget* listWidget, const QString& name, AutoscoperMainWindow* main_window, std::vector<xromm::gpu::RayCaster*>* renderers) : QListWidgetItem(listWidget)
+{
   this->name_ = name;
   this->main_window_ = main_window;
   for (xromm::gpu::RayCaster* renderer : *renderers) {
@@ -22,7 +23,8 @@ VolumeListWidgetItem::VolumeListWidgetItem(QListWidget* listWidget,const QString
   setup(listWidget);
 }
 
-void VolumeListWidgetItem::setup(QListWidget* listWidget) {
+void VolumeListWidgetItem::setup(QListWidget* listWidget)
+{
   // add a layout
   QFrame* pFrame = new QFrame(listWidget);
   QGridLayout* pLayout = new QGridLayout(pFrame);
@@ -37,11 +39,13 @@ void VolumeListWidgetItem::setup(QListWidget* listWidget) {
   QObject::connect(visibilityCheckBox_, SIGNAL(toggled(bool)), this, SLOT(on_visiblilityCheckBox__toggled(bool)));
 }
 
-void VolumeListWidgetItem::setVisibility(bool visible) {
+void VolumeListWidgetItem::setVisibility(bool visible)
+{
   visibilityCheckBox_->setChecked(visible);
 }
 
-void VolumeListWidgetItem::on_visiblilityCheckBox__toggled(bool checked) {
+void VolumeListWidgetItem::on_visiblilityCheckBox__toggled(bool checked)
+{
   if (renderers_.size() > 0) {
     for (xromm::gpu::RayCaster* renderer : renderers_) {
       renderer->setVisible(checked);

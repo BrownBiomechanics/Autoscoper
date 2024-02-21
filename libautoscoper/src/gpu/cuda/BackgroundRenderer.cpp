@@ -52,82 +52,80 @@
 
 namespace xromm { namespace gpu
 {
-
 BackgroundRenderer::BackgroundRenderer() : array_(0)
 {
-    image_plane_[0] = -1.0f;
-    image_plane_[1] = -1.0f;
-    image_plane_[2] =  2.0f;
-    image_plane_[3] =  2.0f;
+  image_plane_[0] = -1.0f;
+  image_plane_[1] = -1.0f;
+  image_plane_[2] =  2.0f;
+  image_plane_[3] =  2.0f;
 
-    viewport_[0] = -1.0f;
-    viewport_[1] = -1.0f;
-    viewport_[2] =  2.0f;
-    viewport_[3] =  2.0f;
+  viewport_[0] = -1.0f;
+  viewport_[1] = -1.0f;
+  viewport_[2] =  2.0f;
+  viewport_[3] =  2.0f;
 }
 
 BackgroundRenderer::~BackgroundRenderer()
 {
-    cutilSafeCall(cudaFreeArray(array_));
+  cutilSafeCall(cudaFreeArray(array_));
 }
 
 void
 BackgroundRenderer::set_back(const void* data, size_t width, size_t height)
 {
-    cutilSafeCall(cudaFreeArray(array_));
+  cutilSafeCall(cudaFreeArray(array_));
 
-    // Create a 2D array.
-    cudaChannelFormatDesc desc;
-    desc = cudaCreateChannelDesc<float>();
+  // Create a 2D array.
+  cudaChannelFormatDesc desc;
+  desc = cudaCreateChannelDesc<float>();
 
-    cutilSafeCall(cudaMallocArray(&array_, &desc, width, height));
+  cutilSafeCall(cudaMallocArray(&array_, &desc, width, height));
 
-    // Copy data to 2D array.
-    cutilSafeCall(cudaMemcpyToArray(array_,
-                                    0,
-                                    0,
-                                    data,
-                                    width*height*sizeof(float),
-                                    cudaMemcpyHostToDevice));
+  // Copy data to 2D array.
+  cutilSafeCall(cudaMemcpyToArray(array_,
+                                  0,
+                                  0,
+                                  data,
+                                  width * height * sizeof(float),
+                                  cudaMemcpyHostToDevice));
 }
 
 void
 BackgroundRenderer::set_image_plane(float x, float y, float width, float height)
 {
-    image_plane_[0] = x;
-    image_plane_[1] = y;
-    image_plane_[2] = width;
-    image_plane_[3] = height;
+  image_plane_[0] = x;
+  image_plane_[1] = y;
+  image_plane_[2] = width;
+  image_plane_[3] = height;
 }
 
 void
 BackgroundRenderer::set_viewport(float x, float y, float width, float height)
 {
-    viewport_[0] = x;
-    viewport_[1] = y;
-    viewport_[2] = width;
-    viewport_[3] = height;
+  viewport_[0] = x;
+  viewport_[1] = y;
+  viewport_[2] = width;
+  viewport_[3] = height;
 }
 
 void
 BackgroundRenderer::render(float* buffer, size_t width, size_t height, float threshold) const
 {
-    cudaTextureObject_t tex = createTexureObjectFromArray(array_, cudaReadModeElementType);
+  cudaTextureObject_t tex = createTexureObjectFromArray(array_, cudaReadModeElementType);
 
-    background_render(tex,buffer,
-                 (int)width,
-                 (int)height,
-                 image_plane_[0],
-                 image_plane_[1],
-                 image_plane_[2],
-                 image_plane_[3],
-                 viewport_[0],
-                 viewport_[1],
-                 viewport_[2],
-                 viewport_[3],
-                 threshold);
+  background_render(tex, buffer,
+                    (int)width,
+                    (int)height,
+                    image_plane_[0],
+                    image_plane_[1],
+                    image_plane_[2],
+                    image_plane_[3],
+                    viewport_[0],
+                    viewport_[1],
+                    viewport_[2],
+                    viewport_[3],
+                    threshold);
 
-    cudaDestroyTextureObject(tex);
+  cudaDestroyTextureObject(tex);
 }
-
 } } // namespace xromm::cuda

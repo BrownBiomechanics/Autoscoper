@@ -50,7 +50,6 @@ typedef cudaArray Image;
 #endif
 
 namespace xromm {
-
 class Volume;
 
 namespace gpu {
@@ -63,31 +62,30 @@ namespace gpu {
 class VolumeDescription
 {
 public:
-    VolumeDescription(const Volume& volume);
-    ~VolumeDescription();
+  VolumeDescription(const Volume& volume);
+  ~VolumeDescription();
 
-    const float* invScale() const { return invScale_; }
-    const float* invTrans() const { return invTrans_; }
+  const float* invScale() const { return invScale_; }
+  const float* invTrans() const { return invTrans_; }
   const double* transCenter() const { return transCenter_; }
-    float minValue() const { return minValue_; }
-    float maxValue() const { return maxValue_; }
+  float minValue() const { return minValue_; }
+  float maxValue() const { return maxValue_; }
 
-    const Image* image() const { return image_; }
-
+  const Image* image() const { return image_; }
 
 private:
-    VolumeDescription(const VolumeDescription&);
-    VolumeDescription& operator=(const VolumeDescription&);
+  VolumeDescription(const VolumeDescription&);
+  VolumeDescription& operator=(const VolumeDescription&);
 
-    float minValue_;
-    float maxValue_;
-    float invScale_[3];
-    float invTrans_[3];
+  float minValue_;
+  float maxValue_;
+  float invScale_[3];
+  float invTrans_[3];
   double transCenter_[3];
 
   Image* image_;
 };
-
-} } // namespace xromm::opencl
+}
+} // namespace xromm::opencl
 
 #endif // XROMM_GPU_VOLUME_DESCRIPTION_HPP

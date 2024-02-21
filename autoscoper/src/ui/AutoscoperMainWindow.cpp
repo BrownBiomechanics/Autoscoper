@@ -94,26 +94,27 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) :
-                        QMainWindow(parent),
-                        ui(new Ui::AutoscoperMainWindow), background_threshold_(-1.0){
+AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget* parent) :
+  QMainWindow(parent),
+  ui(new Ui::AutoscoperMainWindow), background_threshold_(-1.0)
+{
 
-  //Setup UI
+  // Setup UI
   ui->setupUi(this);
 
   // VERSION NUMBER
   puts("Autoscoper v2.8\n");
 
-  //Init Tracker and get SharedGLContext
+  // Init Tracker and get SharedGLContext
   tracker = new Tracker();
-  gltracker = new GLTracker(tracker,NULL);
-  //shared_glcontext = gltracker->getSharedContext();
+  gltracker = new GLTracker(tracker, NULL);
+  // shared_glcontext = gltracker->getSharedContext();
 
-  //History
+  // History
   history = new History(20);
   first_undo = true;
 
-  //Init empty trial
+  // Init empty trial
   trial_filename = "";
   is_trial_saved = true;
   is_tracking_saved = true;
@@ -135,12 +136,14 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 
 
 #if defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-  if (!skipGpuDevice){
-    OpenCLPlatformSelectDialog * dialog = new OpenCLPlatformSelectDialog(this);
+  if (!skipGpuDevice) {
+    OpenCLPlatformSelectDialog* dialog = new OpenCLPlatformSelectDialog(this);
     if (dialog->getNumberPlatforms() > 1)dialog->exec();
-    else{ xromm::gpu::setUsedPlatform(0); }
+    else {
+      xromm::gpu::setUsedPlatform(0);
+    }
     delete dialog;
-}
+  }
 #endif
   // Create worldview but hide it
   worldview = new WorldViewWindow(this);
@@ -151,7 +154,7 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
   // Create timeline widget
   timeline_widget = new TimelineDockWidget(this);
   this->addDockWidget(Qt::BottomDockWidgetArea, timeline_widget, Qt::Horizontal);
-  //resizeDocks({ timeline_widget}, { 300 }, Qt::Horizontal);
+  // resizeDocks({ timeline_widget}, { 300 }, Qt::Horizontal);
 
   // Initialize other dialogs/widgets
   tracking_dialog = NULL;
@@ -169,20 +172,21 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget *parent) 
 #endif
 }
 
-AutoscoperMainWindow::~AutoscoperMainWindow(){
+AutoscoperMainWindow::~AutoscoperMainWindow()
+{
   delete ui;
 
   delete filters_widget;
   delete volumes_widget;
   delete worldview;
   delete tracker;
-  for (int i = 0; i < manipulator.size(); i++){
+  for (int i = 0; i < manipulator.size(); i++) {
     delete manipulator[i];
   }
   manipulator.clear();
 
   delete history;
-  if(tracking_dialog) {
+  if (tracking_dialog) {
     tracking_dialog->hide();
     delete tracking_dialog;
   }
@@ -195,71 +199,73 @@ AutoscoperMainWindow::~AutoscoperMainWindow(){
     delete advanced_dialog;
   }
 
-    cameraViews.clear();
-  for (int i = 0 ; i < cameraViews.size();i++){
+  cameraViews.clear();
+  for (int i = 0; i < cameraViews.size(); i++) {
     delete cameraViews[i];
   }
 
 }
 
-void AutoscoperMainWindow::closeEvent(QCloseEvent *event)
- {
-   save_trial_prompt();
-     save_tracking_prompt();
-     QMainWindow::closeEvent(event);
- }
+void AutoscoperMainWindow::closeEvent(QCloseEvent* event)
+{
+  save_trial_prompt();
+  save_tracking_prompt();
+  QMainWindow::closeEvent(event);
+}
 
-GraphData* AutoscoperMainWindow::getPosition_graph(){
+GraphData* AutoscoperMainWindow::getPosition_graph()
+{
   return timeline_widget->getPosition_graph();
 }
 
-Manip3D * AutoscoperMainWindow::getManipulator(int idx){
+Manip3D* AutoscoperMainWindow::getManipulator(int idx)
+{
   if (idx < manipulator.size() &&
-    idx >= 0){
+      idx >= 0) {
     return manipulator[idx];
-  }
-  else if (getTracker()->trial()->num_frames > 0){
+  } else if (getTracker()->trial()->num_frames > 0) {
     return manipulator[getTracker()->trial()->current_volume];
-  }
-  else{
+  } else {
     return NULL;
   }
 }
 
-void AutoscoperMainWindow::update_graph_min_max(int frame){
+void AutoscoperMainWindow::update_graph_min_max(int frame)
+{
   timeline_widget->update_graph_min_max(frame);
 }
 
-void AutoscoperMainWindow::relayoutCameras(int rows){
-  //clear Old Splitters
-  for (int i = 0 ; i < cameraViews.size();i++){
+void AutoscoperMainWindow::relayoutCameras(int rows)
+{
+  // clear Old Splitters
+  for (int i = 0; i < cameraViews.size(); i++) {
     cameraViews[i]->setParent(NULL);
   }
 
   QObjectList objs = ui->frameWindows->children();
-  for(int x = 0; x < objs.size(); x ++){
+  for (int x = 0; x < objs.size(); x ++) {
     QObjectList objs2 = objs[x]->children();
-    QSplitter * vertsplit = dynamic_cast<QSplitter*> (objs[x]);
-    for(int y = objs2.size() - 1 ; y >= 0; y --){
-      QSplitter * horsplit = dynamic_cast<QSplitter*> (objs2[y]);
-      if(horsplit){
+    QSplitter* vertsplit = dynamic_cast<QSplitter*> (objs[x]);
+    for (int y = objs2.size() - 1; y >= 0; y --) {
+      QSplitter* horsplit = dynamic_cast<QSplitter*> (objs2[y]);
+      if (horsplit) {
         QObjectList objs3 = horsplit->children();
         delete horsplit;
       }
     }
 
-    if(vertsplit){
+    if (vertsplit) {
       ui->gridLayout->removeWidget(vertsplit);
       delete vertsplit;
     }
   }
-  //Create New
-  cameraViewArrangement = QSize(ceil( ((double) cameraViews.size())/rows),rows);
+  // Create New
+  cameraViewArrangement = QSize(ceil( ((double) cameraViews.size()) / rows), rows);
 
-  QSplitter * splitter = new QSplitter(this);
-    splitter->setOrientation(Qt::Vertical);
-  for(int i = 0; i < cameraViewArrangement.height() ; i ++){
-    QSplitter * splitterHorizontal = new QSplitter(splitter);
+  QSplitter* splitter = new QSplitter(this);
+  splitter->setOrientation(Qt::Vertical);
+  for (int i = 0; i < cameraViewArrangement.height(); i ++) {
+    QSplitter* splitterHorizontal = new QSplitter(splitter);
     splitterHorizontal->setOrientation(Qt::Horizontal);
     splitter->addWidget(splitterHorizontal);
   }
@@ -267,20 +273,20 @@ void AutoscoperMainWindow::relayoutCameras(int rows){
   size_t freeSpaces = cameraViewArrangement.height() * cameraViewArrangement.width() - cameraViews.size();
 
   int count = 0;
-  for (int i = 0 ; i < cameraViews.size();i++, count++){
-    if(cameraViews.size() < i + freeSpaces) count++;
+  for (int i = 0; i < cameraViews.size(); i++, count++) {
+    if (cameraViews.size() < i + freeSpaces)count++;
     QObject* obj = splitter->children().at(rows - 1 - count / (cameraViewArrangement.width()));
-    QSplitter * horsplit = dynamic_cast<QSplitter*> (obj);
-    if(horsplit)horsplit->addWidget(cameraViews[i]);
+    QSplitter* horsplit = dynamic_cast<QSplitter*> (obj);
+    if (horsplit)horsplit->addWidget(cameraViews[i]);
   }
 
-  for(int i = 0; i < cameraViewArrangement.height() ; i ++){
+  for (int i = 0; i < cameraViewArrangement.height(); i ++) {
     QObject* obj = splitter->children().at(i);
-    QSplitter * horsplit = dynamic_cast<QSplitter*> (obj);
-    if(horsplit){
+    QSplitter* horsplit = dynamic_cast<QSplitter*> (obj);
+    if (horsplit) {
       QList<int> sizelist = horsplit->sizes();
-      for(int m = 0; m < sizelist.size(); m++){
-          sizelist[m] = 1;
+      for (int m = 0; m < sizelist.size(); m++) {
+        sizelist[m] = 1;
       }
       horsplit->setSizes(sizelist);
     }
@@ -290,10 +296,11 @@ void AutoscoperMainWindow::relayoutCameras(int rows){
   ui->gridLayout->addWidget(splitter, 0, 0, 1, 1);
 }
 
-void AutoscoperMainWindow::timelineSetValue(int value){
+void AutoscoperMainWindow::timelineSetValue(int value)
+{
   tracker->trial()->frame = value;
   curFrame = value;
-    frame_changed();
+  frame_changed();
 }
 
 int AutoscoperMainWindow::getCurrentFrame()
@@ -309,39 +316,38 @@ QString AutoscoperMainWindow::getLastFolder()
 
 void AutoscoperMainWindow::frame_changed()
 {
-    // Lock or unlock the position
+  // Lock or unlock the position
   if (timeline_widget->getPosition_graph()->frame_locks.at(tracker->trial()->frame)) {
     timeline_widget->setValuesEnabled(false);
-    }
-    else {
-       timeline_widget->setValuesEnabled(true);
-    }
+  } else {
+    timeline_widget->setValuesEnabled(true);
+  }
 
-    update_xyzypr_and_coord_frame();
+  update_xyzypr_and_coord_frame();
 
-    for (unsigned int i = 0; i < tracker->trial()->cameras.size(); ++i) {
-        tracker->trial()->videos.at(i).set_frame(tracker->trial()->frame);
-        tracker->view(i)->radRenderer()->set_rad(
-            tracker->trial()->videos.at(i).data(),
-            tracker->trial()->videos.at(i).width(),
-            tracker->trial()->videos.at(i).height(),
-            tracker->trial()->videos.at(i).bps());
+  for (unsigned int i = 0; i < tracker->trial()->cameras.size(); ++i) {
+    tracker->trial()->videos.at(i).set_frame(tracker->trial()->frame);
+    tracker->view(i)->radRenderer()->set_rad(
+      tracker->trial()->videos.at(i).data(),
+      tracker->trial()->videos.at(i).width(),
+      tracker->trial()->videos.at(i).height(),
+      tracker->trial()->videos.at(i).bps());
 
-    //((QOpenGLContext*) shared_glcontext)->makeCurrent();
+    // ((QOpenGLContext*) shared_glcontext)->makeCurrent();
 
-        glBindTexture(GL_TEXTURE_2D,textures[i]);
-        glTexImage2D(GL_TEXTURE_2D,
-                     0,
-                     1,
-                     tracker->trial()->videos.at(i).width(),
-                     tracker->trial()->videos.at(i).height(),
-                     0,
-                     GL_LUMINANCE,
-                    (tracker->trial()->videos.at(i).bps() == 8? GL_UNSIGNED_BYTE:
-                                                               GL_UNSIGNED_SHORT),
-                     tracker->trial()->videos.at(i).data());
-        glBindTexture(GL_TEXTURE_2D,0);
-    }
+    glBindTexture(GL_TEXTURE_2D, textures[i]);
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 1,
+                 tracker->trial()->videos.at(i).width(),
+                 tracker->trial()->videos.at(i).height(),
+                 0,
+                 GL_LUMINANCE,
+                 (tracker->trial()->videos.at(i).bps() == 8 ? GL_UNSIGNED_BYTE :
+                  GL_UNSIGNED_SHORT),
+                 tracker->trial()->videos.at(i).data());
+    glBindTexture(GL_TEXTURE_2D, 0);
+  }
 
   redrawGL();
   QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
@@ -352,25 +358,24 @@ void AutoscoperMainWindow::volume_changed()
   // Lock or unlock the position
   if (timeline_widget->getPosition_graph()->frame_locks.at(tracker->trial()->frame)) {
     timeline_widget->setValuesEnabled(false);
-  }
-  else {
+  } else {
     timeline_widget->setValuesEnabled(true);
   }
 
   if (getManipulator(-1))
     getManipulator(-1)->set_movePivot(ui->toolButtonMovePivot->isChecked());
 
-  //update_xyzypr_and_coord_frame();
+  // update_xyzypr_and_coord_frame();
   timeline_widget->getSelectedNodes()->clear();
   update_graph_min_max(timeline_widget->getPosition_graph());
   redrawGL();
-  //QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+  // QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 
 
 void AutoscoperMainWindow::update_xyzypr()
 {
-  if (getManipulator(-1) && tracker->trial()->getVolumeMatrix(-1)){
+  if (getManipulator(-1) && tracker->trial()->getVolumeMatrix(-1)) {
     double xyzypr[6];
     (CoordFrame::from_matrix(trans(getManipulator(-1)->transform())) * *tracker->trial()->getVolumeMatrix(-1)).to_xyzypr(xyzypr);
 
@@ -386,7 +391,7 @@ void AutoscoperMainWindow::update_xyzypr()
 // been changed.
 void AutoscoperMainWindow::update_xyzypr_and_coord_frame()
 {
-  for (int i = 0; i < tracker->trial()->num_volumes; i++){
+  for (int i = 0; i < tracker->trial()->num_volumes; i++) {
     if (tracker->trial()->getXCurve(i)->empty()) {
       continue;
     }
@@ -400,9 +405,9 @@ void AutoscoperMainWindow::update_xyzypr_and_coord_frame()
     xyzypr[5] = (*tracker->trial()->getRollCurve(i))(tracker->trial()->frame);
 
     CoordFrame newCoordFrame = CoordFrame::from_xyzypr(xyzypr);
-    set_manip_matrix(i, newCoordFrame*tracker->trial()->getVolumeMatrix(i)->inverse());
+    set_manip_matrix(i, newCoordFrame * tracker->trial()->getVolumeMatrix(i)->inverse());
 
-    if (i == tracker->trial()->current_volume){
+    if (i == tracker->trial()->current_volume) {
       timeline_widget->setSpinButtonUpdate(false);
       timeline_widget->setValues(&xyzypr[0]);
       timeline_widget->setSpinButtonUpdate(true);
@@ -412,8 +417,8 @@ void AutoscoperMainWindow::update_xyzypr_and_coord_frame()
 
 void AutoscoperMainWindow::set_manip_matrix(int idx, const CoordFrame& frame)
 {
-    double m[16];
-    frame.to_matrix_row_order(m);
+  double m[16];
+  frame.to_matrix_row_order(m);
   getManipulator(idx)->set_transform(Mat4d(m));
 }
 
@@ -422,155 +427,155 @@ void AutoscoperMainWindow::set_manip_matrix(int idx, const CoordFrame& frame)
 void AutoscoperMainWindow::update_graph_min_max(GraphData* graph, int frame)
 {
   if (!tracker->trial() || tracker->trial()->getXCurve(-1)->empty()) {
-        graph->max_value = 180.0;
-        graph->min_value = -180.0;
-    }
-    // If a frame is specified then only check that frame for a new minimum and
-    // maximum.
-    else if (frame != -1) {
-        if (graph->show_x) {
+    graph->max_value = 180.0;
+    graph->min_value = -180.0;
+  }
+  // If a frame is specified then only check that frame for a new minimum and
+  // maximum.
+  else if (frame != -1) {
+    if (graph->show_x) {
       float x_value = (*tracker->trial()->getXCurve(-1))(frame);
-            if (x_value > graph->max_value) {
-                graph->max_value = x_value;
-            }
-            if (x_value < graph->min_value) {
-                graph->min_value = x_value;
-            }
-        }
-        if (graph->show_y) {
+      if (x_value > graph->max_value) {
+        graph->max_value = x_value;
+      }
+      if (x_value < graph->min_value) {
+        graph->min_value = x_value;
+      }
+    }
+    if (graph->show_y) {
       float y_value = (*tracker->trial()->getYCurve(-1))(frame);
-            if (y_value > graph->max_value) {
-                graph->max_value = y_value;
-            }
-            if (y_value < graph->min_value) {
-                graph->min_value = y_value;
-            }
-        }
-        if (graph->show_z) {
+      if (y_value > graph->max_value) {
+        graph->max_value = y_value;
+      }
+      if (y_value < graph->min_value) {
+        graph->min_value = y_value;
+      }
+    }
+    if (graph->show_z) {
       float z_value = (*tracker->trial()->getZCurve(-1))(frame);
-            if (z_value > graph->max_value) {
-                graph->max_value = z_value;
-            }
-            if (z_value < graph->min_value) {
-                graph->min_value = z_value;
-            }
-        }
-        if (graph->show_yaw) {
+      if (z_value > graph->max_value) {
+        graph->max_value = z_value;
+      }
+      if (z_value < graph->min_value) {
+        graph->min_value = z_value;
+      }
+    }
+    if (graph->show_yaw) {
       float yaw_value = (*tracker->trial()->getYawCurve(-1))(frame);
-            if (yaw_value > graph->max_value) {
-                graph->max_value = yaw_value;
-            }
-            if (yaw_value < graph->min_value) {
-                graph->min_value = yaw_value;
-            }
-        }
-        if (graph->show_pitch) {
+      if (yaw_value > graph->max_value) {
+        graph->max_value = yaw_value;
+      }
+      if (yaw_value < graph->min_value) {
+        graph->min_value = yaw_value;
+      }
+    }
+    if (graph->show_pitch) {
       float pitch_value = (*tracker->trial()->getPitchCurve(-1))(frame);
-            if (pitch_value > graph->max_value) {
-                graph->max_value = pitch_value;
-            }
-            if (pitch_value < graph->min_value) {
-                graph->min_value = pitch_value;
-            }
-        }
-        if (graph->show_roll) {
+      if (pitch_value > graph->max_value) {
+        graph->max_value = pitch_value;
+      }
+      if (pitch_value < graph->min_value) {
+        graph->min_value = pitch_value;
+      }
+    }
+    if (graph->show_roll) {
       float roll_value = (*tracker->trial()->getRollCurve(-1))(frame);
-            if (roll_value > graph->max_value) {
-                graph->max_value = roll_value;
-            }
-            if (roll_value < graph->min_value) {
-                graph->min_value = roll_value;
-            }
-        }
+      if (roll_value > graph->max_value) {
+        graph->max_value = roll_value;
+      }
+      if (roll_value < graph->min_value) {
+        graph->min_value = roll_value;
+      }
     }
-    // Otherwise we need to check all the frames.
-    else {
+  }
+  // Otherwise we need to check all the frames.
+  else {
 
-        graph->min_value = 1e6;
-        graph->max_value = -1e6;
+    graph->min_value = 1e6;
+    graph->max_value = -1e6;
 
-        if (graph->show_x) {
-            for (frame = floor(graph->min_frame);
-                 frame < graph->max_frame;
-                 frame += 1.0f) {
+    if (graph->show_x) {
+      for (frame = floor(graph->min_frame);
+           frame < graph->max_frame;
+           frame += 1.0f) {
         float x_value = (*tracker->trial()->getXCurve(-1))(frame);
-                if (x_value > graph->max_value) {
-                    graph->max_value = x_value;
-                }
-                if (x_value < graph->min_value) {
-                    graph->min_value = x_value;
-                }
-            }
+        if (x_value > graph->max_value) {
+          graph->max_value = x_value;
         }
-        if (graph->show_y) {
-            for (frame = floor(graph->min_frame);
-                 frame < graph->max_frame;
-                 frame += 1.0f) {
-        float y_value = (*tracker->trial()->getYCurve(-1))(frame);
-                if (y_value > graph->max_value) {
-                    graph->max_value = y_value;
-                }
-                if (y_value < graph->min_value) {
-                    graph->min_value = y_value;
-                }
-            }
+        if (x_value < graph->min_value) {
+          graph->min_value = x_value;
         }
-        if (graph->show_z) {
-            for (frame = floor(graph->min_frame);
-                 frame < graph->max_frame;
-                 frame += 1.0f) {
-        float z_value = (*tracker->trial()->getZCurve(-1))(frame);
-                if (z_value > graph->max_value) {
-                    graph->max_value = z_value;
-                }
-                if (z_value < graph->min_value) {
-                    graph->min_value = z_value;
-                }
-            }
-        }
-        if (graph->show_yaw) {
-            for (frame = floor(graph->min_frame);
-                 frame < graph->max_frame;
-                 frame += 1.0f) {
-        float yaw_value = (*tracker->trial()->getYawCurve(-1))(frame);
-                if (yaw_value > graph->max_value) {
-                    graph->max_value = yaw_value;
-                }
-                if (yaw_value < graph->min_value) {
-                    graph->min_value = yaw_value;
-                }
-            }
-        }
-        if (graph->show_pitch) {
-            for (frame = floor(graph->min_frame);
-                 frame < graph->max_frame;
-                 frame += 1.0f) {
-        float pitch_value = (*tracker->trial()->getPitchCurve(-1))(frame);
-                if (pitch_value > graph->max_value) {
-                    graph->max_value = pitch_value;
-                }
-                if (pitch_value < graph->min_value) {
-                    graph->min_value = pitch_value;
-                }
-            }
-        }
-        if (graph->show_roll) {
-            for (frame = floor(graph->min_frame);
-                 frame < graph->max_frame;
-                 frame += 1.0f) {
-        float roll_value = (*tracker->trial()->getRollCurve(-1))(frame);
-                if (roll_value > graph->max_value) {
-                    graph->max_value = roll_value;
-                }
-                if (roll_value < graph->min_value) {
-                    graph->min_value = roll_value;
-                }
-            }
-        }
-
-        graph->min_value -= 1.0;
-        graph->max_value += 1.0;
+      }
     }
+    if (graph->show_y) {
+      for (frame = floor(graph->min_frame);
+           frame < graph->max_frame;
+           frame += 1.0f) {
+        float y_value = (*tracker->trial()->getYCurve(-1))(frame);
+        if (y_value > graph->max_value) {
+          graph->max_value = y_value;
+        }
+        if (y_value < graph->min_value) {
+          graph->min_value = y_value;
+        }
+      }
+    }
+    if (graph->show_z) {
+      for (frame = floor(graph->min_frame);
+           frame < graph->max_frame;
+           frame += 1.0f) {
+        float z_value = (*tracker->trial()->getZCurve(-1))(frame);
+        if (z_value > graph->max_value) {
+          graph->max_value = z_value;
+        }
+        if (z_value < graph->min_value) {
+          graph->min_value = z_value;
+        }
+      }
+    }
+    if (graph->show_yaw) {
+      for (frame = floor(graph->min_frame);
+           frame < graph->max_frame;
+           frame += 1.0f) {
+        float yaw_value = (*tracker->trial()->getYawCurve(-1))(frame);
+        if (yaw_value > graph->max_value) {
+          graph->max_value = yaw_value;
+        }
+        if (yaw_value < graph->min_value) {
+          graph->min_value = yaw_value;
+        }
+      }
+    }
+    if (graph->show_pitch) {
+      for (frame = floor(graph->min_frame);
+           frame < graph->max_frame;
+           frame += 1.0f) {
+        float pitch_value = (*tracker->trial()->getPitchCurve(-1))(frame);
+        if (pitch_value > graph->max_value) {
+          graph->max_value = pitch_value;
+        }
+        if (pitch_value < graph->min_value) {
+          graph->min_value = pitch_value;
+        }
+      }
+    }
+    if (graph->show_roll) {
+      for (frame = floor(graph->min_frame);
+           frame < graph->max_frame;
+           frame += 1.0f) {
+        float roll_value = (*tracker->trial()->getRollCurve(-1))(frame);
+        if (roll_value > graph->max_value) {
+          graph->max_value = roll_value;
+        }
+        if (roll_value < graph->min_value) {
+          graph->min_value = roll_value;
+        }
+      }
+    }
+
+    graph->min_value -= 1.0;
+    graph->max_value += 1.0;
+  }
 }
 
 void AutoscoperMainWindow::setupUI()
@@ -592,124 +597,127 @@ void AutoscoperMainWindow::setupUI()
     getManipulator(i)->set_transform(Mat4d());
   }
 
-  //Add Volumes
+  // Add Volumes
   for (unsigned int i = 0; i < tracker->trial()->volumes.size(); i++) {
     std::cout << "Volume Name: " << tracker->trial()->volumes[i].name() << std::endl;
     volumes_widget->addVolume(tracker->trial()->volumes[i].name(), i);
   }
 
-    //Add the new cameras
-    for (unsigned int i = 0; i < tracker->trial()->cameras.size(); i++) {
-    cameraViews.push_back(new CameraViewWidget(i, tracker->view(i),tracker->trial()->cameras[i].mayacam().c_str(), this));
+  // Add the new cameras
+  for (unsigned int i = 0; i < tracker->trial()->cameras.size(); i++) {
+    cameraViews.push_back(new CameraViewWidget(i, tracker->view(i), tracker->trial()->cameras[i].mayacam().c_str(), this));
     filters_widget->addCamera(tracker->view(i));
-    }
+  }
 
   relayoutCameras(1);
 
-  //QOpenGLContext::globalShareContext()->makeCurrent();
+  // QOpenGLContext::globalShareContext()->makeCurrent();
   // Showing the texture for 3D Worldview
   textures.resize(tracker->trial()->cameras.size());
-    for (unsigned i = 0; i < textures.size(); i++) {
-        glGenTextures(1,&textures[i]);
-        glBindTexture(GL_TEXTURE_2D,textures[i]);
-        glTexImage2D(GL_TEXTURE_2D,
-                     0,
-                     1,
-                     tracker->trial()->videos.at(i).width(),
-                     tracker->trial()->videos.at(i).height(),
-                     0,
-                     GL_LUMINANCE,
-                    (tracker->trial()->videos.at(i).bps() == 8? GL_UNSIGNED_BYTE:
-                                                               GL_UNSIGNED_SHORT),
-                     tracker->trial()->videos.at(i).data());
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D,0);
-    }
+  for (unsigned i = 0; i < textures.size(); i++) {
+    glGenTextures(1, &textures[i]);
+    glBindTexture(GL_TEXTURE_2D, textures[i]);
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 1,
+                 tracker->trial()->videos.at(i).width(),
+                 tracker->trial()->videos.at(i).height(),
+                 0,
+                 GL_LUMINANCE,
+                 (tracker->trial()->videos.at(i).bps() == 8 ? GL_UNSIGNED_BYTE :
+                  GL_UNSIGNED_SHORT),
+                 tracker->trial()->videos.at(i).data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+  }
   // Setup the default view
 
-    // Update the number of frames
-  timeline_widget->setFramesRange(0,tracker->trial()->num_frames-1);
-    reset_graph();
+  // Update the number of frames
+  timeline_widget->setFramesRange(0, tracker->trial()->num_frames - 1);
+  reset_graph();
 
-    // Update the coordinate frames
+  // Update the coordinate frames
   timeline_widget->getPosition_graph()->min_frame = 0;
-  timeline_widget->getPosition_graph()->max_frame = tracker->trial()->num_frames-1; //
-    timeline_widget->getPosition_graph()->frame_locks = std::vector<bool>(tracker->trial()->num_frames,false);
+  timeline_widget->getPosition_graph()->max_frame = tracker->trial()->num_frames - 1; //
+  timeline_widget->getPosition_graph()->frame_locks = std::vector<bool>(tracker->trial()->num_frames, false);
 
-    update_graph_min_max(timeline_widget->getPosition_graph());
+  update_graph_min_max(timeline_widget->getPosition_graph());
 
-    frame_changed();
+  frame_changed();
 }
 
-void AutoscoperMainWindow::redrawGL(){
+void AutoscoperMainWindow::redrawGL()
+{
   for (unsigned int i = 0; i < cameraViews.size(); i++) {
     cameraViews[i]->draw();
-    }
+  }
   worldview->draw();
   timeline_widget->draw();
 }
 
-void AutoscoperMainWindow::setFrame(int frame){
+void AutoscoperMainWindow::setFrame(int frame)
+{
   tracker->trial()->frame = frame;
   timeline_widget->setFrame(frame);
-    frame_changed();
+  frame_changed();
 }
 
 
-void AutoscoperMainWindow::optimizeFrame(int volumeID, int frame, int dframe, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int stall_iter) {
+void AutoscoperMainWindow::optimizeFrame(int volumeID, int frame, int dframe, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int stall_iter)
+{
 
   tracker->trial()->current_volume = volumeID;
 
   volume_changed();
 
   tracker->optimize(frame, dframe, repeats,
-    opt_method,
-    max_iter, min_limit, max_limit,
-    cf_model, stall_iter);
+                    opt_method,
+                    max_iter, min_limit, max_limit,
+                    cf_model, stall_iter);
 }
 
 
 
 void AutoscoperMainWindow::update_coord_frame()
 {
-    double xyzypr[6];
+  double xyzypr[6];
   timeline_widget->getValues(&xyzypr[0]);
   if (tracker->trial()) {
     CoordFrame newCoordFrame = CoordFrame::from_xyzypr(xyzypr);
-    set_manip_matrix(tracker->trial()->current_volume, newCoordFrame*tracker->trial()->getVolumeMatrix(-1)->inverse());
+    set_manip_matrix(tracker->trial()->current_volume, newCoordFrame * tracker->trial()->getVolumeMatrix(-1)->inverse());
   }
   redrawGL();
 }
 
 
-//Saving and Loading
+// Saving and Loading
 void AutoscoperMainWindow::save_trial_prompt()
 {
-    if (is_trial_saved) {
-        return;
-    }
+  if (is_trial_saved) {
+    return;
+  }
 
   QMessageBox::StandardButton reply;
   reply = QMessageBox::question(this, "", "Would you like to save the current trial?",
-                                QMessageBox::Yes|QMessageBox::No);
+                                QMessageBox::Yes | QMessageBox::No);
   if (reply == QMessageBox::Yes) {
-    //on_save_trial1_activate(NULL,NULL);
+    // on_save_trial1_activate(NULL,NULL);
     on_actionSave_as_triggered(true);
   }
 }
 
 void AutoscoperMainWindow::save_tracking_prompt()
 {
-    if (is_tracking_saved) {
-        return;
-    }
+  if (is_tracking_saved) {
+    return;
+  }
 
   QMessageBox::StandardButton reply;
   reply = QMessageBox::question(this, "", "Would you like to export the unsaved tracking data?",
-                                QMessageBox::Yes|QMessageBox::No);
+                                QMessageBox::Yes | QMessageBox::No);
   if (reply == QMessageBox::Yes) {
     QString filename = get_filename(true, "*.tra");
     save_tracking_results(filename);
@@ -721,17 +729,17 @@ QString AutoscoperMainWindow::get_filename(bool save, QString type)
   QString FileName = "";
   QString new_filename = getLastFolder();
 
-  if(save){
-    //FileName = QFileDialog::getSaveFileName(this,
+  if (save) {
+    // FileName = QFileDialog::getSaveFileName(this,
     //              tr("Save File as"), QDir::currentPath(),tr("CFG Files (") + type + tr(" *.cfg)"));
     FileName = QFileDialog::getSaveFileName(this,
-                  tr("Save File as"), new_filename,tr("CFG Files (") + type + tr(" *.cfg)"));
+                                            tr("Save File as"), new_filename, tr("CFG Files (") + type + tr(" *.cfg)"));
 
-  }else{
-    //FileName = QFileDialog::getOpenFileName(this,
+  } else {
+    // FileName = QFileDialog::getOpenFileName(this,
     //              tr("Open File"), QDir::currentPath(),tr("CFG Files (") + type + tr(" *.cfg)"));
     FileName = QFileDialog::getOpenFileName(this,
-                  tr("Open File"), new_filename,tr("CFG Files (") + type + tr(" *.cfg)"));
+                                            tr("Open File"), new_filename, tr("CFG Files (") + type + tr(" *.cfg)"));
   }
 
   // Save new last directory
@@ -749,19 +757,17 @@ void AutoscoperMainWindow::setLastFolder(QString lastFolder)
 
 
 
-void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume){
+void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume)
+{
   const char* s = save_with_commas ? "," : " ";
 
   std::ofstream file(filename.toStdString().c_str(), std::ios::out);
 
   int start, stop;
-  if (volume == -1)
-  {
+  if (volume == -1) {
     start = 0;
     stop = tracker->trial()->num_volumes;
-  }
-  else
-  {
+  } else {
     start = volume;
     stop = volume + 1;
   }
@@ -771,33 +777,31 @@ void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_
   bool invalid;
   for (int i = 0; i < tracker->trial()->num_frames; ++i) {
     for (int j = start; j < stop; j++) {
-      if (!interpolate)
-      {
+      if (!interpolate) {
         /*if (tracker->trial()->getXCurve(-1)->find(i) ==
-          tracker->trial()->getXCurve(-1)->end() &&
-          tracker->trial()->getYCurve(-1)->find(i) ==
-          tracker->trial()->getYCurve(-1)->end() &&
-          tracker->trial()->getZCurve(-1)->find(i) ==
-          tracker->trial()->getZCurve(-1)->end() &&
-          tracker->trial()->getYawCurve(-1)->find(i) ==
-          tracker->trial()->getYawCurve(-1)->end() &&
-          tracker->trial()->getPitchCurve(-1)->find(i) ==
-          tracker->trial()->getPitchCurve(-1)->end() &&
-          tracker->trial()->getRollCurve(-1)->find(i) ==
-          tracker->trial()->getRollCurve(-1)->end())*/
+           tracker->trial()->getXCurve(-1)->end() &&
+           tracker->trial()->getYCurve(-1)->find(i) ==
+           tracker->trial()->getYCurve(-1)->end() &&
+           tracker->trial()->getZCurve(-1)->find(i) ==
+           tracker->trial()->getZCurve(-1)->end() &&
+           tracker->trial()->getYawCurve(-1)->find(i) ==
+           tracker->trial()->getYawCurve(-1)->end() &&
+           tracker->trial()->getPitchCurve(-1)->find(i) ==
+           tracker->trial()->getPitchCurve(-1)->end() &&
+           tracker->trial()->getRollCurve(-1)->find(i) ==
+           tracker->trial()->getRollCurve(-1)->end())*/
         if (tracker->trial()->getXCurve(j)->find(i) ==
-          tracker->trial()->getXCurve(j)->end() &&
-          tracker->trial()->getYCurve(j)->find(i) ==
-          tracker->trial()->getYCurve(j)->end() &&
-          tracker->trial()->getZCurve(j)->find(i) ==
-          tracker->trial()->getZCurve(j)->end() &&
-          tracker->trial()->getYawCurve(j)->find(i) ==
-          tracker->trial()->getYawCurve(j)->end() &&
-          tracker->trial()->getPitchCurve(j)->find(i) ==
-          tracker->trial()->getPitchCurve(j)->end() &&
-          tracker->trial()->getRollCurve(j)->find(i) ==
-          tracker->trial()->getRollCurve(j)->end())
-        {
+            tracker->trial()->getXCurve(j)->end() &&
+            tracker->trial()->getYCurve(j)->find(i) ==
+            tracker->trial()->getYCurve(j)->end() &&
+            tracker->trial()->getZCurve(j)->find(i) ==
+            tracker->trial()->getZCurve(j)->end() &&
+            tracker->trial()->getYawCurve(j)->find(i) ==
+            tracker->trial()->getYawCurve(j)->end() &&
+            tracker->trial()->getPitchCurve(j)->find(i) ==
+            tracker->trial()->getPitchCurve(j)->end() &&
+            tracker->trial()->getRollCurve(j)->find(i) ==
+            tracker->trial()->getRollCurve(j)->end()) {
           invalid = true;
         } else {
           invalid = false;
@@ -809,14 +813,16 @@ void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_
       if (invalid) {
         if (save_as_matrix) {
           file << "NaN";
-          for (int k = 0; k < 15; k++) { file << s << "NaN"; }
-        }
-        else {
+          for (int k = 0; k < 15; k++) {
+            file << s << "NaN";
+          }
+        } else {
           file << "NaN";
-          for (int k = 0; k < 5; k++) { file << s << "NaN"; }
+          for (int k = 0; k < 5; k++) {
+            file << s << "NaN";
+          }
         }
-      }
-      else{
+      } else {
         double xyzypr[6];
         xyzypr[0] = (*tracker->trial()->getXCurve(j))(i);
         xyzypr[1] = (*tracker->trial()->getYCurve(j))(i);
@@ -837,18 +843,16 @@ void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_
 
           if (save_as_rows) {
             file << m[0] << s << m[4] << s << m[8] << s << m[12] << s
-              << m[1] << s << m[5] << s << m[9] << s << m[13] << s
-              << m[2] << s << m[6] << s << m[10] << s << m[14] << s
-              << m[3] << s << m[7] << s << m[11] << s << m[15];
-          }
-          else {
+                 << m[1] << s << m[5] << s << m[9] << s << m[13] << s
+                 << m[2] << s << m[6] << s << m[10] << s << m[14] << s
+                 << m[3] << s << m[7] << s << m[11] << s << m[15];
+          } else {
             file << m[0] << s << m[1] << s << m[2] << s << m[3] << s
-              << m[4] << s << m[5] << s << m[6] << s << m[7] << s
-              << m[8] << s << m[9] << s << m[10] << s << m[11] << s
-              << m[12] << s << m[13] << s << m[14] << s << m[15];
+                 << m[4] << s << m[5] << s << m[6] << s << m[7] << s
+                 << m[8] << s << m[9] << s << m[10] << s << m[11] << s
+                 << m[12] << s << m[13] << s << m[14] << s << m[15];
           }
-        }
-        else {
+        } else {
           if (convert_to_cm) {
             xyzypr[0] /= 10.0;
             xyzypr[1] /= 10.0;
@@ -861,7 +865,7 @@ void AutoscoperMainWindow::save_tracking_results(QString filename, bool save_as_
           }
 
           file << xyzypr[0] << s << xyzypr[1] << s << xyzypr[2] << s
-            << xyzypr[3] << s << xyzypr[4] << s << xyzypr[5];
+               << xyzypr[3] << s << xyzypr[4] << s << xyzypr[5];
         }
       }
 
@@ -880,7 +884,7 @@ void AutoscoperMainWindow::loadFilterSettings(int camera, QString filename)
 
 std::vector<double> AutoscoperMainWindow::getPose(unsigned int volume, unsigned int frame)
 {
-  std::vector<double> pose(6,0);
+  std::vector<double> pose(6, 0);
   pose[0] = (*tracker->trial()->getXCurve(volume))(frame);
   pose[1] = (*tracker->trial()->getYCurve(volume))(frame);
   pose[2] = (*tracker->trial()->getZCurve(volume))(frame);
@@ -902,11 +906,11 @@ void AutoscoperMainWindow::setPose(std::vector<double> pose, unsigned int volume
 
 void AutoscoperMainWindow::setBackground(double threshold)
 {
-  if (background_threshold_ < 0){
+  if (background_threshold_ < 0) {
     for (xromm::Video& vi : tracker->trial()->videos) {
       if (!vi.create_background_image()) {
         std::cerr << "Error creating background image for video " << vi.dirname() << "\n"
-          << "Failed to set background threshold" << std::endl;
+                  << "Failed to set background threshold" << std::endl;
         return;
       }
     }
@@ -927,29 +931,29 @@ std::vector<double> AutoscoperMainWindow::getNCC(unsigned int volumeID, double* 
 void AutoscoperMainWindow::saveFullDRR()
 {
   /*QString filename = get_filename(true);
-  if (filename.compare("") != 0) {
-    try {
+     if (filename.compare("") != 0) {
+     try {
       std::string drr_folderpath = filename.toStdString().c_str();
-    }
-    catch (std::exception& e) {
+     }
+     catch (std::exception& e) {
       std::cerr << e.what() << std::endl;
-    }
-  }*/
+     }
+     }*/
   getTracker()->getFullDRR(tracker->trial()->current_volume);
 
 }
 
-std::vector<unsigned char> AutoscoperMainWindow::getImageData(unsigned int volumeID, unsigned int camera, double* xyzpr, unsigned int &width, unsigned int &height)
+std::vector<unsigned char> AutoscoperMainWindow::getImageData(unsigned int volumeID, unsigned int camera, double* xyzpr, unsigned int& width, unsigned int& height)
 {
   return tracker->getImageData(volumeID, camera, xyzpr, width, height);
 }
 
 void AutoscoperMainWindow::save_tracking_results(QString filename)
 {
-  ImportExportTrackingOptionsDialog * diag = new ImportExportTrackingOptionsDialog(this);
+  ImportExportTrackingOptionsDialog* diag = new ImportExportTrackingOptionsDialog(this);
   diag->exec();
 
-  if(diag->result()){
+  if (diag->result()) {
     bool save_as_matrix = diag->diag->radioButton_TypeMatrix->isChecked();
     bool save_as_rows = diag->diag->radioButton_OrientationRow->isChecked();
     bool save_with_commas = diag->diag->radioButton_SeperatorComma->isChecked();
@@ -959,13 +963,14 @@ void AutoscoperMainWindow::save_tracking_results(QString filename)
     int volume = -1;
     if (diag->diag->radioButton_VolumeCurrent->isChecked()) volume = tracker->trial()->current_volume;
     logTrackingParametersToFile();
-    save_tracking_results(filename, save_as_matrix,save_as_rows,save_with_commas,convert_to_cm,convert_to_rad,interpolate, volume);
+    save_tracking_results(filename, save_as_matrix, save_as_rows, save_with_commas, convert_to_cm, convert_to_rad, interpolate, volume);
     is_tracking_saved = true;
   }
   delete diag;
 }
 
-void AutoscoperMainWindow::logTrackingParametersToFile() {
+void AutoscoperMainWindow::logTrackingParametersToFile()
+{
   // Create logs directory and set up filename
   QDir defaultRootDir(default_root_path);
   defaultRootDir.mkpath("Logs");
@@ -995,51 +1000,49 @@ void AutoscoperMainWindow::backup_tracking(bool backup_on)
   int volume = -1;
   volume = tracker->trial()->current_volume;
   QString tracking_filename_out = "tracked_model_backup.tra";
-  //save_tracking_results(tracking_filename_out, save_as_matrix, save_as_rows, save_with_commas, convert_to_cm, convert_to_rad, interpolate, volume);
+  // save_tracking_results(tracking_filename_out, save_as_matrix, save_as_rows, save_with_commas, convert_to_cm, convert_to_rad, interpolate, volume);
   save_tracking_results(tracking_filename_out, 1, 1, 1, 0, 0, 0, volume);
 }
 
 
 
 bool AutoscoperMainWindow::load_tracking_results(
-    QString filename,
-    bool save_as_matrix,
-    bool save_as_rows,
-    bool save_with_commas,
-    bool convert_to_cm,
-    bool convert_to_rad,
-    bool interpolate,
-    int volume){
+  QString filename,
+  bool save_as_matrix,
+  bool save_as_rows,
+  bool save_with_commas,
+  bool convert_to_cm,
+  bool convert_to_rad,
+  bool interpolate,
+  int volume)
+{
 
   if (!std::filesystem::exists(filename.toStdString())) {
-      std::cerr << "Tracking Data File Not Found: " << qPrintable(filename) << std::endl;
-      return false;
+    std::cerr << "Tracking Data File Not Found: " << qPrintable(filename) << std::endl;
+    return false;
   }
 
   std::cout << "Load Tracking Data Volume " << volume << " : " << qPrintable(filename) << std::endl;
   std::cout << " save as matrix   : " << save_as_matrix << "\n"
-               " save as rows     : " << save_as_rows << "\n"
-               " save with commas : " << save_with_commas << "\n"
-               " convert to cm    : " << convert_to_cm << "\n"
-               " convert to rad   : " << convert_to_rad << "\n"
-               " interpolate      : " << interpolate << std::endl;
+    " save as rows     : " << save_as_rows << "\n"
+    " save with commas : " << save_with_commas << "\n"
+    " convert to cm    : " << convert_to_cm << "\n"
+    " convert to rad   : " << convert_to_rad << "\n"
+    " interpolate      : " << interpolate << std::endl;
 
   char s = save_with_commas ? ',' : ' ';
 
   int start, stop;
-  if (volume == -1)
-  {
+  if (volume == -1) {
     start = 0;
     stop = tracker->trial()->num_volumes;
-  }
-  else
-  {
+  } else {
     start = volume;
     stop = volume + 1;
   }
   std::ifstream file(filename.toStdString().c_str(), std::ios::in);
 
-  for (int j = start; j < stop; j++){
+  for (int j = start; j < stop; j++) {
     tracker->trial()->getXCurve(j)->clear();
     tracker->trial()->getYCurve(j)->clear();
     tracker->trial()->getZCurve(j)->clear();
@@ -1052,7 +1055,7 @@ bool AutoscoperMainWindow::load_tracking_results(
   std::string line, value;
   for (int i = 0; i < tracker->trial()->num_frames && std::getline(file, line); ++i) {
     std::istringstream lineStream(line);
-    for (int k = start; k < stop; k++){
+    for (int k = start; k < stop; k++) {
       for (int j = 0; j < (save_as_matrix ? 16 : 6) && std::getline(lineStream, value, s); ++j) {
         std::istringstream valStream(value);
         valStream >> m[j];
@@ -1084,8 +1087,7 @@ bool AutoscoperMainWindow::load_tracking_results(
           m[12] *= 10.0;
           m[13] *= 10.0;
           m[14] *= 10.0;
-        }
-        else {
+        } else {
           m[0] *= 10.0;
           m[1] *= 10.0;
           m[2] *= 10.0;
@@ -1126,12 +1128,12 @@ bool AutoscoperMainWindow::load_tracking_results(
 
 void AutoscoperMainWindow::load_tracking_results(QString filename)
 {
-    save_tracking_prompt();
+  save_tracking_prompt();
 
-  ImportExportTrackingOptionsDialog * diag = new ImportExportTrackingOptionsDialog(this);
+  ImportExportTrackingOptionsDialog* diag = new ImportExportTrackingOptionsDialog(this);
   diag->exec();
 
-  if(diag->result()){
+  if (diag->result()) {
     bool save_as_matrix = diag->diag->radioButton_TypeMatrix->isChecked();
     bool save_as_rows = diag->diag->radioButton_OrientationRow->isChecked();
     bool save_with_commas = diag->diag->radioButton_SeperatorComma->isChecked();
@@ -1146,18 +1148,19 @@ void AutoscoperMainWindow::load_tracking_results(QString filename)
   delete diag;
 }
 
-void AutoscoperMainWindow::openTrial(){
+void AutoscoperMainWindow::openTrial()
+{
   QString cfg_fileName = get_filename(false);
 
-  if ( cfg_fileName.isNull() == false )
-    {
-        openTrial(cfg_fileName);
+  if (cfg_fileName.isNull() == false) {
+    openTrial(cfg_fileName);
   }
 }
 
-bool AutoscoperMainWindow::openTrial(QString filename){
+bool AutoscoperMainWindow::openTrial(QString filename)
+{
   try {
-    Trial * trial = new Trial(filename.toStdString().c_str());
+    Trial* trial = new Trial(filename.toStdString().c_str());
     tracker->load(*trial);
     delete trial;
 
@@ -1222,8 +1225,8 @@ bool AutoscoperMainWindow::openTrial(QString filename){
     for (int iVol = 0; iVol < tracker->trial()->num_volumes; iVol++) {
 
       QString tracking_filename = QString("%1_%2.tra").arg(
-            QString::fromStdString(task_name_tmp),
-            volumes_widget->getVolumeName(iVol));
+        QString::fromStdString(task_name_tmp),
+        volumes_widget->getVolumeName(iVol));
 
       tracking_path = tracking_path_root;
       tracking_path += "/";
@@ -1251,11 +1254,12 @@ bool AutoscoperMainWindow::openTrial(QString filename){
   }
 }
 
-void AutoscoperMainWindow::newTrial(){
-  NewTrialDialog * diag = new NewTrialDialog(this);
+void AutoscoperMainWindow::newTrial()
+{
+  NewTrialDialog* diag = new NewTrialDialog(this);
   diag->exec();
 
-  if(diag->result()){
+  if (diag->result()) {
     try {
       tracker->load(diag->trial);
 
@@ -1263,11 +1267,11 @@ void AutoscoperMainWindow::newTrial(){
       is_trial_saved = false;
       is_tracking_saved = true;
 
-      for (int i = 0; i < manipulator.size(); i++){
+      for (int i = 0; i < manipulator.size(); i++) {
         delete manipulator[i];
       }
       manipulator.clear();
-      for (int i = 0; i < tracker->trial()->num_volumes; i++){
+      for (int i = 0; i < tracker->trial()->num_volumes; i++) {
         manipulator.push_back(new Manip3D());
         getManipulator(i)->set_transform(Mat4d());
       }
@@ -1287,11 +1291,11 @@ void AutoscoperMainWindow::newTrial(){
   delete diag;
 }
 
-//History
+// History
 void AutoscoperMainWindow::push_state()
 {
-    State current_state;
-  for (int i = 0; i < tracker->trial()->num_volumes; i++){
+  State current_state;
+  for (int i = 0; i < tracker->trial()->num_volumes; i++) {
     current_state.x_curve.push_back(*tracker->trial()->getXCurve(i));
     current_state.y_curve.push_back(*tracker->trial()->getYCurve(i));
     current_state.z_curve.push_back(*tracker->trial()->getZCurve(i));
@@ -1299,24 +1303,24 @@ void AutoscoperMainWindow::push_state()
     current_state.y_rot_curve.push_back(*tracker->trial()->getPitchCurve(i));
     current_state.z_rot_curve.push_back(*tracker->trial()->getRollCurve(i));
   }
-    history->push(current_state);
+  history->push(current_state);
 
-    first_undo = true;
-    is_tracking_saved = false;
+  first_undo = true;
+  is_tracking_saved = false;
 }
 
 void AutoscoperMainWindow::undo_state()
 {
-    if (history->can_undo()) {
-        if (first_undo) {
-            push_state();
-            history->undo();
-            first_undo = false;
-        }
+  if (history->can_undo()) {
+    if (first_undo) {
+      push_state();
+      history->undo();
+      first_undo = false;
+    }
 
-        State undo_state = history->undo();
+    State undo_state = history->undo();
 
-    for (int i = 0; i < tracker->trial()->num_volumes; i++){
+    for (int i = 0; i < tracker->trial()->num_volumes; i++) {
       *tracker->trial()->getXCurve(i) = undo_state.x_curve[i];
       *tracker->trial()->getYCurve(i) = undo_state.y_curve[i];
       *tracker->trial()->getZCurve(i) = undo_state.z_curve[i];
@@ -1325,21 +1329,21 @@ void AutoscoperMainWindow::undo_state()
       *tracker->trial()->getRollCurve(i) = undo_state.z_rot_curve[i];
     }
 
-        timeline_widget->getSelectedNodes()->clear();
+    timeline_widget->getSelectedNodes()->clear();
 
-        update_graph_min_max(timeline_widget->getPosition_graph());
-        update_xyzypr_and_coord_frame();
+    update_graph_min_max(timeline_widget->getPosition_graph());
+    update_xyzypr_and_coord_frame();
 
     redrawGL();
-    }
+  }
 }
 
 void AutoscoperMainWindow::redo_state()
 {
-    if (history->can_redo()) {
-        State redo_state = history->redo();
+  if (history->can_redo()) {
+    State redo_state = history->redo();
 
-    for (int i = 0; i < tracker->trial()->num_volumes; i++){
+    for (int i = 0; i < tracker->trial()->num_volumes; i++) {
       *tracker->trial()->getXCurve(i) = redo_state.x_curve[i];
       *tracker->trial()->getYCurve(i) = redo_state.y_curve[i];
       *tracker->trial()->getZCurve(i) = redo_state.z_curve[i];
@@ -1349,16 +1353,16 @@ void AutoscoperMainWindow::redo_state()
     }
     timeline_widget->getSelectedNodes()->clear();
 
-        update_graph_min_max(timeline_widget->getPosition_graph());
-        update_xyzypr_and_coord_frame();
+    update_graph_min_max(timeline_widget->getPosition_graph());
+    update_xyzypr_and_coord_frame();
 
     redrawGL();
-    }
+  }
 }
 
 void AutoscoperMainWindow::reset_graph()
 {
-  for (int i = 0; i < tracker->trial()->num_volumes; i++){
+  for (int i = 0; i < tracker->trial()->num_volumes; i++) {
     tracker->trial()->getXCurve(i)->clear();
     tracker->trial()->getYCurve(i)->clear();
     tracker->trial()->getZCurve(i)->clear();
@@ -1382,27 +1386,23 @@ void AutoscoperMainWindow::MovingAverageFilter(int nWin, int firstFrame, int las
   std::vector<double> sma(6, 0);
   std::vector<double> temp_sma(6, 0);
   std::vector<double> filt_pose(6, 0);
-  int nFrames = lastFrame; //tracker->trial()->num_frames;
+  int nFrames = lastFrame; // tracker->trial()->num_frames;
 
   // Hyperparameters
   int skip_frame = 1;
 
   int q = (nWin - 1) / 2;
   double q_step = 1;
-  for (int iFrame = firstFrame + q; iFrame <= nFrames - q; iFrame++)
-  {
+  for (int iFrame = firstFrame + q; iFrame <= nFrames - q; iFrame++) {
     sma.assign(6, 0);
     temp_sma.assign(6, 0);
     filt_pose.assign(6, 0);
-    for (int jFrame = -q; jFrame <= q; jFrame++)
-    {
+    for (int jFrame = -q; jFrame <= q; jFrame++) {
       cur_pose = getPose(current_volume, iFrame + jFrame);
 
-      if (jFrame == -q || jFrame == +q)
-      {
+      if (jFrame == -q || jFrame == +q) {
         q_step = 1 / (4 * (double)q);
-      }
-      else {
+      } else {
         q_step = 1 / (2 * (double)q);
       }
       std::transform(cur_pose.begin(), cur_pose.end(), temp_sma.begin(), std::bind(std::multiplies<double>(), q_step, std::placeholders::_1));
@@ -1413,8 +1413,7 @@ void AutoscoperMainWindow::MovingAverageFilter(int nWin, int firstFrame, int las
 
     if (fmod(iFrame, skip_frame) == 0) {
       setPose(filt_pose, current_volume, iFrame);
-    }
-    else {
+    } else {
       deletePose(iFrame);
     }
   }
@@ -1423,7 +1422,8 @@ void AutoscoperMainWindow::MovingAverageFilter(int nWin, int firstFrame, int las
 
 
 
-void AutoscoperMainWindow::deletePose(int curFrame) {
+void AutoscoperMainWindow::deletePose(int curFrame)
+{
 
   std::vector<double> temp_pose(6, 0);
   int current_volume = tracker->trial()->current_volume;
@@ -1438,25 +1438,28 @@ void AutoscoperMainWindow::deletePose(int curFrame) {
 }
 
 
-//File menu
-void AutoscoperMainWindow::on_actionNew_triggered(bool checked){
+// File menu
+void AutoscoperMainWindow::on_actionNew_triggered(bool checked)
+{
   save_trial_prompt();
-    save_tracking_prompt();
+  save_tracking_prompt();
 
   newTrial();
 }
-void AutoscoperMainWindow::on_actionOpen_triggered(bool checked){
+void AutoscoperMainWindow::on_actionOpen_triggered(bool checked)
+{
   save_trial_prompt();
-    save_tracking_prompt();
+  save_tracking_prompt();
 
   openTrial();
 }
 
-void AutoscoperMainWindow::on_actionSave_triggered(bool checked){
+void AutoscoperMainWindow::on_actionSave_triggered(bool checked)
+{
   /*if (trial_filename.compare("") == 0) {
         on_actionSave_as_triggered(true);
-    }
-    else {
+     }
+     else {
         try {
             tracker->trial()->save(trial_filename);
             is_trial_saved = true;
@@ -1464,7 +1467,7 @@ void AutoscoperMainWindow::on_actionSave_triggered(bool checked){
         catch (std::exception& e) {
             std::cerr << e.what() << std::endl;
         }
-    }*/
+     }*/
   QString filename = get_filename(true, "*.tra");
   if (filename.compare("") != 0) {
     save_tracking_results(filename);
@@ -1472,47 +1475,52 @@ void AutoscoperMainWindow::on_actionSave_triggered(bool checked){
   }
 }
 
-void AutoscoperMainWindow::on_actionSave_as_triggered(bool checked){
+void AutoscoperMainWindow::on_actionSave_as_triggered(bool checked)
+{
   QString filename = get_filename(true);
-    if (filename.compare("") != 0) {
-        try {
+  if (filename.compare("") != 0) {
+    try {
       trial_filename = filename.toStdString().c_str();
       tracker->trial()->save(trial_filename);
-            is_trial_saved = true;
-        }
-        catch (std::exception& e) {
-            std::cerr << e.what() << std::endl;
-        }
+      is_trial_saved = true;
     }
+    catch (std::exception& e) {
+      std::cerr << e.what() << std::endl;
+    }
+  }
 }
 
-void AutoscoperMainWindow::on_actionImport_Tracking_triggered(bool checked){
+void AutoscoperMainWindow::on_actionImport_Tracking_triggered(bool checked)
+{
   QString filename = get_filename(false, "*.tra");
-    if (filename.compare("") != 0) {
-        load_tracking_results(filename);
-    }
+  if (filename.compare("") != 0) {
+    load_tracking_results(filename);
+  }
 }
 
-void AutoscoperMainWindow::on_actionExport_Tracking_triggered(bool checked){
+void AutoscoperMainWindow::on_actionExport_Tracking_triggered(bool checked)
+{
   QString filename = get_filename(true, "*.tra");
-    if (filename.compare("") != 0) {
-        save_tracking_results(filename);
-    }
+  if (filename.compare("") != 0) {
+    save_tracking_results(filename);
+  }
 }
 
-void AutoscoperMainWindow::on_actionQuit_triggered(bool checked){
+void AutoscoperMainWindow::on_actionQuit_triggered(bool checked)
+{
   QApplication::quit();
 }
 
-void AutoscoperMainWindow::on_actionSave_Test_Sequence_triggered(bool checked){
+void AutoscoperMainWindow::on_actionSave_Test_Sequence_triggered(bool checked)
+{
   fprintf(stderr, "Saving testSequence\n");
-  for (int i = 0; i < tracker->trial()->num_frames; i++){
+  for (int i = 0; i < tracker->trial()->num_frames; i++) {
     timeline_widget->setFrame(i);
-    for (int j = 0; j < cameraViews.size(); j++){
+    for (int j = 0; j < cameraViews.size(); j++) {
       QFileInfo fi(cameraViews[j]->getName());
-      if (i == 0){
+      if (i == 0) {
         QDir dir(fi.absolutePath() + OS_SEP + fi.completeBaseName());
-        if (!dir.exists()){
+        if (!dir.exists()) {
           dir.mkdir(".");
         }
       }
@@ -1527,48 +1535,46 @@ void AutoscoperMainWindow::on_actionSave_Test_Sequence_triggered(bool checked){
   }
 }
 
-void AutoscoperMainWindow::on_actionSaveForBatch_triggered(bool checked){
+void AutoscoperMainWindow::on_actionSaveForBatch_triggered(bool checked)
+{
   QString inputPath = QFileDialog::getExistingDirectory(this,
-    tr("Select Directory"), QDir::currentPath());
-  if (inputPath.isNull() == false)
-  {
+                                                        tr("Select Directory"), QDir::currentPath());
+  if (inputPath.isNull() == false) {
     QString xml_filename = inputPath + OS_SEP + "batch.xml";
-    if (!xml_filename.isNull())
-    {
+    if (!xml_filename.isNull()) {
       QFile file(xml_filename);
-      if (file.open(QIODevice::WriteOnly | QIODevice::Text))
-      {
+      if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QXmlStreamWriter xmlWriter(&file);
         xmlWriter.writeStartDocument();
         xmlWriter.writeStartElement("Batch");
         xmlWriter.setAutoFormatting(true);
-        //save GPU_devices
+        // save GPU_devices
 #if defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
         xmlWriter.writeStartElement("GPUDevice");
         xmlWriter.writeAttribute("Platform", QString::number(xromm::gpu::getUsedPlatform().first));
         xmlWriter.writeAttribute("Device", QString::number(xromm::gpu::getUsedPlatform().second));
         xmlWriter.writeEndElement();
 #endif
-        //save Trial
+        // save Trial
         QString trial_filename = inputPath + OS_SEP + "trial.cfg";
         tracker->trial()->save(trial_filename.toStdString().c_str());
         xmlWriter.writeStartElement("Trial");
         xmlWriter.writeCharacters(trial_filename);
         xmlWriter.writeEndElement();
 
-        //save Filters
+        // save Filters
         filters_widget->saveAllSettings(inputPath + OS_SEP);
 
-        //save Pivot
-        for (int i = 0; i < tracker->trial()->num_volumes; i++){
+        // save Pivot
+        for (int i = 0; i < tracker->trial()->num_volumes; i++) {
           xmlWriter.writeStartElement("Pivot");
           xmlWriter.writeAttribute("id", QString::number(i));
           xmlWriter.writeCharacters(QString::fromStdString(tracker->trial()->getVolumeMatrix(i)->to_string()));
           xmlWriter.writeEndElement();
         }
 
-        //save Tracking
-        ImportExportTrackingOptionsDialog * diag = new ImportExportTrackingOptionsDialog(this);
+        // save Tracking
+        ImportExportTrackingOptionsDialog* diag = new ImportExportTrackingOptionsDialog(this);
         diag->exec();
 
         bool save_as_matrix = diag->diag->radioButton_TypeMatrix->isChecked();
@@ -1592,8 +1598,8 @@ void AutoscoperMainWindow::on_actionSaveForBatch_triggered(bool checked){
         xmlWriter.writeEndElement();
         delete diag;
 
-        //save TrackingOptions
-        TrackingOptionsDialog * tracking_dialog_tmp;
+        // save TrackingOptions
+        TrackingOptionsDialog* tracking_dialog_tmp;
         tracking_dialog_tmp = new TrackingOptionsDialog(this);
         tracking_dialog_tmp->setRange(timeline_widget->getPosition_graph()->min_frame, timeline_widget->getPosition_graph()->max_frame, tracker->trial()->num_frames - 1);
         tracking_dialog_tmp->inActive = true;
@@ -1615,7 +1621,8 @@ void AutoscoperMainWindow::on_actionSaveForBatch_triggered(bool checked){
   }
 }
 
-void AutoscoperMainWindow::runBatch(QString batchfile, bool saveData){
+void AutoscoperMainWindow::runBatch(QString batchfile, bool saveData)
+{
   bool save_as_matrix;
   bool save_as_rows;
   bool save_with_commas;
@@ -1632,50 +1639,38 @@ void AutoscoperMainWindow::runBatch(QString batchfile, bool saveData){
 
   gltracker->makeCurrent();
 
-  if (batchfile.isNull() == false)
-  {
+  if (batchfile.isNull() == false) {
 
     QString xml_filename = batchfile;
-    if (!xml_filename.isNull())
-    {
+    if (!xml_filename.isNull()) {
       QFile file(xml_filename);
-      if (file.open(QIODevice::ReadOnly | QIODevice::Text))
-      {
+      if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QXmlStreamReader xmlReader(&file);
-        //Reading from the file
+        // Reading from the file
 
-        while (!xmlReader.atEnd())
-        {
-          if (xmlReader.isStartElement())
-          {
+        while (!xmlReader.atEnd()) {
+          if (xmlReader.isStartElement()) {
             QString name = xmlReader.name().toString();
-            if (name == "GPUDevice")
-            {
+            if (name == "GPUDevice") {
 #if defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
               fprintf(stderr, "Load GPUDevice Setting\n");
               xromm::gpu::setUsedPlatform(xmlReader.readElementText().toInt());
               QApplication::processEvents();
 #endif
-            }
-            else if (name == "Trial")
-            {
+            } else if (name == "Trial") {
               fprintf(stderr, "Load Trial Setting\n");
               openTrial(xmlReader.readElementText());
               end_Frame = tracker->trial()->num_frames;
               QFileInfo info(file);
               filters_widget->loadAllSettings(info.absolutePath() + OS_SEP);
               QApplication::processEvents();
-            }
-            else if (name == "Pivot")
-            {
+            } else if (name == "Pivot") {
               QXmlStreamAttributes attr = xmlReader.attributes();
               int id = attr.value("id").toString().toInt();
               fprintf(stderr, "Load Pivot %d Setting\n", id);
               QString pivot_data = xmlReader.readElementText();
               tracker->trial()->getVolumeMatrix(id)->from_string(pivot_data.toStdString().c_str());
-            }
-            else if (name == "TrackingData")
-            {
+            } else if (name == "TrackingData") {
               fprintf(stderr, "Load TrackingData Setting\n");
               QXmlStreamAttributes attr = xmlReader.attributes();
               save_as_matrix = attr.value("Matrix").toString().toInt();
@@ -1688,9 +1683,7 @@ void AutoscoperMainWindow::runBatch(QString batchfile, bool saveData){
 
               load_tracking_results(trackdata_filename, save_as_matrix, save_as_rows, save_with_commas, convert_to_cm, convert_to_rad, interpolate);
               QApplication::processEvents();
-            }
-            else if (name == "TrackingOptions")
-            {
+            } else if (name == "TrackingOptions") {
               fprintf(stderr, "Load TrackingOptions Setting\n");
               doTracking = true;
               QXmlStreamAttributes attr = xmlReader.attributes();
@@ -1700,14 +1693,11 @@ void AutoscoperMainWindow::runBatch(QString batchfile, bool saveData){
               iterations = attr.value("Iterations").toString().toInt();
             }
             xmlReader.readNextStartElement();
-          }
-          else
-          {
+          } else {
             xmlReader.readNext();
           }
         }
-        if (xmlReader.hasError())
-        {
+        if (xmlReader.hasError()) {
           std::cout << "XML error: " << xmlReader.error() << std::endl;
         }
         file.close();
@@ -1715,9 +1705,9 @@ void AutoscoperMainWindow::runBatch(QString batchfile, bool saveData){
     }
   }
 
-  if (doTracking){
+  if (doTracking) {
     fprintf(stderr, "Start Tracking\n");
-    TrackingOptionsDialog * tracking_dialog_tmp;
+    TrackingOptionsDialog* tracking_dialog_tmp;
     tracking_dialog_tmp = new TrackingOptionsDialog(this);
     tracking_dialog_tmp->diag->spinBox_FrameStart->setValue(start_Frame);
     tracking_dialog_tmp->diag->spinBox_FrameEnd->setValue(end_Frame);
@@ -1725,7 +1715,7 @@ void AutoscoperMainWindow::runBatch(QString batchfile, bool saveData){
     QApplication::processEvents();
     tracking_dialog_tmp->on_pushButton_OK_clicked(true);
 
-    if (saveData){
+    if (saveData) {
 
       QFileInfo info(trackdata_filename);
       QString tracking_filename_out = info.absolutePath() + OS_SEP + info.completeBaseName() + "_tracked.tra";
@@ -1738,120 +1728,122 @@ void AutoscoperMainWindow::runBatch(QString batchfile, bool saveData){
 }
 
 
-void AutoscoperMainWindow::on_actionLoad_xml_batch_triggered(bool checked){
+void AutoscoperMainWindow::on_actionLoad_xml_batch_triggered(bool checked)
+{
 
 
-  QString inputfile= QFileDialog::getOpenFileName(this,
-                  tr("Open XML File"), QDir::currentPath(),tr("XML Files (") + tr(" *.xml)"));
-  if ( inputfile.isNull() == false )
-    {
-    fprintf(stderr,"%s\n",inputfile.toStdString().c_str());
+  QString inputfile = QFileDialog::getOpenFileName(this,
+                                                   tr("Open XML File"), QDir::currentPath(), tr("XML Files (") + tr(" *.xml)"));
+  if (inputfile.isNull() == false) {
+    fprintf(stderr, "%s\n", inputfile.toStdString().c_str());
     runBatch(inputfile);
-    }
+  }
 }
 
 
-//Edit menu
-void AutoscoperMainWindow::on_actionUndo_triggered(bool checked){
+// Edit menu
+void AutoscoperMainWindow::on_actionUndo_triggered(bool checked)
+{
   undo_state();
 }
 
-void AutoscoperMainWindow::on_actionRedo_triggered(bool checked){
+void AutoscoperMainWindow::on_actionRedo_triggered(bool checked)
+{
   redo_state();
 }
 
-void AutoscoperMainWindow::on_actionCut_triggered(bool checked){
+void AutoscoperMainWindow::on_actionCut_triggered(bool checked)
+{
   push_state();
 
-    if (!timeline_widget->getSelectedNodes()->empty()) {
-        timeline_widget->getCopiedNodes()->clear();
-        for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
-            if ((*timeline_widget->getSelectedNodes())[i].second == NODE) {
-        timeline_widget->getCopiedNodes()->push_back( (*timeline_widget->getSelectedNodes())[i].first);
-                if (!timeline_widget->getPosition_graph()->frame_locks.at((int)(*timeline_widget->getSelectedNodes())[i].first.first->time((*timeline_widget->getSelectedNodes())[i].first.second))) {
-                    (*timeline_widget->getSelectedNodes())[i].first.first->erase((*timeline_widget->getSelectedNodes())[i].first.second);
-                }
-            }
-        }
-        timeline_widget->getSelectedNodes()->clear();
-    }
-
-    update_xyzypr_and_coord_frame();
-  update_graph_min_max(timeline_widget->getPosition_graph());
-
-    redrawGL();
-}
-
-void AutoscoperMainWindow::on_actionCopy_triggered(bool checked){
   if (!timeline_widget->getSelectedNodes()->empty()) {
     timeline_widget->getCopiedNodes()->clear();
-        for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
-            if ((*timeline_widget->getSelectedNodes())[i].second == NODE) {
-                timeline_widget->getCopiedNodes()->push_back((*timeline_widget->getSelectedNodes())[i].first);
-            }
-        }    }
-
-  redrawGL();
-}
-
-void AutoscoperMainWindow::on_actionPaste_triggered(bool checked){
-  push_state();
-
-    if (!timeline_widget->getCopiedNodes()->empty()) {
-        float frame_offset = timeline_widget->getCopiedNodes()->front().first->time(timeline_widget->getCopiedNodes()->front().second);
-        for (unsigned i = 0; i < timeline_widget->getCopiedNodes()->size(); i++) {
-      float frame = tracker->trial()->frame + (*timeline_widget->getCopiedNodes())[i].first->time((*timeline_widget->getCopiedNodes())[i].second) - frame_offset;
-      if (!timeline_widget->getPosition_graph()->frame_locks.at((int)frame)) {
-        if ((*timeline_widget->getCopiedNodes())[i].first->type == KeyCurve::X_CURVE){
-          getTracker()->trial()->getXCurve(-1)->insert(frame, (*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
-        }
-        else if ((*timeline_widget->getCopiedNodes())[i].first->type == KeyCurve::Y_CURVE){
-          getTracker()->trial()->getYCurve(-1)->insert(frame, (*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
-        }
-        else if ((*timeline_widget->getCopiedNodes())[i].first->type == KeyCurve::Z_CURVE){
-          getTracker()->trial()->getZCurve(-1)->insert(frame, (*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
-        }
-        else if ((*timeline_widget->getCopiedNodes())[i].first->type == KeyCurve::YAW_CURVE){
-          getTracker()->trial()->getYawCurve(-1)->insert(frame, (*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
-        }
-        else if ((*timeline_widget->getCopiedNodes())[i].first->type == KeyCurve::PITCH_CURVE){
-          getTracker()->trial()->getPitchCurve(-1)->insert(frame, (*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
-        }
-        else if ((*timeline_widget->getCopiedNodes())[i].first->type == KeyCurve::ROLL_CURVE){
-          getTracker()->trial()->getRollCurve(-1)->insert(frame, (*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
-        }
-      }
-        }
-        timeline_widget->getSelectedNodes()->clear();
-    }
-
-    update_xyzypr_and_coord_frame();
-    update_graph_min_max(timeline_widget->getPosition_graph());
-
-  redrawGL();
-}
-
-void AutoscoperMainWindow::on_actionDelete_triggered(bool checked) {
-  // Old Method
-  /*if (!timeline_widget->getSelectedNodes()->empty()) {
-    push_state();
-
-    std::cout << "Size\n: " << timeline_widget->getSelectedNodes()->size();
     for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
       if ((*timeline_widget->getSelectedNodes())[i].second == NODE) {
+        timeline_widget->getCopiedNodes()->push_back( (*timeline_widget->getSelectedNodes())[i].first);
         if (!timeline_widget->getPosition_graph()->frame_locks.at((int)(*timeline_widget->getSelectedNodes())[i].first.first->time((*timeline_widget->getSelectedNodes())[i].first.second))) {
           (*timeline_widget->getSelectedNodes())[i].first.first->erase((*timeline_widget->getSelectedNodes())[i].first.second);
         }
       }
     }
     timeline_widget->getSelectedNodes()->clear();
+  }
 
-    update_xyzypr_and_coord_frame();
-    update_graph_min_max(timeline_widget->getPosition_graph());
+  update_xyzypr_and_coord_frame();
+  update_graph_min_max(timeline_widget->getPosition_graph());
 
-    redrawGL();
+  redrawGL();
+}
 
-  }*/
+void AutoscoperMainWindow::on_actionCopy_triggered(bool checked)
+{
+  if (!timeline_widget->getSelectedNodes()->empty()) {
+    timeline_widget->getCopiedNodes()->clear();
+    for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
+      if ((*timeline_widget->getSelectedNodes())[i].second == NODE) {
+        timeline_widget->getCopiedNodes()->push_back((*timeline_widget->getSelectedNodes())[i].first);
+      }
+    }
+  }
+
+  redrawGL();
+}
+
+void AutoscoperMainWindow::on_actionPaste_triggered(bool checked)
+{
+  push_state();
+
+  if (!timeline_widget->getCopiedNodes()->empty()) {
+    float frame_offset = timeline_widget->getCopiedNodes()->front().first->time(timeline_widget->getCopiedNodes()->front().second);
+    for (unsigned i = 0; i < timeline_widget->getCopiedNodes()->size(); i++) {
+      float frame = tracker->trial()->frame + (*timeline_widget->getCopiedNodes())[i].first->time((*timeline_widget->getCopiedNodes())[i].second) - frame_offset;
+      if (!timeline_widget->getPosition_graph()->frame_locks.at((int)frame)) {
+        if ((*timeline_widget->getCopiedNodes())[i].first->type == KeyCurve::X_CURVE) {
+          getTracker()->trial()->getXCurve(-1)->insert(frame, (*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
+        } else if ((*timeline_widget->getCopiedNodes())[i].first->type == KeyCurve::Y_CURVE) {
+          getTracker()->trial()->getYCurve(-1)->insert(frame, (*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
+        } else if ((*timeline_widget->getCopiedNodes())[i].first->type == KeyCurve::Z_CURVE) {
+          getTracker()->trial()->getZCurve(-1)->insert(frame, (*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
+        } else if ((*timeline_widget->getCopiedNodes())[i].first->type == KeyCurve::YAW_CURVE) {
+          getTracker()->trial()->getYawCurve(-1)->insert(frame, (*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
+        } else if ((*timeline_widget->getCopiedNodes())[i].first->type == KeyCurve::PITCH_CURVE) {
+          getTracker()->trial()->getPitchCurve(-1)->insert(frame, (*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
+        } else if ((*timeline_widget->getCopiedNodes())[i].first->type == KeyCurve::ROLL_CURVE) {
+          getTracker()->trial()->getRollCurve(-1)->insert(frame, (*timeline_widget->getCopiedNodes())[i].first->value((*timeline_widget->getCopiedNodes())[i].second));
+        }
+      }
+    }
+    timeline_widget->getSelectedNodes()->clear();
+  }
+
+  update_xyzypr_and_coord_frame();
+  update_graph_min_max(timeline_widget->getPosition_graph());
+
+  redrawGL();
+}
+
+void AutoscoperMainWindow::on_actionDelete_triggered(bool checked)
+{
+  // Old Method
+  /*if (!timeline_widget->getSelectedNodes()->empty()) {
+     push_state();
+
+     std::cout << "Size\n: " << timeline_widget->getSelectedNodes()->size();
+     for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
+      if ((*timeline_widget->getSelectedNodes())[i].second == NODE) {
+        if (!timeline_widget->getPosition_graph()->frame_locks.at((int)(*timeline_widget->getSelectedNodes())[i].first.first->time((*timeline_widget->getSelectedNodes())[i].first.second))) {
+          (*timeline_widget->getSelectedNodes())[i].first.first->erase((*timeline_widget->getSelectedNodes())[i].first.second);
+        }
+      }
+     }
+     timeline_widget->getSelectedNodes()->clear();
+
+     update_xyzypr_and_coord_frame();
+     update_graph_min_max(timeline_widget->getPosition_graph());
+
+     redrawGL();
+
+     }*/
 
   if (timeline_widget->getSelectedNodes()->empty()) {
     return; // If there are no nodes to be deleted, exit the method
@@ -1864,7 +1856,7 @@ void AutoscoperMainWindow::on_actionDelete_triggered(bool checked) {
 
   double xyzypr[6];
   double manip_0[6] = { 0 };
-  (CoordFrame::from_matrix(trans(getManipulator()->transform()))* *tracker->trial()->getVolumeMatrix(-1)).to_xyzypr(xyzypr);
+  (CoordFrame::from_matrix(trans(getManipulator()->transform())) * *tracker->trial()->getVolumeMatrix(-1)).to_xyzypr(xyzypr);
   getTracker()->trial()->getXCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[0]);
   getTracker()->trial()->getYCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[1]);
   getTracker()->trial()->getZCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[2]);
@@ -1874,8 +1866,8 @@ void AutoscoperMainWindow::on_actionDelete_triggered(bool checked) {
 
   // Now Remove the Key
   int curFrame = getCurrentFrame();
-  //auto it_frame = tracker->trial()->getXCurve(-1)->end();
-  //it_frame = tracker->trial()->getXCurve(-1)->find(curFrame);
+  // auto it_frame = tracker->trial()->getXCurve(-1)->end();
+  // it_frame = tracker->trial()->getXCurve(-1)->find(curFrame);
 
   tracker->trial()->getXCurve(-1)->erase(tracker->trial()->getXCurve(-1)->find(curFrame));
   tracker->trial()->getYCurve(-1)->erase(tracker->trial()->getYCurve(-1)->find(curFrame));
@@ -1895,38 +1887,42 @@ void AutoscoperMainWindow::on_actionSet_Background_triggered(bool checked)
 {
   bool ok;
   double threshold = QInputDialog::getDouble(this, "Enter threshold", "threshold in percent", 0.2, 0.0, 1.0, 4, &ok);
-  if (ok){
+  if (ok) {
     setBackground(threshold);
   }
 }
 
-//Tracking menu
-void AutoscoperMainWindow::on_actionImport_triggered(bool checked){
-  QString filename = get_filename(false,"*.tra");
-    if (filename.compare("") != 0) {
-        load_tracking_results(filename);
-    }
+// Tracking menu
+void AutoscoperMainWindow::on_actionImport_triggered(bool checked)
+{
+  QString filename = get_filename(false, "*.tra");
+  if (filename.compare("") != 0) {
+    load_tracking_results(filename);
+  }
 }
 
-void AutoscoperMainWindow::on_actionExport_triggered(bool checked){
+void AutoscoperMainWindow::on_actionExport_triggered(bool checked)
+{
   QString filename = get_filename(true, "*.tra");
-    if (filename.compare("") != 0) {
-        save_tracking_results(filename);
-    }
+  if (filename.compare("") != 0) {
+    save_tracking_results(filename);
+  }
 }
 
 
-void AutoscoperMainWindow::on_actionExport_Full_DRR_Image_triggered(bool checked) {
+void AutoscoperMainWindow::on_actionExport_Full_DRR_Image_triggered(bool checked)
+{
   this->saveFullDRR();
 }
 
-void AutoscoperMainWindow::on_actionInsert_Key_triggered(bool checked){
+void AutoscoperMainWindow::on_actionInsert_Key_triggered(bool checked)
+{
   push_state();
   timeline_widget->getSelectedNodes()->clear();
 
-    double xyzypr[6];
+  double xyzypr[6];
   double manip_0[6] = { 0 };
-  (CoordFrame::from_matrix(trans(getManipulator()->transform()))* *tracker->trial()->getVolumeMatrix(-1)).to_xyzypr(xyzypr);
+  (CoordFrame::from_matrix(trans(getManipulator()->transform())) * *tracker->trial()->getVolumeMatrix(-1)).to_xyzypr(xyzypr);
   getTracker()->trial()->getXCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[0]);
   getTracker()->trial()->getYCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[1]);
   getTracker()->trial()->getZCurve(-1)->insert(getTracker()->trial()->frame, xyzypr[2]);
@@ -1942,16 +1938,17 @@ void AutoscoperMainWindow::on_actionInsert_Key_triggered(bool checked){
   std::cout << "Current NCC is: " << NCC << std::endl;
 }
 
-void AutoscoperMainWindow::on_actionLock_triggered(bool checked){
+void AutoscoperMainWindow::on_actionLock_triggered(bool checked)
+{
   push_state();
 
-    for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
+  for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
 
-        int time = (int)(*timeline_widget->getSelectedNodes())[i].first.first->time(
-                   (*timeline_widget->getSelectedNodes())[i].first.second);
+    int time = (int)(*timeline_widget->getSelectedNodes())[i].first.first->time(
+      (*timeline_widget->getSelectedNodes())[i].first.second);
 
-        // Force the addition of keys for all curves in order to truly freeze
-        // the frame
+    // Force the addition of keys for all curves in order to truly freeze
+    // the frame
 
     tracker->trial()->getXCurve(-1)->insert(time);
     tracker->trial()->getYCurve(-1)->insert(time);
@@ -1960,66 +1957,70 @@ void AutoscoperMainWindow::on_actionLock_triggered(bool checked){
     tracker->trial()->getPitchCurve(-1)->insert(time);
     tracker->trial()->getRollCurve(-1)->insert(time);
 
-        timeline_widget->getPosition_graph()->frame_locks.at(time) = true;
-    }
+    timeline_widget->getPosition_graph()->frame_locks.at(time) = true;
+  }
 
-    timeline_widget->getSelectedNodes()->clear();
+  timeline_widget->getSelectedNodes()->clear();
 
-    frame_changed();
-    redrawGL();
+  frame_changed();
+  redrawGL();
 }
 
-void AutoscoperMainWindow::on_actionUnlock_triggered(bool checked){
+void AutoscoperMainWindow::on_actionUnlock_triggered(bool checked)
+{
   for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
     timeline_widget->getPosition_graph()->frame_locks.at((int)(*timeline_widget->getSelectedNodes())[i].first.first->time(
-                                   (*timeline_widget->getSelectedNodes())[i].first.second)) = false;
-    }
+                                                           (*timeline_widget->getSelectedNodes())[i].first.second)) = false;
+  }
 
-    frame_changed();
-    redrawGL();
+  frame_changed();
+  redrawGL();
 }
 
-void AutoscoperMainWindow::on_actionBreak_Tangents_triggered(bool checked){
+void AutoscoperMainWindow::on_actionBreak_Tangents_triggered(bool checked)
+{
   push_state();
 
-    for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
-        KeyCurve& curve = *(*timeline_widget->getSelectedNodes())[i].first.first;
-        KeyCurve::iterator it = (*timeline_widget->getSelectedNodes())[i].first.second;
-        if (!timeline_widget->getPosition_graph()->frame_locks.at((int)curve.time(it))) {
-            curve.set_bind_tangents(it,false);
-        }
+  for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
+    KeyCurve& curve = *(*timeline_widget->getSelectedNodes())[i].first.first;
+    KeyCurve::iterator it = (*timeline_widget->getSelectedNodes())[i].first.second;
+    if (!timeline_widget->getPosition_graph()->frame_locks.at((int)curve.time(it))) {
+      curve.set_bind_tangents(it, false);
     }
+  }
 
 }
 
-void AutoscoperMainWindow::on_actionSmooth_Tangents_triggered(bool checked){
+void AutoscoperMainWindow::on_actionSmooth_Tangents_triggered(bool checked)
+{
   push_state();
 
-    /*for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
-        KeyCurve& curve = *(*timeline_widget->getSelectedNodes())[i].first.first;
-        KeyCurve::iterator it = (*timeline_widget->getSelectedNodes())[i].first.second;
+  /*for (unsigned i = 0; i < timeline_widget->getSelectedNodes()->size(); i++) {
+      KeyCurve& curve = *(*timeline_widget->getSelectedNodes())[i].first.first;
+      KeyCurve::iterator it = (*timeline_widget->getSelectedNodes())[i].first.second;
 
-        if (!timeline_widget->getPosition_graph()->frame_locks.at((int)curve.time(it))) {
-            curve.set_bind_tangents(it,true);
-            curve.set_in_tangent_type(it,KeyCurve::SMOOTH);
-            curve.set_out_tangent_type(it,KeyCurve::SMOOTH);
-        }
-    }*/
+      if (!timeline_widget->getPosition_graph()->frame_locks.at((int)curve.time(it))) {
+          curve.set_bind_tangents(it,true);
+          curve.set_in_tangent_type(it,KeyCurve::SMOOTH);
+          curve.set_out_tangent_type(it,KeyCurve::SMOOTH);
+      }
+     }*/
 
   // BARDIYA ADDED MOVING AVERAGE FILTER
   int nWin = 5; // Default
-  //puts("change nWin in actionSmooth function");
+  // puts("change nWin in actionSmooth function");
   MovingAverageFilter(nWin, 0, tracker->trial()->num_frames);
 
-    update_xyzypr_and_coord_frame();
-    update_graph_min_max(timeline_widget->getPosition_graph());
+  update_xyzypr_and_coord_frame();
+  update_graph_min_max(timeline_widget->getPosition_graph());
 
-    redrawGL();
+  redrawGL();
 }
 
 
 // Advanced Settings
-void AutoscoperMainWindow::on_actionAdvanced_Settings_triggered(bool checked) {
+void AutoscoperMainWindow::on_actionAdvanced_Settings_triggered(bool checked)
+{
   if (advanced_dialog == NULL)
     advanced_dialog = new AdvancedOptionsDialog(this);
 
@@ -2031,19 +2032,21 @@ void AutoscoperMainWindow::on_actionAdvanced_Settings_triggered(bool checked) {
 }
 
 
-//View
-void AutoscoperMainWindow::on_actionLayoutCameraViews_triggered(bool triggered){
+// View
+void AutoscoperMainWindow::on_actionLayoutCameraViews_triggered(bool triggered)
+{
 
   bool ok;
-    int rows = QInputDialog::getInt(this, tr("Layout Camera Views"),
-                                          tr("Number of Rows"),1,1,10,1, &ok);
-    if (ok)relayoutCameras(rows);
+  int rows = QInputDialog::getInt(this, tr("Layout Camera Views"),
+                                  tr("Number of Rows"), 1, 1, 10, 1, &ok);
+  if (ok) relayoutCameras(rows);
 }
 
-void AutoscoperMainWindow::on_actionShow_world_view_triggered(bool checked){
-  if(checked){
+void AutoscoperMainWindow::on_actionShow_world_view_triggered(bool checked)
+{
+  if (checked) {
     worldview->show();
-  }else{
+  } else {
     worldview->hide();
   }
 }
@@ -2056,7 +2059,7 @@ void AutoscoperMainWindow::on_actionThick_Lines_Mode_triggered(bool checked)
   }
 
   // Set Thick Lines Mode for all Manipulators
-  for(Manip3D* manip3D: manipulator) {
+  for (Manip3D* manip3D : manipulator) {
     manip3D->setThickLinesMode(checked);
   }
 
@@ -2064,79 +2067,88 @@ void AutoscoperMainWindow::on_actionThick_Lines_Mode_triggered(bool checked)
   redrawGL();
 }
 
-//Toolbar
-void AutoscoperMainWindow::on_toolButtonOpenTrial_clicked(){
+// Toolbar
+void AutoscoperMainWindow::on_toolButtonOpenTrial_clicked()
+{
   save_trial_prompt();
-    save_tracking_prompt();
+  save_tracking_prompt();
 
   openTrial();
 }
 
-void AutoscoperMainWindow::on_toolButtonSaveTracking_clicked(){
+void AutoscoperMainWindow::on_toolButtonSaveTracking_clicked()
+{
   QString filename = get_filename(true, "*.tra");
-    if (filename.compare("") != 0) {
-        save_tracking_results(filename);
-    }
+  if (filename.compare("") != 0) {
+    save_tracking_results(filename);
+  }
 }
 
-void AutoscoperMainWindow::on_toolButtonLoadTracking_clicked(){
+void AutoscoperMainWindow::on_toolButtonLoadTracking_clicked()
+{
   QString filename = get_filename(false, "*.tra");
-    if (filename.compare("") != 0) {
-        load_tracking_results(filename);
-    }
+  if (filename.compare("") != 0) {
+    load_tracking_results(filename);
+  }
 }
 
-void AutoscoperMainWindow::on_toolButtonTranslate_clicked(){
+void AutoscoperMainWindow::on_toolButtonTranslate_clicked()
+{
   ui->toolButtonTranslate->setChecked(true);
   ui->toolButtonRotate->setChecked(false);
   getManipulator()->set_mode(Manip3D::TRANSLATION);
   redrawGL();
 }
 
-void AutoscoperMainWindow::on_toolButtonRotate_clicked(){
+void AutoscoperMainWindow::on_toolButtonRotate_clicked()
+{
   ui->toolButtonRotate->setChecked(true);
   ui->toolButtonTranslate->setChecked(false);
   getManipulator()->set_mode(Manip3D::ROTATION);
   redrawGL();
 }
 
-void AutoscoperMainWindow::on_toolButtonMovePivot_clicked(){
+void AutoscoperMainWindow::on_toolButtonMovePivot_clicked()
+{
   getManipulator()->set_movePivot(ui->toolButtonMovePivot->isChecked());
   redrawGL();
 }
 
-void AutoscoperMainWindow::on_toolButtonTrack_clicked(){
-  if(tracking_dialog == NULL)
-    tracking_dialog = new TrackingOptionsDialog(this);
-
-  tracking_dialog->setRange(timeline_widget->getPosition_graph()->min_frame,timeline_widget->getPosition_graph()->max_frame,
-    tracker->trial()->num_frames-1);
-
-  tracking_dialog->show();
-}
-
-void AutoscoperMainWindow::on_toolButtonTrackCurrent_clicked() {
+void AutoscoperMainWindow::on_toolButtonTrack_clicked()
+{
   if (tracking_dialog == NULL)
     tracking_dialog = new TrackingOptionsDialog(this);
 
   tracking_dialog->setRange(timeline_widget->getPosition_graph()->min_frame, timeline_widget->getPosition_graph()->max_frame,
-    tracker->trial()->num_frames - 1);
+                            tracker->trial()->num_frames - 1);
+
+  tracking_dialog->show();
+}
+
+void AutoscoperMainWindow::on_toolButtonTrackCurrent_clicked()
+{
+  if (tracking_dialog == NULL)
+    tracking_dialog = new TrackingOptionsDialog(this);
+
+  tracking_dialog->setRange(timeline_widget->getPosition_graph()->min_frame, timeline_widget->getPosition_graph()->max_frame,
+                            tracker->trial()->num_frames - 1);
 
   tracking_dialog->trackCurrent();
 }
 
 
 /*void AutoscoperMainWindow::on_toolButtonRetrack_clicked(){
-  if(tracking_dialog == NULL)
+   if(tracking_dialog == NULL)
     tracking_dialog = new TrackingOptionsDialog(this);
 
-  tracking_dialog->setRange(timeline_widget->getPosition_graph()->min_frame,timeline_widget->getPosition_graph()->max_frame,
+   tracking_dialog->setRange(timeline_widget->getPosition_graph()->min_frame,timeline_widget->getPosition_graph()->max_frame,
     tracker->trial()->num_frames-1);
 
-  tracking_dialog->retrack();
-}*/
+   tracking_dialog->retrack();
+   }*/
 
-void AutoscoperMainWindow::on_actionExport_NCC_as_csv_triggered(bool checked) {
+void AutoscoperMainWindow::on_actionExport_NCC_as_csv_triggered(bool checked)
+{
   QString filename = get_filename(true, "*.ncc");
   if (filename.compare("") != 0) {
     save_ncc_results(filename);
@@ -2144,14 +2156,15 @@ void AutoscoperMainWindow::on_actionExport_NCC_as_csv_triggered(bool checked) {
 }
 
 
-void AutoscoperMainWindow::save_ncc_results(QString filename) {
+void AutoscoperMainWindow::save_ncc_results(QString filename)
+{
 
   std::ofstream file(filename.toStdString().c_str(), std::ios::out);
 
   file.precision(6);
   file.setf(std::ios::fixed, std::ios::floatfield);
   unsigned int volume = tracker->trial()->current_volume;
-  std::vector<double>  ncc_values(2,999);
+  std::vector<double> ncc_values(2, 999);
   for (int frame = 0; frame < tracker->trial()->num_frames; ++frame) {
     double pose[6];
     pose[0] = (*tracker->trial()->getXCurve(volume))(frame);
@@ -2163,77 +2176,79 @@ void AutoscoperMainWindow::save_ncc_results(QString filename) {
     setFrame(frame);
     ncc_values = tracker->trackFrame(volume, pose);
 
-    file << ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0)+ ncc_values.at(1) << std::endl;
+    file << ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0) + ncc_values.at(1) << std::endl;
   }
   file.close();
 }
 
 
 
-void AutoscoperMainWindow::on_actionExport_all_NCCs_near_this_pose_triggered(bool checked) {
+void AutoscoperMainWindow::on_actionExport_all_NCCs_near_this_pose_triggered(bool checked)
+{
   QString filename = get_filename(true, "*.ncc");
   if (filename.compare("") != 0) {
     save_nearby_nccs(filename);
   }
 }
 
-void AutoscoperMainWindow::on_actionAboutAutoscoper_triggered(bool checked) {
+void AutoscoperMainWindow::on_actionAboutAutoscoper_triggered(bool checked)
+{
   /*puts("Copyright (c) 2011-2019, Brown University\n\
-All rights reserved.\n\
-This is autoscoper 2 by Dr.Ben Knorlein, and modified by Bardiya Akhbari.\n\
-Autoscoper 1 was developed by Andy Loomis(original CUDA version) and Mark Howison(OpenCL reimplementation).");*/
+     All rights reserved.\n\
+     This is autoscoper 2 by Dr.Ben Knorlein, and modified by Bardiya Akhbari.\n\
+     Autoscoper 1 was developed by Andy Loomis(original CUDA version) and Mark Howison(OpenCL reimplementation).");*/
 
-  if (about_autoscoper == NULL)
-  {
+  if (about_autoscoper == NULL) {
     about_autoscoper = new AboutAutoscoper(this);
   }
 
   about_autoscoper->show();
 }
 
-void AutoscoperMainWindow::on_actionOpen_Sample_Wrist_triggered(bool checked) {
+void AutoscoperMainWindow::on_actionOpen_Sample_Wrist_triggered(bool checked)
+{
 
-    QString root_path = qApp->applicationDirPath() + "/";
-    //"/Users/bardiya/autoscoper-v2";// QDir::currentPath(); //qApp->applicationDirPath();
+  QString root_path = qApp->applicationDirPath() + "/";
+  // "/Users/bardiya/autoscoper-v2";// QDir::currentPath(); //qApp->applicationDirPath();
 
-    QString default_config_path = root_path + "sample_data";
-    default_config_path += "/";
-    default_config_path += "wrist.cfg";
+  QString default_config_path = root_path + "sample_data";
+  default_config_path += "/";
+  default_config_path += "wrist.cfg";
 
-    std::ifstream file(default_config_path.toStdString().c_str());
-    if (file.is_open() == false) {
-        QString l_1 = "mayaCam_csv " + root_path +
-        "sample_data/Calibration/xr_calib_wrist_cam01.txt";
-        QString l_2 = "mayaCam_csv " + root_path +
-        "sample_data/Calibration/xr_calib_wrist_cam02.txt";
-        QString l_3 = "CameraRootDir " + root_path +
-        "sample_data/XMA_UND/xr_data_wrist_cam01";
-        QString l_4 = "CameraRootDir " + root_path +
-        "sample_data/XMA_UND/xr_data_wrist_cam02";
-        QString l_5 = "VolumeFile " + root_path +
-        "sample_data/Models/rad_dcm_cropped.tif";
-        QString l_6 = "VolumeFlip 0 0 0";
-        QString l_7 = "VoxelSize 0.39625 0.39625 0.625";
-        QString l_8 = "RenderResolution 512 512";
-        QString l_9 = "OptimizationOffsets 0.1 0.1 0.1 0.1 0.1 0.1";
+  std::ifstream file(default_config_path.toStdString().c_str());
+  if (file.is_open() == false) {
+    QString l_1 = "mayaCam_csv " + root_path +
+                  "sample_data/Calibration/xr_calib_wrist_cam01.txt";
+    QString l_2 = "mayaCam_csv " + root_path +
+                  "sample_data/Calibration/xr_calib_wrist_cam02.txt";
+    QString l_3 = "CameraRootDir " + root_path +
+                  "sample_data/XMA_UND/xr_data_wrist_cam01";
+    QString l_4 = "CameraRootDir " + root_path +
+                  "sample_data/XMA_UND/xr_data_wrist_cam02";
+    QString l_5 = "VolumeFile " + root_path +
+                  "sample_data/Models/rad_dcm_cropped.tif";
+    QString l_6 = "VolumeFlip 0 0 0";
+    QString l_7 = "VoxelSize 0.39625 0.39625 0.625";
+    QString l_8 = "RenderResolution 512 512";
+    QString l_9 = "OptimizationOffsets 0.1 0.1 0.1 0.1 0.1 0.1";
 
     QString l_10 = "VolumeFile " + root_path +
-      "sample_data/Models/mc2_mc3_dcm_cropped.tif";
+                   "sample_data/Models/mc2_mc3_dcm_cropped.tif";
     QString l_11 = "VolumeFile " + root_path +
-      "sample_data/Models/mc3_dcm_cropped.tif";
+                   "sample_data/Models/mc3_dcm_cropped.tif";
     QString l_12 = "VolumeFile " + root_path +
-      "sample_data/Models/uln_dcm_cropped.tif";
+                   "sample_data/Models/uln_dcm_cropped.tif";
 
-        std::ofstream cfg_file(default_config_path.toStdString().c_str());
-        cfg_file.precision(12);
-        cfg_file << l_1.toStdString().c_str() << std::endl;
-        cfg_file << l_2.toStdString().c_str() << std::endl;
-        cfg_file << l_3.toStdString().c_str() << std::endl;
-        cfg_file << l_4.toStdString().c_str() << std::endl;
+    std::ofstream cfg_file(default_config_path.toStdString().c_str());
+    cfg_file.precision(12);
+    cfg_file << l_1.toStdString().c_str() << std::endl;
+    cfg_file << l_2.toStdString().c_str() << std::endl;
+    cfg_file << l_3.toStdString().c_str() << std::endl;
+    cfg_file << l_4.toStdString().c_str() << std::endl;
     // Radius
-        cfg_file << l_5.toStdString().c_str() << std::endl;
-        cfg_file << l_6.toStdString().c_str() << std::endl;
-        cfg_file << l_7.toStdString().c_str() << std::endl;
+    cfg_file << l_5.toStdString().c_str() << std::endl;
+    cfg_file << l_6.toStdString().c_str() << std::endl;
+    cfg_file << l_7.toStdString().c_str() << std::endl;
     // MC2-MC3
     cfg_file << l_10.toStdString().c_str() << std::endl;
     cfg_file << l_6.toStdString().c_str() << std::endl;
@@ -2248,15 +2263,16 @@ void AutoscoperMainWindow::on_actionOpen_Sample_Wrist_triggered(bool checked) {
     cfg_file << l_7.toStdString().c_str() << std::endl;
     cfg_file << l_8.toStdString().c_str() << std::endl;
     cfg_file << l_9.toStdString().c_str();
-        cfg_file.close();
-    }
-    file.close();
+    cfg_file.close();
+  }
+  file.close();
 
-    openTrial(default_config_path);
+  openTrial(default_config_path);
 }
 
 
-void AutoscoperMainWindow::on_actionOpen_Sample_Knee_triggered(bool checked) {
+void AutoscoperMainWindow::on_actionOpen_Sample_Knee_triggered(bool checked)
+{
 
   QString root_path = qApp->applicationDirPath() + "/";
 
@@ -2267,22 +2283,22 @@ void AutoscoperMainWindow::on_actionOpen_Sample_Knee_triggered(bool checked) {
   std::ifstream file(default_config_path.toStdString().c_str());
   if (file.is_open() == false) {
     QString l_1 = "mayaCam_csv " + root_path +
-      "sample_data/Calibration/xr_calib_left_knee_cam01.txt";
+                  "sample_data/Calibration/xr_calib_left_knee_cam01.txt";
     QString l_2 = "mayaCam_csv " + root_path +
-      "sample_data/Calibration/xr_calib_left_knee_cam02.txt";
+                  "sample_data/Calibration/xr_calib_left_knee_cam02.txt";
     QString l_3 = "CameraRootDir " + root_path +
-      "sample_data/XMA_UND/xr_data_left_knee_cam01";
+                  "sample_data/XMA_UND/xr_data_left_knee_cam01";
     QString l_4 = "CameraRootDir " + root_path +
-      "sample_data/XMA_UND/xr_data_left_knee_cam02";
+                  "sample_data/XMA_UND/xr_data_left_knee_cam02";
     QString l_5 = "VolumeFile " + root_path +
-      "sample_data/Models/left_knee_femur_cropped.tif";
+                  "sample_data/Models/left_knee_femur_cropped.tif";
     QString l_6 = "VolumeFlip 0 0 0";
     QString l_7 = "VoxelSize 0.421875 0.421875 0.625";
     QString l_8 = "RenderResolution 512 512";
     QString l_9 = "OptimizationOffsets 0.1 0.1 0.1 0.1 0.1 0.1";
 
     QString l_10 = "VolumeFile " + root_path +
-      "sample_data/Models/left_knee_tibia_cropped.tif";
+                   "sample_data/Models/left_knee_tibia_cropped.tif";
 
     std::ofstream cfg_file(default_config_path.toStdString().c_str());
     cfg_file.precision(12);
@@ -2305,11 +2321,12 @@ void AutoscoperMainWindow::on_actionOpen_Sample_Knee_triggered(bool checked) {
   }
   file.close();
 
-  //cout << default_config_path.toStdString().c_str() << std::endl;
+  // cout << default_config_path.toStdString().c_str() << std::endl;
   openTrial(default_config_path);
 }
 
-void AutoscoperMainWindow::on_actionOpen_Sample_Ankle_triggered(bool checked) {
+void AutoscoperMainWindow::on_actionOpen_Sample_Ankle_triggered(bool checked)
+{
 
   QString root_path = qApp->applicationDirPath() + "/";
 
@@ -2320,24 +2337,24 @@ void AutoscoperMainWindow::on_actionOpen_Sample_Ankle_triggered(bool checked) {
   std::ifstream file(default_config_path.toStdString().c_str());
   if (file.is_open() == false) {
     QString l_1 = "mayaCam_csv " + root_path +
-      "sample_data/Calibration/xr_calib_right_ankle_cam01.txt";
+                  "sample_data/Calibration/xr_calib_right_ankle_cam01.txt";
     QString l_2 = "mayaCam_csv " + root_path +
-      "sample_data/Calibration/xr_calib_right_ankle_cam02.txt";
+                  "sample_data/Calibration/xr_calib_right_ankle_cam02.txt";
     QString l_3 = "CameraRootDir " + root_path +
-      "sample_data/XMA_UND/xr_data_right_ankle_cam01";
+                  "sample_data/XMA_UND/xr_data_right_ankle_cam01";
     QString l_4 = "CameraRootDir " + root_path +
-      "sample_data/XMA_UND/xr_data_right_ankle_cam02";
+                  "sample_data/XMA_UND/xr_data_right_ankle_cam02";
     QString l_5 = "VolumeFile " + root_path +
-      "sample_data/Models/right_ankle_calc.tif";
+                  "sample_data/Models/right_ankle_calc.tif";
     QString l_6 = "VolumeFlip 0 0 0";
     QString l_7 = "VoxelSize 0.4414 0.4414 0.625";
     QString l_8 = "RenderResolution 512 512";
     QString l_9 = "OptimizationOffsets 0.1 0.1 0.1 0.1 0.1 0.1";
 
     QString l_10 = "VolumeFile " + root_path +
-      "sample_data/Models/right_ankle_talus.tif";
-        QString l_11 = "VolumeFile " + root_path +
-      "sample_data/Models/right_ankle_tibia.tif";
+                   "sample_data/Models/right_ankle_talus.tif";
+    QString l_11 = "VolumeFile " + root_path +
+                   "sample_data/Models/right_ankle_tibia.tif";
 
 
     std::ofstream cfg_file(default_config_path.toStdString().c_str());
@@ -2365,17 +2382,18 @@ void AutoscoperMainWindow::on_actionOpen_Sample_Ankle_triggered(bool checked) {
   }
   file.close();
 
-  //cout << default_config_path.toStdString().c_str() << std::endl;
+  // cout << default_config_path.toStdString().c_str() << std::endl;
   openTrial(default_config_path);
 }
 
-void AutoscoperMainWindow::save_nearby_nccs(QString filename) {
+void AutoscoperMainWindow::save_nearby_nccs(QString filename)
+{
   std::ofstream file(filename.toStdString().c_str(), std::ios::out);
 
   file.precision(6);
   file.setf(std::ios::fixed, std::ios::floatfield);
   unsigned int volume = tracker->trial()->current_volume;
-  std::vector<double>  ncc_values(2, 9999);
+  std::vector<double> ncc_values(2, 9999);
 
 
   double pose[6];
@@ -2386,14 +2404,14 @@ void AutoscoperMainWindow::save_nearby_nccs(QString filename) {
   pose[4] = (*tracker->trial()->getPitchCurve(volume))(curFrame);
   pose[5] = (*tracker->trial()->getRollCurve(volume))(curFrame);
 
-  //int iter_max = 5000;
-  //int t_lim = 1;
+  // int iter_max = 5000;
+  // int t_lim = 1;
 
 
   // Get Current One
   ncc_values = tracker->trackFrame(volume, pose);
   file << pose[0] << "," << pose[1] << "," << pose[2] << "," << pose[3] << "," << pose[4] << "," << pose[5] << ","
-    << ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0) + ncc_values.at(1) << std::endl;
+       << ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0) + ncc_values.at(1) << std::endl;
 
 
   // Look the neighbors
@@ -2403,18 +2421,12 @@ void AutoscoperMainWindow::save_nearby_nccs(QString filename) {
   double r_lim = .3;
   double r_skip = 0.1;
 
-  for (double d1 = -t_lim; d1 <= t_lim; d1 = d1 + t_skip)
-  {
-    for (double d2 = -t_lim; d2 <= t_lim; d2 = d2 + t_skip)
-    {
-      for (double d3 = -t_lim; d3 <= t_lim; d3 = d3 + t_skip)
-      {
-        for (double d4 = -r_lim; d4 <= r_lim; d4 = d4 + r_skip)
-        {
-          for (double d5 = -r_lim; d5 <= r_lim; d5 = d5 + r_skip)
-          {
-            for (double d6 = -r_lim; d6 <= r_lim; d6 = d6 + r_skip)
-            {
+  for (double d1 = -t_lim; d1 <= t_lim; d1 = d1 + t_skip) {
+    for (double d2 = -t_lim; d2 <= t_lim; d2 = d2 + t_skip) {
+      for (double d3 = -t_lim; d3 <= t_lim; d3 = d3 + t_skip) {
+        for (double d4 = -r_lim; d4 <= r_lim; d4 = d4 + r_skip) {
+          for (double d5 = -r_lim; d5 <= r_lim; d5 = d5 + r_skip) {
+            for (double d6 = -r_lim; d6 <= r_lim; d6 = d6 + r_skip) {
               next_pose[0] = pose[0] + d1;
               next_pose[1] = pose[1] + d2;
               next_pose[2] = pose[2] + d3;
@@ -2425,7 +2437,7 @@ void AutoscoperMainWindow::save_nearby_nccs(QString filename) {
               ncc_values = tracker->trackFrame(volume, next_pose);
 
               file << next_pose[0] << "," << next_pose[1] << "," << next_pose[2] << "," << next_pose[3] << "," << next_pose[4] << "," << next_pose[5] << ","
-                << ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0)+ncc_values.at(1) << std::endl;
+                   << ncc_values.at(0) << "," << ncc_values.at(1) << "," << ncc_values.at(0) + ncc_values.at(1) << std::endl;
             }
           }
         }
@@ -2438,44 +2450,54 @@ void AutoscoperMainWindow::save_nearby_nccs(QString filename) {
   std::cout << "All NCCs were saved nearby this pose..." << std::endl;
 }
 
-void AutoscoperMainWindow::key_w_pressed(){
+void AutoscoperMainWindow::key_w_pressed()
+{
   ui->toolButtonTranslate->click();
 }
-void AutoscoperMainWindow::key_e_pressed(){
+void AutoscoperMainWindow::key_e_pressed()
+{
   ui->toolButtonRotate->click();
 }
-void AutoscoperMainWindow::key_d_pressed(){
+void AutoscoperMainWindow::key_d_pressed()
+{
   ui->toolButtonMovePivot->click();
 }
-void AutoscoperMainWindow::key_h_pressed(){
+void AutoscoperMainWindow::key_h_pressed()
+{
   filters_widget->toggle_drrs();
 }
-void AutoscoperMainWindow::key_t_pressed(){
+void AutoscoperMainWindow::key_t_pressed()
+{
   ui->toolButtonTrack->click();
 }
 /*void AutoscoperMainWindow::key_p_pressed(){
-  ui->toolButtonRetrack->click();
-} */
-void AutoscoperMainWindow::key_c_pressed() {
+   ui->toolButtonRetrack->click();
+   } */
+void AutoscoperMainWindow::key_c_pressed()
+{
   on_actionInsert_Key_triggered(true); // Insert the current frame and then run the tracking
   ui->toolButtonTrackCurrent->click();
 }
-void AutoscoperMainWindow::key_plus_pressed(){
+void AutoscoperMainWindow::key_plus_pressed()
+{
   getManipulator(-1)->set_pivotSize(getManipulator(-1)->get_pivotSize() * 1.1f);
   redrawGL();
 }
-void AutoscoperMainWindow::key_equal_pressed(){
+void AutoscoperMainWindow::key_equal_pressed()
+{
   getManipulator(-1)->set_pivotSize(getManipulator(-1)->get_pivotSize() * 1.1f);
   redrawGL();
 }
 
-void AutoscoperMainWindow::key_minus_pressed(){
+void AutoscoperMainWindow::key_minus_pressed()
+{
   getManipulator(-1)->set_pivotSize(getManipulator(-1)->get_pivotSize() * 0.9f);
   redrawGL();
 }
 
-//Shortcuts
-void AutoscoperMainWindow::setupShortcuts(){
+// Shortcuts
+void AutoscoperMainWindow::setupShortcuts()
+{
   // W - switches to translate mode
   new QShortcut(QKeySequence(Qt::Key_W), this, SLOT(key_w_pressed()));
   // E - switches to rotate mode
@@ -2487,7 +2509,7 @@ void AutoscoperMainWindow::setupShortcuts(){
   // T - Opens the tracking dialog
   new QShortcut(QKeySequence(Qt::Key_T), this, SLOT(key_t_pressed()));
   // P - Retrack - not enabled
-  //new QShortcut(QKeySequence(Qt::Key_P), this, SLOT(key_p_pressed()));
+  // new QShortcut(QKeySequence(Qt::Key_P), this, SLOT(key_p_pressed()));
   // C - Track current frame
   new QShortcut(QKeySequence(Qt::Key_C), this, SLOT(key_c_pressed()));
   // + - Increase pivot size
@@ -2525,14 +2547,17 @@ void AutoscoperMainWindow::setupShortcuts(){
   ui->actionInsert_Key->setShortcut(QKeySequence(Qt::Key_S));
 }
 
-int AutoscoperMainWindow::getNumVolumes() {
-    return tracker->trial()->num_volumes;
+int AutoscoperMainWindow::getNumVolumes()
+{
+  return tracker->trial()->num_volumes;
 }
 
-int AutoscoperMainWindow::getNumFrames() {
-    return tracker->trial()->num_frames;
+int AutoscoperMainWindow::getNumFrames()
+{
+  return tracker->trial()->num_frames;
 }
 
-void AutoscoperMainWindow::setVolumeVisibility(int volume, bool visible) {
+void AutoscoperMainWindow::setVolumeVisibility(int volume, bool visible)
+{
   volumes_widget->setVolumeVisibility(volume, visible);
 }

@@ -63,108 +63,105 @@
 
 namespace xromm
 {
-  class Camera;
-  class CoordFrame;
+class Camera;
+class CoordFrame;
 
-  namespace gpu
+namespace gpu
+{
+class Filter;
+class View;
+class VolumeDescription;
+} // namespace gpu
+
+struct OptimizationParameters
+{
+  OptimizationParameters() = default;
+  OptimizationParameters(unsigned int repeats, int dframe, unsigned int method, unsigned int max_iter, double min_limit, double max_limit, unsigned int cf_model, unsigned int max_stall_iter, unsigned int opt_init_heuristic) :
+    repeats(repeats),
+    dframe(dframe),
+    method(method),
+    max_iter(max_iter),
+    min_limit(min_limit),
+    max_limit(max_limit),
+    cf_model(cf_model),
+    max_stall_iter(max_stall_iter),
+    opt_init_heuristic(opt_init_heuristic)
   {
-    class Filter;
-    class View;
-    class VolumeDescription;
-
-  } // namespace gpu
-
-  struct OptimizationParameters
+  }
+  void PrintSelf(std::ostream& os) const
   {
-    OptimizationParameters() = default;
-    OptimizationParameters(unsigned int repeats, int dframe, unsigned int method, unsigned int max_iter, double min_limit, double max_limit, unsigned int cf_model, unsigned int max_stall_iter, unsigned int opt_init_heuristic) :
-      repeats(repeats),
-      dframe(dframe),
-      method(method),
-      max_iter(max_iter),
-      min_limit(min_limit),
-      max_limit(max_limit),
-      cf_model(cf_model),
-      max_stall_iter(max_stall_iter),
-      opt_init_heuristic(opt_init_heuristic)
-    {
-    }
-    void PrintSelf(std::ostream& os) const
-    {
-      os << "OptimizationParameters: " << std::endl;
-      os << "repeats: " << repeats << std::endl;
-      os << "dframe: " << dframe << std::endl;
-      os << "method: " << method << std::endl;
-      os << "max_iter: " << max_iter << std::endl;
-      os << "min_limit: " << min_limit << std::endl;
-      os << "max_limit: " << max_limit << std::endl;
-      os << "cf_model: " << cf_model << std::endl;
-      os << "max_stall_iter: " << max_stall_iter << std::endl;
-      os << "opt_init_heuristic: " << opt_init_heuristic << std::endl;
-    }
-    unsigned int repeats{0};
-    int dframe{0};
-    unsigned int method{0};
-    unsigned int max_iter{0};
-    double min_limit{0.0};
-    double max_limit{0.0};
-    unsigned int cf_model{0};
-    unsigned int max_stall_iter{0};
-    unsigned int opt_init_heuristic{0};
-  };
+    os << "OptimizationParameters: " << std::endl;
+    os << "repeats: " << repeats << std::endl;
+    os << "dframe: " << dframe << std::endl;
+    os << "method: " << method << std::endl;
+    os << "max_iter: " << max_iter << std::endl;
+    os << "min_limit: " << min_limit << std::endl;
+    os << "max_limit: " << max_limit << std::endl;
+    os << "cf_model: " << cf_model << std::endl;
+    os << "max_stall_iter: " << max_stall_iter << std::endl;
+    os << "opt_init_heuristic: " << opt_init_heuristic << std::endl;
+  }
+  unsigned int repeats{ 0 };
+  int dframe{ 0 };
+  unsigned int method{ 0 };
+  unsigned int max_iter{ 0 };
+  double min_limit{ 0.0 };
+  double max_limit{ 0.0 };
+  unsigned int cf_model{ 0 };
+  unsigned int max_stall_iter{ 0 };
+  unsigned int opt_init_heuristic{ 0 };
+};
 
 
-  class Tracker
-  {
-  public:
+class Tracker
+{
+public:
 
-    Tracker();
-    ~Tracker();
-    void init();
-    void load(const Trial& trial);
-    Trial* trial() { return &trial_; }
-    void optimize(int frame, int dframe, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int max_stall_iter);
-    double minimizationFunc(const double* values) const;
-    std::vector <double> trackFrame(unsigned int volumeID, double* xyzpr) const;
-    std::vector<gpu::View*>& views() { return views_; }
-    const std::vector<gpu::View*>& views() const { return views_; }
-    gpu::View* view(size_t i) { return views_.at(i); }
-    const gpu::View* view(size_t i) const { return views_.at(i); }
-    void updateBackground();
-    void setBackgroundThreshold(float threshold);
-    std::vector<unsigned char> getImageData(unsigned volumeID, unsigned camera, double* xyzpr, unsigned& width, unsigned& height);
-    OptimizationParameters& getLatestOptimizationParameters() { return latest_optimization_parameters_; }
-    void printLatestOptimizationParameters(std::ostream& os) const { latest_optimization_parameters_.PrintSelf(os); }
+  Tracker();
+  ~Tracker();
+  void init();
+  void load(const Trial& trial);
+  Trial* trial() { return &trial_; }
+  void optimize(int frame, int dframe, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int max_stall_iter);
+  double minimizationFunc(const double* values) const;
+  std::vector<double> trackFrame(unsigned int volumeID, double* xyzpr) const;
+  std::vector<gpu::View*>& views() { return views_; }
+  const std::vector<gpu::View*>& views() const { return views_; }
+  gpu::View* view(size_t i) { return views_.at(i); }
+  const gpu::View* view(size_t i) const { return views_.at(i); }
+  void updateBackground();
+  void setBackgroundThreshold(float threshold);
+  std::vector<unsigned char> getImageData(unsigned volumeID, unsigned camera, double* xyzpr, unsigned& width, unsigned& height);
+  OptimizationParameters& getLatestOptimizationParameters() { return latest_optimization_parameters_; }
+  void printLatestOptimizationParameters(std::ostream& os) const { latest_optimization_parameters_.PrintSelf(os); }
 
-    // Bardiya Cost Function for Implants
-    //double implantMinFunc(const double* values) const;
-    //std::vector<double> trackImplantFrame(unsigned int volumeID, double * xyzypr) const;
+  // Bardiya Cost Function for Implants
+  // double implantMinFunc(const double* values) const;
+  // std::vector<double> trackImplantFrame(unsigned int volumeID, double * xyzypr) const;
 
-    void getFullDRR(unsigned int volumeID) const;
+  void getFullDRR(unsigned int volumeID) const;
 
+private:
+  bool calculate_viewport(const CoordFrame& modelview, const Camera& camera, double* viewport) const;
 
-  private:
-    bool calculate_viewport(const CoordFrame& modelview, const Camera& camera, double* viewport) const;
-
-    int optimization_method = (int)0;
-    int cf_model_select = (int)0;
-    Trial trial_;
-    std::vector <gpu::VolumeDescription*> volumeDescription_;
-    std::vector <gpu::View*> views_;
-    OptimizationParameters latest_optimization_parameters_;
+  int optimization_method = (int)0;
+  int cf_model_select = (int)0;
+  Trial trial_;
+  std::vector<gpu::VolumeDescription*> volumeDescription_;
+  std::vector<gpu::View*> views_;
+  OptimizationParameters latest_optimization_parameters_;
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
-    Buffer* rendered_drr_;
-    Buffer* rendered_rad_;
-    Buffer* background_mask_;
-    Buffer* drr_mask_;
+  Buffer* rendered_drr_;
+  Buffer* rendered_rad_;
+  Buffer* background_mask_;
+  Buffer* drr_mask_;
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-    gpu::Buffer* rendered_drr_;
-    gpu::Buffer* rendered_rad_;
-    gpu::Buffer* background_mask_;
-    gpu::Buffer* drr_mask_;
+  gpu::Buffer* rendered_drr_;
+  gpu::Buffer* rendered_rad_;
+  gpu::Buffer* background_mask_;
+  gpu::Buffer* drr_mask_;
 #endif
-  };
-
+};
 } // namespace XROMM
 
 #endif // XROMM_TRACKER_H

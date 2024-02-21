@@ -48,6 +48,7 @@
 #include "CoordFrame.hpp"
 namespace xromm
 {
+
 // The trial class contains all of the state information for an autoscoper run.
 // It should eventually become an in-memory representation of the xromm
 // autoscoper file format. Currently that file format does not however hold the
@@ -57,21 +58,20 @@ class VolumeTransform
 {
 public:
 
-    // Loads a trial file
-    VolumeTransform();
+  // Loads a trial file
+  VolumeTransform();
   ~VolumeTransform();
 
-    KeyCurve x_curve;
-    KeyCurve y_curve;
-    KeyCurve z_curve;
-    KeyCurve yaw_curve;
-    KeyCurve pitch_curve;
-    KeyCurve roll_curve;
+  KeyCurve x_curve;
+  KeyCurve y_curve;
+  KeyCurve z_curve;
+  KeyCurve yaw_curve;
+  KeyCurve pitch_curve;
+  KeyCurve roll_curve;
 
-    //CoordFrame volumeTrans; //FromWorldToVolume
-  CoordFrame volumeMatrix; //FromWorldToPivot
+  // CoordFrame volumeTrans; //FromWorldToVolume
+  CoordFrame volumeMatrix; // FromWorldToPivot
 };
-
 } // namespace xromm
 
 #endif // XROMM_VOLUME_TRANSFORM

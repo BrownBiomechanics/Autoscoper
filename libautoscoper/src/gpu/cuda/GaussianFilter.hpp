@@ -52,29 +52,28 @@ class GaussianFilter : public Filter
 {
 public:
 
-    GaussianFilter();
+  GaussianFilter();
 
-    virtual
-    ~GaussianFilter();
+  virtual
+  ~GaussianFilter();
 
-    // Apply the filter to the input image
+  // Apply the filter to the input image
 
-    virtual
-    void apply(const float* input, float* output, int width, int height);
+  virtual
+  void apply(const float* input, float* output, int width, int height);
 
-    // Accessors and mutators
+  // Accessors and mutators
 
-    float radius() const { return radius_; }
+  float radius() const { return radius_; }
 
-    void set_radius(float radius);
+  void set_radius(float radius);
 
 private:
 
-    float radius_;
-    float* gaussian_;
-    int filterSize_;
+  float radius_;
+  float* gaussian_;
+  int filterSize_;
 };
-
 } } // namespace xromm::cuda
 
 #endif // XROMM_GPU_GAUSSIAN_FILTER_HPP

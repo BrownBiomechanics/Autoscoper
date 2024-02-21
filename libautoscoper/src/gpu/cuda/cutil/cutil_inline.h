@@ -20,15 +20,15 @@
 #include <cutil_inline_runtime.h>
 #include <cutil_inline_drvapi.h>
 
-inline void print_NVCC_min_spec(const char *sSDKsample, const char *sNVCCReq, const char *sDriverReq)
+inline void print_NVCC_min_spec(const char* sSDKsample, const char* sNVCCReq, const char* sDriverReq)
 {
-    printf("CUDA %d.%02d Toolkit built this project.\n", CUDART_VERSION/1000, (CUDART_VERSION%100));
-    printf("  [ %s ] requirements:\n", sSDKsample);
-    printf(" -> CUDA %s Toolkit\n"  , sNVCCReq);
-    printf(" -> %s NVIDIA Display Driver.\n", sDriverReq);
+  printf("CUDA %d.%02d Toolkit built this project.\n", CUDART_VERSION / 1000, (CUDART_VERSION % 100));
+  printf("  [ %s ] requirements:\n", sSDKsample);
+  printf(" -> CUDA %s Toolkit\n", sNVCCReq);
+  printf(" -> %s NVIDIA Display Driver.\n", sDriverReq);
 }
 
-#define ALIGN_OFFSET(offset, alignment) offset = (offset + (alignment-1)) & ~((alignment-1))
+#define ALIGN_OFFSET(offset, alignment) offset = (offset + (alignment - 1)) & ~((alignment - 1))
 
 
 #endif // _CUTIL_INLINE_H_

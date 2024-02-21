@@ -52,32 +52,31 @@ class ContrastFilter : public Filter
 {
 public:
 
-    ContrastFilter();
+  ContrastFilter();
 
-    // Apply the filter to the input image
+  // Apply the filter to the input image
 
-    virtual
-    void apply(const float* input, float* output, int width, int height);
+  virtual
+  void apply(const float* input, float* output, int width, int height);
 
-    // Accessors and mutators
+  // Accessors and mutators
 
-    float alpha() const { return alpha_; }
+  float alpha() const { return alpha_; }
 
-    void set_alpha(float alpha) { alpha_ = alpha; }
+  void set_alpha(float alpha) { alpha_ = alpha; }
 
-    float beta() const { return beta_; }
+  float beta() const { return beta_; }
 
-    void set_beta(float beta) { beta_ = beta; }
+  void set_beta(float beta) { beta_ = beta; }
 
 private:
 
-    float alpha_;
+  float alpha_;
 
-    float beta_;
+  float beta_;
 
-    int size_;
+  int size_;
 };
-
 } } // namespace xromm::cuda
 
 #endif // XROMM_GPU_CONTRAST_FILTER_HPP

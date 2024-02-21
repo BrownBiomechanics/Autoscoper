@@ -49,7 +49,6 @@
 
 namespace xromm { namespace gpu
 {
-
 #include "gpu/opencl/kernel/RadRenderer.cl.h"
 
 static Program rad_renderer_program_;
@@ -58,19 +57,19 @@ static int num_rad_renderers = 0;
 
 RadRenderer::RadRenderer() : image_(0)
 {
-    image_plane_[0] = -1.0f;
-    image_plane_[1] = -1.0f;
-    image_plane_[2] =  2.0f;
-    image_plane_[3] =  2.0f;
+  image_plane_[0] = -1.0f;
+  image_plane_[1] = -1.0f;
+  image_plane_[2] =  2.0f;
+  image_plane_[3] =  2.0f;
 
-    viewport_[0] = -1.0f;
-    viewport_[1] = -1.0f;
-    viewport_[2] =  2.0f;
-    viewport_[3] =  2.0f;
+  viewport_[0] = -1.0f;
+  viewport_[1] = -1.0f;
+  viewport_[2] =  2.0f;
+  viewport_[3] =  2.0f;
 
-    std::stringstream name_stream;
-    name_stream << "RadRenderer" << (++num_rad_renderers);
-    name_ = name_stream.str();
+  std::stringstream name_stream;
+  name_stream << "RadRenderer" << (++num_rad_renderers);
+  name_ = name_stream.str();
 }
 
 RadRenderer::~RadRenderer()
@@ -83,14 +82,14 @@ RadRenderer::set_rad(const void* data, size_t width, size_t height, size_t bps)
 {
   cl_image_format format;
   format.image_channel_order = CL_R;
-    switch (bps) {
-        case 8:  format.image_channel_data_type = CL_UNORM_INT8; break;
-        case 16: format.image_channel_data_type = CL_UNORM_INT16; break;
-        default:
-            std::cerr << "RadRenderer::rad(): Unsupported bit depth "
-                 << bps << std::endl;
-            return;
-    }
+  switch (bps) {
+    case 8:  format.image_channel_data_type = CL_UNORM_INT8; break;
+    case 16: format.image_channel_data_type = CL_UNORM_INT16; break;
+    default:
+      std::cerr << "RadRenderer::rad(): Unsupported bit depth "
+                << bps << std::endl;
+      return;
+  }
 
   if (image_) delete image_;
   size_t dims[3] = { width, height, 1 };
@@ -101,26 +100,26 @@ RadRenderer::set_rad(const void* data, size_t width, size_t height, size_t bps)
 void
 RadRenderer::set_image_plane(float x, float y, float width, float height)
 {
-    image_plane_[0] = x;
-    image_plane_[1] = y;
-    image_plane_[2] = width;
-    image_plane_[3] = height;
+  image_plane_[0] = x;
+  image_plane_[1] = y;
+  image_plane_[2] = width;
+  image_plane_[3] = height;
 }
 
 void
 RadRenderer::set_viewport(float x, float y, float width, float height)
 {
-    viewport_[0] = x;
-    viewport_[1] = y;
-    viewport_[2] = width;
-    viewport_[3] = height;
+  viewport_[0] = x;
+  viewport_[1] = y;
+  viewport_[2] = width;
+  viewport_[3] = height;
 }
 
 void
 RadRenderer::render(const Buffer* buffer, unsigned width, unsigned height) const
 {
   Kernel* kernel = rad_renderer_program_.compile(
-                    RadRenderer_cl, "rad_render_kernel");
+    RadRenderer_cl, "rad_render_kernel");
 
   kernel->addBufferArg(buffer);
   kernel->addArg(width);
@@ -135,13 +134,12 @@ RadRenderer::render(const Buffer* buffer, unsigned width, unsigned height) const
   kernel->addArg(viewport_[3]);
   kernel->addImageArg(image_);
 
-    // Calculate the block and grid sizes.
+  // Calculate the block and grid sizes.
   kernel->block2d(BX, BY);
-    kernel->grid2d((width+BX-1)/BX, (height+BY-1)/BY);
+  kernel->grid2d((width + BX - 1) / BX, (height + BY - 1) / BY);
 
   kernel->launch();
 
   delete kernel;
 }
-
 } } // namespace xromm::opencl

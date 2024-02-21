@@ -43,17 +43,15 @@
 #define XROMM_GPU_COMPOSITOR_KERNELS_H
 
 namespace xromm { namespace gpu {
-
 void composite(float* src1,
                float* src2,
-         float* src3,
-         float* src4,
+               float* src3,
+               float* src4,
                float* dest,
                size_t width,
                size_t height);
 
 void fill(float* src1, unsigned int size, float val);
-
 } } // namespace xromm::cuda
 
 #endif // XROMM_GPU_COMPOSITOR_KERNELS_H

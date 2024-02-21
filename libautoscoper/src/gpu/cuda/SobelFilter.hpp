@@ -52,36 +52,39 @@ class SobelFilter : public Filter
 {
 public:
 
-    SobelFilter();
+  SobelFilter();
 
-    virtual void apply(const float* input,
-                       float* output,
-                       int width,
-                       int height);
+  virtual void apply(const float* input,
+                     float* output,
+                     int width,
+                     int height);
 
-    float getScale() const {
-        return scale_;
-    }
+  float getScale() const
+  {
+    return scale_;
+  }
 
-    void setScale(float scale) {
-        scale_ = scale;
-    }
+  void setScale(float scale)
+  {
+    scale_ = scale;
+  }
 
-    float getBlend() const {
-        return blend_;
-    }
+  float getBlend() const
+  {
+    return blend_;
+  }
 
-    void setBlend(float blend) {
-        blend_ = blend;
-    }
+  void setBlend(float blend)
+  {
+    blend_ = blend;
+  }
 
 private:
 
-    float scale_;
+  float scale_;
 
-    float blend_;
+  float blend_;
 };
-
 } } // namespace xromm::cuda
 
 #endif // XROMM_GPU_SOBEL_FILTER_HPP

@@ -52,45 +52,45 @@ class QToolButton;
 class QCheckBox;
 
 namespace xromm{
-  namespace gpu{
-    class Filter;
-  }
+namespace gpu{
+class Filter;
+}
 }
 using xromm::gpu::Filter;
 
-class FilterTreeWidgetItem :  public QObject ,public  QTreeWidgetItem
+class FilterTreeWidgetItem :  public QObject, public  QTreeWidgetItem
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
   FilterTreeWidgetItem(int type);
-    //FilterTreeWidgetItem(QString _name);
-  //FilterTreeWidgetItem(QString _name, QTreeWidget * parent);
+  // FilterTreeWidgetItem(QString _name);
+  // FilterTreeWidgetItem(QString _name, QTreeWidget * parent);
   ~FilterTreeWidgetItem();
 
-  QString getName(){return name;}
-  void setName(QString _name){name = _name;}
-  std::vector<FilterTreeWidgetParameter * >* getParameters(){return &parameters;}
+  QString getName() { return name; }
+  void setName(QString _name) { name = _name; }
+  std::vector<FilterTreeWidgetParameter*>* getParameters() { return &parameters; }
 
-  void addToModelViewTreeWidgetItem(QTreeWidget * treewidget, ModelViewTreeWidgetItem * modelViewWidget, bool addToTree = true);
+  void addToModelViewTreeWidgetItem(QTreeWidget* treewidget, ModelViewTreeWidgetItem* modelViewWidget, bool addToTree = true);
 
-  Filter * getFilter () {return m_filter;}
-  void save(std::ofstream & file);
-  void load(std::ifstream & file);
+  Filter* getFilter() { return m_filter; }
+  void save(std::ofstream& file);
+  void load(std::ifstream& file);
 
 private:
   void init();
   QString name;
 
-  std::vector<FilterTreeWidgetParameter * > parameters;
+  std::vector<FilterTreeWidgetParameter*> parameters;
   bool settingsShown;
 
-  QFrame *pFrameSettings;
+  QFrame* pFrameSettings;
   QToolButton* settingsButton;
   QCheckBox* visibleCheckBox;
 
   int m_type;
-  Filter * m_filter;
+  Filter* m_filter;
 
 protected:
 

@@ -48,8 +48,6 @@
 #define BY 16
 
 namespace xromm { namespace gpu {
-
-
 #include "gpu/opencl/kernel/SharpenFilter.cl.h"
 
 static Program sharpen_program_;
@@ -57,7 +55,7 @@ static Program sharpen_program_;
 static int num_sharpen_filters = 0;
 
 SharpenFilter::SharpenFilter()
-  : Filter(XROMM_GPU_SHARPEN_FILTER,""),
+  : Filter(XROMM_GPU_SHARPEN_FILTER, ""),
     radius_(1),
     contrast_(1),
     sharpen_(NULL)
@@ -89,7 +87,7 @@ void SharpenFilter::set_radius(float radius)
 
 void SharpenFilter::set_contrast(float contrast)
 {
-  if(contrast<1)
+  if (contrast < 1)
     contrast = 1;
 
   contrast_ = contrast;
@@ -103,22 +101,22 @@ void SharpenFilter::set_threshold(float threshold)
 /* makes a Gaussian blur filter (filterSize*filterSize) with stdev radius_ */
 void SharpenFilter::makeFilter()
 {
-  int filterRadius= 3*radius_;
-  filterSize_ = 2*filterRadius + 1;
+  int filterRadius = 3 * radius_;
+  filterSize_ = 2 * filterRadius + 1;
 
-  if(filterSize_ == 1) return;
+  if (filterSize_ == 1)return;
 
   size_t nBytes = sizeof(float) * filterSize_ * filterSize_;
   float* sharpen = new float[nBytes];
 
   float sum = 0.0f;
 
-  for(int i = 0; i < filterSize_; ++i){
-    for(int j = 0; j < filterSize_ ; ++j){
-      sharpen[i*filterSize_+j] = exp((
-            (i-filterRadius)*(i-filterRadius)+
-            (j-filterRadius)*(j-filterRadius)) / (-2.0*radius_));
-      sum = sum + sharpen[i*filterSize_ +j];
+  for (int i = 0; i < filterSize_; ++i) {
+    for (int j = 0; j < filterSize_; ++j) {
+      sharpen[i * filterSize_ + j] = exp((
+                                           (i - filterRadius) * (i - filterRadius) +
+                                           (j - filterRadius) * (j - filterRadius)) / (-2.0 * radius_));
+      sum = sum + sharpen[i * filterSize_ + j];
     }
   }
 
@@ -126,11 +124,11 @@ void SharpenFilter::makeFilter()
 
   /* normalize the filter */
 
-  for(int i = 0 ; i < filterSize_; ++i){
-    for(int j = 0 ; j < filterSize_; ++j) {
-      temp = sharpen[i*filterSize_ +j];
-      sharpen[i*filterSize_ + j] = temp / sum;
-     }
+  for (int i = 0; i < filterSize_; ++i) {
+    for (int j = 0; j < filterSize_; ++j) {
+      temp = sharpen[i * filterSize_ + j];
+      sharpen[i * filterSize_ + j] = temp / sum;
+    }
   }
 
   /* copy the filter to GPU */
@@ -143,23 +141,20 @@ void SharpenFilter::makeFilter()
 
 void
 SharpenFilter::apply(
-    const Buffer* input,
-    Buffer* output,
-    int width,
-    int height)
+  const Buffer* input,
+  Buffer* output,
+  int width,
+  int height)
 {
-  if (filterSize_ == 1 )
-  {
+  if (filterSize_ == 1) {
     /* if filterSize_ = 1, filter does not change image */
     input->copy(output);
-  }
-  else
-  {
+  } else {
     Kernel* kernel = sharpen_program_.compile(
-                  SharpenFilter_cl, "sharpen_filter_kernel");
+      SharpenFilter_cl, "sharpen_filter_kernel");
 
     kernel->block2d(BX, BY);
-    kernel->grid2d((width-1)/BX+1, (height-1)/BY+1);
+    kernel->grid2d((width - 1) / BX + 1, (height - 1) / BY + 1);
 
     kernel->addBufferArg(input);
     kernel->addBufferArg(output);
@@ -175,5 +170,4 @@ SharpenFilter::apply(
     delete kernel;
   }
 }
-
 } } // namespace xromm::cuda

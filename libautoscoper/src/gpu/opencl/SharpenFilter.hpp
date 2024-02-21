@@ -56,10 +56,10 @@ public:
   virtual ~SharpenFilter();
 
   // Apply the filter to the input image
-    virtual void apply(const Buffer* input,
-                       Buffer* output,
-                       int width,
-                       int height);
+  virtual void apply(const Buffer* input,
+                     Buffer* output,
+                     int width,
+                     int height);
 
   // Accessors and mutators
   float radius() const { return radius_; }
@@ -68,7 +68,7 @@ public:
   float contrast() const { return contrast_; }
   void set_contrast(float contrast);
 
-  float threshold() const {return threshold_; }
+  float threshold() const { return threshold_; }
   void set_threshold(float threshold);
 
 private:
@@ -81,7 +81,6 @@ private:
 
   void makeFilter();
 };
-
 } } // namespace xromm::opencl
 
 #endif // XROMM_GPU_SHARPEN_FILTER_HPP

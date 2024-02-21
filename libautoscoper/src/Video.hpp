@@ -58,58 +58,58 @@ class Video
 {
 public:
 
-    typedef std::vector<std::string>::size_type size_type;
+  typedef std::vector<std::string>::size_type size_type;
 
-    // Loads a directory of video frames -- only supports TIFF
+  // Loads a directory of video frames -- only supports TIFF
 
-    Video(const std::string& dirname);
+  Video(const std::string& dirname);
 
-    Video(const Video& video);
+  Video(const Video& video);
 
-    ~Video();
+  ~Video();
 
-    Video& operator=(const Video& video);
+  Video& operator=(const Video& video);
 
-    // Accessors
+  // Accessors
 
   bool create_background_image();
 
-    const std::string& dirname() const { return dirname_; }
+  const std::string& dirname() const { return dirname_; }
 
-    const std::string& filename(size_type i) const { return filenames_.at(i); }
+  const std::string& filename(size_type i) const { return filenames_.at(i); }
 
-    size_type num_frames() const { return filenames_.size(); }
+  size_type num_frames() const { return filenames_.size(); }
 
-    void set_frame(size_type i);
+  void set_frame(size_type i);
 
-    size_t frame() const { return frame_; }
+  size_t frame() const { return frame_; }
 
-    // Frame information
+  // Frame information
 
-    size_type width() const;
+  size_type width() const;
 
-    size_type height() const;
+  size_type height() const;
 
-    size_type bps() const;
+  size_type bps() const;
 
-    const void* data() const;
+  const void* data() const;
 
   const float* background() const { return background_; }
 
 private:
-    template <typename T> void create_background_image_internal(TiffImage* tmp_img);
+  template <typename T>
+  void create_background_image_internal(TiffImage* tmp_img);
 
-    std::string dirname_;
+  std::string dirname_;
 
-    std::vector<std::string> filenames_;
+  std::vector<std::string> filenames_;
 
-    size_type frame_;
+  size_type frame_;
 
-    TiffImage* image_;
+  TiffImage* image_;
 
   float* background_;
 };
-
 } // namespace xromm
 
 #endif // XROMM_VIDEO_HPP

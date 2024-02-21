@@ -80,37 +80,35 @@ void cuda_ncc_kernel(float* f, float meanF, float* g, float meanG, float* mask,
 
 namespace xromm
 {
-
 namespace gpu
 {
-
 void ncc_init(unsigned int max_n, unsigned int maxNumThreads)
 {
-    if (g_max_n != max_n || g_maxNumThreads != maxNumThreads) {
-        ncc_deinit();
+  if (g_max_n != max_n || g_maxNumThreads != maxNumThreads) {
+    ncc_deinit();
 
-        unsigned int numThreads, numBlocks, sizeMem;
-        get_device_params(max_n, maxNumThreads, numThreads, numBlocks, sizeMem);
+    unsigned int numThreads, numBlocks, sizeMem;
+    get_device_params(max_n, maxNumThreads, numThreads, numBlocks, sizeMem);
 
-        cutilSafeCall(cudaMalloc(&d_sums, numBlocks*sizeof(float)));
-        cutilSafeCall(cudaMalloc(&d_nums, max_n*sizeof(float)));
-        cutilSafeCall(cudaMalloc(&d_den1s, max_n*sizeof(float)));
-        cutilSafeCall(cudaMalloc(&d_den2s, max_n*sizeof(float)));
+    cutilSafeCall(cudaMalloc(&d_sums, numBlocks * sizeof(float)));
+    cutilSafeCall(cudaMalloc(&d_nums, max_n * sizeof(float)));
+    cutilSafeCall(cudaMalloc(&d_den1s, max_n * sizeof(float)));
+    cutilSafeCall(cudaMalloc(&d_den2s, max_n * sizeof(float)));
 
-        g_max_n = max_n;
-        g_maxNumThreads = maxNumThreads;
-    }
+    g_max_n = max_n;
+    g_maxNumThreads = maxNumThreads;
+  }
 }
 
 void ncc_deinit()
 {
-    cutilSafeCall(cudaFree(d_sums));
-    cutilSafeCall(cudaFree(d_nums));
-    cutilSafeCall(cudaFree(d_den1s));
-    cutilSafeCall(cudaFree(d_den2s));
+  cutilSafeCall(cudaFree(d_sums));
+  cutilSafeCall(cudaFree(d_nums));
+  cutilSafeCall(cudaFree(d_den1s));
+  cutilSafeCall(cudaFree(d_den2s));
 
-    g_max_n = 0;
-    g_maxNumThreads = 0;
+  g_max_n = 0;
+  g_maxNumThreads = 0;
 }
 
 float ncc(float* f, float* g, float* mask, unsigned int n)
@@ -119,24 +117,22 @@ float ncc(float* f, float* g, float* mask, unsigned int n)
   float meanF = sum(f, n) / nbPixel;
   float meanG = sum(g, n) / nbPixel;
 
-    unsigned int numThreads, numBlocks, sizeMem;
-    get_device_params(n, g_maxNumThreads, numThreads, numBlocks, sizeMem);
+  unsigned int numThreads, numBlocks, sizeMem;
+  get_device_params(n, g_maxNumThreads, numThreads, numBlocks, sizeMem);
 
-  cuda_ncc_kernel<<<numBlocks, numThreads, sizeMem>>> (f, meanF, g, meanG, mask,
-                                                        d_nums, d_den1s,
-                                                        d_den2s, n);
+  cuda_ncc_kernel << < numBlocks, numThreads, sizeMem >> > (f, meanF, g, meanG, mask,
+                                                            d_nums, d_den1s,
+                                                            d_den2s, n);
 
-    float den = sqrt(sum(d_den1s,n)*sum(d_den2s,n));
+  float den = sqrt(sum(d_den1s, n) * sum(d_den2s, n));
 
-    if (den < 1e-5) {
-        return 1e5;
-    }
+  if (den < 1e-5) {
+    return 1e5;
+  }
 
-    return sum(d_nums,n)/den;
+  return sum(d_nums, n) / den;
 }
-
 } // namespace gpu
-
 } // namespace xromm
 
 //////// Helper Function Definitions ////////
@@ -147,51 +143,51 @@ void get_device_params(unsigned int n,
                        unsigned int& numBlocks,
                        unsigned int& sizeMem)
 {
-    numThreads = n < maxNumThreads? n: maxNumThreads;
-    numBlocks = (n+numThreads-1)/numThreads;
-    sizeMem = numThreads*sizeof(float);
+  numThreads = n < maxNumThreads ? n : maxNumThreads;
+  numBlocks = (n + numThreads - 1) / numThreads;
+  sizeMem = numThreads * sizeof(float);
 }
 
 float sum(float* f, unsigned int n)
 {
-    unsigned int numThreads, numBlocks, sizeMem;
+  unsigned int numThreads, numBlocks, sizeMem;
+  get_device_params(n, g_maxNumThreads, numThreads, numBlocks, sizeMem);
+
+  while (n > 1) {
+    sum_kernel << < numBlocks, numThreads, sizeMem >> > (f, d_sums, n);
+    n = numBlocks;
     get_device_params(n, g_maxNumThreads, numThreads, numBlocks, sizeMem);
+    f = d_sums;
+  }
 
-    while (n > 1) {
-        sum_kernel<<<numBlocks, numThreads, sizeMem>>>(f, d_sums, n);
-        n = numBlocks;
-        get_device_params(n, g_maxNumThreads, numThreads, numBlocks, sizeMem);
-        f = d_sums;
-    }
-
-    float h_sum;
-    cutilSafeCall(cudaMemcpy(&h_sum,
-                             d_sums,
-                             sizeof(float),
-                             cudaMemcpyDeviceToHost));
-    return h_sum;
+  float h_sum;
+  cutilSafeCall(cudaMemcpy(&h_sum,
+                           d_sums,
+                           sizeof(float),
+                           cudaMemcpyDeviceToHost));
+  return h_sum;
 }
 
 __global__
 void sum_kernel(float* f, float* sums, unsigned int n)
 {
-    extern __shared__ float sdata[];
+  extern __shared__ float sdata[];
 
-    unsigned int i = blockDim.x*blockIdx.x+threadIdx.x;
+  unsigned int i = blockDim.x * blockIdx.x + threadIdx.x;
 
-    sdata[threadIdx.x] = (i < n) ? f[i] : 0.0f;
+  sdata[threadIdx.x] = (i < n) ? f[i] : 0.0f;
 
+  __syncthreads();
+  for (unsigned int s = blockDim.x / 2; s > 0; s >>= 1) {
+    if (threadIdx.x < s) {
+      sdata[threadIdx.x] += sdata[threadIdx.x + s];
+    }
     __syncthreads();
-    for(unsigned int s = blockDim.x/2; s > 0; s >>= 1) {
-        if (threadIdx.x < s) {
-            sdata[threadIdx.x] += sdata[threadIdx.x + s];
-        }
-        __syncthreads();
-    }
+  }
 
-    if (threadIdx.x == 0) {
-        sums[blockIdx.x] = sdata[0];
-    }
+  if (threadIdx.x == 0) {
+    sums[blockIdx.x] = sdata[0];
+  }
 }
 
 __global__
@@ -199,20 +195,19 @@ void cuda_ncc_kernel(float* f, float meanF, float* g, float meanG, float* mask,
                      float* nums, float* den1s, float* den2s,
                      unsigned int n)
 {
-    unsigned int i = blockDim.x*blockIdx.x+threadIdx.x;
+  unsigned int i = blockDim.x * blockIdx.x + threadIdx.x;
 
   if (i < n && mask[i] > 0.5f /*&& f[i] > 0.8f*/) {
-        float fMinusMean = f[i]-meanF;
-        float gMinusMean = g[i]-meanG;
+    float fMinusMean = f[i] - meanF;
+    float gMinusMean = g[i] - meanG;
 
-        nums[i] = fMinusMean*gMinusMean;
-        den1s[i] = fMinusMean*fMinusMean;
-        den2s[i] = gMinusMean*gMinusMean;
-    }
-    else {
-        nums[i] = 0.0f;
-        den1s[i] = 0.0f;
-        den2s[i] = 0.0f;
-    }
+    nums[i] = fMinusMean * gMinusMean;
+    den1s[i] = fMinusMean * fMinusMean;
+    den2s[i] = gMinusMean * gMinusMean;
+  } else {
+    nums[i] = 0.0f;
+    den1s[i] = 0.0f;
+    den2s[i] = 0.0f;
+  }
 }
 

@@ -9,16 +9,16 @@
  *
  */
 
- /*
-* Copyright 1993-2010 NVIDIA Corporation.  All rights reserved.
-*
-* NVIDIA Corporation and its licensors retain all intellectual property and
-* proprietary rights in and to this software and related documentation and
-* any modifications thereto.  Any use, reproduction, disclosure, or distribution
-* of this software and related documentation without an express license
-* agreement from NVIDIA Corporation is strictly prohibited.
-*
-*/
+/*
+ * Copyright 1993-2010 NVIDIA Corporation.  All rights reserved.
+ *
+ * NVIDIA Corporation and its licensors retain all intellectual property and
+ * proprietary rights in and to this software and related documentation and
+ * any modifications thereto.  Any use, reproduction, disclosure, or distribution
+ * of this software and related documentation without an express license
+ * agreement from NVIDIA Corporation is strictly prohibited.
+ *
+ */
 
 #ifndef CUTIL_GL_ERROR
 #define CUTIL_GL_ERROR
@@ -35,7 +35,7 @@
 #endif
 
 // includes, graphics
-#if defined (__APPLE__) || defined(MACOSX)
+#if defined(__APPLE__) || defined(MACOSX)
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #else
@@ -52,14 +52,13 @@
 //! @note This function should be used via the CHECK_ERROR_GL() macro
 ////////////////////////////////////////////////////////////////////////////
 CUTBoolean CUTIL_API
-cutCheckErrorGL( const char* file, const int line)
+cutCheckErrorGL(const char* file, const int line)
 {
   CUTBoolean ret_val = CUTTrue;
 
   // check for error
   GLenum gl_error = glGetError();
-  if (gl_error != GL_NO_ERROR)
-  {
+  if (gl_error != GL_NO_ERROR) {
 #ifdef _WIN32
     char tmpStr[512];
     // NOTE: "%s(%i) : " allows Visual Studio to directly jump to the file at the right line
@@ -77,21 +76,21 @@ cutCheckErrorGL( const char* file, const int line)
 #ifdef _DEBUG
 
 #define CUT_CHECK_ERROR_GL()                                               \
-  if( CUTFalse == cutCheckErrorGL( __FILE__, __LINE__)) {                  \
-  exit(EXIT_FAILURE);                                                  \
+  if (CUTFalse == cutCheckErrorGL( __FILE__, __LINE__)) {                  \
+    exit(EXIT_FAILURE);                                                  \
   }
 // Use this one to do : if(CUT_GL_HAS_ERROR)
 #define CUT_GL_HAS_ERROR (cutCheckErrorGL( __FILE__, __LINE__) ? CUTFalse : CUTTrue )
 #ifdef _WIN32
 #define CUT_CHECK_ERROR_GL2()\
-    if(CUT_GL_HAS_ERROR)\
+  if (CUT_GL_HAS_ERROR)\
   {\
     MessageBox(NULL, "Error in OpenGL. Check VStudio Output...", "Error", MB_OK);\
     exit(EXIT_FAILURE);\
   }
 #else // Not _WIN32:
 #define CUT_CHECK_ERROR_GL2()\
-    if(CUT_GL_HAS_ERROR)\
+  if (CUT_GL_HAS_ERROR)\
   {\
     printf("press a key...\n");\
     getc(stdin);\

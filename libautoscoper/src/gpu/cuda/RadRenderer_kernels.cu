@@ -47,57 +47,52 @@
 //////// Image Rendering Kernel ////////
 
 __global__
-void image_render_kernel(cudaTextureObject_t tex,float* output, int width, int height, float u0,
+void image_render_kernel(cudaTextureObject_t tex, float* output, int width, int height, float u0,
                          float v0, float u1, float v1, float u2, float v2,
                          float u3, float v3);
 
 namespace xromm
 {
-
 namespace gpu
 {
-
-void video_render(cudaTextureObject_t tex,float* output, int width, int height, float u0,
+void video_render(cudaTextureObject_t tex, float* output, int width, int height, float u0,
                   float v0, float u1, float v1, float u2, float v2,
                   float u3, float v3)
 {
-    // Calculate the block and grid sizes.
-    dim3 blockDim(32, 32);
-    dim3 gridDim((width+blockDim.x-1)/blockDim.x,
-                 (height+blockDim.y-1)/blockDim.y);
+  // Calculate the block and grid sizes.
+  dim3 blockDim(32, 32);
+  dim3 gridDim((width + blockDim.x - 1) / blockDim.x,
+               (height + blockDim.y - 1) / blockDim.y);
 
-    image_render_kernel<<<gridDim, blockDim>>>(tex,output, width, height,
-                                               u0, v0, u1, v1, u2, v2,
-                                               u3, v3);
+  image_render_kernel << < gridDim, blockDim >> > (tex, output, width, height,
+                                                   u0, v0, u1, v1, u2, v2,
+                                                   u3, v3);
 }
-
 } // namespace gpu
-
 } // namespace xromm
 
 __global__
-void image_render_kernel(cudaTextureObject_t tex,float* output, int width, int height, float u0,
+void image_render_kernel(cudaTextureObject_t tex, float* output, int width, int height, float u0,
                          float v0, float u1, float v1, float u2, float v2,
                          float u3, float v3)
 {
-  int x = blockIdx.x*blockDim.x+threadIdx.x;
-    int y = blockIdx.y*blockDim.y+threadIdx.y;
+  int x = blockIdx.x * blockDim.x + threadIdx.x;
+  int y = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (x > width-1 || y > height-1) {
-        return;
-    }
+  if (x > width - 1 || y > height - 1) {
+    return;
+  }
 
-    float u = u2+u3*(x/(float)width);
-    float v = v2+v3*(y/(float)height);
+  float u = u2 + u3 * (x / (float)width);
+  float v = v2 + v3 * (y / (float)height);
 
-    float s = (u-u0)/u1+0.5f;
-    float t = 0.5f-(v-v0)/v1;
+  float s = (u - u0) / u1 + 0.5f;
+  float t = 0.5f - (v - v0) / v1;
 
-    if (s < 0.0f || t < 0.0f || s > 1.0f || t > 1.0f) {
-        output[width*y+x] = 0.0f;
-    }
-    else {
-        output[width*y+x] = 1.0f-tex2D<float>(tex, s, t);
-    }
+  if (s < 0.0f || t < 0.0f || s > 1.0f || t > 1.0f) {
+    output[width * y + x] = 0.0f;
+  } else {
+    output[width * y + x] = 1.0f - tex2D<float>(tex, s, t);
+  }
 }
 

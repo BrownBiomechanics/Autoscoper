@@ -57,25 +57,22 @@
 
 namespace xromm
 {
+std::istream& safeGetline(std::istream& is, std::string& t)
+{
+  t.clear();
 
-  std::istream& safeGetline(std::istream& is, std::string& t)
-  {
-    t.clear();
+  // The characters in the stream are read one-by-one using a std::streambuf.
+  // That is faster than reading them one-by-one using the std::istream.
+  // Code that uses streambuf this way must be guarded by a sentry object.
+  // The sentry object performs various tasks,
+  // such as thread synchronization and updating the stream state.
 
-    // The characters in the stream are read one-by-one using a std::streambuf.
-    // That is faster than reading them one-by-one using the std::istream.
-    // Code that uses streambuf this way must be guarded by a sentry object.
-    // The sentry object performs various tasks,
-    // such as thread synchronization and updating the stream state.
+  std::istream::sentry se(is, true);
+  std::streambuf* sb = is.rdbuf();
 
-    std::istream::sentry se(is, true);
-    std::streambuf* sb = is.rdbuf();
-
-    for (;;)
-    {
-      int c = sb->sbumpc();
-      switch (c)
-      {
+  for (;;) {
+    int c = sb->sbumpc();
+    switch (c) {
       case '\n':
         return is;
       case '\r':
@@ -84,455 +81,451 @@ namespace xromm
         return is;
       case EOF:
         // Also handle the case when the last line has no line ending
-        if (t.empty())
-        {
+        if (t.empty()) {
           is.setstate(std::ios::eofbit);
         }
         return is;
       default:
         t += (char)c;
-      }
     }
   }
+}
 
-  std::string mayaCamReadingError(const std::string& version, int line, const std::string& filename, const std::string& message)
-  {
-    return std::string("Invalid MayaCam ") + version + ".0 file. " + message + "\n"
-          "See line " + std::to_string(line) + " in " + filename + ".\n"
-          "\n"
-          "Please check the MayaCam " + version + ".0 specification.\n"
-          "See https://autoscoper.readthedocs.io/en/latest/file-specifications/camera-calibration.html#mayacam-" + version + "-0";
-  }
+std::string mayaCamReadingError(const std::string& version, int line, const std::string& filename, const std::string& message)
+{
+  return std::string("Invalid MayaCam ") + version + ".0 file. " + message + "\n"
+         "See line " + std::to_string(line) + " in " + filename + ".\n"
+         "\n"
+         "Please check the MayaCam " + version + ".0 specification.\n"
+         "See https://autoscoper.readthedocs.io/en/latest/file-specifications/camera-calibration.html#mayacam-" + version + "-0";
+}
 
-  std::string vtkCamReadingError(const std::string& version, int line, const std::string& filename, const std::string& message) {
-    return std::string("Invalid VTKCam ") + version + ".0 file. " + message + "\n"
-      "See line " + std::to_string(line) + " in " + filename + ".\n"
-      "\n"
-      "Please check the VTKCam " + version + ".0 specification.\n"
-      "See https://autoscoper.readthedocs.io/en/latest/file-specifications/camera-calibration.html#vtkcam-" + version + "-0";
-  }
+std::string vtkCamReadingError(const std::string& version, int line, const std::string& filename, const std::string& message)
+{
+  return std::string("Invalid VTKCam ") + version + ".0 file. " + message + "\n"
+         "See line " + std::to_string(line) + " in " + filename + ".\n"
+         "\n"
+         "Please check the VTKCam " + version + ".0 specification.\n"
+         "See https://autoscoper.readthedocs.io/en/latest/file-specifications/camera-calibration.html#vtkcam-" + version + "-0";
+}
 
-  bool parseArray(std::string& value, double* a, int n) {
-    value.erase(std::remove(value.begin(), value.end(), '['), value.end());
-    value.erase(std::remove(value.begin(), value.end(), ']'), value.end());
-    value.erase(std::remove(value.begin(), value.end(), ','), value.end());
-    std::istringstream value_stream(value);
-    for (int i = 0; i < n; ++i) {
-      if (!(value_stream >> a[i])) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  Camera::Camera(const std::string& mayacam) : mayacam_(mayacam)
-  {
-    // Check the file extension
-    std::string::size_type ext_pos = mayacam_.find_last_of('.');
-    if (ext_pos == std::string::npos) {
-        throw std::runtime_error("Invalid MayaCam file");
-    }
-    std::string ext = mayacam_.substr(ext_pos + 1);
-    // if its a yaml file load it as a vtk camera
-    if (ext.compare("json") == 0) {
-        loadVTKCamera(mayacam_);
-    }
-    else {
-      std::fstream file(mayacam.c_str(), std::ios::in);
-      if (file.is_open() == false) {
-        throw std::runtime_error("File not found: " + mayacam);
-      }
-
-      std::string csv_line;
-      safeGetline(file, csv_line);
-      file.close();
-      if (csv_line.compare("image size") == 0)
-      {
-        loadMayaCam2(mayacam);
-      }
-      else
-      {
-        loadMayaCam1(mayacam);
-      }
+bool parseArray(std::string& value, double* a, int n)
+{
+  value.erase(std::remove(value.begin(), value.end(), '['), value.end());
+  value.erase(std::remove(value.begin(), value.end(), ']'), value.end());
+  value.erase(std::remove(value.begin(), value.end(), ','), value.end());
+  std::istringstream value_stream(value);
+  for (int i = 0; i < n; ++i) {
+    if (!(value_stream >> a[i])) {
+      return false;
     }
   }
+  return true;
+}
 
-  void Camera::loadMayaCam1(const std::string& mayacam)
-  {
-    std::cout << "Reading MayaCam 1.0 file: " << mayacam << std::endl;
-
+Camera::Camera(const std::string& mayacam) : mayacam_(mayacam)
+{
+  // Check the file extension
+  std::string::size_type ext_pos = mayacam_.find_last_of('.');
+  if (ext_pos == std::string::npos) {
+    throw std::runtime_error("Invalid MayaCam file");
+  }
+  std::string ext = mayacam_.substr(ext_pos + 1);
+  // if its a yaml file load it as a vtk camera
+  if (ext.compare("json") == 0) {
+    loadVTKCamera(mayacam_);
+  } else {
     std::fstream file(mayacam.c_str(), std::ios::in);
-    double csv_vals[5][3] = {0.};
-    std::string csv_line, csv_val;
-    int line_count = 0;
-
-    for (int i = 0; i < 5 && safeGetline(file, csv_line); ++i) {
-      int read_count = 0;
-      std::istringstream csv_line_stream(csv_line);
-      for (int j = 0; j < 3 && std::getline(csv_line_stream, csv_val, ','); ++j) {
-        std::istringstream csv_val_stream(csv_val);
-        if (!(csv_val_stream >> csv_vals[i][j])) {
-          break;
-        }
-        ++read_count;
-      }
-      if (read_count != 3) {
-        throw std::runtime_error(
-              mayaCamReadingError("1", /* line= */ i + 1, mayacam, "There was an error reading values."));
-      }
-      ++line_count;
+    if (file.is_open() == false) {
+      throw std::runtime_error("File not found: " + mayacam);
     }
+
+    std::string csv_line;
+    safeGetline(file, csv_line);
     file.close();
-
-    if (line_count != 5) {
-      throw std::runtime_error(
-            mayaCamReadingError("1", /* line= */ 1, mayacam, "There was an error reading values."));
-    }
-
-    // Line 1: Camera location in world space
-    // Line 2: Rotations around the local x, y, and z axes of the camera. The
-    //         order of rotation is z, y, then x.
-    // Line 3: Position of the film plane relative to the camera. Given in the
-    //         camera's local space. These values are calculated using the
-    //         values in lines 4 and 5.
-    // Line 4: u0, v0, Z
-    // Line 5: scale, size_[0], size_[1]
-    //
-    // If the image width and height are set to 0 they are assumed to be 1024.
-    //
-    // The equations used to calculate the position and size of the film plane
-    // are as follows:
-    //
-    // image_plane_x = scale*(size_[0]/2-u0)
-    // image_plane_y = scale*(size_[1]/2-v0)
-    // image_plane_z = -scale*Z
-    //
-    // image_plane_width = scale*size_[0]
-    // image_plane_height = scale*size_[1]
-    //
-    // All units are in centimeters
-
-    double* translation = csv_vals[0];
-    double* rotation = csv_vals[1];
-    double* image_plane_trans = csv_vals[2];
-
-    double u0 = csv_vals[3][0] - 1; //Note: we should adjust here for the matlab offset of the old Mayacam
-    double v0 = csv_vals[3][1] - 1;
-    double z = csv_vals[3][2];
-
-    // Default to 1024x1024
-    size_[0] = csv_vals[4][1];
-    if (size_[0] == 0) size_[0] = 1024;
-
-    size_[1] = csv_vals[4][2];
-    if (size_[1] == 0) size_[1] = 1024;
-
-    // Calculate the cameras local coordinate frame
-    double xyzypr[6] = { translation[0], translation[1], translation[2],
-      rotation[2], rotation[1], rotation[0] };
-    coord_frame_ = CoordFrame::from_xyzypr(xyzypr);
-
-    // Calculate the viewport
-    if (z < 0) {
-      calculateViewport(u0, v0, -z, -z);
+    if (csv_line.compare("image size") == 0) {
+      loadMayaCam2(mayacam);
     } else {
-      calculateViewport(u0, v0, z, z);
+      loadMayaCam1(mayacam);
     }
-
-    // Calculate the Image Plane
-    calculateImagePlane(u0, v0, z);
   }
+}
 
-  void Camera::loadMayaCam2(const std::string& mayacam)
-  {
-    std::cout << "Reading MayaCam 2.0 file: " << mayacam << std::endl;
+void Camera::loadMayaCam1(const std::string& mayacam)
+{
+  std::cout << "Reading MayaCam 1.0 file: " << mayacam << std::endl;
 
-    // camera matrix
-    double K[3][3] = {0.};
+  std::fstream file(mayacam.c_str(), std::ios::in);
+  double csv_vals[5][3] = { 0. };
+  std::string csv_line, csv_val;
+  int line_count = 0;
 
-    // rotation
-    double rotation[3][3] = {0.};
-
-    // translation
-    double translation[3] = {0.};
-    int translation_read_count = 0;
-
-
-    std::fstream file(mayacam.c_str(), std::ios::in);
-    std::string csv_line, csv_val;
-    for (int i = 0; i < 17 && safeGetline(file, csv_line); ++i) {
-      std::istringstream csv_line_stream(csv_line);
-
-      switch (i)
-      {
-        default:
-          break;
-        case 1: //size
-        {
-          int read_count = 0;
-          for (int j = 0; j < 2 && std::getline(csv_line_stream, csv_val, ','); ++j) {
-            std::istringstream csv_val_stream(csv_val);
-            if (!(csv_val_stream >> size_[j])) {
-              break;
-            }
-            ++read_count;
-          }
-          if (read_count != 2) {
-            throw std::runtime_error(
-                  mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'image size' values."));
-          }
-          break;
-        }
-        case 4: //K
-        case 5:
-        case 6:
-        {
-          int read_count = 0;
-          for (int j = 0; j < 3 && std::getline(csv_line_stream, csv_val, ','); ++j) {
-            std::istringstream csv_val_stream(csv_val);
-            if (!(csv_val_stream >> K[j][i - 4])) {
-              break;
-            }
-            ++read_count;
-          }
-          if (read_count != 3) {
-            throw std::runtime_error(
-                  mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'camera matrix' values."));
-          }
-          break;
-        }
-        case 9: //R
-        case 10:
-        case 11:
-        {
-          int read_count = 0;
-          for (int j = 0; j < 3 && std::getline(csv_line_stream, csv_val, ','); ++j) {
-            std::istringstream csv_val_stream(csv_val);
-            if (!(csv_val_stream >> rotation[j][i - 9])) {
-              break;
-            }
-            ++read_count;
-          }
-          if (read_count != 3) {
-            throw std::runtime_error(
-                  mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'rotation' values."));
-          }
-          break;
-        }
-        case 14: //t
-        case 15:
-        case 16:
-          if (!(csv_line_stream >> translation[i - 14])) {
-            throw std::runtime_error(
-                  mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'translation' values."));
-            }
-          ++translation_read_count;
-          break;
-
+  for (int i = 0; i < 5 && safeGetline(file, csv_line); ++i) {
+    int read_count = 0;
+    std::istringstream csv_line_stream(csv_line);
+    for (int j = 0; j < 3 && std::getline(csv_line_stream, csv_val, ','); ++j) {
+      std::istringstream csv_val_stream(csv_val);
+      if (!(csv_val_stream >> csv_vals[i][j])) {
+        break;
       }
+      ++read_count;
     }
-    file.close();
-
-    if (translation_read_count != 3) {
+    if (read_count != 3) {
       throw std::runtime_error(
-            mayaCamReadingError("2", /* line= */ 14 + 1, mayacam, "There was an error reading 'translation' values."));
+              mayaCamReadingError("1", /* line= */ i + 1, mayacam, "There was an error reading values."));
     }
+    ++line_count;
+  }
+  file.close();
 
-    //invert y - axis
-    translation[0] = -translation[0];
-    translation[2] = -translation[2];
-    for (int i = 0; i < 3; i++)
-    {
-      rotation[i][0] = -rotation[i][0];
-      rotation[i][2] = -rotation[i][2];
-    }
-    K[2][1] = (size_[1] - 1) - K[2][1];
+  if (line_count != 5) {
+    throw std::runtime_error(
+            mayaCamReadingError("1", /* line= */ 1, mayacam, "There was an error reading values."));
+  }
 
-    //invert rotation
-    for (int i = 0; i < 3; i++)
-    {
-      for (int j = 0; j < i; j++)
+  // Line 1: Camera location in world space
+  // Line 2: Rotations around the local x, y, and z axes of the camera. The
+  //         order of rotation is z, y, then x.
+  // Line 3: Position of the film plane relative to the camera. Given in the
+  //         camera's local space. These values are calculated using the
+  //         values in lines 4 and 5.
+  // Line 4: u0, v0, Z
+  // Line 5: scale, size_[0], size_[1]
+  //
+  // If the image width and height are set to 0 they are assumed to be 1024.
+  //
+  // The equations used to calculate the position and size of the film plane
+  // are as follows:
+  //
+  // image_plane_x = scale*(size_[0]/2-u0)
+  // image_plane_y = scale*(size_[1]/2-v0)
+  // image_plane_z = -scale*Z
+  //
+  // image_plane_width = scale*size_[0]
+  // image_plane_height = scale*size_[1]
+  //
+  // All units are in centimeters
+
+  double* translation = csv_vals[0];
+  double* rotation = csv_vals[1];
+  double* image_plane_trans = csv_vals[2];
+
+  double u0 = csv_vals[3][0] - 1; // Note: we should adjust here for the matlab offset of the old Mayacam
+  double v0 = csv_vals[3][1] - 1;
+  double z = csv_vals[3][2];
+
+  // Default to 1024x1024
+  size_[0] = csv_vals[4][1];
+  if (size_[0] == 0) size_[0] = 1024;
+
+  size_[1] = csv_vals[4][2];
+  if (size_[1] == 0) size_[1] = 1024;
+
+  // Calculate the cameras local coordinate frame
+  double xyzypr[6] = { translation[0], translation[1], translation[2],
+                       rotation[2], rotation[1], rotation[0] };
+  coord_frame_ = CoordFrame::from_xyzypr(xyzypr);
+
+  // Calculate the viewport
+  if (z < 0) {
+    calculateViewport(u0, v0, -z, -z);
+  } else {
+    calculateViewport(u0, v0, z, z);
+  }
+
+  // Calculate the Image Plane
+  calculateImagePlane(u0, v0, z);
+}
+
+void Camera::loadMayaCam2(const std::string& mayacam)
+{
+  std::cout << "Reading MayaCam 2.0 file: " << mayacam << std::endl;
+
+  // camera matrix
+  double K[3][3] = { 0. };
+
+  // rotation
+  double rotation[3][3] = { 0. };
+
+  // translation
+  double translation[3] = { 0. };
+  int translation_read_count = 0;
+
+
+  std::fstream file(mayacam.c_str(), std::ios::in);
+  std::string csv_line, csv_val;
+  for (int i = 0; i < 17 && safeGetline(file, csv_line); ++i) {
+    std::istringstream csv_line_stream(csv_line);
+
+    switch (i) {
+      default:
+        break;
+      case 1: // size
       {
-
-        double tmp = rotation[i][j];
-        rotation[i][j] = rotation[j][i];
-        rotation[j][i] = tmp;
+        int read_count = 0;
+        for (int j = 0; j < 2 && std::getline(csv_line_stream, csv_val, ','); ++j) {
+          std::istringstream csv_val_stream(csv_val);
+          if (!(csv_val_stream >> size_[j])) {
+            break;
+          }
+          ++read_count;
+        }
+        if (read_count != 2) {
+          throw std::runtime_error(
+                  mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'image size' values."));
+        }
+        break;
       }
-    }
+      case 4: // K
+      case 5:
+      case 6:
+      {
+        int read_count = 0;
+        for (int j = 0; j < 3 && std::getline(csv_line_stream, csv_val, ','); ++j) {
+          std::istringstream csv_val_stream(csv_val);
+          if (!(csv_val_stream >> K[j][i - 4])) {
+            break;
+          }
+          ++read_count;
+        }
+        if (read_count != 3) {
+          throw std::runtime_error(
+                  mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'camera matrix' values."));
+        }
+        break;
+      }
+      case 9: // R
+      case 10:
+      case 11:
+      {
+        int read_count = 0;
+        for (int j = 0; j < 3 && std::getline(csv_line_stream, csv_val, ','); ++j) {
+          std::istringstream csv_val_stream(csv_val);
+          if (!(csv_val_stream >> rotation[j][i - 9])) {
+            break;
+          }
+          ++read_count;
+        }
+        if (read_count != 3) {
+          throw std::runtime_error(
+                  mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'rotation' values."));
+        }
+        break;
+      }
+      case 14: // t
+      case 15:
+      case 16:
+        if (!(csv_line_stream >> translation[i - 14])) {
+          throw std::runtime_error(
+                  mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'translation' values."));
+        }
+        ++translation_read_count;
+        break;
 
-    //invert translation
-    {
-      double translation_new[3];
-      for (int i = 0; i < 3; i++)
-        translation_new[i] = -(translation[0] * rotation[0][i] + translation[1] * rotation[1][i] + translation[2] * rotation[2][i]);
-
-      for (int i = 0; i < 3; i++)
-        translation[i] = translation_new[i];
     }
+  }
+  file.close();
+
+  if (translation_read_count != 3) {
+    throw std::runtime_error(
+            mayaCamReadingError("2", /* line= */ 14 + 1, mayacam, "There was an error reading 'translation' values."));
+  }
+
+  // invert y - axis
+  translation[0] = -translation[0];
+  translation[2] = -translation[2];
+  for (int i = 0; i < 3; i++) {
+    rotation[i][0] = -rotation[i][0];
+    rotation[i][2] = -rotation[i][2];
+  }
+  K[2][1] = (size_[1] - 1) - K[2][1];
+
+  // invert rotation
+  for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < i; j++) {
+
+      double tmp = rotation[i][j];
+      rotation[i][j] = rotation[j][i];
+      rotation[j][i] = tmp;
+    }
+  }
+
+  // invert translation
+  {
+    double translation_new[3];
+    for (int i = 0; i < 3; i++)
+      translation_new[i] = -(translation[0] * rotation[0][i] + translation[1] * rotation[1][i] + translation[2] * rotation[2][i]);
 
     for (int i = 0; i < 3; i++)
-    {
-      rotation[0][i] = -rotation[0][i];
-      rotation[1][i] = -rotation[1][i];
-    }
-
-    coord_frame_ = CoordFrame(&rotation[0][0], translation);
-
-    // Calculate the viewport
-    calculateViewport(K[2][0], K[2][1], K[0][0], K[1][1]);
-
-    // Calculate the image plane
-    double z = -0.5* (K[0][0] + K[1][1]); // Average focal length, negated to be consistent with MayaCam 1.0
-    calculateImagePlane(K[2][0], K[2][1], z);
+      translation[i] = translation_new[i];
   }
 
-  void Camera::loadVTKCamera(const std::string& filename) {
-    std::cout << "Loading VTKCam file: " << filename << std::endl;
-    std::fstream file(filename.c_str(), std::ios::in);
-    if (!file.is_open()) {
-      throw std::runtime_error("Error opening VTKCam file: " + filename);
-    }
-
-    Json::Value calibrationFile;
-    file >> calibrationFile;
-    file.close();
-
-    // Check the schema
-    if (calibrationFile["@schema"].asString() != VTK_CAMERA_SCHEMA_URL) {
-      throw std::runtime_error(vtkCamReadingError("1", -1, filename, "Unsupported schema. " + calibrationFile["@schema"].asString() + " is not " + VTK_CAMERA_SCHEMA_URL));
-    }
-
-    // Check the version number
-    if (calibrationFile["version"].asDouble() != 1.0) {
-      throw std::runtime_error(vtkCamReadingError("1", -1, filename, "Unsupported version number. "+ calibrationFile["version"].asString() + " is not 1.0"));
-    }
-
-
-    // Set the size
-    size_[0] = calibrationFile["image-width"].asDouble();
-    size_[1] = calibrationFile["image-height"].asDouble();
-
-    Vec3d cam_pos(calibrationFile["camera-position"][0].asDouble(), calibrationFile["camera-position"][1].asDouble(), calibrationFile["camera-position"][2].asDouble());
-    Vec3d focal(calibrationFile["focal-point"][0].asDouble(), calibrationFile["focal-point"][1].asDouble(), calibrationFile["focal-point"][2].asDouble());
-    Vec3d up(calibrationFile["view-up"][0].asDouble(), calibrationFile["view-up"][1].asDouble(), calibrationFile["view-up"][2].asDouble());
-    double rot[9] = { 0.0 };
-    calculateLookAtMatrix(cam_pos, focal, up, rot);
-    coord_frame_ = CoordFrame(rot, cam_pos);
-
-    // Calculate the focal length
-    double focal_lengths[2] = { 0.0 };
-    calculateFocalLength(calibrationFile["view-angle"].asDouble(), focal_lengths);
-
-    // Calculate the principal point
-    double cx = size_[0] / 2.0;
-    double cy = size_[1] / 2.0;
-
-    // Calculate the viewport
-    calculateViewport(cx, cy , focal_lengths[0], focal_lengths[1]);
-
-    // Calculate the image plane
-    double z = -0.5* (focal_lengths[0] + focal_lengths[1]);
-    calculateImagePlane(cx, cy, z);
+  for (int i = 0; i < 3; i++) {
+    rotation[0][i] = -rotation[0][i];
+    rotation[1][i] = -rotation[1][i];
   }
 
-  void Camera::calculateViewport(const double& cx, const double& cy, const double& fx, const double& fy) {
-    // Calculate the viewport
+  coord_frame_ = CoordFrame(&rotation[0][0], translation);
 
-    // Validate that neither fx nor fy are zero
-    if (fx == 0 || fy == 0) {
-      throw std::runtime_error("Invalid camera parameters (fx or fy is zero)");
-    }
-    // viewport_[0] and viewport[1] approximately describe the x and y viewport coordinates of the (0,0) pixel
-    viewport_[0] = -(2.0f*cx - size_[0]) / fx;
-    viewport_[1] = -(2.0f*cy - size_[1]) / fy;
-    // viewport_[2] and viewport[3] approximately describe the width and height of the viewport
-    viewport_[2] = 2.0f* size_[0] / fx;
-    viewport_[3] = 2.0f* size_[1] / fy;
+  // Calculate the viewport
+  calculateViewport(K[2][0], K[2][1], K[0][0], K[1][1]);
+
+  // Calculate the image plane
+  double z = -0.5 * (K[0][0] + K[1][1]); // Average focal length, negated to be consistent with MayaCam 1.0
+  calculateImagePlane(K[2][0], K[2][1], z);
+}
+
+void Camera::loadVTKCamera(const std::string& filename)
+{
+  std::cout << "Loading VTKCam file: " << filename << std::endl;
+  std::fstream file(filename.c_str(), std::ios::in);
+  if (!file.is_open()) {
+    throw std::runtime_error("Error opening VTKCam file: " + filename);
   }
 
-  void Camera::calculateImagePlane(const double& cx, const double& cy, const double& z) {
-    // Pick a scale factor that places the image plane on the other side of the origin from the camera.
-    double distance = sqrt(coord_frame_.translation()[0] * coord_frame_.translation()[0] +
-      coord_frame_.translation()[1] * coord_frame_.translation()[1] +
-      coord_frame_.translation()[2] * coord_frame_.translation()[2]);
-    double scale = -1.5 * distance / z;
+  Json::Value calibrationFile;
+  file >> calibrationFile;
+  file.close();
 
-    double image_plane_trans[3];
-    image_plane_trans[0] = scale * (size_[0] / 2.0 - cx);
-    image_plane_trans[1] = scale * (size_[1] / 2.0 - cy);
-    image_plane_trans[2] = scale * z;
-
-    // Calculate the coordinates of the four corners of the image plane in world space.
-    double image_plane_center[3];
-    coord_frame_.point_to_world_space(image_plane_trans, image_plane_center); // Convert from camera space to world space
-
-    double half_width = scale * size_[0] / 2.0;
-    double half_height = scale * size_[1] / 2.0;
-
-    double right[3] = { coord_frame_.rotation()[0],
-      coord_frame_.rotation()[1],
-      coord_frame_.rotation()[2] };
-    double up[3] = { coord_frame_.rotation()[3],
-      coord_frame_.rotation()[4],
-      coord_frame_.rotation()[5] };
-
-    // Top-left corner of the image plane
-    image_plane_[0] = image_plane_center[0] - half_width * right[0] +
-      half_height * up[0];
-    image_plane_[1] = image_plane_center[1] - half_width * right[1] +
-      half_height * up[1];
-    image_plane_[2] = image_plane_center[2] - half_width * right[2] +
-      half_height * up[2];
-
-    // Bottom-left corner of the image plane
-    image_plane_[3] = image_plane_center[0] - half_width * right[0] -
-      half_height * up[0];
-    image_plane_[4] = image_plane_center[1] - half_width * right[1] -
-      half_height * up[1];
-    image_plane_[5] = image_plane_center[2] - half_width * right[2] -
-      half_height * up[2];
-
-    // Bottom-right corner of the image plane
-    image_plane_[6] = image_plane_center[0] + half_width * right[0] -
-      half_height * up[0];
-    image_plane_[7] = image_plane_center[1] + half_width * right[1] -
-      half_height * up[1];
-    image_plane_[8] = image_plane_center[2] + half_width * right[2] -
-      half_height * up[2];
-
-    // Top-right corner of the image plane
-    image_plane_[9] = image_plane_center[0] + half_width * right[0] +
-      half_height * up[0];
-    image_plane_[10] = image_plane_center[1] + half_width * right[1] +
-      half_height * up[1];
-    image_plane_[11] = image_plane_center[2] + half_width * right[2] +
-      half_height * up[2];
+  // Check the schema
+  if (calibrationFile["@schema"].asString() != VTK_CAMERA_SCHEMA_URL) {
+    throw std::runtime_error(vtkCamReadingError("1", -1, filename, "Unsupported schema. " + calibrationFile["@schema"].asString() + " is not " + VTK_CAMERA_SCHEMA_URL));
   }
 
-  void Camera::calculateFocalLength(const double& view_angle, double focal_lengths[2]) {
-    // Convert from deg to rad
-    double angle_rad = view_angle * (M_PI / 180);
-
-    focal_lengths[0] = size_[0] / (2 * std::tan(angle_rad / 2));
-    focal_lengths[1] = size_[1] / (2 * std::tan(angle_rad / 2));
+  // Check the version number
+  if (calibrationFile["version"].asDouble() != 1.0) {
+    throw std::runtime_error(vtkCamReadingError("1", -1, filename, "Unsupported version number. " + calibrationFile["version"].asString() + " is not 1.0"));
   }
 
-  void Camera::calculateLookAtMatrix(const Vec3d& eye, const Vec3d& center, const Vec3d& up, double matrix[9]) {
-    // Implementation based off of:
-    // https://www.khronos.org/opengl/wiki/GluLookAt_code
-    Vec3d forward = unit(center - eye);
-    // This vector points to the right-hand side of the camera's orientation.
-    Vec3d side = unit(cross(forward, up));
-    Vec3d perpendicularUp = cross(side, forward);
-    matrix[0] = side.x;
-    matrix[1] = side.y;
-    matrix[2] = side.z;
-    matrix[3] = perpendicularUp.x;
-    matrix[4] = perpendicularUp.y;
-    matrix[5] = perpendicularUp.z;
-    matrix[6] = -forward.x;
-    matrix[7] = -forward.y;
-    matrix[8] = -forward.z;
-  }
 
+  // Set the size
+  size_[0] = calibrationFile["image-width"].asDouble();
+  size_[1] = calibrationFile["image-height"].asDouble();
+
+  Vec3d cam_pos(calibrationFile["camera-position"][0].asDouble(), calibrationFile["camera-position"][1].asDouble(), calibrationFile["camera-position"][2].asDouble());
+  Vec3d focal(calibrationFile["focal-point"][0].asDouble(), calibrationFile["focal-point"][1].asDouble(), calibrationFile["focal-point"][2].asDouble());
+  Vec3d up(calibrationFile["view-up"][0].asDouble(), calibrationFile["view-up"][1].asDouble(), calibrationFile["view-up"][2].asDouble());
+  double rot[9] = { 0.0 };
+  calculateLookAtMatrix(cam_pos, focal, up, rot);
+  coord_frame_ = CoordFrame(rot, cam_pos);
+
+  // Calculate the focal length
+  double focal_lengths[2] = { 0.0 };
+  calculateFocalLength(calibrationFile["view-angle"].asDouble(), focal_lengths);
+
+  // Calculate the principal point
+  double cx = size_[0] / 2.0;
+  double cy = size_[1] / 2.0;
+
+  // Calculate the viewport
+  calculateViewport(cx, cy, focal_lengths[0], focal_lengths[1]);
+
+  // Calculate the image plane
+  double z = -0.5 * (focal_lengths[0] + focal_lengths[1]);
+  calculateImagePlane(cx, cy, z);
+}
+
+void Camera::calculateViewport(const double& cx, const double& cy, const double& fx, const double& fy)
+{
+  // Calculate the viewport
+
+  // Validate that neither fx nor fy are zero
+  if (fx == 0 || fy == 0) {
+    throw std::runtime_error("Invalid camera parameters (fx or fy is zero)");
+  }
+  // viewport_[0] and viewport[1] approximately describe the x and y viewport coordinates of the (0,0) pixel
+  viewport_[0] = -(2.0f * cx - size_[0]) / fx;
+  viewport_[1] = -(2.0f * cy - size_[1]) / fy;
+  // viewport_[2] and viewport[3] approximately describe the width and height of the viewport
+  viewport_[2] = 2.0f * size_[0] / fx;
+  viewport_[3] = 2.0f * size_[1] / fy;
+}
+
+void Camera::calculateImagePlane(const double& cx, const double& cy, const double& z)
+{
+  // Pick a scale factor that places the image plane on the other side of the origin from the camera.
+  double distance = sqrt(coord_frame_.translation()[0] * coord_frame_.translation()[0] +
+                         coord_frame_.translation()[1] * coord_frame_.translation()[1] +
+                         coord_frame_.translation()[2] * coord_frame_.translation()[2]);
+  double scale = -1.5 * distance / z;
+
+  double image_plane_trans[3];
+  image_plane_trans[0] = scale * (size_[0] / 2.0 - cx);
+  image_plane_trans[1] = scale * (size_[1] / 2.0 - cy);
+  image_plane_trans[2] = scale * z;
+
+  // Calculate the coordinates of the four corners of the image plane in world space.
+  double image_plane_center[3];
+  coord_frame_.point_to_world_space(image_plane_trans, image_plane_center); // Convert from camera space to world space
+
+  double half_width = scale * size_[0] / 2.0;
+  double half_height = scale * size_[1] / 2.0;
+
+  double right[3] = { coord_frame_.rotation()[0],
+                      coord_frame_.rotation()[1],
+                      coord_frame_.rotation()[2] };
+  double up[3] = { coord_frame_.rotation()[3],
+                   coord_frame_.rotation()[4],
+                   coord_frame_.rotation()[5] };
+
+  // Top-left corner of the image plane
+  image_plane_[0] = image_plane_center[0] - half_width * right[0] +
+                    half_height * up[0];
+  image_plane_[1] = image_plane_center[1] - half_width * right[1] +
+                    half_height * up[1];
+  image_plane_[2] = image_plane_center[2] - half_width * right[2] +
+                    half_height * up[2];
+
+  // Bottom-left corner of the image plane
+  image_plane_[3] = image_plane_center[0] - half_width * right[0] -
+                    half_height * up[0];
+  image_plane_[4] = image_plane_center[1] - half_width * right[1] -
+                    half_height * up[1];
+  image_plane_[5] = image_plane_center[2] - half_width * right[2] -
+                    half_height * up[2];
+
+  // Bottom-right corner of the image plane
+  image_plane_[6] = image_plane_center[0] + half_width * right[0] -
+                    half_height * up[0];
+  image_plane_[7] = image_plane_center[1] + half_width * right[1] -
+                    half_height * up[1];
+  image_plane_[8] = image_plane_center[2] + half_width * right[2] -
+                    half_height * up[2];
+
+  // Top-right corner of the image plane
+  image_plane_[9] = image_plane_center[0] + half_width * right[0] +
+                    half_height * up[0];
+  image_plane_[10] = image_plane_center[1] + half_width * right[1] +
+                     half_height * up[1];
+  image_plane_[11] = image_plane_center[2] + half_width * right[2] +
+                     half_height * up[2];
+}
+
+void Camera::calculateFocalLength(const double& view_angle, double focal_lengths[2])
+{
+  // Convert from deg to rad
+  double angle_rad = view_angle * (M_PI / 180);
+
+  focal_lengths[0] = size_[0] / (2 * std::tan(angle_rad / 2));
+  focal_lengths[1] = size_[1] / (2 * std::tan(angle_rad / 2));
+}
+
+void Camera::calculateLookAtMatrix(const Vec3d& eye, const Vec3d& center, const Vec3d& up, double matrix[9])
+{
+  // Implementation based off of:
+  // https://www.khronos.org/opengl/wiki/GluLookAt_code
+  Vec3d forward = unit(center - eye);
+  // This vector points to the right-hand side of the camera's orientation.
+  Vec3d side = unit(cross(forward, up));
+  Vec3d perpendicularUp = cross(side, forward);
+  matrix[0] = side.x;
+  matrix[1] = side.y;
+  matrix[2] = side.z;
+  matrix[3] = perpendicularUp.x;
+  matrix[4] = perpendicularUp.y;
+  matrix[5] = perpendicularUp.z;
+  matrix[6] = -forward.x;
+  matrix[7] = -forward.y;
+  matrix[8] = -forward.z;
+}
 } // namespace XROMM

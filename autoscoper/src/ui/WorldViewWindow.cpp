@@ -47,34 +47,36 @@
 #include "ui/AutoscoperMainWindow.h"
 #include <QOpenGLContext>
 
-WorldViewWindow::WorldViewWindow(QWidget *parent):QDockWidget(parent)
+WorldViewWindow::WorldViewWindow(QWidget* parent):QDockWidget(parent)
 {
-    setWindowTitle(tr("World view"));
+  setWindowTitle(tr("World view"));
 
-    openGL = new GLView(this);
+  openGL = new GLView(this);
   openGL->setStaticView(true);
-  setFeatures(QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable);
+  setFeatures(QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable);
   setAllowedAreas(Qt::AllDockWidgetAreas);
-  setMinimumSize(0,0);
+  setMinimumSize(0, 0);
   setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
-  this->resize(500,500);
-    layout = new QGridLayout;
-    layout->addWidget(openGL, 0, 0);
+  this->resize(500, 500);
+  layout = new QGridLayout;
+  layout->addWidget(openGL, 0, 0);
   setWidget(openGL);
 
-  mainwindow  = dynamic_cast <AutoscoperMainWindow *> ( parent);
+  mainwindow  = dynamic_cast<AutoscoperMainWindow*> ( parent);
 }
 
-void  WorldViewWindow::resizeEvent ( QResizeEvent * event )
+void  WorldViewWindow::resizeEvent ( QResizeEvent* event )
 {
   openGL->repaint();
 }
 
-void WorldViewWindow::setSharedGLContext(QOpenGLContext * sharedContext){
+void WorldViewWindow::setSharedGLContext(QOpenGLContext* sharedContext)
+{
   openGL->context()->setShareContext(sharedContext);
   openGL->context()->create();
 }
 
-void WorldViewWindow::draw(){
+void WorldViewWindow::draw()
+{
   openGL->update();
 }

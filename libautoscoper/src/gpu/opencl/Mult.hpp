@@ -45,13 +45,11 @@
 #include "OpenCL.hpp"
 
 namespace xromm { namespace gpu {
-
 void multiply(const Buffer* src1,
-               const Buffer* src2,
-               const Buffer* dest,
-               unsigned width,
-               unsigned height);
-
+              const Buffer* src2,
+              const Buffer* dest,
+              unsigned width,
+              unsigned height);
 } } // namespace xromm::opencl
 
 #endif // XROMM_MERGER_H

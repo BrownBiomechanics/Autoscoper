@@ -52,26 +52,25 @@ namespace xromm { namespace gpu
 class RadRenderer
 {
 public:
-    RadRenderer();
-    ~RadRenderer();
+  RadRenderer();
+  ~RadRenderer();
 
-    void set_rad(const void* data, size_t width, size_t height, size_t bps);
-    void set_image_plane(float x, float y, float width, float height);
-    void set_viewport(float x, float y, float width, float height);
-    void render(const Buffer* buffer, unsigned width, unsigned height) const;
-    const std::string& getName() const { return name_; }
-    void setName(const std::string& name) { name_ = name; }
+  void set_rad(const void* data, size_t width, size_t height, size_t bps);
+  void set_image_plane(float x, float y, float width, float height);
+  void set_viewport(float x, float y, float width, float height);
+  void render(const Buffer* buffer, unsigned width, unsigned height) const;
+  const std::string& getName() const { return name_; }
+  void setName(const std::string& name) { name_ = name; }
 
 private:
-    RadRenderer(const RadRenderer& renderer);
-    RadRenderer& operator=(const RadRenderer& renderer);
+  RadRenderer(const RadRenderer& renderer);
+  RadRenderer& operator=(const RadRenderer& renderer);
 
   Image* image_;
-    float image_plane_[4];
-    float viewport_[4];
-    std::string name_;
+  float image_plane_[4];
+  float viewport_[4];
+  std::string name_;
 };
-
 } } // namespace xromm::opencl
 
 #endif // XROMM_RAD_RENDERER_HPP

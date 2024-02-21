@@ -45,37 +45,35 @@
 
 // Define the cuda compositing kernel
 __global__ void mult_kernel(float* src1,
-  float* src2,
-  float* dest,
-  size_t width,
-  size_t height);
+                            float* src2,
+                            float* dest,
+                            size_t width,
+                            size_t height);
 
 namespace xromm {
-  namespace gpu {
-    void multiply(float* src1,
-      float* src2,
-      float* dest,
-      size_t width,
-      size_t height)
-    {
-      // Calculate the block and grid sizes.
-      dim3 blockDim(32, 32);
-      dim3 gridDim(((unsigned int)width + blockDim.x - 1) / blockDim.x,
-        ((unsigned int)height + blockDim.y - 1) / blockDim.y);
+namespace gpu {
+void multiply(float* src1,
+              float* src2,
+              float* dest,
+              size_t width,
+              size_t height)
+{
+  // Calculate the block and grid sizes.
+  dim3 blockDim(32, 32);
+  dim3 gridDim(((unsigned int)width + blockDim.x - 1) / blockDim.x,
+               ((unsigned int)height + blockDim.y - 1) / blockDim.y);
 
-      // Call the kernel
-      mult_kernel<<<gridDim, blockDim>>>(src1, src2, dest, width, height);
-    }
-
-  } // namespace gpu
-
+  // Call the kernel
+  mult_kernel << < gridDim, blockDim >> > (src1, src2, dest, width, height);
+}
+} // namespace gpu
 } // namespace xromm
 
 __global__ void mult_kernel(float* src1,
-  float* src2,
-  float* dest,
-  size_t width,
-  size_t height)
+                            float* src2,
+                            float* dest,
+                            size_t width,
+                            size_t height)
 {
   int x = blockIdx.x * blockDim.x + threadIdx.x;
   int y = blockIdx.y * blockDim.y + threadIdx.y;

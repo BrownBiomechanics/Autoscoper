@@ -43,13 +43,11 @@
 #define XROMM_GPU_FILTER_KERNELS_H
 
 namespace xromm { namespace gpu {
-
 void gaussian_filter_apply(const float* input,
                            float* output,
                            int width,
                            int height,
                            float* filter, int filterSize);
-
 } } // namespace xromm::cuda
 
 #endif // XROMM_GPU_FILTER_KERNELS_H

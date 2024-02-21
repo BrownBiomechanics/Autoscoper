@@ -45,22 +45,21 @@
 #define BY 16
 
 namespace xromm { namespace gpu {
-
 #include "gpu/opencl/kernel/Mult.cl.h"
 
 static Program Mult_kernel_;
 
 void multiply(const Buffer* src1,
-               const Buffer* src2,
-               const Buffer* dest,
-               unsigned width,
-               unsigned height)
+              const Buffer* src2,
+              const Buffer* dest,
+              unsigned width,
+              unsigned height)
 {
   Kernel* kernel = Mult_kernel_.compile(
-                    Mult_cl, "multiply_kernel");
+    Mult_cl, "multiply_kernel");
 
-    kernel->block2d(BX, BY);
-  kernel->grid2d((width+BX-1)/BX, (height+BY-1)/BY);
+  kernel->block2d(BX, BY);
+  kernel->grid2d((width + BX - 1) / BX, (height + BY - 1) / BY);
 
   kernel->addBufferArg(src1);
   kernel->addBufferArg(src2);
@@ -72,7 +71,5 @@ void multiply(const Buffer* src1,
 
   delete kernel;
 }
-
 } // namespace gpu
-
 } // namespace xromm

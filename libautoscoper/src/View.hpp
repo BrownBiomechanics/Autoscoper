@@ -53,12 +53,10 @@ typedef float GLBuffer;
 
 namespace xromm
 {
-
 class Camera;
 
 namespace gpu
 {
-
 class RayCaster;
 class RadRenderer;
 class BackgroundRenderer;
@@ -72,49 +70,49 @@ class Filter;
 class View
 {
 public:
-    // Constructs a View from a camera
-    View(Camera& camera);
-    ~View();
+  // Constructs a View from a camera
+  View(Camera& camera);
+  ~View();
 
 private:
-    View(const View& view);
-    View& operator=(const View& view);
+  View(const View& view);
+  View& operator=(const View& view);
 
 public:
-    // Accessors
-    Camera* camera() { return camera_; }
-    const Camera* camera() const { return camera_; }
+  // Accessors
+  Camera* camera() { return camera_; }
+  const Camera* camera() const { return camera_; }
   RayCaster* drrRenderer(int idx) { return drrRenderer_[idx]; }
   const RayCaster* drrRenderer(int idx) const { return drrRenderer_[idx]; }
-    RadRenderer* radRenderer() { return radRenderer_; }
-    const RadRenderer* radRenderer() const { return radRenderer_; }
-    std::vector<Filter*>& drrFilters() { return drrFilters_; }
-    const std::vector<Filter*>& drrFilters() const { return drrFilters_; }
-    std::vector<Filter*>& radFilters() { return radFilters_; }
-    const std::vector<Filter*>& radFilters() const { return radFilters_; }
+  RadRenderer* radRenderer() { return radRenderer_; }
+  const RadRenderer* radRenderer() const { return radRenderer_; }
+  std::vector<Filter*>& drrFilters() { return drrFilters_; }
+  const std::vector<Filter*>& drrFilters() const { return drrFilters_; }
+  std::vector<Filter*>& radFilters() { return radFilters_; }
+  const std::vector<Filter*>& radFilters() const { return radFilters_; }
   BackgroundRenderer* backgroundRenderer() { return backgroundRenderer_; }
 
   void addDrrRenderer();
   void saveImage(std::string filename, int width, int height);
 
-    // Rendering functions
-    void renderRad(Buffer* buffer, unsigned int width, unsigned int height);
+  // Rendering functions
+  void renderRad(Buffer* buffer, unsigned int width, unsigned int height);
 
-  void renderBackground(Buffer* buffer,unsigned width, unsigned height);
-  void renderDRRMask(Buffer* in_buffer, Buffer* out_buffer,unsigned width, unsigned height);
+  void renderBackground(Buffer* buffer, unsigned width, unsigned height);
+  void renderDRRMask(Buffer* in_buffer, Buffer* out_buffer, unsigned width, unsigned height);
 
-    void renderDrr(Buffer* buffer, unsigned int width, unsigned int height);
+  void renderDrr(Buffer* buffer, unsigned int width, unsigned int height);
   void renderDrrSingle(int volume, Buffer* buffer, unsigned width, unsigned height);
-    void renderDrr(unsigned int  pbo, unsigned int width, unsigned int height);
+  void renderDrr(unsigned int  pbo, unsigned int width, unsigned int height);
 
-    void render(GLBuffer* buffer, unsigned int width, unsigned int height);
-    void render(unsigned int  pbo, unsigned int width, unsigned int height);
+  void render(GLBuffer* buffer, unsigned int width, unsigned int height);
+  void render(unsigned int  pbo, unsigned int width, unsigned int height);
 
-    bool drr_enabled;
-    bool rad_enabled;
+  bool drr_enabled;
+  bool rad_enabled;
 
-  void updateBackground(const float * buffer, unsigned int width, unsigned int height);
-  void setBackgroundThreshold(float threshold){ backgroundThreshold_ = threshold; }
+  void updateBackground(const float* buffer, unsigned int width, unsigned int height);
+  void setBackgroundThreshold(float threshold) { backgroundThreshold_ = threshold; }
 
   const unsigned int nbDrrRenderer()
   {
@@ -128,30 +126,30 @@ private:
   void init(unsigned width, unsigned height);
 #endif
 
-    void filter(const std::vector<Filter*>& filters,
-                const Buffer* input,
-                Buffer* output,
-                unsigned width,
-                unsigned height);
+  void filter(const std::vector<Filter*>& filters,
+              const Buffer* input,
+              Buffer* output,
+              unsigned width,
+              unsigned height);
 
-    Camera* camera_;
-  std::vector <RayCaster*> drrRenderer_;
-    RadRenderer* radRenderer_;
+  Camera* camera_;
+  std::vector<RayCaster*> drrRenderer_;
+  RadRenderer* radRenderer_;
 
   BackgroundRenderer* backgroundRenderer_;
 
-    std::vector<Filter*> drrFilters_;
-    std::vector<Filter*> radFilters_;
+  std::vector<Filter*> drrFilters_;
+  std::vector<Filter*> radFilters_;
 
-    size_t maxWidth_;
+  size_t maxWidth_;
   size_t maxHeight_;
 
   std::vector<Buffer*> drrBuffer_;
   Buffer* drrBufferMerged_;
-    Buffer* drrFilterBuffer_;
-    Buffer* radBuffer_;
-    Buffer* radFilterBuffer_;
-    Buffer* filterBuffer_;
+  Buffer* drrFilterBuffer_;
+  Buffer* radBuffer_;
+  Buffer* radFilterBuffer_;
+  Buffer* filterBuffer_;
 
   Buffer* backgroundmask_;
   float backgroundThreshold_;
@@ -159,7 +157,7 @@ private:
 
   bool inited_;
 };
-
-} } //namespace xromm::opencl
+}
+} // namespace xromm::opencl
 
 #endif // XROMM_GPU_VIEW_HPP

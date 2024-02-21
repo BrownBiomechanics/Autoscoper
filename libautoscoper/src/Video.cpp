@@ -64,83 +64,82 @@
 
 namespace xromm
 {
-
-  Video::Video(const std::string& dirname)
-    : dirname_(dirname),
+Video::Video(const std::string& dirname)
+  : dirname_(dirname),
     filenames_(),
     frame_(),
     image_(new TiffImage()),
     background_(NULL)
 {
-    DIR *dir = opendir(dirname_.c_str());
-    if (dir == 0) {
-        throw std::runtime_error("Unable to open directory: " + dirname_);
+  DIR* dir = opendir(dirname_.c_str());
+  if (dir == 0) {
+    throw std::runtime_error("Unable to open directory: " + dirname_);
+  }
+
+  struct dirent* ent;
+  while ((ent = readdir(dir)) != NULL) {
+
+    // Ignore hidden files
+    std::string filename(ent->d_name);
+    if (filename.compare(0, 1, ".") == 0) {
+      continue;
     }
 
-    struct dirent *ent;
-    while ((ent = readdir(dir)) != NULL) {
-
-        // Ignore hidden files
-        std::string filename(ent->d_name);
-        if(filename.compare(0,1,".") == 0) {
-            continue;
-        }
-
-        // Only search for tifs
-        size_t ext = filename.find_last_of(".")+1;
-        if (filename.compare(ext, 3, "tif") != 0) {
-            continue;
-        }
-
-        filenames_.push_back(dirname + "/" + filename);
-    }
-    closedir(dir);
-
-    // Check if we found any files
-    if (filenames_.size() == 0) {
-        throw std::runtime_error("No TIFF files found in directory: " + dirname_);
+    // Only search for tifs
+    size_t ext = filename.find_last_of(".") + 1;
+    if (filename.compare(ext, 3, "tif") != 0) {
+      continue;
     }
 
-    // Sort the filenames and load the first frame
-    sort(filenames_.begin(), filenames_.end());
-    set_frame(0);
+    filenames_.push_back(dirname + "/" + filename);
+  }
+  closedir(dir);
+
+  // Check if we found any files
+  if (filenames_.size() == 0) {
+    throw std::runtime_error("No TIFF files found in directory: " + dirname_);
+  }
+
+  // Sort the filenames and load the first frame
+  sort(filenames_.begin(), filenames_.end());
+  set_frame(0);
 }
 
 Video::Video(const Video& video)
-    : dirname_(video.dirname_),
-      filenames_(video.filenames_),
-      frame_(),
+  : dirname_(video.dirname_),
+    filenames_(video.filenames_),
+    frame_(),
     background_(NULL)
 {
-    image_ = tiffImageCopy(video.image_);
-  if (video.background_){
-    background_ = new float[image_->width*image_->height];
+  image_ = tiffImageCopy(video.image_);
+  if (video.background_) {
+    background_ = new float[image_->width * image_->height];
     memcpy(background_, video.background_, image_->width * image_->height * sizeof(float));
   }
 }
 
 Video::~Video()
 {
-    if (image_) tiffImageFree(image_);
+  if (image_) tiffImageFree(image_);
   if (background_) delete[] background_;
 }
 
 Video&
 Video::operator=(const Video& video)
 {
-    dirname_   = video.dirname_;
-    filenames_ = video.filenames_;
-    frame_     = video.frame_;
+  dirname_   = video.dirname_;
+  filenames_ = video.filenames_;
+  frame_     = video.frame_;
 
-    if (image_) tiffImageFree(image_);
-    image_ = tiffImageCopy(video.image_);
+  if (image_) tiffImageFree(image_);
+  image_ = tiffImageCopy(video.image_);
 
-  if (video.background_){
+  if (video.background_) {
     if (background_) delete[] background_;
-    background_ = new float[image_->width*image_->height];
+    background_ = new float[image_->width * image_->height];
     memcpy(background_, video.background_, image_->width * image_->height * sizeof(float));
   }
-    return *this;
+  return *this;
 }
 
 bool Video::create_background_image()
@@ -151,10 +150,10 @@ bool Video::create_background_image()
   }
 
   if (background_) delete[] background_;
-  background_ = new float[width()*height()];
-  memset(background_, 0, width()*height()*sizeof(float));
+  background_ = new float[width() * height()];
+  memset(background_, 0, width() * height() * sizeof(float));
 
-  for (size_t i = 0; i < filenames_.size(); i++){
+  for (size_t i = 0; i < filenames_.size(); i++) {
 
     // Read tmp_image
     TIFFSetWarningHandler(0);
@@ -169,31 +168,32 @@ bool Video::create_background_image()
     tiffImageRead(tif, tmp_image);
     TIFFClose(tif);
 
-    switch (tmp_image->bitsPerSample)
-    {
-    case 8:
-      create_background_image_internal<unsigned char>(tmp_image);
-      tiffImageFree(tmp_image);
-      break;
-    case 16:
-      create_background_image_internal<unsigned short>(tmp_image);
-      tiffImageFree(tmp_image);
-      break;
-    case 32:
-      create_background_image_internal<unsigned int>(tmp_image);
-      tiffImageFree(tmp_image);
-      break;
-    default:
-      std::cerr << "Video::create_background_image(): Unsupported bits per sample." << std::endl;
-      tiffImageFree(tmp_image);
-      return false;
+    switch (tmp_image->bitsPerSample) {
+      case 8:
+        create_background_image_internal<unsigned char>(tmp_image);
+        tiffImageFree(tmp_image);
+        break;
+      case 16:
+        create_background_image_internal<unsigned short>(tmp_image);
+        tiffImageFree(tmp_image);
+        break;
+      case 32:
+        create_background_image_internal<unsigned int>(tmp_image);
+        tiffImageFree(tmp_image);
+        break;
+      default:
+        std::cerr << "Video::create_background_image(): Unsupported bits per sample." << std::endl;
+        tiffImageFree(tmp_image);
+        return false;
     }
   }
 
   return true;
 }
 
-template <typename T> void Video::create_background_image_internal(TiffImage* tmp_img) {
+template <typename T>
+void Video::create_background_image_internal(TiffImage* tmp_img)
+{
   static_assert(
     std::is_same<T, unsigned char>::value
     || std::is_same<T, unsigned short>::value
@@ -207,7 +207,7 @@ template <typename T> void Video::create_background_image_internal(TiffImage* tm
   T* end = start + (tmp_img->dataSize / sizeof(T));
   T* iter = start;
   float* bg = background_;
-  while(iter < end) {
+  while (iter < end) {
     float val = *iter;
     if (val / normalization_factor > *bg) {
       *bg = val / normalization_factor;
@@ -217,52 +217,50 @@ template <typename T> void Video::create_background_image_internal(TiffImage* tm
   }
 }
 
-  void
+void
 Video::set_frame(size_type i)
 {
-    if (i >= filenames_.size()) {
-        i = filenames_.size()-1;
-    }
+  if (i >= filenames_.size()) {
+    i = filenames_.size() - 1;
+  }
 
-    TIFFSetWarningHandler(0);
-    TIFF* tif = TIFFOpen(filenames_.at(i).c_str(), "r");
-    if (!tif) {
-        std::cerr << "Video::frame(): Unable to open image. " << std::endl;
-        return;
-    }
+  TIFFSetWarningHandler(0);
+  TIFF* tif = TIFFOpen(filenames_.at(i).c_str(), "r");
+  if (!tif) {
+    std::cerr << "Video::frame(): Unable to open image. " << std::endl;
+    return;
+  }
 
-    tiffImageFree(image_);
-    tiffImageRead(tif, image_);
+  tiffImageFree(image_);
+  tiffImageRead(tif, image_);
 
-    TIFFClose(tif);
+  TIFFClose(tif);
 
-    frame_  = i;
+  frame_  = i;
 }
 
 Video::size_type
 Video::width() const
 {
-    return image_->width;
+  return image_->width;
 }
 
 Video::size_type
 Video::height() const
 {
-    return image_->height;
+  return image_->height;
 }
 
 Video::size_type
 Video::bps() const
 {
-    return image_->bitsPerSample;
+  return image_->bitsPerSample;
 }
 
 const void*
 Video::data() const
 {
-    return image_->data;
+  return image_->data;
 }
-
-
 } // namespace xromm
 

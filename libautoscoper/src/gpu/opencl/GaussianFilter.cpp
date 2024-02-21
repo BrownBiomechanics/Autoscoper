@@ -44,7 +44,6 @@
 #include "GaussianFilter.hpp"
 
 namespace xromm { namespace gpu {
-
 #define KERNEL_X 16
 #define KERNEL_Y 16
 #define KERNEL_CODE GaussianFilter_cl
@@ -56,7 +55,7 @@ static int num_gaussian_filters = 0;
 static Program gaussian_program_;
 
 GaussianFilter::GaussianFilter()
-  : Filter(XROMM_GPU_GAUSSIAN_FILTER,""),
+  : Filter(XROMM_GPU_GAUSSIAN_FILTER, ""),
     gaussian_(NULL)
 {
   std::stringstream name_stream;
@@ -68,7 +67,7 @@ GaussianFilter::GaussianFilter()
 
 GaussianFilter::~GaussianFilter()
 {
-   if (gaussian_ != NULL) delete gaussian_;
+  if (gaussian_ != NULL) delete gaussian_;
 }
 
 void GaussianFilter::set_radius(float radius)
@@ -80,10 +79,10 @@ void GaussianFilter::set_radius(float radius)
    * stdevs (3*radius_) of the Gaussian */
 
   radius_ = radius;
-  int filterRadius = 3*radius_;
-  filterSize_ = 2*filterRadius+1;
+  int filterRadius = 3 * radius_;
+  filterSize_ = 2 * filterRadius + 1;
 
-  if(filterSize_ == 1)
+  if (filterSize_ == 1)
     return;
 
   size_t nBytes = sizeof(float) * filterSize_ * filterSize_;
@@ -91,13 +90,13 @@ void GaussianFilter::set_radius(float radius)
 
   float sum = 0.0f;
 
-  for(int i = 0; i < filterSize_; ++i){
-    for(int j = 0; j < filterSize_ ; ++j){
+  for (int i = 0; i < filterSize_; ++i) {
+    for (int j = 0; j < filterSize_; ++j) {
       /* equation for a gaussian with stdev radius_ */
-      gaussian[i*filterSize_+j] = exp((
-            (i-filterRadius)*(i-filterRadius)+
-            (j-filterRadius)*(j-filterRadius)) / (-2.0*radius_));
-      sum = sum + gaussian[i*filterSize_ +j];
+      gaussian[i * filterSize_ + j] = exp((
+                                            (i - filterRadius) * (i - filterRadius) +
+                                            (j - filterRadius) * (j - filterRadius)) / (-2.0 * radius_));
+      sum = sum + gaussian[i * filterSize_ + j];
     }
   }
 
@@ -105,11 +104,11 @@ void GaussianFilter::set_radius(float radius)
 
   /* normalize the filter */
 
-  for(int i = 0 ; i < filterSize_; ++i){
-    for(int j = 0 ; j < filterSize_; ++j) {
-      temp = gaussian[i*filterSize_ +j];
-      gaussian[i*filterSize_ + j] = temp / sum;
-     }
+  for (int i = 0; i < filterSize_; ++i) {
+    for (int j = 0; j < filterSize_; ++j) {
+      temp = gaussian[i * filterSize_ + j];
+      gaussian[i * filterSize_ + j] = temp / sum;
+    }
   }
 
   /* copies gaussian filter over to GPU */
@@ -122,21 +121,18 @@ void GaussianFilter::set_radius(float radius)
 
 void
 GaussianFilter::apply(const Buffer* input,
-            Buffer* output,
-            int width,
-            int height)
+                      Buffer* output,
+                      int width,
+                      int height)
 {
-  if (filterSize_ == 1 )
-  {
+  if (filterSize_ == 1) {
     /* if filterSize_ = 1, filter does not change image */
     input->copy(output);
-  }
-  else
-  {
+  } else {
     Kernel* kernel = gaussian_program_.compile(GaussianFilter_cl, KERNEL_NAME);
 
     kernel->block2d(KERNEL_X, KERNEL_Y);
-    kernel->grid2d((width-1)/KERNEL_X+1, (height-1)/KERNEL_Y+1);
+    kernel->grid2d((width - 1) / KERNEL_X + 1, (height - 1) / KERNEL_Y + 1);
 
     kernel->addBufferArg(input);
     kernel->addBufferArg(output);
@@ -150,5 +146,4 @@ GaussianFilter::apply(const Buffer* input,
     delete kernel;
   }
 }
-
 } } // namespace xromm::opencl

@@ -52,21 +52,21 @@
 // interperet this as the appropriate type.
 struct TiffImage
 {
-    // Baseline Tiff metadata
-    uint32_t width;
-    uint32_t height;
-    uint16_t bitsPerSample;
-    uint16_t photometric;
-    uint16_t orientation;
-    uint16_t samplesPerPixel;
-    uint16_t planarConfig;
-    uint16_t compression;
+  // Baseline Tiff metadata
+  uint32_t width;
+  uint32_t height;
+  uint16_t bitsPerSample;
+  uint16_t photometric;
+  uint16_t orientation;
+  uint16_t samplesPerPixel;
+  uint16_t planarConfig;
+  uint16_t compression;
 
-    // Extended Tiff metadata
-    uint16_t sampleFormat;
+  // Extended Tiff metadata
+  uint16_t sampleFormat;
 
-    // Image data
-    tdata_t data;
+  // Image data
+  tdata_t data;
   size_t dataSize;
 };
 

@@ -99,46 +99,45 @@ extern "C" void cuda_pso(float *positions, float *velocities, float *pBests, flo
     }
   }*/
 
-  cudaMalloc((void**)&devPos, sizeof(float)*size);
-  cudaMalloc((void**)&devVel, sizeof(float)*size);
-  cudaMalloc((void**)&devPBest, sizeof(float)*size);
-  cudaMalloc((void**)&devGBest, sizeof(float)*NUM_OF_DIMENSIONS);
+cudaMalloc((void**)&devPos, sizeof(float) * size);
+cudaMalloc((void**)&devVel, sizeof(float) * size);
+cudaMalloc((void**)&devPBest, sizeof(float) * size);
+cudaMalloc((void**)&devGBest, sizeof(float) * NUM_OF_DIMENSIONS);
 
-  int threadNum = 64;
-  int blocksNum = NUM_OF_PARTICLES / threadNum;
+int threadNum = 64;
+int blocksNum = NUM_OF_PARTICLES / threadNum;
 
-  cudaMemcpy(devPos, positions, sizeof(float)*size, cudaMemcpyHostToDevice);
-  cudaMemcpy(devVel, velocities, sizeof(float)*size, cudaMemcpyHostToDevice);
-  cudaMemcpy(devPBest, pBests, sizeof(float)*size, cudaMemcpyHostToDevice);
-  cudaMemcpy(devGBest, gBest, sizeof(float)*NUM_OF_DIMENSIONS, cudaMemcpyHostToDevice);
+cudaMemcpy(devPos, positions, sizeof(float) * size, cudaMemcpyHostToDevice);
+cudaMemcpy(devVel, velocities, sizeof(float) * size, cudaMemcpyHostToDevice);
+cudaMemcpy(devPBest, pBests, sizeof(float) * size, cudaMemcpyHostToDevice);
+cudaMemcpy(devGBest, gBest, sizeof(float) * NUM_OF_DIMENSIONS, cudaMemcpyHostToDevice);
 
-  //cudaEvent_t start1;
-  //cudaEventCreate(&start1);
-  //cudaEvent_t stop1;
-  //cudaEventCreate(&stop1);
-  //float msecTotal1 = 0.0f;
-  for (int iter = 0; iter < MAX_EPOCHS; iter++)
-  {
-    kernelUpdateParticle << <blocksNum, threadNum >> > (devPos, devVel, devPBest, devGBest, getRandomClamped(), getRandomClamped());//0.000008s
+// cudaEvent_t start1;
+// cudaEventCreate(&start1);
+// cudaEvent_t stop1;
+// cudaEventCreate(&stop1);
+// float msecTotal1 = 0.0f;
+for (int iter = 0; iter < MAX_EPOCHS; iter++) {
+  kernelUpdateParticle << < blocksNum, threadNum >> > (devPos, devVel, devPBest, devGBest, getRandomClamped(), getRandomClamped()); // 0.000008s
 
-    //cudaEventRecord(start1, NULL);
+  // cudaEventRecord(start1, NULL);
 
-    kernelUpdatePBest << <blocksNum, threadNum >> > (devPos, devPBest, devGBest);
+  kernelUpdatePBest << < blocksNum, threadNum >> > (devPos, devPBest, devGBest);
 
-    //cudaEventRecord(stop1, NULL);
-    //cudaEventSynchronize(stop1);
-    //cudaEventElapsedTime(&msecTotal1, start1, stop1);
-    //printf("Time elapsed:%10.10lf s\n",(double)msecTotal1/1000);
-  }
-
-  cudaMemcpy(positions, devPos, sizeof(float)*size, cudaMemcpyDeviceToHost);
-  cudaMemcpy(velocities, devVel, sizeof(float)*size, cudaMemcpyDeviceToHost);
-  cudaMemcpy(pBests, devPBest, sizeof(float)*size, cudaMemcpyDeviceToHost);
-  cudaMemcpy(gBest, devGBest, sizeof(float)*NUM_OF_DIMENSIONS, cudaMemcpyDeviceToHost);
-
-  cudaFree(devPos);
-  cudaFree(devVel);
-  cudaFree(devPBest);
-  cudaFree(devGBest);
+  // cudaEventRecord(stop1, NULL);
+  // cudaEventSynchronize(stop1);
+  // cudaEventElapsedTime(&msecTotal1, start1, stop1);
+  // printf("Time elapsed:%10.10lf s\n",(double)msecTotal1/1000);
 }
-*/
+
+cudaMemcpy(positions, devPos, sizeof(float) * size, cudaMemcpyDeviceToHost);
+cudaMemcpy(velocities, devVel, sizeof(float) * size, cudaMemcpyDeviceToHost);
+cudaMemcpy(pBests, devPBest, sizeof(float) * size, cudaMemcpyDeviceToHost);
+cudaMemcpy(gBest, devGBest, sizeof(float) * NUM_OF_DIMENSIONS, cudaMemcpyDeviceToHost);
+
+cudaFree(devPos);
+cudaFree(devVel);
+cudaFree(devPBest);
+cudaFree(devGBest);
+}
+* /

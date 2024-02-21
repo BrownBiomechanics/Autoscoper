@@ -45,7 +45,6 @@
 #include <cmath>
 
 namespace xromm { namespace gpu {
-
 //////// Global variables ////////
 
 static unsigned g_max_n = 0;
@@ -67,8 +66,7 @@ static Program ncc_sum_kernel_;
 
 static void get_max_threads()
 {
-  if (!g_maxNumThreads)
-  {
+  if (!g_maxNumThreads) {
     g_maxNumThreads = Kernel::getMaxGroup();
     size_t* max_items = Kernel::getMaxItems();
     if (max_items[0] < g_maxNumThreads)
@@ -82,7 +80,7 @@ static void get_max_threads()
 
     /* reduce threads to fit in local mem */
     size_t maxLocalMem = Kernel::getLocalMemSize();
-    if (g_maxNumThreads*sizeof(float) > maxLocalMem) {
+    if (g_maxNumThreads * sizeof(float) > maxLocalMem) {
       g_maxNumThreads = maxLocalMem / sizeof(float);
     }
 
@@ -94,13 +92,13 @@ static void get_max_threads()
 }
 
 static void get_device_params(unsigned n,
-             size_t& numThreads,
-             size_t& numBlocks,
-             size_t& sizeMem)
+                              size_t& numThreads,
+                              size_t& numBlocks,
+                              size_t& sizeMem)
 {
   numThreads = n < g_maxNumThreads ? n : g_maxNumThreads;
-  numBlocks = (n+numThreads-1)/numThreads;
-  sizeMem = numThreads*sizeof(float);
+  numBlocks = (n + numThreads - 1) / numThreads;
+  sizeMem = numThreads * sizeof(float);
 }
 
 static float ncc_sum(Buffer* f, unsigned n)
@@ -110,8 +108,7 @@ static float ncc_sum(Buffer* f, unsigned n)
 
   Kernel* kernel = ncc_sum_kernel_.compile(NccSum_cl, "ncc_sum_kernel");
 
-  while (n > 1)
-  {
+  while (n > 1) {
 #if DEBUG
     std::cerr << "ncc_sum[" << n << "] numThreads = " << numThreads << std::endl;
     std::cerr << "ncc_sum[" << n << "] numBlocks = " << numBlocks << std::endl;
@@ -129,9 +126,9 @@ static float ncc_sum(Buffer* f, unsigned n)
     kernel->launch();
 
 #if DEBUG
-    float *tmp = new float[numBlocks];
-    d_sums->write(tmp, numBlocks*sizeof(float));
-    for (unsigned j=0; j<numBlocks; j++) {
+    float* tmp = new float[numBlocks];
+    d_sums->write(tmp, numBlocks * sizeof(float));
+    for (unsigned j = 0; j < numBlocks; j++) {
       std::cerr << " " << tmp[j];
     }
     std::cerr << std::endl;
@@ -156,18 +153,17 @@ static float ncc_sum(Buffer* f, unsigned n)
 
 void ncc_init(unsigned max_n)
 {
-  if (g_max_n != max_n)
-  {
+  if (g_max_n != max_n) {
     ncc_deinit();
     get_max_threads();
 
     size_t numThreads, numBlocks, sizeMem;
     get_device_params(max_n, numThreads, numBlocks, sizeMem);
 
-    d_sums = new Buffer(numBlocks*sizeof(float));
-    d_nums = new Buffer(max_n*sizeof(float));
-    d_den1s = new Buffer(max_n*sizeof(float));
-    d_den2s = new Buffer(max_n*sizeof(float));
+    d_sums = new Buffer(numBlocks * sizeof(float));
+    d_nums = new Buffer(max_n * sizeof(float));
+    d_den1s = new Buffer(max_n * sizeof(float));
+    d_den2s = new Buffer(max_n * sizeof(float));
 
     g_max_n = max_n;
   }
@@ -216,16 +212,14 @@ float ncc(Buffer* f, Buffer* g, Buffer* mask, unsigned n)
 
   delete kernel;
 
-  float den = sqrt(ncc_sum(d_den1s,n)*ncc_sum(d_den2s,n));
+  float den = sqrt(ncc_sum(d_den1s, n) * ncc_sum(d_den2s, n));
 
   if (den < 1e-5) {
     return 1e5;
   }
 
-  return ncc_sum(d_nums,n)/den;
+  return ncc_sum(d_nums, n) / den;
 }
-
 } // namespace gpu
-
 } // namespace xromm
 

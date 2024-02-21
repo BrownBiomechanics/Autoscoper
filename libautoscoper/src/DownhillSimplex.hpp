@@ -4,14 +4,14 @@
 #define DOWNHILL_SIMPLEX_H
 
 #define   MP  22
-#define   NP  21    //Maximum value for NDIM=20
+#define   NP  21 // Maximum value for NDIM=20
 typedef   double MAT[MP][NP];
 
 // We define this function.
-double FUNC(double *P);
+double FUNC(double* P);
 
 // This runs the downhill simplex routine.
-void AMOEBA(MAT P, double *Y, int NDIM, double FTOL, int *ITER);
+void AMOEBA(MAT P, double* Y, int NDIM, double FTOL, int* ITER);
 
 #endif
 

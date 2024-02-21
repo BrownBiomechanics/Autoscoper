@@ -49,25 +49,25 @@
 namespace xromm { namespace gpu
 {
 
-  class BackgroundRenderer
+class BackgroundRenderer
 {
 public:
   BackgroundRenderer();
   ~BackgroundRenderer();
 
   void set_back(const void* data, size_t width, size_t height);
-    void set_image_plane(float x, float y, float width, float height);
-    void set_viewport(float x, float y, float width, float height);
+  void set_image_plane(float x, float y, float width, float height);
+  void set_viewport(float x, float y, float width, float height);
   void render(const Buffer* buffer, unsigned width, unsigned height, float threshold) const;
+
 private:
   BackgroundRenderer(const BackgroundRenderer& renderer);
   BackgroundRenderer& operator=(const BackgroundRenderer& renderer);
 
   Image* image_;
-    float image_plane_[4];
-    float viewport_[4];
+  float image_plane_[4];
+  float viewport_[4];
 };
-
 } } // namespace xromm::opencl
 
 #endif // XROMM_BACKGROUND_RENDERER_HPP

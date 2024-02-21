@@ -43,17 +43,13 @@
 #define XROMM_GPU_HDIST_KERNELS_H
 
 namespace xromm {
+namespace gpu {
+void hdist_init(unsigned int max_n, unsigned int maxNumThreads = 256);
 
-  namespace gpu {
+void hdist_deinit();
 
-    void hdist_init(unsigned int max_n, unsigned int maxNumThreads = 256);
-
-    void hdist_deinit();
-
-    float hdist(float* f, float* g, float* mask, unsigned int n);
-
-  } // namespace gpu
-
+float hdist(float* f, float* g, float* mask, unsigned int n);
+} // namespace gpu
 } // namespace xromm
 
 #endif // XROMM_GPU_HDIST_KERNELS_H

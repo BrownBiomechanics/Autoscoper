@@ -49,9 +49,9 @@
 #define CALL_GL(exp) do{ \
     exp; \
     if (glGetError() != GL_NO_ERROR) \
-        cerr << "Error in OpenGL call at " \
-           << __FILE__ << ':' << __LINE__ << endl; \
-}while(0)
+    cerr << "Error in OpenGL call at " \
+         << __FILE__ << ':' << __LINE__ << endl; \
+} while (0)
 #else
 #define CALL_GL(exp) exp
 #endif
@@ -60,39 +60,38 @@ struct ViewData
 {
   bool m_isStaticView;
 
-    int window_width;
-    int window_height;
+  int window_width;
+  int window_height;
 
-    float ratio;
-    float fovy;
-    float near_clip;
-    float far_clip;
+  float ratio;
+  float fovy;
+  float near_clip;
+  float far_clip;
 
-    float zoom;
-    float zoom_x;
-    float zoom_y;
+  float zoom;
+  float zoom_x;
+  float zoom_y;
 
-    int viewport_x;
-    int viewport_y;
-    int viewport_width;
-    int viewport_height;
+  int viewport_x;
+  int viewport_y;
+  int viewport_width;
+  int viewport_height;
 
-    double scale;
+  double scale;
 
-    GLuint pbo;
+  GLuint pbo;
 };
 
 
 class GLWidget : public QOpenGLWidget
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    GLWidget(QWidget *parent);
+  GLWidget(QWidget* parent);
 
 public slots:
-    //void animate();
-
+  // void animate();
 
 protected:
   void initializeGL();
@@ -103,7 +102,7 @@ protected:
   void update_viewport(ViewData* view);
 
 private:
-  int w,h;
+  int w, h;
 
 };
 

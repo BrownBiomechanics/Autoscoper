@@ -43,13 +43,11 @@
 #define XROMM_GPU_MERGER_KERNELS_H
 
 namespace xromm { namespace gpu {
-
 void merge(float* src1,
-               float* src2,
-               float* dest,
-               size_t width,
-               size_t height);
-
+           float* src2,
+           float* dest,
+           size_t width,
+           size_t height);
 } } // namespace xromm::cuda
 
 #endif // XROMM_GPU_MERGER_KERNELS_H

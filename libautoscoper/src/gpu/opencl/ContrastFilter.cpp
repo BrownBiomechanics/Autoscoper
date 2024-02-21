@@ -43,7 +43,6 @@
 #include "ContrastFilter.hpp"
 
 namespace xromm { namespace gpu {
-
 #define KERNEL_X 16
 #define KERNEL_Y 16
 #define KERNEL_CODE ContrastFilter_cl
@@ -56,39 +55,38 @@ static int num_contrast_filters = 0;
 static Program contrast_program_;
 
 ContrastFilter::ContrastFilter()
-    : Filter(XROMM_GPU_CONTRAST_FILTER,""),
-      alpha_(1.0f),
-      beta_(1.0f),
-      size_(3)
+  : Filter(XROMM_GPU_CONTRAST_FILTER, ""),
+    alpha_(1.0f),
+    beta_(1.0f),
+    size_(3)
 {
-    std::stringstream name_stream;
-    name_stream << "ContrastFilter" << (++num_contrast_filters);
-    name_ = name_stream.str();
+  std::stringstream name_stream;
+  name_stream << "ContrastFilter" << (++num_contrast_filters);
+  name_ = name_stream.str();
 }
 
 void
 ContrastFilter::apply(
-    const Buffer* input,
-    Buffer* output,
-    int width,
-    int height)
+  const Buffer* input,
+  Buffer* output,
+  int width,
+  int height)
 {
   Kernel* kernel = contrast_program_.compile(ContrastFilter_cl, KERNEL_NAME);
 
-    kernel->block2d(KERNEL_X, KERNEL_Y);
-    kernel->grid2d((width-1)/KERNEL_X+1, (height-1)/KERNEL_Y+1);
+  kernel->block2d(KERNEL_X, KERNEL_Y);
+  kernel->grid2d((width - 1) / KERNEL_X + 1, (height - 1) / KERNEL_Y + 1);
 
-    kernel->addBufferArg(input);
-    kernel->addBufferArg(output);
-    kernel->addArg(width);
-    kernel->addArg(height);
-    kernel->addArg(alpha_);
-    kernel->addArg(beta_);
-    kernel->addArg(size_);
+  kernel->addBufferArg(input);
+  kernel->addBufferArg(output);
+  kernel->addArg(width);
+  kernel->addArg(height);
+  kernel->addArg(alpha_);
+  kernel->addArg(beta_);
+  kernel->addArg(size_);
 
   kernel->launch();
 
   delete kernel;
 }
-
 } } // namespace xromm::opencl

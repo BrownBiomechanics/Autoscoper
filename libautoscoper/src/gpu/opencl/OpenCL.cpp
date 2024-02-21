@@ -43,7 +43,7 @@
 #include <cstring>
 #include <iostream>
 #include <fstream>
-#include <sstream>      // std::stringstream, std::stringbuf
+#include <sstream> // std::stringstream, std::stringbuf
 
 #include "OpenCL.hpp"
 #include "Backtrace.hpp"
@@ -66,16 +66,16 @@ static clGetGLContextInfoKHR_fn pfn_clGetGLContextInfoKHR;
 #define TYPE CL_DEVICE_TYPE_GPU
 
 #define ERROR(msg) do{\
-  std::cerr << "Error at " << __FILE__ << ':' << __LINE__ \
-       << "\n  " << msg << std::endl; \
-  xromm::bt(); \
-  exit(1); \
-  }while(0)
+    std::cerr << "Error at " << __FILE__ << ':' << __LINE__ \
+              << "\n  " << msg << std::endl; \
+    xromm::bt(); \
+    exit(1); \
+} while (0)
 
 #define CHECK_CL \
   if (err_ != CL_SUCCESS) {\
     std::cerr << "OpenCL error at " << __FILE__ << ':' << __LINE__ \
-           << "\n  " << err_ << ' ' << opencl_error(err_) << std::endl; \
+              << "\n  " << err_ << ' ' << opencl_error(err_) << std::endl; \
     xromm::bt(); \
     exit(1); \
   }
@@ -84,7 +84,7 @@ static bool inited_ = false;
 static bool gl_inited_ = false;
 static int used_platform = 0;
 static int used_device = 0;
-std::vector <std::pair<int,int> > platform_device_keys;
+std::vector<std::pair<int, int>> platform_device_keys;
 
 #if defined(__APPLE__) || defined(__MACOSX)
 static CGLShareGroupObj share_group_;
@@ -175,7 +175,7 @@ static const char* opencl_error(cl_int err)
     case CL_MAX_SIZE_RESTRICTION_EXCEEDED: return "CL_MAX_SIZE_RESTRICTION_EXCEEDED";
 #endif
     default: return "Unknown";
-    }
+  }
 }
 
 static void print_platform(cl_platform_id platform)
@@ -185,17 +185,17 @@ static void print_platform(cl_platform_id platform)
   char buffer[1024];
 
   err_ = clGetPlatformInfo(
-        platform, CL_PLATFORM_VERSION, sizeof(buffer), buffer, NULL);
+    platform, CL_PLATFORM_VERSION, sizeof(buffer), buffer, NULL);
   CHECK_CL
   std::cerr << "# Version    : " << buffer << std::endl;
 
   err_ = clGetPlatformInfo(
-        platform, CL_PLATFORM_NAME, sizeof(buffer), buffer, NULL);
+    platform, CL_PLATFORM_NAME, sizeof(buffer), buffer, NULL);
   CHECK_CL
   std::cerr << "# Name       : " << buffer << std::endl;
 
   err_ = clGetPlatformInfo(
-        platform, CL_PLATFORM_VENDOR, sizeof(buffer), buffer, NULL);
+    platform, CL_PLATFORM_VENDOR, sizeof(buffer), buffer, NULL);
   CHECK_CL
   std::cerr << "# Vendor     : " << buffer << std::endl;
 }
@@ -213,12 +213,12 @@ static void print_device(cl_device_id device)
   std::cerr << "# OpenCL Device" << "\n";
 
   err_ = clGetDeviceInfo(
-        device, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
+    device, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
   CHECK_CL
   std::cerr << "# Name          : " << buffer << "\n";
 
   err_ = clGetDeviceInfo(
-        device, CL_DEVICE_TYPE, sizeof(t), &t, NULL);
+    device, CL_DEVICE_TYPE, sizeof(t), &t, NULL);
   std::cerr << "# Type          : ";
   switch (t) {
     case CL_DEVICE_TYPE_CPU: std::cerr << "CPU\n"; break;
@@ -272,7 +272,7 @@ static void print_device(cl_device_id device)
     device, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(s), s, NULL);
   CHECK_CL
   std::cerr << "# Max Items     : ("
-     << s[0] << ',' << s[1] << ',' << s[2] << ")\n";
+            << s[0] << ',' << s[1] << ',' << s[2] << ")\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), s, NULL);
@@ -292,12 +292,12 @@ static void print_device(cl_device_id device)
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_LOCAL_MEM_SIZE, sizeof(ul), &ul, NULL);
   CHECK_CL
-  std::cerr << "# Local Mem.    : " << (ul/1024) << " kB\n";
+  std::cerr << "# Local Mem.    : " << (ul / 1024) << " kB\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(ul), &ul, NULL);
   CHECK_CL
-  std::cerr << "# Global Mem.   : " << (ul/1024) << " kB\n";
+  std::cerr << "# Global Mem.   : " << (ul / 1024) << " kB\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_GLOBAL_MEM_CACHE_SIZE, sizeof(ul), &ul, NULL);
@@ -310,25 +310,25 @@ static void print_device(cl_device_id device)
   std::cerr << "# Image Support : " << b << "\n";
 
   err_ = clGetDeviceInfo(
-    device, CL_DEVICE_IMAGE2D_MAX_WIDTH, sizeof(size_t), s+0, NULL);
+    device, CL_DEVICE_IMAGE2D_MAX_WIDTH, sizeof(size_t), s + 0, NULL);
   CHECK_CL
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_IMAGE2D_MAX_HEIGHT, sizeof(size_t), s+1, NULL);
+    err_ = clGetDeviceInfo(
+    device, CL_DEVICE_IMAGE2D_MAX_HEIGHT, sizeof(size_t), s + 1, NULL);
   CHECK_CL
   std::cerr << "# Max 2D Image  : (" << s[0] << ',' << s[1] << ")\n";
 
   err_ = clGetDeviceInfo(
-    device, CL_DEVICE_IMAGE3D_MAX_WIDTH, sizeof(size_t), s+0, NULL);
+    device, CL_DEVICE_IMAGE3D_MAX_WIDTH, sizeof(size_t), s + 0, NULL);
   CHECK_CL
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_IMAGE3D_MAX_HEIGHT, sizeof(size_t), s+1, NULL);
+    err_ = clGetDeviceInfo(
+    device, CL_DEVICE_IMAGE3D_MAX_HEIGHT, sizeof(size_t), s + 1, NULL);
   CHECK_CL
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_IMAGE3D_MAX_DEPTH, sizeof(size_t), s+2, NULL);
+    err_ = clGetDeviceInfo(
+    device, CL_DEVICE_IMAGE3D_MAX_DEPTH, sizeof(size_t), s + 2, NULL);
   CHECK_CL
   std::cerr << "# Max 3D Image  : ("
 
-     << s[0] << ',' << s[1] << ',' << s[2] << ")\n";
+            << s[0] << ',' << s[1] << ',' << s[2] << ")\n";
 
   err_ = clGetDeviceInfo(
     device, CL_DEVICE_EXTENSIONS, sizeof(buffer), buffer, NULL);
@@ -337,9 +337,8 @@ static void print_device(cl_device_id device)
 }
 
 namespace xromm { namespace gpu {
-
-
-std::vector< std::vector<std::string> > get_platforms(){
+std::vector<std::vector<std::string>> get_platforms()
+{
   cl_uint num_platforms;
   cl_platform_id platforms[10];
   err_ = clGetPlatformIDs(10, platforms, &num_platforms);
@@ -347,13 +346,13 @@ std::vector< std::vector<std::string> > get_platforms(){
 
   if (num_platforms < 1) ERROR("no OpenCL platforms found");
 
-  std::vector< std::vector<std::string> > platforms_desc;
+  std::vector<std::vector<std::string>> platforms_desc;
   char buffer[1024];
 
-  for (int i = 0 ; i < num_platforms; i ++){
+  for (int i = 0; i < num_platforms; i ++) {
     cl_uint num_devices;
     err_ = clGetDeviceIDs(platforms[i], TYPE, 1, devices_, &num_devices);
-    for(int d = 0 ; d <num_devices; d++){
+    for (int d = 0; d < num_devices; d++) {
       bool isvalid = true;
 
       std::vector<std::string> platform_desc;
@@ -474,7 +473,7 @@ std::vector< std::vector<std::string> > get_platforms(){
 
       err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(s), s, NULL);
       isvalid = (err_ == CL_SUCCESS) ? isvalid : false;
-      ss << "# Max Items     : ("<< s[0] << ',' << s[1] << ',' << s[2] << ")";
+      ss << "# Max Items     : (" << s[0] << ',' << s[1] << ',' << s[2] << ")";
       platform_desc.push_back(ss.str());
       ss.str("");
       ss.clear(); // Clear state flags.
@@ -502,14 +501,14 @@ std::vector< std::vector<std::string> > get_platforms(){
 
       err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_LOCAL_MEM_SIZE, sizeof(ul), &ul, NULL);
       isvalid = (err_ == CL_SUCCESS) ? isvalid : false;
-      ss << "# Local Mem.    : " << (ul/1024) << " kB";
+      ss << "# Local Mem.    : " << (ul / 1024) << " kB";
       platform_desc.push_back(ss.str());
       ss.str("");
       ss.clear(); // Clear state flags.
 
       err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(ul), &ul, NULL);
       isvalid = (err_ == CL_SUCCESS) ? isvalid : false;
-      ss << "# Global Mem.   : " << (ul/1024) << " kB";
+      ss << "# Global Mem.   : " << (ul / 1024) << " kB";
       platform_desc.push_back(ss.str());
       ss.str("");
       ss.clear(); // Clear state flags.
@@ -528,20 +527,20 @@ std::vector< std::vector<std::string> > get_platforms(){
       ss.str("");
       ss.clear(); // Clear state flags.
 
-      err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_IMAGE2D_MAX_WIDTH, sizeof(size_t), s+0, NULL);
+      err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_IMAGE2D_MAX_WIDTH, sizeof(size_t), s + 0, NULL);
       isvalid = (err_ == CL_SUCCESS) ? isvalid : false;
-      err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_IMAGE2D_MAX_HEIGHT, sizeof(size_t), s+1, NULL);
+      err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_IMAGE2D_MAX_HEIGHT, sizeof(size_t), s + 1, NULL);
       isvalid = (err_ == CL_SUCCESS) ? isvalid : false;
       ss << "# Max 2D Image  : (" << s[0] << ',' << s[1] << ")";
       platform_desc.push_back(ss.str());
       ss.str("");
       ss.clear(); // Clear state flags.
 
-      err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_IMAGE3D_MAX_WIDTH, sizeof(size_t), s+0, NULL);
+      err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_IMAGE3D_MAX_WIDTH, sizeof(size_t), s + 0, NULL);
       isvalid = (err_ == CL_SUCCESS) ? isvalid : false;
-      err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_IMAGE3D_MAX_HEIGHT, sizeof(size_t), s+1, NULL);
+      err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_IMAGE3D_MAX_HEIGHT, sizeof(size_t), s + 1, NULL);
       isvalid = (err_ == CL_SUCCESS) ? isvalid : false;
-      err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_IMAGE3D_MAX_DEPTH, sizeof(size_t), s+2, NULL);
+      err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_IMAGE3D_MAX_DEPTH, sizeof(size_t), s + 2, NULL);
       isvalid = (err_ == CL_SUCCESS) ? isvalid : false;
       ss << "# Max 3D Image  : (" << s[0] << ',' << s[1] << ',' << s[2] << ")";
       platform_desc.push_back(ss.str());
@@ -555,27 +554,30 @@ std::vector< std::vector<std::string> > get_platforms(){
       ss.str("");
       ss.clear(); // Clear state flags.
 
-      if(isvalid){
+      if (isvalid) {
         platforms_desc.push_back(platform_desc);
-        platform_device_keys.push_back(std::make_pair(i,d));
+        platform_device_keys.push_back(std::make_pair(i, d));
       }
     }
   }
   return platforms_desc;
 }
 
-void setUsedPlatform(int platform_idx){
+void setUsedPlatform(int platform_idx)
+{
   used_platform = platform_device_keys[platform_idx].first;
   used_device = platform_device_keys[platform_idx].second;
 }
 
-void setUsedPlatform(int platform, int device){
+void setUsedPlatform(int platform, int device)
+{
   used_platform = platform;
   used_device = device;
 }
 
-std::pair<int,int> getUsedPlatform(){
-  return std::make_pair(used_platform,used_device);
+std::pair<int, int> getUsedPlatform()
+{
+  return std::make_pair(used_platform, used_device);
 }
 
 void opencl_global_gl_context()
@@ -596,8 +598,7 @@ void opencl_global_gl_context()
 
 cl_int opencl_global_context()
 {
-  if (!inited_)
-  {
+  if (!inited_) {
     if (!gl_inited_) return CL_INVALID_CONTEXT;
 
     /* find platform */
@@ -625,11 +626,11 @@ cl_int opencl_global_context()
 
     size_t num_gl_devices;
     err_ = clGetGLContextInfoAPPLE(
-          context_, glContext   ,
-                    CL_CGL_DEVICE_FOR_CURRENT_VIRTUAL_SCREEN_APPLE,
-          sizeof(devices_), devices_, &num_gl_devices);
-        int  _count = num_gl_devices / sizeof(cl_device_id);
-    if(used_device >= _count) used_device = 0;
+      context_, glContext,
+      CL_CGL_DEVICE_FOR_CURRENT_VIRTUAL_SCREEN_APPLE,
+      sizeof(devices_), devices_, &num_gl_devices);
+    int  _count = num_gl_devices / sizeof(cl_device_id);
+    if (used_device >= _count)used_device = 0;
     CHECK_CL
 
 #elif defined(_WIN32)
@@ -641,27 +642,25 @@ cl_int opencl_global_context()
       CL_CONTEXT_PLATFORM, (cl_context_properties)(platforms[used_platform]),
       0 };
 
-      if (!pfn_clGetGLContextInfoKHR)
-      {
+    if (!pfn_clGetGLContextInfoKHR) {
 #ifdef CL_VERSION_1_2
-        pfn_clGetGLContextInfoKHR = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddressForPlatform(platforms[used_platform], "clGetGLContextInfoKHR");
+      pfn_clGetGLContextInfoKHR = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddressForPlatform(platforms[used_platform], "clGetGLContextInfoKHR");
 #else
-        pfn_clGetGLContextInfoKHR = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddress("clGetGLContextInfoKHR");
+      pfn_clGetGLContextInfoKHR = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddress("clGetGLContextInfoKHR");
 #endif
-        if (!pfn_clGetGLContextInfoKHR)
-        {
-           std::cout << "Failed to query proc address for clGetGLContextInfoKHR." << std::endl;
-          exit(EXIT_FAILURE);
-        }
+      if (!pfn_clGetGLContextInfoKHR) {
+        std::cout << "Failed to query proc address for clGetGLContextInfoKHR." << std::endl;
+        exit(EXIT_FAILURE);
       }
-      size_t size;
-      pfn_clGetGLContextInfoKHR(prop, CL_DEVICES_FOR_GL_CONTEXT_KHR, 10 * sizeof(cl_device_id), devices_, &size);
-      // Create a context using the supported devices
-      int _count = size / sizeof(cl_device_id);
-      if(used_device >= _count) used_device = 0;
-      //fprintf(stderr,"%d Devices \n",_count);
-      context_ = clCreateContext(prop, 1, &devices_[used_device], NULL, NULL, &err_);
-      CHECK_CL
+    }
+    size_t size;
+    pfn_clGetGLContextInfoKHR(prop, CL_DEVICES_FOR_GL_CONTEXT_KHR, 10 * sizeof(cl_device_id), devices_, &size);
+    // Create a context using the supported devices
+    int _count = size / sizeof(cl_device_id);
+    if (used_device >= _count)used_device = 0;
+    // fprintf(stderr,"%d Devices \n",_count);
+    context_ = clCreateContext(prop, 1, &devices_[used_device], NULL, NULL, &err_);
+    CHECK_CL
 #else
 #pragma OPENCL EXTENSION cl_khr_gl_sharing : enable
     cl_context_properties prop[] = {
@@ -673,27 +672,25 @@ cl_int opencl_global_context()
       (cl_context_properties)(platforms[used_platform]),
       0 };
 
-      if (!pfn_clGetGLContextInfoKHR)
-      {
+    if (!pfn_clGetGLContextInfoKHR) {
 #ifdef CL_VERSION_1_2
-        pfn_clGetGLContextInfoKHR = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddressForPlatform(platforms[used_platform], "clGetGLContextInfoKHR");
+      pfn_clGetGLContextInfoKHR = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddressForPlatform(platforms[used_platform], "clGetGLContextInfoKHR");
 #else
-        pfn_clGetGLContextInfoKHR = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddress("clGetGLContextInfoKHR");
+      pfn_clGetGLContextInfoKHR = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddress("clGetGLContextInfoKHR");
 #endif
-        if (!pfn_clGetGLContextInfoKHR)
-        {
-          std::cout << "Failed to query proc address for clGetGLContextInfoKHR." << std::endl;
-          exit(EXIT_FAILURE);
-        }
+      if (!pfn_clGetGLContextInfoKHR) {
+        std::cout << "Failed to query proc address for clGetGLContextInfoKHR." << std::endl;
+        exit(EXIT_FAILURE);
       }
+    }
 
-      size_t size;
-      pfn_clGetGLContextInfoKHR(prop, CL_DEVICES_FOR_GL_CONTEXT_KHR, 10 * sizeof(cl_device_id), devices_, &size);
+    size_t size;
+    pfn_clGetGLContextInfoKHR(prop, CL_DEVICES_FOR_GL_CONTEXT_KHR, 10 * sizeof(cl_device_id), devices_, &size);
 
-      int _count = size / sizeof(cl_device_id);
-      if(used_device >= _count) used_device = 0;
+    int _count = size / sizeof(cl_device_id);
+    if (used_device >= _count)used_device = 0;
 
-      context_ = clCreateContext(prop, 1, &devices_[used_device], NULL, NULL, &err_);
+    context_ = clCreateContext(prop, 1, &devices_[used_device], NULL, NULL, &err_);
     CHECK_CL
 #endif
 
@@ -702,7 +699,7 @@ cl_int opencl_global_context()
     queue_ = clCreateCommandQueue(context_, devices_[used_device], 0, &err_);
     CHECK_CL
 
-    inited_ = true;
+      inited_ = true;
   }
   return CL_SUCCESS;
 }
@@ -711,13 +708,14 @@ Kernel::Kernel(cl_program program, const char* func)
 {
   err_ = opencl_global_context();
   CHECK_CL
-  reset();
+    reset();
   kernel_ = clCreateKernel(program, func, &err_);
   CHECK_CL
 }
-Kernel::~Kernel() {
-    err_ = clReleaseKernel(kernel_);
-    CHECK_CL
+Kernel::~Kernel()
+{
+  err_ = clReleaseKernel(kernel_);
+  CHECK_CL
 }
 
 void Kernel::reset()
@@ -733,7 +731,7 @@ size_t Kernel::getLocalMemSize()
   CHECK_CL
   cl_ulong s;
   err_ = clGetDeviceInfo(devices_[used_device],
-          CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &s, NULL);
+                         CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &s, NULL);
   CHECK_CL
   return s;
 }
@@ -744,7 +742,7 @@ size_t* Kernel::getMaxItems()
   CHECK_CL
   size_t* s = new size_t[3];
   err_ = clGetDeviceInfo(devices_[used_device],
-          CL_DEVICE_MAX_WORK_ITEM_SIZES, 3*sizeof(s), s, NULL);
+                         CL_DEVICE_MAX_WORK_ITEM_SIZES, 3 * sizeof(s), s, NULL);
   CHECK_CL
   return s;
 }
@@ -755,7 +753,7 @@ size_t Kernel::getMaxGroup()
   CHECK_CL
   size_t s;
   err_ = clGetDeviceInfo(devices_[used_device],
-          CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), &s, NULL);
+                         CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), &s, NULL);
   CHECK_CL
   return s;
 }
@@ -785,7 +783,8 @@ void Kernel::grid2d(size_t X, size_t Y)
   grid_[1] = Y * block_[1];
 }
 
-void Kernel::grid3d(size_t X, size_t Y, size_t Z) {
+void Kernel::grid3d(size_t X, size_t Y, size_t Z)
+{
   if (grid_dim_ && (grid_dim_ != 3)) {
     ERROR("Grid dimension was already set and is not 3");
   } else if (!block_dim_) {
@@ -853,7 +852,7 @@ void Kernel::addImageArg(const Image* img)
 /* Dynamically allocated local memory can be added to the kernel by passing
    a NULL argument with the size of the buffer, e.g.
    http://stackoverflow.com/questions/8888718/how-to-declare-local-memory-in-opencl
-*/
+ */
 void Kernel::addLocalMem(size_t size)
 {
   err_ = clSetKernelArg(kernel_, arg_index_++, size, NULL);
@@ -863,10 +862,10 @@ void Kernel::launch()
 {
 #if DEBUG
   std::cerr << "block:";
-  for (unsigned i=0; i<grid_dim_; i++) std::cerr << ' ' << block_[i];
+  for (unsigned i = 0; i < grid_dim_; i++)std::cerr << ' ' << block_[i];
   std::cerr << std::endl;
   std::cerr << "grid:";
-  for (unsigned i=0; i<grid_dim_; i++) std::cerr << ' ' << grid_[i];
+  for (unsigned i = 0; i < grid_dim_; i++)std::cerr << ' ' << grid_[i];
   std::cerr << std::endl;
 #endif
   if (!block_dim_) {
@@ -879,28 +878,26 @@ void Kernel::launch()
 
   unsigned n_gl_buffers = gl_buffers.size();
   cl_mem* gl_mem = NULL;
-  if (n_gl_buffers)
-  {
+  if (n_gl_buffers) {
     gl_mem = new cl_mem[n_gl_buffers];
 
-    for (unsigned i=0; i<n_gl_buffers; i++) {
+    for (unsigned i = 0; i < n_gl_buffers; i++) {
       gl_mem[i] = gl_buffers[i]->buffer_;
     }
 
     err_ = clEnqueueAcquireGLObjects(
-        queue_, n_gl_buffers, gl_mem, 0, NULL, NULL);
+      queue_, n_gl_buffers, gl_mem, 0, NULL, NULL);
     CHECK_CL
   }
 
   err_ = clEnqueueNDRangeKernel(
-      queue_, kernel_, grid_dim_, NULL,
-      grid_, block_, 0, NULL, NULL);
+    queue_, kernel_, grid_dim_, NULL,
+    grid_, block_, 0, NULL, NULL);
   CHECK_CL
 
-  if (n_gl_buffers)
-  {
+  if (n_gl_buffers) {
     err_ = clEnqueueReleaseGLObjects(
-        queue_, n_gl_buffers, gl_mem, 0, NULL, NULL);
+      queue_, n_gl_buffers, gl_mem, 0, NULL, NULL);
     CHECK_CL
 
     delete gl_mem;
@@ -920,8 +917,7 @@ Program::Program() { compiled_ = false; }
 
 Kernel* Program::compile(const char* code, const char* func)
 {
-  if (!compiled_)
-  {
+  if (!compiled_) {
     err_ = opencl_global_context();
     CHECK_CL
 
@@ -929,22 +925,22 @@ Kernel* Program::compile(const char* code, const char* func)
     program_ = clCreateProgramWithSource(context_, 1, &code, &len, &err_);
     CHECK_CL
 
-    err_ = clBuildProgram(program_, 1, devices_, NULL, NULL, NULL);
+      err_ = clBuildProgram(program_, 1, devices_, NULL, NULL, NULL);
     if (err_ == CL_BUILD_PROGRAM_FAILURE) {
       size_t log_size;
       err_ = clGetProgramBuildInfo(
-          program_, devices_[0], CL_PROGRAM_BUILD_LOG,
-          0, NULL, &log_size);
+        program_, devices_[0], CL_PROGRAM_BUILD_LOG,
+        0, NULL, &log_size);
       CHECK_CL
-      char* build_log = (char*)malloc(log_size+1);
+      char* build_log = (char*)malloc(log_size + 1);
       if (!build_log) ERROR("malloc for build log");
       err_ = clGetProgramBuildInfo(
-          program_, devices_[0], CL_PROGRAM_BUILD_LOG,
-          log_size, build_log, NULL);
+        program_, devices_[0], CL_PROGRAM_BUILD_LOG,
+        log_size, build_log, NULL);
       CHECK_CL
-      build_log[log_size] = '\0';
+        build_log[log_size] = '\0';
       std::cerr << "OpenCL build failure for kernel function '" << func
-           << "':\n" << build_log << std::endl;
+                << "':\n" << build_log << std::endl;
       free(build_log);
       exit(1);
     } else {
@@ -961,7 +957,7 @@ Buffer::Buffer(size_t size, cl_mem_flags access)
 {
   err_ = opencl_global_context();
   CHECK_CL
-  size_ = size;
+    size_ = size;
   access_ = access;
   buffer_ = clCreateBuffer(context_, access, size, NULL, &err_);
   CHECK_CL
@@ -977,7 +973,7 @@ void Buffer::read(const void* buf, size_t size) const
 {
   if (size == 0) size = size_;
   err_ = clEnqueueWriteBuffer(
-      queue_, buffer_, CL_TRUE, 0, size, buf, 0, NULL, NULL);
+    queue_, buffer_, CL_TRUE, 0, size, buf, 0, NULL, NULL);
   CHECK_CL
 }
 
@@ -985,7 +981,7 @@ void Buffer::write(void* buf, size_t size) const
 {
   if (size == 0) size = size_;
   err_ = clEnqueueReadBuffer(
-      queue_, buffer_, CL_TRUE, 0, size, buf, 0, NULL, NULL);
+    queue_, buffer_, CL_TRUE, 0, size, buf, 0, NULL, NULL);
   CHECK_CL
 }
 
@@ -996,7 +992,7 @@ void Buffer::copy(const Buffer* dst, size_t size) const
     ERROR("Destination buffer does not have enough room! ("
           << size << " > " << dst->size_ << ")");
   err_ = clEnqueueCopyBuffer(
-      queue_, buffer_, dst->buffer_, 0, 0, size, 0, NULL, NULL);
+    queue_, buffer_, dst->buffer_, 0, 0, size, 0, NULL, NULL);
   CHECK_CL
 }
 
@@ -1009,7 +1005,7 @@ void Buffer::fill(const char c) const
   char* tmp = (char*)new char[size_];
   memset(tmp, c, size_);
   err_ = clEnqueueWriteBuffer(
-      queue_, buffer_, CL_TRUE, 0, size_, (void*)tmp, 0, NULL, NULL);
+    queue_, buffer_, CL_TRUE, 0, size_, (void*)tmp, 0, NULL, NULL);
   CHECK_CL
   delete tmp;
 #endif
@@ -1026,7 +1022,7 @@ void Buffer::fill(const float val) const
   err_ = clEnqueueWriteBuffer(
     queue_, buffer_, CL_TRUE, 0, size_, (void*)tmp, 0, NULL, NULL);
   CHECK_CL
-    delete tmp;
+  delete tmp;
 #endif
 }
 
@@ -1034,7 +1030,7 @@ GLBuffer::GLBuffer(cl_GLuint pbo, cl_mem_flags access)
 {
   err_ = opencl_global_context();
   CHECK_CL
-  access_ = access;
+    access_ = access;
   buffer_ = clCreateFromGLBuffer(context_, access, pbo, &err_);
   CHECK_CL
 }
@@ -1045,18 +1041,18 @@ GLBuffer::~GLBuffer()
   CHECK_CL
 }
 
-Image::Image(size_t* dims, cl_image_format *format, cl_mem_flags access)
+Image::Image(size_t* dims, cl_image_format* format, cl_mem_flags access)
 {
   err_ = opencl_global_context();
   CHECK_CL
-  dims_[0] = dims[0];
+    dims_[0] = dims[0];
   dims_[1] = dims[1];
   dims_[2] = dims[2];
   access_ = access;
 
 #if DEBUG
   std::cerr << "OpenCL::Image dims (" << dims[0] << ',' << dims[1] << ','
-     << dims[2] << ')' << std::endl;
+            << dims[2] << ')' << std::endl;
 #endif
 
   if (dims[0] == 0 || dims[1] == 0 || dims[2] == 0)
@@ -1085,12 +1081,12 @@ Image::Image(size_t* dims, cl_image_format *format, cl_mem_flags access)
 #else
   if (dims[2] == 1) {
     image_ = clCreateImage2D(context_,
-          access, format, dims[0], dims[1], 0, NULL, &err_);
+                             access, format, dims[0], dims[1], 0, NULL, &err_);
   } else {
     image_ = clCreateImage3D(
-          context_, access, format,
-          dims[0], dims[1], dims[2],
-          0, 0, NULL, &err_);
+      context_, access, format,
+      dims[0], dims[1], dims[2],
+      0, 0, NULL, &err_);
   }
 #endif
 
@@ -1105,18 +1101,17 @@ Image::~Image()
 
 void Image::read(const void* buf) const
 {
-  size_t origin[3] = {0,0,0};
+  size_t origin[3] = { 0, 0, 0 };
   err_ = clEnqueueWriteImage(
-      queue_, image_, CL_TRUE, origin, dims_, 0, 0, buf, 0, NULL, NULL);
+    queue_, image_, CL_TRUE, origin, dims_, 0, 0, buf, 0, NULL, NULL);
   CHECK_CL
 }
 
 void Image::write(void* buf) const
 {
-  size_t origin[3] = {0,0,0};
+  size_t origin[3] = { 0, 0, 0 };
   err_ = clEnqueueReadImage(
-      queue_, image_, CL_TRUE, origin, dims_, 0, 0, buf, 0, NULL, NULL);
+    queue_, image_, CL_TRUE, origin, dims_, 0, 0, buf, 0, NULL, NULL);
   CHECK_CL
 }
-
 } } // namespace xromm::opencl

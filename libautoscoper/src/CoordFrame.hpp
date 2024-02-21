@@ -55,73 +55,72 @@ class CoordFrame
 {
 public:
 
-    CoordFrame();
+  CoordFrame();
 
-    CoordFrame(const double* rotation, const double* translation);
+  CoordFrame(const double* rotation, const double* translation);
 
-    CoordFrame(const CoordFrame& xcframe);
+  CoordFrame(const CoordFrame& xcframe);
 
-    ~CoordFrame() {}
+  ~CoordFrame() {}
 
-    static CoordFrame from_xyzypr(const double* xyzypr);
+  static CoordFrame from_xyzypr(const double* xyzypr);
 
   static CoordFrame from_xyzquat(const double* xyzijk);
 
   static CoordFrame from_xyzAxis_angle(const double* xyzijk);
 
-    void to_xyzypr(double* xyzypr) const;
+  void to_xyzypr(double* xyzypr) const;
 
-    static CoordFrame from_matrix(const double* m);
+  static CoordFrame from_matrix(const double* m);
 
-    void to_matrix(double* m) const;
+  void to_matrix(double* m) const;
 
-    void to_matrix_row_order(double* m) const;
+  void to_matrix_row_order(double* m) const;
 
-    void orient(const double* rotation, const double* translation);
+  void orient(const double* rotation, const double* translation);
 
-    void translate(const double* v);
+  void translate(const double* v);
 
-    void rotate(const double* v, double angle);
+  void rotate(const double* v, double angle);
 
-    CoordFrame inverse() const;
+  CoordFrame inverse() const;
 
-    void point_to_world_space(const double* p, double* q) const;
+  void point_to_world_space(const double* p, double* q) const;
 
-    void vector_to_world_space(const double* p, double* q) const;
+  void vector_to_world_space(const double* p, double* q) const;
 
-    CoordFrame linear_extrap(const CoordFrame& x2) const;
+  CoordFrame linear_extrap(const CoordFrame& x2) const;
 
-    CoordFrame operator*(const CoordFrame& xcframe) const;
+  CoordFrame operator*(const CoordFrame& xcframe) const;
 
-    CoordFrame& operator=(const CoordFrame& xcframe);
+  CoordFrame& operator=(const CoordFrame& xcframe);
 
-    //Accessors
+  // Accessors
 
-    inline double* translation() {return translation_;}
+  inline double* translation() { return translation_; }
 
-    inline const double* translation() const {return translation_;}
+  inline const double* translation() const { return translation_; }
 
-    inline double* rotation() {return rotation_;}
+  inline double* rotation() { return rotation_; }
 
-    inline const double* rotation() const {return rotation_;}
+  inline const double* rotation() const { return rotation_; }
 
-    // Formatting
+  // Formatting
 
-    std::string to_string() const;
+  std::string to_string() const;
 
-    void from_string(std::string str);
+  void from_string(std::string str);
 
 private:
 
-    double rotation_[9];
+  double rotation_[9];
 
-    double translation_[3];
+  double translation_[3];
 
   void rotateQuat(double x, double y, double z);
 };
 
 std::ostream& operator<<(std::ostream& os, const CoordFrame& frame);
-
 } // namespace XROMM
 
 #endif // XROMM_COORD_FRAME_HPP

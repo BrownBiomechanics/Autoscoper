@@ -45,10 +45,10 @@
 #define SIM_ANNEALING_H
 
 // We define this function.
-double FUNC(double *P);
+double FUNC(double* P);
 
 // This runs the downhill simplex routine.
-void SA_BA(double pose0, double *Y, int *ITER, double MAX_TEMP, double MAX_ITER);
+void SA_BA(double pose0, double* Y, int* ITER, double MAX_TEMP, double MAX_ITER);
 
 #endif
 

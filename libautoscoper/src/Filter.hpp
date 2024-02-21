@@ -57,42 +57,41 @@ namespace xromm { namespace gpu {
 class Filter
 {
 public:
-    enum
-    {
-        XROMM_GPU_CONTRAST_FILTER,
-        XROMM_GPU_SOBEL_FILTER,
-        XROMM_GPU_MEDIAN_FILTER,
-        XROMM_GPU_GAUSSIAN_FILTER,
-        XROMM_GPU_SHARPEN_FILTER
-    };
+  enum
+  {
+    XROMM_GPU_CONTRAST_FILTER,
+    XROMM_GPU_SOBEL_FILTER,
+    XROMM_GPU_MEDIAN_FILTER,
+    XROMM_GPU_GAUSSIAN_FILTER,
+    XROMM_GPU_SHARPEN_FILTER
+  };
 
-    Filter(int type, const std::string& name)
-        : type_(type), name_(name), enabled_(true) {}
+  Filter(int type, const std::string& name)
+    : type_(type), name_(name), enabled_(true) {}
 
   virtual ~Filter() {}
 
-    // Apply the filter to the input image
-    virtual void apply(const Buffer* input,
-                       Buffer* output,
-                       int width,
-                       int height) = 0;
+  // Apply the filter to the input image
+  virtual void apply(const Buffer* input,
+                     Buffer* output,
+                     int width,
+                     int height) = 0;
 
 
-    // Accessors and mutators
-    int type() const { return type_; }
+  // Accessors and mutators
+  int type() const { return type_; }
 
-    const std::string& name() const { return name_; }
-    void set_name(const std::string& name) { name_ = name; }
+  const std::string& name() const { return name_; }
+  void set_name(const std::string& name) { name_ = name; }
 
-    bool enabled() const { return enabled_; }
-    void set_enabled(bool enabled) { enabled_ = enabled; }
+  bool enabled() const { return enabled_; }
+  void set_enabled(bool enabled) { enabled_ = enabled; }
 
 protected:
-    int type_;
-    std::string name_;
-    bool enabled_;
+  int type_;
+  std::string name_;
+  bool enabled_;
 };
-
 } } // namespace xromm::opencl
 
 #endif // XROMM_GPU_FILTER_HPP

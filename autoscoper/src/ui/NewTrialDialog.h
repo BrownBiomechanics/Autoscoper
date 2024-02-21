@@ -45,7 +45,7 @@
 #include <QDialog>
 
 namespace Ui {
-  class NewTrialDialog;
+class NewTrialDialog;
 }
 
 
@@ -55,35 +55,36 @@ using xromm::Trial;
 class CameraBox;
 class VolumeBox;
 
-class NewTrialDialog : public QDialog{
+class NewTrialDialog : public QDialog
+{
 
   Q_OBJECT
 
-  private:
-    std::vector <CameraBox *> cameras;
-    std::vector <VolumeBox *> volumes;
-    int nbCams;
-    int nbVolumes;
-    bool run();
+private:
+  std::vector<CameraBox*> cameras;
+  std::vector<VolumeBox*> volumes;
+  int nbCams;
+  int nbVolumes;
+  bool run();
 
-  public:
-    explicit NewTrialDialog(QWidget *parent = 0);
-    ~NewTrialDialog();
+public:
+  explicit NewTrialDialog(QWidget* parent = 0);
+  ~NewTrialDialog();
 
-    Ui::NewTrialDialog *diag;
+  Ui::NewTrialDialog* diag;
 
-    Trial trial;
+  Trial trial;
 
-  public slots:
+public slots:
 
-    void on_toolButton_CameraMinus_clicked();
-    void on_toolButton_CameraPlus_clicked();
+  void on_toolButton_CameraMinus_clicked();
+  void on_toolButton_CameraPlus_clicked();
 
-    void on_toolButton_VolumeMinus_clicked();
-    void on_toolButton_VolumePlus_clicked();
+  void on_toolButton_VolumeMinus_clicked();
+  void on_toolButton_VolumePlus_clicked();
 
-    void on_pushButton_OK_clicked();
-    void on_pushButton_Cancel_clicked();
+  void on_pushButton_OK_clicked();
+  void on_pushButton_Cancel_clicked();
 
 };
 

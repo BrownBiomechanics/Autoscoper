@@ -52,25 +52,24 @@ namespace xromm { namespace gpu {
 class GaussianFilter : public Filter
 {
 public:
-    GaussianFilter();
-    virtual ~GaussianFilter();
+  GaussianFilter();
+  virtual ~GaussianFilter();
 
-    // Apply the filter to the input image
-    virtual void apply(const Buffer* input,
-                       Buffer* output,
-                       int width,
-                       int height);
+  // Apply the filter to the input image
+  virtual void apply(const Buffer* input,
+                     Buffer* output,
+                     int width,
+                     int height);
 
-    // Accessors and mutators
-    float radius() const { return radius_; }
-    void set_radius(float radius);
+  // Accessors and mutators
+  float radius() const { return radius_; }
+  void set_radius(float radius);
 
 private:
-    float radius_;
+  float radius_;
   Buffer* gaussian_;
-    int filterSize_;
+  int filterSize_;
 };
-
 } } // namespace xromm::opencl
 
 #endif // XROMM_GPU_GAUSSIAN_FILTER_HPP
