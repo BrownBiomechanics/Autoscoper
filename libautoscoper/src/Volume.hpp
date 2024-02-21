@@ -57,85 +57,84 @@ class Volume
 {
 public:
 
-    // Loads a tiff volume
+  // Loads a tiff volume
 
-    Volume(const std::string& filename);
+  Volume(const std::string& filename);
 
-    Volume(const Volume& volume);
+  Volume(const Volume& volume);
 
-    ~Volume();
+  ~Volume();
 
-    Volume& operator=(const Volume&);
+  Volume& operator=(const Volume&);
 
 public:
 
-    // Accessors
+  // Accessors
 
-    const std::string& name() const { return name_; }
+  const std::string& name() const { return name_; }
 
-    size_t width() const { return width_; }
+  size_t width() const { return width_; }
 
-    size_t height() const { return height_; }
+  size_t height() const { return height_; }
 
-    size_t depth() const { return depth_; }
+  size_t depth() const { return depth_; }
 
-    size_t bps() const { return bps_; }
+  size_t bps() const { return bps_; }
 
-    const void* data() const { return data_; }
+  const void* data() const { return data_; }
 
-    // Volume properties that also affect rendering
+  // Volume properties that also affect rendering
 
-    float scaleX() const { return scaleX_; }
+  float scaleX() const { return scaleX_; }
 
-    void scaleX(float scale) { scaleX_ = scale; }
+  void scaleX(float scale) { scaleX_ = scale; }
 
-    float scaleY() const { return scaleY_; }
+  float scaleY() const { return scaleY_; }
 
-    void scaleY(float scale) { scaleY_ = scale; }
+  void scaleY(float scale) { scaleY_ = scale; }
 
-    float scaleZ() const { return scaleZ_; }
+  float scaleZ() const { return scaleZ_; }
 
-    void scaleZ(float scale) { scaleZ_ = scale; }
+  void scaleZ(float scale) { scaleZ_ = scale; }
 
-    bool flipX() const { return flipX_; }
+  bool flipX() const { return flipX_; }
 
-    void flipX(bool flip) { flipX_ = flip; }
+  void flipX(bool flip) { flipX_ = flip; }
 
-    bool flipY() const { return flipY_; }
+  bool flipY() const { return flipY_; }
 
-    void flipY(bool flip) { flipY_ = flip; }
+  void flipY(bool flip) { flipY_ = flip; }
 
-    bool flipZ() const { return flipZ_; }
+  bool flipZ() const { return flipZ_; }
 
-    void flipZ(bool flip) { flipZ_ = flip; }
+  void flipZ(bool flip) { flipZ_ = flip; }
 
 private:
 
-    std::string name_;
+  std::string name_;
 
-    size_t width_;
+  size_t width_;
 
-    size_t height_;
+  size_t height_;
 
-    size_t depth_;
+  size_t depth_;
 
-    size_t bps_;
+  size_t bps_;
 
-    void* data_;
+  void* data_;
 
-    float scaleX_;
+  float scaleX_;
 
-    float scaleY_;
+  float scaleY_;
 
-    float scaleZ_;
+  float scaleZ_;
 
-    bool flipX_;
+  bool flipX_;
 
-    bool flipY_;
+  bool flipY_;
 
-    bool flipZ_;
+  bool flipZ_;
 };
-
 } // namespace xromm
 
 #endif // XROMM_VOLUME_HPP

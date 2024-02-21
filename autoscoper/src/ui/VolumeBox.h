@@ -45,25 +45,25 @@
 #include <QWidget>
 
 namespace Ui {
-  class VolumeBox;
+class VolumeBox;
 }
 
-class VolumeBox : public QWidget{
+class VolumeBox : public QWidget
+{
 
   Q_OBJECT
 
-  private:
+private:
 
+public:
+  explicit VolumeBox(QWidget* parent = 0);
+  ~VolumeBox();
 
-  public:
-    explicit VolumeBox(QWidget *parent = 0);
-    ~VolumeBox();
+  Ui::VolumeBox* widget;
 
-    Ui::VolumeBox *widget;
+public slots:
 
-  public slots:
-
-    void on_toolButton_VolumeFile_clicked();
+  void on_toolButton_VolumeFile_clicked();
 
 };
 

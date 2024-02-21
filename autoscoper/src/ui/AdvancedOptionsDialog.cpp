@@ -48,15 +48,16 @@
 #include "Trial.hpp"
 #include "Manip3D.hpp"
 
-AdvancedOptionsDialog::AdvancedOptionsDialog(QWidget *parent) :
-                        QDialog(parent),
-                        adv_diag(new Ui::AdvancedOptionsDialog){
+AdvancedOptionsDialog::AdvancedOptionsDialog(QWidget* parent) :
+  QDialog(parent),
+  adv_diag(new Ui::AdvancedOptionsDialog)
+{
 
   adv_diag->setupUi(this);
   doExit = false;
 
   from_frame = 0;
-    to_frame = 0;
+  to_frame = 0;
   skip_frame = 1;
 
   curFrame = 0;
@@ -68,11 +69,13 @@ AdvancedOptionsDialog::AdvancedOptionsDialog(QWidget *parent) :
   inActive = false;
 }
 
-AdvancedOptionsDialog::~AdvancedOptionsDialog(){
+AdvancedOptionsDialog::~AdvancedOptionsDialog()
+{
   delete adv_diag;
 }
 
-void AdvancedOptionsDialog::setRangeAdvanced(int from, int to, int max){
+void AdvancedOptionsDialog::setRangeAdvanced(int from, int to, int max)
+{
   adv_diag->spinBox_FrameStart_adv->setMinimum(0);
   adv_diag->spinBox_FrameStart_adv->setMaximum(max);
   adv_diag->spinBox_FrameStart_adv->setValue(from);
@@ -82,17 +85,17 @@ void AdvancedOptionsDialog::setRangeAdvanced(int from, int to, int max){
   adv_diag->spinBox_FrameEnd_adv->setValue(to);
 }
 
-void AdvancedOptionsDialog::on_pushButton_Delete_clicked(bool checked) {
+void AdvancedOptionsDialog::on_pushButton_Delete_clicked(bool checked)
+{
   if (!inActive) {
-    AutoscoperMainWindow *mainwindow = dynamic_cast <AutoscoperMainWindow *> (parent());
+    AutoscoperMainWindow* mainwindow = dynamic_cast<AutoscoperMainWindow*> (parent());
     if (!mainwindow) return;
 
     from_frame = adv_diag->spinBox_FrameStart_adv->value();
     to_frame = adv_diag->spinBox_FrameEnd_adv->value();
     skip_frame = adv_diag->spinBox_FrameSkip_adv->value();
 
-    for (int iF = from_frame; iF <= to_frame; iF++)
-    {
+    for (int iF = from_frame; iF <= to_frame; iF++) {
       mainwindow->deletePose(iF);
     }
 
@@ -102,15 +105,15 @@ void AdvancedOptionsDialog::on_pushButton_Delete_clicked(bool checked) {
 
     mainwindow->update_xyzypr_and_coord_frame();
     mainwindow->redrawGL();
-  }
-  else {
+  } else {
     this->accept();
   }
 }
 
-void AdvancedOptionsDialog::on_pushButton_Smooth_clicked(bool checked) {
+void AdvancedOptionsDialog::on_pushButton_Smooth_clicked(bool checked)
+{
   if (!inActive) {
-    AutoscoperMainWindow *mainwindow = dynamic_cast <AutoscoperMainWindow *> (parent());
+    AutoscoperMainWindow* mainwindow = dynamic_cast<AutoscoperMainWindow*> (parent());
     if (!mainwindow) return;
 
     from_frame = adv_diag->spinBox_FrameStart_adv->value();
@@ -126,24 +129,26 @@ void AdvancedOptionsDialog::on_pushButton_Smooth_clicked(bool checked) {
 
     mainwindow->update_xyzypr_and_coord_frame();
     mainwindow->redrawGL();
-  }
-  else {
+  } else {
     this->accept();
   }
 }
 
-void AdvancedOptionsDialog::on_radioButton_MovingAverage_clicked(bool checked){
+void AdvancedOptionsDialog::on_radioButton_MovingAverage_clicked(bool checked)
+{
   // AutoscoperMainWindow *mainwindow  = dynamic_cast <AutoscoperMainWindow *> ( parent());
 
-  //mainwindow->getTracker()->trial()->guess = 0;
+  // mainwindow->getTracker()->trial()->guess = 0;
 }
-void AdvancedOptionsDialog::on_radioButton_AnotherMethod_clicked(bool checked){
+void AdvancedOptionsDialog::on_radioButton_AnotherMethod_clicked(bool checked)
+{
   // AutoscoperMainWindow *mainwindow  = dynamic_cast <AutoscoperMainWindow *> ( parent());
 
-  //mainwindow->getTracker()->trial()->guess = 1;
+  // mainwindow->getTracker()->trial()->guess = 1;
 }
 
-void AdvancedOptionsDialog::setDefPaths(QString root_path, QString filter_folder, QString filter_name, QString tracking_folder, QString task_name) {
+void AdvancedOptionsDialog::setDefPaths(QString root_path, QString filter_folder, QString filter_name, QString tracking_folder, QString task_name)
+{
 
   adv_diag->lineEdit_rootPath->setText(root_path);
   adv_diag->lineEdit_filterFolder->setText(filter_folder);

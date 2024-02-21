@@ -53,41 +53,40 @@ class RadRenderer
 {
 public:
 
-    RadRenderer();
+  RadRenderer();
 
-    ~RadRenderer();
+  ~RadRenderer();
 
 private:
 
-    RadRenderer(const RadRenderer& renderer);
+  RadRenderer(const RadRenderer& renderer);
 
-    RadRenderer& operator=(const RadRenderer& renderer);
+  RadRenderer& operator=(const RadRenderer& renderer);
 
 public:
 
-    void set_rad(const void* data, size_t width, size_t height, size_t bps);
+  void set_rad(const void* data, size_t width, size_t height, size_t bps);
 
-    void set_image_plane(float x, float y, float width, float height);
+  void set_image_plane(float x, float y, float width, float height);
 
-    void set_viewport(float x, float y, float width, float height);
+  void set_viewport(float x, float y, float width, float height);
 
-    void render(float* buffer, size_t width, size_t height) const;
+  void render(float* buffer, size_t width, size_t height) const;
 
-    const std::string& getName() const { return name_; }
+  const std::string& getName() const { return name_; }
 
-    void setName(const std::string& name) { name_ = name; }
+  void setName(const std::string& name) { name_ = name; }
 
 private:
 
-    cudaArray* array_;
+  cudaArray* array_;
 
-    float image_plane_[4];
+  float image_plane_[4];
 
-    float viewport_[4];
+  float viewport_[4];
 
-    std::string name_;
+  std::string name_;
 };
-
 } } // namespace xromm::cuda
 
 #endif // XROMM_GPU_RAD_RENDERER_HPP

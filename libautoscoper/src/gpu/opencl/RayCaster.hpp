@@ -52,70 +52,80 @@ namespace xromm { namespace gpu {
 class RayCaster
 {
 public:
-    RayCaster();
-    ~RayCaster();
+  RayCaster();
+  ~RayCaster();
 
-    void setVolume(VolumeDescription& volume);
-    void setInvModelView(const double* invModelView);
-    void setViewport(float x, float y, float width, float height);
-    void render(const Buffer* buffer, unsigned width, unsigned height);
+  void setVolume(VolumeDescription& volume);
+  void setInvModelView(const double* invModelView);
+  void setViewport(float x, float y, float width, float height);
+  void render(const Buffer* buffer, unsigned width, unsigned height);
 
-    void setVisible(bool visible) {
-        visible_ = visible;
-    }
+  void setVisible(bool visible)
+  {
+    visible_ = visible;
+  }
 
-    float getSampleDistance() const {
-        return sampleDistance_;
-    }
+  float getSampleDistance() const
+  {
+    return sampleDistance_;
+  }
 
-    void setSampleDistance(float sampleDistance) {
-        sampleDistance_ = sampleDistance;
-    }
+  void setSampleDistance(float sampleDistance)
+  {
+    sampleDistance_ = sampleDistance;
+  }
 
-    float getRayIntensity() const {
-        return rayIntensity_;
-    }
+  float getRayIntensity() const
+  {
+    return rayIntensity_;
+  }
 
-    void setRayIntensity(float rayIntensity) {
-        rayIntensity_ = rayIntensity;
-    }
+  void setRayIntensity(float rayIntensity)
+  {
+    rayIntensity_ = rayIntensity;
+  }
 
-    float getCutoff() const {
-        return cutoff_;
-    }
+  float getCutoff() const
+  {
+    return cutoff_;
+  }
 
-  float getMinCutoff() const {
+  float getMinCutoff() const
+  {
     return volumeDescription_->minValue();
   }
 
-  float getMaxCutoff() const {
+  float getMaxCutoff() const
+  {
     return volumeDescription_->maxValue();
   }
 
-    void setCutoff(float cutoff) {
-        cutoff_ = cutoff;
-    }
+  void setCutoff(float cutoff)
+  {
+    cutoff_ = cutoff;
+  }
 
-    const std::string& getName() const {
-        return name_;
-    }
+  const std::string& getName() const
+  {
+    return name_;
+  }
 
-    void setName(const std::string& name) {
-        name_ = name;
-    }
+  void setName(const std::string& name)
+  {
+    name_ = name;
+  }
 
 private:
-    VolumeDescription* volumeDescription_;
-    float invModelView_[16];
-    float viewport_[4];
+  VolumeDescription* volumeDescription_;
+  float invModelView_[16];
+  float viewport_[4];
   Buffer* b_viewport_;
-    float sampleDistance_;
-    float rayIntensity_;
-    float cutoff_;
-    std::string name_;
-    bool visible_;
+  float sampleDistance_;
+  float rayIntensity_;
+  float cutoff_;
+  std::string name_;
+  bool visible_;
 };
-
 } } // namespace xromm::opencl
 
 #endif // XROMM_RAY_CASTER_HPP

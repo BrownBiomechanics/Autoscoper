@@ -46,7 +46,8 @@
 #include <cmath>
 #include <iostream>
 
-void SA_BA(double pose0, double *Y, int *ITER, double MAX_TEMP, double MAX_ITER) {
+void SA_BA(double pose0, double* Y, int* ITER, double MAX_TEMP, double MAX_ITER)
+{
   // P0: This is a matrix of offsets. This is a manipulator on the model,
   // so change in this will be multiply by the orientation and translation
   // of model position. We run the optimization on this. Every change in the
@@ -56,13 +57,12 @@ void SA_BA(double pose0, double *Y, int *ITER, double MAX_TEMP, double MAX_ITER)
 
   double Pi;
   double Pcur[6];
-  //double Pbest[];
+  // double Pbest[];
 
   printf("In Annealing Function\n");
   std::cout << sizeof(P0[1]);
 
-  for (int i = 0; i < 6; i++)
-  {
+  for (int i = 0; i < 6; i++) {
     std::cout << xyzypr[i] << " ";
   }
   std::cout << std::endl;

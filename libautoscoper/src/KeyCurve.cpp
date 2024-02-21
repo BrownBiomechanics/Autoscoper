@@ -45,176 +45,172 @@
 
 void KeyCurve::insert(int time)
 {
-    insert(time,(*this)(time));
+  insert(time, (*this)(time));
 }
 
 void KeyCurve::insert(int time, float value)
 {
-    Key key;
-    key.value = value;
-    key.in_tangent_type = SMOOTH;
-    key.out_tangent_type = SMOOTH;
-    key.bind_tangents = true;
-    key.in_tangent_lock = false;
-    key.out_tangent_lock = false;
+  Key key;
+  key.value = value;
+  key.in_tangent_type = SMOOTH;
+  key.out_tangent_type = SMOOTH;
+  key.bind_tangents = true;
+  key.in_tangent_lock = false;
+  key.out_tangent_lock = false;
 
-    iterator position = keys.find(time);
-    if (position == keys.end()) {
-        std::pair<iterator,bool> temp = keys.insert(std::make_pair(time,key));
-        position = temp.first;
-    }
-    else {
-        key.in_tangent_type = position->second.in_tangent_type;
-        key.out_tangent_type = position->second.out_tangent_type;
-        key.bind_tangents = position->second.bind_tangents;
-        key.in_tangent_lock = position->second.in_tangent_lock;
-        key.out_tangent_lock = position->second.out_tangent_lock;
-        key.in_tangent = position->second.in_tangent;
-        key.out_tangent = position->second.out_tangent;
+  iterator position = keys.find(time);
+  if (position == keys.end()) {
+    std::pair<iterator, bool> temp = keys.insert(std::make_pair(time, key));
+    position = temp.first;
+  } else {
+    key.in_tangent_type = position->second.in_tangent_type;
+    key.out_tangent_type = position->second.out_tangent_type;
+    key.bind_tangents = position->second.bind_tangents;
+    key.in_tangent_lock = position->second.in_tangent_lock;
+    key.out_tangent_lock = position->second.out_tangent_lock;
+    key.in_tangent = position->second.in_tangent;
+    key.out_tangent = position->second.out_tangent;
 
-        if (position == keys.begin()) {
-            erase(position);
-            position = keys.insert(keys.begin(), std::make_pair(time,key));
-        }
-        else {
-            erase(position--);
-            position = keys.insert(position, std::make_pair(time,key));
-        }
+    if (position == keys.begin()) {
+      erase(position);
+      position = keys.insert(keys.begin(), std::make_pair(time, key));
+    } else {
+      erase(position--);
+      position = keys.insert(position, std::make_pair(time, key));
     }
-    key_changed(position);
+  }
+  key_changed(position);
 }
 
 void KeyCurve::erase(iterator position)
 {
-    if (position == keys.begin()) {
-        keys.erase(position);
-        if (!keys.empty()) {
-            key_changed(keys.begin());
-        }
+  if (position == keys.begin()) {
+    keys.erase(position);
+    if (!keys.empty()) {
+      key_changed(keys.begin());
     }
-    else {
-        keys.erase(position--);
-        key_changed(position);
-    }
+  } else {
+    keys.erase(position--);
+    key_changed(position);
+  }
 }
 
 KeyCurve::iterator KeyCurve::set_time(iterator position, int time)
 {
-    iterator temp = keys.find(time);
-    if (temp == position || temp != keys.end()) {
-        return position;
-    }
-
-    Key key = position->second;
-    if (position == keys.begin()) {
-        erase(position);
-        position = keys.insert(keys.begin(), std::make_pair(time,key));
-    }
-    else {
-        erase(position--);
-        position = keys.insert(position, std::make_pair(time,key));
-    }
-    key_changed(position);
-
+  iterator temp = keys.find(time);
+  if (temp == position || temp != keys.end()) {
     return position;
+  }
+
+  Key key = position->second;
+  if (position == keys.begin()) {
+    erase(position);
+    position = keys.insert(keys.begin(), std::make_pair(time, key));
+  } else {
+    erase(position--);
+    position = keys.insert(position, std::make_pair(time, key));
+  }
+  key_changed(position);
+
+  return position;
 }
 
 float KeyCurve::operator()(float time) const
 {
-    if (keys.empty()) {
-        return 0.0f;
-    }
+  if (keys.empty()) {
+    return 0.0f;
+  }
 
-    const_iterator p1 = keys.upper_bound(time);
-    if (p1 == keys.begin()) {
-        return p1->second.value;
-    }
+  const_iterator p1 = keys.upper_bound(time);
+  if (p1 == keys.begin()) {
+    return p1->second.value;
+  }
 
-    const_iterator p0 = p1; p0--;
-    if (p1 == keys.end()) {
-        return p0->second.value;
-    }
+  const_iterator p0 = p1; p0--;
+  if (p1 == keys.end()) {
+    return p0->second.value;
+  }
 
-    float t = (time-p0->first)/(float)(p1->first-p0->first);
-    return p0->second.a+t*p0->second.b+t*t*p0->second.c+t*t*t*p0->second.d;
+  float t = (time - p0->first) / (float)(p1->first - p0->first);
+  return p0->second.a + t * p0->second.b + t * t * p0->second.c + t * t * t * p0->second.d;
 }
 
 void KeyCurve::key_changed(iterator position)
 {
-    iterator next = position;
-    if (next != --keys.end() && next != keys.end()) {
-        ++next;
-    }
+  iterator next = position;
+  if (next != --keys.end() && next != keys.end()) {
+    ++next;
+  }
 
-    iterator prev = position;
-    if (prev != keys.begin()){
-        --prev;
-    }
+  iterator prev = position;
+  if (prev != keys.begin()) {
+    --prev;
+  }
 
-    iterator prev_prev = prev;
-    if (prev_prev != keys.begin()){
-        --prev_prev;
-    }
+  iterator prev_prev = prev;
+  if (prev_prev != keys.begin()) {
+    --prev_prev;
+  }
 
-    if (next != position) {
-        update_curve(next);
-    }
+  if (next != position) {
+    update_curve(next);
+  }
 
-    update_curve(position);
+  update_curve(position);
 
-    if (prev != position) {
-        update_curve(prev);
-    }
+  if (prev != position) {
+    update_curve(prev);
+  }
 
-    if (prev_prev != prev) {
-        update_curve(prev_prev);
-    }
+  if (prev_prev != prev) {
+    update_curve(prev_prev);
+  }
 }
 
 void KeyCurve::update_curve(iterator position)
 {
-    float time = (float)position->first;
-    Key& key = position->second;
+  float time = (float)position->first;
+  Key& key = position->second;
 
-    // First update the tangents
+  // First update the tangents
 
-    iterator prev = position;
-    if (prev != keys.begin()) {
-        --prev;
+  iterator prev = position;
+  if (prev != keys.begin()) {
+    --prev;
+  }
+  iterator next = position;
+  if (next != --keys.end() && next != keys.end()) {
+    ++next;
+  }
+
+  if (!key.in_tangent_lock) {
+    switch (key.in_tangent_type) {
+      default:
+      case SMOOTH:
+        key.in_tangent = (next->second.value - prev->second.value) /
+                         (float)(next->first - prev->first);
+        break;
     }
-    iterator next = position;
-    if (next != --keys.end() && next != keys.end()) {
-        ++next;
+  }
+  if (!key.out_tangent_lock) {
+    switch (key.out_tangent_type) {
+      default:
+      case SMOOTH:
+        key.out_tangent = (next->second.value - prev->second.value) /
+                          (float)(next->first - prev->first);
+        break;
     }
+  }
 
-    if (!key.in_tangent_lock) {
-        switch (key.in_tangent_type) {
-            default:
-            case SMOOTH:
-                key.in_tangent = (next->second.value-prev->second.value)/
-                                 (float)(next->first-prev->first);
-                break;
-        }
-    }
-    if (!key.out_tangent_lock) {
-        switch (key.out_tangent_type) {
-            default:
-            case SMOOTH:
-                key.out_tangent = (next->second.value-prev->second.value)/
-                                  (float)(next->first-prev->first);
-                break;
-        }
-    }
+  // Update the cubic spline
 
-    // Update the cubic spline
+  if (next != position) {
+    float D1 = key.out_tangent * (next->first - time);
+    float D2 = next->second.in_tangent * (next->first - time);
 
-    if (next != position) {
-        float D1 = key.out_tangent*(next->first-time);
-        float D2 = next->second.in_tangent*(next->first-time);
-
-        key.a = key.value;
-        key.b = D1;
-        key.c = 3.0f*(next->second.value-key.value)-2.0f*D1-D2;
-        key.d = 2.0f*(key.value-next->second.value)+D1+D2;
-    }
+    key.a = key.value;
+    key.b = D1;
+    key.c = 3.0f * (next->second.value - key.value) - 2.0f * D1 - D2;
+    key.d = 2.0f * (key.value - next->second.value) + D1 + D2;
+  }
 }

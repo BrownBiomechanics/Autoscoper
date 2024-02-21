@@ -45,26 +45,26 @@
 #include <QDialog>
 
 namespace Ui {
-  class ImportExportTrackingOptionsDialog;
+class ImportExportTrackingOptionsDialog;
 }
 
-class ImportExportTrackingOptionsDialog : public QDialog{
+class ImportExportTrackingOptionsDialog : public QDialog
+{
 
   Q_OBJECT
 
-  private:
+private:
 
+public:
+  explicit ImportExportTrackingOptionsDialog(QWidget* parent = 0);
+  ~ImportExportTrackingOptionsDialog();
 
-  public:
-    explicit ImportExportTrackingOptionsDialog(QWidget *parent = 0);
-    ~ImportExportTrackingOptionsDialog();
+  Ui::ImportExportTrackingOptionsDialog* diag;
 
-    Ui::ImportExportTrackingOptionsDialog *diag;
+public slots:
 
-  public slots:
-
-    void on_pushButton_OK_clicked();
-    void on_pushButton_Cancel_clicked();
+  void on_pushButton_OK_clicked();
+  void on_pushButton_Cancel_clicked();
 };
 
 #endif /* IMPORTEXPORTTRACKINGOPTIONSDIALOG_H_ */

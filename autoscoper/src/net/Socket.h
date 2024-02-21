@@ -35,9 +35,9 @@
 // FOREGOING, AND ACCEPTS ALL RISKS AND LIABILITIES THAT MAY ARISE FROM
 // THEIR USE OF THE SOFTWARE.
 // ---------------------------------
-///\file Socket.h
-///\author Benjamin Knorlein
-///\date 5/14/2018
+/// \file Socket.h
+/// \author Benjamin Knorlein
+/// \date 5/14/2018
 
 #pragma once
 
@@ -62,9 +62,10 @@ public:
   QString versionString();
 
 private:
-  QTcpServer *tcpServer;
-  std::vector<QTcpSocket *> clientConnections;
-  void handleMessage(QTcpSocket * connection, char* data, qint64 length);
+  QTcpServer* tcpServer;
+  std::vector<QTcpSocket*> clientConnections;
+  void handleMessage(QTcpSocket* connection, char* data, qint64 length);
+
 private:
   AutoscoperMainWindow* m_mainwindow;
 

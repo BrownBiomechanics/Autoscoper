@@ -45,74 +45,70 @@
 
 __global__
 void sharpen_filter_kernel(const float* input, float* output,
-                            int width, int height,
-                float* filter, int filterSize, float contrast, float threshold);
+                           int width, int height,
+                           float* filter, int filterSize, float contrast, float threshold);
 
 namespace xromm { namespace gpu {
-
 void sharpen_filter_apply(const float* input, float* output,
-                           int width, int height, float* sharpen, int filterSize, float contrast, float threshold)
+                          int width, int height, float* sharpen, int filterSize, float contrast, float threshold)
 {
-    dim3 blockDim(32, 32);
-    dim3 gridDim((width+blockDim.x-1)/blockDim.x,
-                 (height+blockDim.y-1)/blockDim.y);
+  dim3 blockDim(32, 32);
+  dim3 gridDim((width + blockDim.x - 1) / blockDim.x,
+               (height + blockDim.y - 1) / blockDim.y);
 
 
-    sharpen_filter_kernel<<<gridDim, blockDim>>>(input, output,
-                                                  width, height,
-                                              sharpen, filterSize, contrast, threshold);
+  sharpen_filter_kernel << < gridDim, blockDim >> > (input, output,
+                                                     width, height,
+                                                     sharpen, filterSize, contrast, threshold);
 
 }
-
 } } // namespace xromm::cuda
 
 static __device__
-float filterConvolution(const float* input, int width, int height, int x, int y, float* filter, int filterSize) //returns blurred pixel for comparison with original
+float filterConvolution(const float* input, int width, int height, int x, int y, float* filter, int filterSize) // returns blurred pixel for comparison with original
 {
 
-    float centerValue=0.0f;
-    int filterRadius = (filterSize - 1) / 2;
+  float centerValue = 0.0f;
+  int filterRadius = (filterSize - 1) / 2;
 
-    for(int i = 0; i < filterSize; ++i){
-        for(int j = 0; j < filterSize; ++j){
+  for (int i = 0; i < filterSize; ++i) {
+    for (int j = 0; j < filterSize; ++j) {
 
-            int a = x - filterRadius + i;
-            int b = y - filterRadius + j;
+      int a = x - filterRadius + i;
+      int b = y - filterRadius + j;
 
-            if(!(a < 0 || a >=width || b < 0 || b >= height))
-                 centerValue = centerValue + (filter[i*filterSize + j])*(input[b*width + a]);
-        }
+      if (!(a < 0 || a >= width || b < 0 || b >= height))
+        centerValue = centerValue + (filter[i * filterSize + j]) * (input[b * width + a]);
     }
+  }
 
 
-    return centerValue;
+  return centerValue;
 }
 
 __global__
 void sharpen_filter_kernel(const float* input, float* output,
-                            int width, int height,
-                    float* filter, int filterSize, float contrast, float threshold)
+                           int width, int height,
+                           float* filter, int filterSize, float contrast, float threshold)
 {
-    short x = blockIdx.x*blockDim.x+threadIdx.x;
-    short y = blockIdx.y*blockDim.y+threadIdx.y;
+  short x = blockIdx.x * blockDim.x + threadIdx.x;
+  short y = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (x > width-1 || y > height-1) {
-        return;
-    }
+  if (x > width - 1 || y > height - 1) {
+    return;
+  }
 
-    float blur = filterConvolution(input, width, height, x, y, filter, filterSize);
+  float blur = filterConvolution(input, width, height, x, y, filter, filterSize);
 
-//if original pixel and blurred pixel differ by more than threshold, difference is adjusted by contrast and added to original, else no change
-    if(abs(input[y*width+x] - blur) > threshold)
-    {
-          output[y*width + x] = input[y*width+x] + contrast*(input[y*width + x] - blur);
+// if original pixel and blurred pixel differ by more than threshold, difference is adjusted by contrast and added to original, else no change
+  if (abs(input[y * width + x] - blur) > threshold) {
+    output[y * width + x] = input[y * width + x] + contrast * (input[y * width + x] - blur);
 
-         if(output[y*width + x]  > 1)
-                output[y*width + x] = 1;
-         if(output[y*width + x]  < 0)
-             output[y*width + x] = 0;
-    }
-    else
-         output[y*width + x] = input[y*width + x];
+    if (output[y * width + x]  > 1)
+      output[y * width + x] = 1;
+    if (output[y * width + x]  < 0)
+      output[y * width + x] = 0;
+  } else
+    output[y * width + x] = input[y * width + x];
 
 }

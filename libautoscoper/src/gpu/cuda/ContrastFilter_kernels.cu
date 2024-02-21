@@ -45,59 +45,57 @@
 #include <cutil_math.h>
 
 __global__ void contrast_filter_kernel(const float* input, float* output,
-                            int width, int height,
-                            float alpha, float beta, int size);
+                                       int width, int height,
+                                       float alpha, float beta, int size);
 
 namespace xromm { namespace gpu {
-
 void contrast_filter_apply(const float* input, float* output,
                            int width, int height,
                            float alpha, float beta, int size)
 {
-    dim3 blockDim(32, 32);
-    dim3 gridDim((width+blockDim.x-1)/blockDim.x,
-                 (height+blockDim.y-1)/blockDim.y);
+  dim3 blockDim(32, 32);
+  dim3 gridDim((width + blockDim.x - 1) / blockDim.x,
+               (height + blockDim.y - 1) / blockDim.y);
 
-    contrast_filter_kernel <<<gridDim, blockDim>>> (input, output,
-                                                  width, height,
-                                                  alpha, beta, size);
+  contrast_filter_kernel << < gridDim, blockDim >> > (input, output,
+                                                      width, height,
+                                                      alpha, beta, size);
 }
-
 } } // namespace xromm::cuda
 
 __device__ float average(const float* input, int width, int height, int x, int y, int size)
 {
-    float n = 0.0f;
-    float sum = 0.0f;
-    int minI = max(y-size/2, 0);
-    int maxI = min(y+(size+1)/2, height);
-    int minJ = max(x-size/2, 0);
-    int maxJ = min(x+(size+1)/2, width);
-    for (int i = minI; i < maxI; ++i) {
-        for (int j = minJ; j < maxJ; ++j) {
-            n += 1.0f;
-            sum += input[i*width+j];
-        }
+  float n = 0.0f;
+  float sum = 0.0f;
+  int minI = max(y - size / 2, 0);
+  int maxI = min(y + (size + 1) / 2, height);
+  int minJ = max(x - size / 2, 0);
+  int maxJ = min(x + (size + 1) / 2, width);
+  for (int i = minI; i < maxI; ++i) {
+    for (int j = minJ; j < maxJ; ++j) {
+      n += 1.0f;
+      sum += input[i * width + j];
     }
-    return sum/n;
+  }
+  return sum / n;
 }
 
 __global__ void contrast_filter_kernel(const float* input, float* output,
-                            int width, int height,
-                            float alpha, float beta, int size)
+                                       int width, int height,
+                                       float alpha, float beta, int size)
 {
-    short x = blockIdx.x*blockDim.x+threadIdx.x;
-    short y = blockIdx.y*blockDim.y+threadIdx.y;
+  short x = blockIdx.x * blockDim.x + threadIdx.x;
+  short y = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (x > width-1 || y > height-1) {
-        return;
-    }
+  if (x > width - 1 || y > height - 1) {
+    return;
+  }
 
-    float fxy = input[y*width+x];
-    float axy = average(input, width, height, x, y, size);
-    float gxy = 0.0f;
-    if (axy > 0.01f) {
-        gxy = pow(axy,alpha-beta)*pow(fxy,beta);
-    }
-    output[y*width+x] = gxy;
+  float fxy = input[y * width + x];
+  float axy = average(input, width, height, x, y, size);
+  float gxy = 0.0f;
+  if (axy > 0.01f) {
+    gxy = pow(axy, alpha - beta) * pow(fxy, beta);
+  }
+  output[y * width + x] = gxy;
 }

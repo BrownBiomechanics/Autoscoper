@@ -45,21 +45,23 @@
 #include <QFileDialog>
 
 
-VolumeBox::VolumeBox(QWidget *parent) :
-                        QWidget(parent),
-                        widget(new Ui::VolumeBox){
+VolumeBox::VolumeBox(QWidget* parent) :
+  QWidget(parent),
+  widget(new Ui::VolumeBox)
+{
   widget->setupUi(this);
 }
 
-VolumeBox::~VolumeBox(){
+VolumeBox::~VolumeBox()
+{
   delete widget;
 }
 
-void VolumeBox::on_toolButton_VolumeFile_clicked(){
+void VolumeBox::on_toolButton_VolumeFile_clicked()
+{
   QString fileName = QFileDialog::getOpenFileName(this,
-    tr("Open Volume File"), QDir::currentPath(), tr("Volume Object File (*.tif)"));
-  if (fileName.isNull() == false)
-  {
+                                                  tr("Open Volume File"), QDir::currentPath(), tr("Volume Object File (*.tif)"));
+  if (fileName.isNull() == false) {
     widget->lineEdit_VolumeFile->setText(fileName);
   }
 }

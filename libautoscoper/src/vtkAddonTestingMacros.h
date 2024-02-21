@@ -54,19 +54,19 @@
 /// Verifies that pointer is nullptr
 #define CHECK_NULL(pointer) \
   { \
-  const void* pointerValue = (pointer); \
-  if (!vtkAddonTestingUtilities::CheckNull(__LINE__,#pointer " is not NULL", pointerValue)) \
+    const void* pointerValue = (pointer); \
+    if (!vtkAddonTestingUtilities::CheckNull(__LINE__,#pointer " is not NULL", pointerValue)) \
     { \
-    return EXIT_FAILURE; \
+      return EXIT_FAILURE; \
     } \
   }
 
 /// Verifies that pointer is not nullptr
 #define CHECK_NOT_NULL(pointer) \
   { \
-  if (!vtkAddonTestingUtilities::CheckNotNull(__LINE__,#pointer " is NULL", (pointer))) \
+    if (!vtkAddonTestingUtilities::CheckNotNull(__LINE__,#pointer " is NULL", (pointer))) \
     { \
-    return EXIT_FAILURE; \
+      return EXIT_FAILURE; \
     } \
   }
 
@@ -74,45 +74,45 @@
 /// if check fails then it calls methodToCallOnFailure before returning with failure
 #define CHECK_NOT_NULL_ADD_REPORT(pointer, methodToCallOnFailure) \
   { \
-  if (!vtkAddonTestingUtilities::CheckNotNull(__LINE__,#pointer " is NULL", (pointer))) \
+    if (!vtkAddonTestingUtilities::CheckNotNull(__LINE__,#pointer " is NULL", (pointer))) \
     { \
-    methodToCallOnFailure; \
-    return EXIT_FAILURE; \
+      methodToCallOnFailure; \
+      return EXIT_FAILURE; \
     } \
   }
 
 #define CHECK_EXIT_SUCCESS(actual) \
   { \
-  if (!vtkAddonTestingUtilities::CheckInt(__LINE__,#actual " != EXIT_SUCCESS", (actual), EXIT_SUCCESS)) \
+    if (!vtkAddonTestingUtilities::CheckInt(__LINE__,#actual " != EXIT_SUCCESS", (actual), EXIT_SUCCESS)) \
     { \
-    return EXIT_FAILURE; \
+      return EXIT_FAILURE; \
     } \
   }
 
 /// Verifies if actual double value is the same as expected
 #define CHECK_DOUBLE(actual, expected) \
   { \
-  if (!vtkAddonTestingUtilities::Check<double>(__LINE__,#actual " != " #expected, (actual), (expected), "CheckDouble")) \
+    if (!vtkAddonTestingUtilities::Check<double>(__LINE__,#actual " != " #expected, (actual), (expected), "CheckDouble")) \
     { \
-    return EXIT_FAILURE; \
+      return EXIT_FAILURE; \
     } \
   }
 
 /// Verifies if actual double value is the same as expected, within the specified tolerance
 #define CHECK_DOUBLE_TOLERANCE(actual, expected, tolerance) \
+  { \
+    if (!vtkAddonTestingUtilities::CheckDoubleTolerance(__LINE__,#actual " != " #expected " (tolerance: " #tolerance ")", (actual), (expected), (tolerance))) \
     { \
-  if (!vtkAddonTestingUtilities::CheckDoubleTolerance(__LINE__,#actual " != " #expected " (tolerance: " #tolerance ")", (actual), (expected), (tolerance))) \
-      { \
-    return EXIT_FAILURE; \
-      } \
-    }
+      return EXIT_FAILURE; \
+    } \
+  }
 
 /// Verifies if actual int value is the same as expected
 #define CHECK_INT(actual, expected) \
   { \
-  if (!vtkAddonTestingUtilities::CheckInt(__LINE__,#actual " != " #expected, (actual), (expected))) \
+    if (!vtkAddonTestingUtilities::CheckInt(__LINE__,#actual " != " #expected, (actual), (expected))) \
     { \
-    return EXIT_FAILURE; \
+      return EXIT_FAILURE; \
     } \
   }
 
@@ -120,37 +120,37 @@
 /// if check fails then it calls methodToCallOnFailure before returning with failure
 #define CHECK_INT_ADD_REPORT(actual, expected, methodToCallOnFailure) \
   { \
-  if (!vtkAddonTestingUtilities::CheckInt(__LINE__,#actual " != " #expected, (actual), (expected))) \
+    if (!vtkAddonTestingUtilities::CheckInt(__LINE__,#actual " != " #expected, (actual), (expected))) \
     { \
-    methodToCallOnFailure; \
-    return EXIT_FAILURE; \
+      methodToCallOnFailure; \
+      return EXIT_FAILURE; \
     } \
   }
 
 /// Verifies if actual pointer value is the same as expected
 #define CHECK_POINTER(actual, expected) \
   { \
-  if (!vtkAddonTestingUtilities::CheckPointer(__LINE__,#actual " != " #expected, (actual), (expected))) \
+    if (!vtkAddonTestingUtilities::CheckPointer(__LINE__,#actual " != " #expected, (actual), (expected))) \
     { \
-    return EXIT_FAILURE; \
+      return EXIT_FAILURE; \
     } \
   }
 
 /// Verifies if actual pointer value is the same as expected
 #define CHECK_POINTER_DIFFERENT(actual, expected) \
   { \
-  if (!vtkAddonTestingUtilities::CheckPointer(__LINE__,#actual " == " #expected, (actual), (expected), false)) \
+    if (!vtkAddonTestingUtilities::CheckPointer(__LINE__,#actual " == " #expected, (actual), (expected), false)) \
     { \
-    return EXIT_FAILURE; \
+      return EXIT_FAILURE; \
     } \
   }
 
 /// Verifies if actual bool value is the same as expected
 #define CHECK_BOOL(actual, expected) \
   { \
-  if (!vtkAddonTestingUtilities::CheckInt(__LINE__,#actual " != " #expected, (actual)?1:0, (expected)?1:0)) \
+    if (!vtkAddonTestingUtilities::CheckInt(__LINE__,#actual " != " #expected, (actual) ? 1 : 0, (expected) ? 1 : 0)) \
     { \
-    return EXIT_FAILURE; \
+      return EXIT_FAILURE; \
     } \
   }
 
@@ -158,9 +158,9 @@
 /// It can handle nullptr pointer inputs.
 #define CHECK_STRING(actual, expected) \
   { \
-  if (!vtkAddonTestingUtilities::CheckString(__LINE__,#actual " != " #expected, (actual), (expected))) \
+    if (!vtkAddonTestingUtilities::CheckString(__LINE__,#actual " != " #expected, (actual), (expected))) \
     { \
-    return EXIT_FAILURE; \
+      return EXIT_FAILURE; \
     } \
   }
 
@@ -169,11 +169,11 @@
 /// It cannot handle nullptr pointer inputs.
 #define CHECK_STD_STRING(actual, expected) \
   { \
-  std::string a = (actual); \
-  std::string e = (expected); \
-  if (!vtkAddonTestingUtilities::CheckString(__LINE__,#actual " != " #expected, a.c_str(), e.c_str())) \
+    std::string a = (actual); \
+    std::string e = (expected); \
+    if (!vtkAddonTestingUtilities::CheckString(__LINE__,#actual " != " #expected, a.c_str(), e.c_str())) \
     { \
-    return EXIT_FAILURE; \
+      return EXIT_FAILURE; \
     } \
   }
 
@@ -182,10 +182,10 @@
 /// It can handle nullptr pointer inputs.
 #define CHECK_STRING_ADD_REPORT(actual, expected, methodToCallOnFailure) \
   { \
-  if (!vtkAddonTestingUtilities::CheckString(__LINE__,#actual " != " #expected, (actual), (expected))) \
+    if (!vtkAddonTestingUtilities::CheckString(__LINE__,#actual " != " #expected, (actual), (expected))) \
     { \
-    methodToCallOnFailure; \
-    return EXIT_FAILURE; \
+      methodToCallOnFailure; \
+      return EXIT_FAILURE; \
     } \
   }
 
@@ -193,9 +193,9 @@
 /// It can handle nullptr pointer inputs.
 #define CHECK_STRING_DIFFERENT(actual, expected) \
   { \
-  if (!vtkAddonTestingUtilities::CheckString(__LINE__,#actual " != " #expected, (actual), (expected), false)) \
+    if (!vtkAddonTestingUtilities::CheckString(__LINE__,#actual " != " #expected, (actual), (expected), false)) \
     { \
-    return EXIT_FAILURE; \
+      return EXIT_FAILURE; \
     } \
   }
 
@@ -204,11 +204,11 @@
 /// It cannot handle nullptr pointer inputs.
 #define CHECK_STD_STRING_DIFFERENT(actual, expected) \
   { \
-  std::string a = (actual); \
-  std::string e = (expected); \
-  if (!vtkAddonTestingUtilities::CheckString(__LINE__,#actual " != " #expected, a.c_str(), e.c_str(), false)) \
+    std::string a = (actual); \
+    std::string e = (expected); \
+    if (!vtkAddonTestingUtilities::CheckString(__LINE__,#actual " != " #expected, a.c_str(), e.c_str(), false)) \
     { \
-    return EXIT_FAILURE; \
+      return EXIT_FAILURE; \
     } \
   }
 

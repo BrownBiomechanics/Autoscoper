@@ -52,95 +52,93 @@
 
 namespace xromm { namespace gpu
 {
-
 static int num_rad_renderers = 0;
 
 RadRenderer::RadRenderer() : array_(0)
 {
-    image_plane_[0] = -1.0f;
-    image_plane_[1] = -1.0f;
-    image_plane_[2] =  2.0f;
-    image_plane_[3] =  2.0f;
+  image_plane_[0] = -1.0f;
+  image_plane_[1] = -1.0f;
+  image_plane_[2] =  2.0f;
+  image_plane_[3] =  2.0f;
 
-    viewport_[0] = -1.0f;
-    viewport_[1] = -1.0f;
-    viewport_[2] =  2.0f;
-    viewport_[3] =  2.0f;
+  viewport_[0] = -1.0f;
+  viewport_[1] = -1.0f;
+  viewport_[2] =  2.0f;
+  viewport_[3] =  2.0f;
 
-    std::stringstream name_stream;
-    name_stream << "RadRenderer" << (++num_rad_renderers);
-    name_ = name_stream.str();
+  std::stringstream name_stream;
+  name_stream << "RadRenderer" << (++num_rad_renderers);
+  name_ = name_stream.str();
 }
 
 RadRenderer::~RadRenderer()
 {
-    num_rad_renderers = 0;
-    cutilSafeCall(cudaFreeArray(array_));
+  num_rad_renderers = 0;
+  cutilSafeCall(cudaFreeArray(array_));
 }
 
 void
 RadRenderer::set_rad(const void* data, size_t width, size_t height, size_t bps)
 {
-    cutilSafeCall(cudaFreeArray(array_));
+  cutilSafeCall(cudaFreeArray(array_));
 
-    // Create a 2D array.
-    cudaChannelFormatDesc desc;
-    switch (bps) {
-        case 8:  desc = cudaCreateChannelDesc<unsigned char>(); break;
-        case 16: desc = cudaCreateChannelDesc<unsigned short>(); break;
-        case 32: desc = cudaCreateChannelDesc<unsigned int>(); break;
-        default:
-            std::cerr << "RadRenderer::rad(): Unsupported bit depth "
-                 << bps << std::endl;
-            return;
-    }
-    cutilSafeCall(cudaMallocArray(&array_, &desc, width, height));
+  // Create a 2D array.
+  cudaChannelFormatDesc desc;
+  switch (bps) {
+    case 8:  desc = cudaCreateChannelDesc<unsigned char>(); break;
+    case 16: desc = cudaCreateChannelDesc<unsigned short>(); break;
+    case 32: desc = cudaCreateChannelDesc<unsigned int>(); break;
+    default:
+      std::cerr << "RadRenderer::rad(): Unsupported bit depth "
+                << bps << std::endl;
+      return;
+  }
+  cutilSafeCall(cudaMallocArray(&array_, &desc, width, height));
 
-    // Copy data to 2D array.
-    cutilSafeCall(cudaMemcpyToArray(array_,
-                                    0,
-                                    0,
-                                    data,
-                                    width*height*(bps/8),
-                                    cudaMemcpyHostToDevice));
+  // Copy data to 2D array.
+  cutilSafeCall(cudaMemcpyToArray(array_,
+                                  0,
+                                  0,
+                                  data,
+                                  width * height * (bps / 8),
+                                  cudaMemcpyHostToDevice));
 }
 
 void
 RadRenderer::set_image_plane(float x, float y, float width, float height)
 {
-    image_plane_[0] = x;
-    image_plane_[1] = y;
-    image_plane_[2] = width;
-    image_plane_[3] = height;
+  image_plane_[0] = x;
+  image_plane_[1] = y;
+  image_plane_[2] = width;
+  image_plane_[3] = height;
 }
 
 void
 RadRenderer::set_viewport(float x, float y, float width, float height)
 {
-    viewport_[0] = x;
-    viewport_[1] = y;
-    viewport_[2] = width;
-    viewport_[3] = height;
+  viewport_[0] = x;
+  viewport_[1] = y;
+  viewport_[2] = width;
+  viewport_[3] = height;
 }
 
 void
 RadRenderer::render(float* buffer, size_t width, size_t height) const
 {
-    cudaTextureObject_t tex = createTexureObjectFromArray(array_, cudaReadModeNormalizedFloat);
+  cudaTextureObject_t tex = createTexureObjectFromArray(array_, cudaReadModeNormalizedFloat);
 
-    video_render(tex,buffer,
-                 (int)width,
-                 (int)height,
-                 image_plane_[0],
-                 image_plane_[1],
-                 image_plane_[2],
-                 image_plane_[3],
-                 viewport_[0],
-                 viewport_[1],
-                 viewport_[2],
-                 viewport_[3]);
+  video_render(tex, buffer,
+               (int)width,
+               (int)height,
+               image_plane_[0],
+               image_plane_[1],
+               image_plane_[2],
+               image_plane_[3],
+               viewport_[0],
+               viewport_[1],
+               viewport_[2],
+               viewport_[3]);
 
-    cudaDestroyTextureObject(tex);
+  cudaDestroyTextureObject(tex);
 }
-
 } } // namespace xromm::cuda

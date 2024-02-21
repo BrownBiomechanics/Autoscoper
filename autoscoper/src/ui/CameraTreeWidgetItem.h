@@ -48,37 +48,37 @@
 
 class ModelViewTreeWidgetItem;
 namespace xromm{
-  namespace gpu{
-    class View;
-  }
+namespace gpu{
+class View;
+}
 }
 using xromm::gpu::View;
 
-class CameraTreeWidgetItem : public QObject ,public  QTreeWidgetItem
+class CameraTreeWidgetItem : public QObject, public  QTreeWidgetItem
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    CameraTreeWidgetItem(View * view);
-  CameraTreeWidgetItem(View * view, QTreeWidget * parent);
+  CameraTreeWidgetItem(View* view);
+  CameraTreeWidgetItem(View* view, QTreeWidget* parent);
   ~CameraTreeWidgetItem();
 
-  QString getName(){return name;}
-  void setName(QString _name){name = _name;}
+  QString getName() { return name; }
+  void setName(QString _name) { name = _name; }
 
   void addModelView(ModelViewTreeWidgetItem* modelViewWidget);
   void removeModelView(ModelViewTreeWidgetItem* modelViewWidget);
 
-  void addToGrid(QTreeWidget * treewidget);
+  void addToGrid(QTreeWidget* treewidget);
 
-  View * getView(){return m_view;}
+  View* getView() { return m_view; }
 
 private:
   void init();
   QString name;
 
-  std::vector <ModelViewTreeWidgetItem *> modelViewTreeWidgets;
-  View * m_view;
+  std::vector<ModelViewTreeWidgetItem*> modelViewTreeWidgets;
+  View* m_view;
 
 protected:
 

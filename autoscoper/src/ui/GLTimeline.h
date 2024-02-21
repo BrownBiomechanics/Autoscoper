@@ -47,8 +47,7 @@
 #include "ui/GLWidget.h"
 
 namespace xromm {
-  class Trial;
-
+class Trial;
 }
 using xromm::Trial;
 class KeyCurve;
@@ -58,21 +57,21 @@ struct GraphData;
 
 class GLTimeline: public GLWidget
 {
-    Q_OBJECT
+  Q_OBJECT
 
 protected:
-    void paintGL();
-  void mousePressEvent(QMouseEvent *e);
-  void mouseMoveEvent(QMouseEvent *e);
-  void mouseReleaseEvent(QMouseEvent *e);
+  void paintGL();
+  void mousePressEvent(QMouseEvent* e);
+  void mouseMoveEvent(QMouseEvent* e);
+  void mouseReleaseEvent(QMouseEvent* e);
 
 public:
-    GLTimeline(QWidget *parent);
+  GLTimeline(QWidget* parent);
   void setTrial(Trial* trial);
   void setGraphData(GraphData* position_graph);
 
 private:
-  Trial * m_trial;
+  Trial* m_trial;
   GraphData* m_position_graph;
 
   bool draw_marquee;
@@ -83,7 +82,7 @@ private:
   void draw_curve(const KeyCurve& curve);
   void render_bitmap_string(double x, double y, const char* string);
   void renderText(double textPosX, double textPosY, QString text);
-    float round_this(double my_val);
+  float round_this(double my_val);
 };
 
 

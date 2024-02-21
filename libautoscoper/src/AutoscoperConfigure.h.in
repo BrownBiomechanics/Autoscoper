@@ -1,0 +1,6 @@
+#ifndef AutoscoperConfigure_h
+#define AutoscoperConfigure_h
+
+#cmakedefine Autoscoper_RENDERING_USE_CUDA_BACKEND
+
+#endif

@@ -44,17 +44,12 @@
 
 namespace xromm
 {
-
 namespace gpu
 {
-
-
-void background_render(cudaTextureObject_t tex,float* output, int width, int height, float u0,
-                  float v0, float u1, float v1, float u2, float v2,
-                  float u3, float v3, float threshold);
-
+void background_render(cudaTextureObject_t tex, float* output, int width, int height, float u0,
+                       float v0, float u1, float v1, float u2, float v2,
+                       float u3, float v3, float threshold);
 } // namespace gpu
-
 } // namespace xromm
 
 #endif // XROMM_GPU_RAD_RENDERER_KERNELS_H

@@ -7,7 +7,7 @@
 
 #pragma once
 
- // ADD: NEW PSO
+// ADD: NEW PSO
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -20,7 +20,7 @@ const float c1 = 1.5f;
 const float c2 = 1.5f;
 // END: NEW PSO
 
-double PSO_FUNC(double *P);
+double PSO_FUNC(double* P);
 
 void initializeRandom();
 

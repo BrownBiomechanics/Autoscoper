@@ -4,32 +4,37 @@
 #include <string>
 
 // Particle Struct Function Definitions
-Particle::Particle(const Particle& p) {
+Particle::Particle(const Particle& p)
+{
   this->NCC = p.NCC;
   this->Position = p.Position;
   this->Velocity = p.Velocity;
 }
 
-Particle::Particle() {
+Particle::Particle()
+{
   this->NCC = FLT_MAX;
   this->Position = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
   this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
 }
 
-Particle::Particle(const std::vector<float>& pos) {
+Particle::Particle(const std::vector<float>& pos)
+{
   this->NCC = FLT_MAX;
   this->Position = pos;
   this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
 }
 
-Particle::Particle(float start_range_min, float start_range_max) {
+Particle::Particle(float start_range_min, float start_range_max)
+{
   this->NCC = FLT_MAX;
   this->Position = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
   this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
   this->initializePosition(start_range_min, start_range_max);
 }
 
-Particle& Particle::operator=(const Particle& p) {
+Particle& Particle::operator=(const Particle& p)
+{
   this->NCC = p.NCC;
   this->Position = p.Position;
   this->Velocity = p.Velocity;
@@ -39,11 +44,11 @@ Particle& Particle::operator=(const Particle& p) {
 std::ostream& operator<<(std::ostream& os, const std::vector<float>& values)
 {
   auto it = std::begin(values);
-  for (auto value: values) {
+  for (auto value : values) {
     os << value;
     ++it;
     os << (it != std::end(values) ? ", " : "");
-    }
+  }
   return os;
 }
 
@@ -55,21 +60,23 @@ std::ostream& operator<<(std::ostream& os, const Particle& p)
   return os;
 }
 
-void Particle::updateVelocityAndPosition(const Particle& pBest, const Particle& gBest, float omega) {
+void Particle::updateVelocityAndPosition(const Particle& pBest, const Particle& gBest, float omega)
+{
   for (int dim = 0; dim < NUM_OF_DIMENSIONS; dim++) {
     float rp = getRandomClamped();
     float rg = getRandomClamped();
 
     this->Velocity[dim] =
-        omega * this->Velocity[dim]
-        + c1 * rp * (pBest.Position[dim] - this->Position[dim])
-        + c2 * rg * (gBest.Position[dim] - this->Position[dim]);
+      omega * this->Velocity[dim]
+      + c1 * rp * (pBest.Position[dim] - this->Position[dim])
+      + c2 * rg * (gBest.Position[dim] - this->Position[dim]);
 
     this->Position[dim] += this->Velocity[dim];
   }
 }
 
-void Particle::initializePosition(float start_range_min, float start_range_max) {
+void Particle::initializePosition(float start_range_min, float start_range_max)
+{
   for (int dim = 0; dim < NUM_OF_DIMENSIONS; dim++) {
     this->Position[dim] = getRandom(start_range_min, start_range_max);
   }
@@ -97,11 +104,11 @@ void initializeRandom()
       std::cout << "Autoscoper_RANDOM_SEED env. variable is set to " << randomSeed << std::endl;
       seed = std::stoi(std::string(randomSeed));
     }
-    catch (const std::invalid_argument &e) {
+    catch (const std::invalid_argument& e) {
       std::cerr << "Autoscoper_RANDOM_SEED is not a valid integer" << std::endl;
       exit(1);
     }
-    catch (const std::out_of_range &e) {
+    catch (const std::out_of_range& e) {
       std::cerr << "Autoscoper_RANDOM_SEED is out of range" << std::endl;
       exit(1);
     }
@@ -134,8 +141,7 @@ Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOC
   particles[0] = Particle({ 0.f, 0.f, 0.f, 0.f, 0.f, 0.f });
 
   // ... and the other particles positions are randomly iniialized
-  for (int idx = 1; idx < NUM_OF_PARTICLES; idx++)
-  {
+  for (int idx = 1; idx < NUM_OF_PARTICLES; idx++) {
     particles[idx] = Particle(start_range_min, start_range_max);
   }
 
@@ -145,9 +151,8 @@ Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOC
   std::vector<Particle> pBest = particles;
 
   Particle currentBest;
-  while (do_this)
-  {
-    //std::cout << "OMEGA: " << OMEGA << std::endl;
+  while (do_this) {
+    // std::cout << "OMEGA: " << OMEGA << std::endl;
     if (counter >= MAX_EPOCHS) {
       do_this = false;
     }
@@ -177,12 +182,12 @@ Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOC
 
     std::cout << "Current Best NCC: " << gBest.NCC << std::endl;
 
-    //std::cout << "Stall: " << stall_iter << std::endl;
+    // std::cout << "Stall: " << stall_iter << std::endl;
     if (abs(gBest.NCC - currentBest.NCC) < 1e-4f) {
-      //std::cout << "Increased Stall Iter" << std::endl;
+      // std::cout << "Increased Stall Iter" << std::endl;
       stall_iter++;
     } else if (abs(gBest.NCC - currentBest.NCC) > 0.001f) {
-      //std::cout << "Zeroed Stall Iter" << std::endl;
+      // std::cout << "Zeroed Stall Iter" << std::endl;
       stall_iter = 0;
     }
 

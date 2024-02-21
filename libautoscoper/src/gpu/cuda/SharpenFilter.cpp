@@ -50,111 +50,109 @@
 #include <cuda_runtime.h>
 
 namespace xromm { namespace gpu {
-
 // Unique identifier for each contrast filter
 
 static int num_sharpen_filters = 0;
 
 SharpenFilter::SharpenFilter()
-    : Filter(XROMM_GPU_SHARPEN_FILTER,""),
-      radius_(1),
-      contrast_(1),
-      sharpen_(NULL)
+  : Filter(XROMM_GPU_SHARPEN_FILTER, ""),
+    radius_(1),
+    contrast_(1),
+    sharpen_(NULL)
 {
-    std::stringstream name_stream;
-    name_stream << "SharpenFilter" << (++num_sharpen_filters);
-    name_ = name_stream.str();
+  std::stringstream name_stream;
+  name_stream << "SharpenFilter" << (++num_sharpen_filters);
+  name_ = name_stream.str();
 
-//default values--threshold = 0 so all pixels are sharpened
-    set_radius(1);
-    set_contrast(1);
-    set_threshold(0);
+// default values--threshold = 0 so all pixels are sharpened
+  set_radius(1);
+  set_contrast(1);
+  set_threshold(0);
 }
 
 SharpenFilter::~SharpenFilter()
 {
-     cudaFree(sharpen_);
+  cudaFree(sharpen_);
 }
 
 void SharpenFilter::set_radius(float radius)
 {
-    if (radius < 0)
-        radius = 0;
+  if (radius < 0)
+    radius = 0;
 
-    radius_ = radius;
+  radius_ = radius;
 
-    makeFilter();
+  makeFilter();
 
 }
 
 void SharpenFilter::set_contrast(float contrast)
 {
-    if(contrast<1)
-        contrast = 1;
+  if (contrast < 1)
+    contrast = 1;
 
-    contrast_ = contrast;
+  contrast_ = contrast;
 }
 
 void SharpenFilter::set_threshold(float threshold)
 {
-    threshold_ = threshold;
+  threshold_ = threshold;
 
 }
 
-void SharpenFilter::makeFilter() //makes a Gaussian blur filter (filterSize*filterSize) with stdev radius_
+void SharpenFilter::makeFilter() // makes a Gaussian blur filter (filterSize*filterSize) with stdev radius_
 {
 
-    int filterRadius= 3*radius_;
-    filterSize_ = 2*filterRadius + 1;
+  int filterRadius = 3 * radius_;
+  filterSize_ = 2 * filterRadius + 1;
 
-    if(filterSize_ == 1)
-        return;
+  if (filterSize_ == 1)
+    return;
 
-    float* sharpen = (float *)malloc(sizeof(float )*(filterSize_*filterSize_));
+  float* sharpen = (float*)malloc(sizeof(float ) * (filterSize_ * filterSize_));
 
-    float sum = 0.0f;
+  float sum = 0.0f;
 
-    for(int i = 0; i < filterSize_; ++i){
-        for(int j = 0; j < filterSize_ ; ++j){
-            sharpen[i*filterSize_+j] = pow((double) 2.71828,(-( pow((double) (i-filterRadius),2) +pow((double) (j-filterRadius), 2) ) / (2* radius_))); //equation for Gaussian at (i, j)
-            sum = sum +  sharpen[i*filterSize_ +j];
-        }
+  for (int i = 0; i < filterSize_; ++i) {
+    for (int j = 0; j < filterSize_; ++j) {
+      sharpen[i * filterSize_ + j] = pow((double) 2.71828, (-( pow((double) (i - filterRadius), 2) + pow((double) (j - filterRadius), 2) ) / (2 * radius_))); // equation for Gaussian at (i, j)
+      sum = sum +  sharpen[i * filterSize_ + j];
     }
+  }
 
-    float temp = 0.0f;
+  float temp = 0.0f;
 
-//normalize the filter
+// normalize the filter
 
-    for(int i = 0 ; i < filterSize_; ++i){
-        for(int j = 0 ; j < filterSize_; ++j) {
-            temp = sharpen[i*filterSize_ +j];
-            sharpen[i*filterSize_ + j] = temp / sum;
-         }
+  for (int i = 0; i < filterSize_; ++i) {
+    for (int j = 0; j < filterSize_; ++j) {
+      temp = sharpen[i * filterSize_ + j];
+      sharpen[i * filterSize_ + j] = temp / sum;
     }
+  }
 
-//copy the filter to GPU
+// copy the filter to GPU
 
-    float * sharpenGPU;
-    cudaMalloc(&sharpenGPU, sizeof(float )*(filterSize_*filterSize_));
-    cudaMemcpy(sharpenGPU, sharpen, (sizeof(float )*(filterSize_*filterSize_)),cudaMemcpyHostToDevice);
+  float* sharpenGPU;
+  cudaMalloc(&sharpenGPU, sizeof(float ) * (filterSize_ * filterSize_));
+  cudaMemcpy(sharpenGPU, sharpen, (sizeof(float ) * (filterSize_ * filterSize_)), cudaMemcpyHostToDevice);
 
-    free(sharpen);
-    cudaFree(sharpen_);
+  free(sharpen);
+  cudaFree(sharpen_);
 
-    sharpen_ = sharpenGPU;
+  sharpen_ = sharpenGPU;
 }
 
 void
 
 SharpenFilter::apply(const float* input,
-                      float* output,
-                      int width,
-                      int height)
+                     float* output,
+                     int width,
+                     int height)
 {
-    if(filterSize_ == 1 ) //if filterSize_ = 1, filter does not change image
-       cudaMemcpy(output, input, (sizeof(float )*(filterSize_*filterSize_)), cudaMemcpyDeviceToDevice);
-    else
-      sharpen_filter_apply(input,output,width,height, sharpen_, filterSize_, contrast_, threshold_);
+  if (filterSize_ == 1)   // if filterSize_ = 1, filter does not change image
+    cudaMemcpy(output, input, (sizeof(float ) * (filterSize_ * filterSize_)), cudaMemcpyDeviceToDevice);
+  else
+    sharpen_filter_apply(input, output, width, height, sharpen_, filterSize_, contrast_, threshold_);
 }
-
 } } // namespace xromm::cuda

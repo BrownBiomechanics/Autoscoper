@@ -43,13 +43,11 @@
 #define XROMM_GPU_SOBEL_KERNELS_H
 
 namespace xromm { namespace gpu {
-
 void sobel_filter(const float* input, float* output, int width, int height,
                   float scale);
 
 void sobel_filter_blend(const float* input, float* output, int width,
                         int height, float scale, float blend);
-
 } } // namespace xromm::cuda
 
 #endif // XROMM_GPU_SOBEL_KERNELS_H

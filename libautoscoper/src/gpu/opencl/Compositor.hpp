@@ -45,15 +45,13 @@
 #include "OpenCL.hpp"
 
 namespace xromm { namespace gpu {
-
 void composite(const Buffer* src1,
                const Buffer* src2,
-         const Buffer* src3,
-         const Buffer* src4,
+               const Buffer* src3,
+               const Buffer* src4,
                const GLBuffer* dest,
                unsigned width,
                unsigned height);
-
 } } // namespace xromm::opencl
 
 #endif // XROMM_COMPOSITOR_H

@@ -41,34 +41,33 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-//#include <execinfo.h>
+// #include <execinfo.h>
 
 #include "Backtrace.hpp"
 
 namespace xromm {
-
 void bt()
 {
-  //void* trace[16];
-  //char** messages = (char**)NULL;
-  //int trace_size = 0;
+  // void* trace[16];
+  // char** messages = (char**)NULL;
+  // int trace_size = 0;
 
-  //trace_size = backtrace(trace, 16);
+  // trace_size = backtrace(trace, 16);
 
-  ///* overwrite sigaction with caller's address */
+  /// * overwrite sigaction with caller's address */
   ////if (addr) trace[1] = addr;
-  //messages = backtrace_symbols(trace, trace_size);
+  // messages = backtrace_symbols(trace, trace_size);
 
-  ///* skip first stack frame (points here) */
-  //fprintf(stderr, "[bt] Execution path:\n");
-  //for (int i=1; i<trace_size; ++i)
-  //{
+  /// * skip first stack frame (points here) */
+  // fprintf(stderr, "[bt] Execution path:\n");
+  // for (int i=1; i<trace_size; ++i)
+  // {
   //  fprintf(stderr, "[bt] #%d %s\n", i, messages[i]);
-  //}
+  // }
 }
 
-//void bt_sighandler(int sig, siginfo_t *info, void *secret)
-//{
+// void bt_sighandler(int sig, siginfo_t *info, void *secret)
+// {
 //  if (sig == SIGSEGV)
 //    printf("Got signal %d, faulty address is %p\n", sig, info->si_addr);
 //  else
@@ -77,19 +76,18 @@ void bt()
 //  bt();
 //
 //  exit(EXIT_FAILURE);
-//}
+// }
 
 void register_bt_sighandler()
 {
-  ///* Install our signal handler */
-  //struct sigaction sa;
+  /// * Install our signal handler */
+  // struct sigaction sa;
 
-  //sa.sa_sigaction = bt_sighandler;
-  //sigemptyset(&sa.sa_mask);
-  //sa.sa_flags = SA_RESTART;
+  // sa.sa_sigaction = bt_sighandler;
+  // sigemptyset(&sa.sa_mask);
+  // sa.sa_flags = SA_RESTART;
 
-  //sigaction(SIGSEGV, &sa, NULL);
-  //sigaction(SIGUSR1, &sa, NULL);
+  // sigaction(SIGSEGV, &sa, NULL);
+  // sigaction(SIGUSR1, &sa, NULL);
 }
-
 } // xromm

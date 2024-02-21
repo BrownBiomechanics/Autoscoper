@@ -49,24 +49,24 @@
 
 #include "ui/GLTracker.h"
 #include "Tracker.hpp"
-//#include <QOpenGLContext>
-//#include <QOpenGLFunctions>
+// #include <QOpenGLContext>
+// #include <QOpenGLFunctions>
 
 #if defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
 #include <gpu/opencl/OpenCL.hpp>
 #endif
 
-GLTracker::GLTracker(Tracker * tracker , QWidget *parent)
+GLTracker::GLTracker(Tracker* tracker, QWidget* parent)
   : QOpenGLWidget(parent)
 {
-  //m_tracker = tracker;
-    setAutoFillBackground(false);
-  //makeCurrent();
+  // m_tracker = tracker;
+  setAutoFillBackground(false);
+  // makeCurrent();
   show();
   initializeGL();
-  //shared_context = new QOpenGLContext(this);
-  //context()->setShareContext(shared_context);
-  //shared_context->create();
+  // shared_context = new QOpenGLContext(this);
+  // context()->setShareContext(shared_context);
+  // shared_context->create();
   hide();
 }
 
@@ -75,22 +75,23 @@ GLTracker::~GLTracker()
   // delete shared_context;
 }
 
-void GLTracker::initializeGL(){
+void GLTracker::initializeGL()
+{
   glewInit();
 
-  std::cout << "Graphics Card Vendor: "<< glGetString(GL_VENDOR) << std::endl;
+  std::cout << "Graphics Card Vendor: " << glGetString(GL_VENDOR) << std::endl;
   std::cout << glGetString(GL_RENDERER) << std::endl;
   std::cout << glGetString(GL_VERSION)  << std::endl;
 
-  //m_tracker->init();
+  // m_tracker->init();
 
   std::cerr << "Initializing OpenGL..." << std::endl;
 
 
-    glDisable(GL_LIGHTING);
-    glEnable(GL_DEPTH_TEST);
-    glClearColor(0.5,0.5,0.5,1.0);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  glDisable(GL_LIGHTING);
+  glEnable(GL_DEPTH_TEST);
+  glClearColor(0.5, 0.5, 0.5, 1.0);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 #if defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   std::cerr << "Initializing OpenCL-OpenGL interoperability..." << std::endl;
@@ -98,7 +99,7 @@ void GLTracker::initializeGL(){
 #endif
 }
 
-//void GLTracker::paintGL()
-//{
+// void GLTracker::paintGL()
+// {
 
 // }

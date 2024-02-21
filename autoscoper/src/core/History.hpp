@@ -49,73 +49,73 @@
 
 struct State
 {
-  std::vector <KeyCurve> x_curve;
-  std::vector <KeyCurve> y_curve;
-  std::vector <KeyCurve> z_curve;
-  std::vector <KeyCurve> x_rot_curve;
-  std::vector <KeyCurve> y_rot_curve;
-  std::vector <KeyCurve> z_rot_curve;
+  std::vector<KeyCurve> x_curve;
+  std::vector<KeyCurve> y_curve;
+  std::vector<KeyCurve> z_curve;
+  std::vector<KeyCurve> x_rot_curve;
+  std::vector<KeyCurve> y_rot_curve;
+  std::vector<KeyCurve> z_rot_curve;
 };
 
 class History
 {
 public:
 
-    History(unsigned size) : size(size)
-    {
-        it = states.begin();
-    }
+  History(unsigned size) : size(size)
+  {
+    it = states.begin();
+  }
 
-    void clear()
-    {
-        states.clear();
-        it = states.end();
-    }
+  void clear()
+  {
+    states.clear();
+    it = states.end();
+  }
 
-    void push(const State& state)
-    {
-        states.erase(it,states.end());
-        states.push_back(state);
-        if (states.size() > size) {
-            states.pop_front();
-        }
-        it = states.end();
+  void push(const State& state)
+  {
+    states.erase(it, states.end());
+    states.push_back(state);
+    if (states.size() > size) {
+      states.pop_front();
     }
+    it = states.end();
+  }
 
-    bool can_undo() const
-    {
-        return it != states.begin();
-    }
+  bool can_undo() const
+  {
+    return it != states.begin();
+  }
 
-    State undo()
-    {
-        if (!can_undo()) {
-            throw std::runtime_error("There is nothing to undo");
-        }
-        return *(--it);
+  State undo()
+  {
+    if (!can_undo()) {
+      throw std::runtime_error("There is nothing to undo");
     }
+    return *(--it);
+  }
 
-    bool can_redo() const
-    {
-        std::list<State>::iterator test = it;
-        return test != states.end() && (++test) != states.end();
-    }
+  bool can_redo() const
+  {
+    std::list<State>::iterator test = it;
+    return test != states.end() && (++test) != states.end();
+  }
 
-    State redo()
-    {
-        if (!can_redo()) {
-            throw std::runtime_error("There is nothing to redo");
-        }
-        return *(++it);
+  State redo()
+  {
+    if (!can_redo()) {
+      throw std::runtime_error("There is nothing to redo");
     }
+    return *(++it);
+  }
 
 private:
 
-    unsigned size;
+  unsigned size;
 
-    std::list<State> states;
+  std::list<State> states;
 
-    std::list<State>::iterator it;
+  std::list<State>::iterator it;
 };
 
 #endif // HISTORY_HPP

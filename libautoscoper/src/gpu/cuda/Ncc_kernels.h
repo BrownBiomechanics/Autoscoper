@@ -42,15 +42,11 @@
 #pragma once
 
 namespace xromm {
-
 namespace gpu {
-
-void ncc_init(unsigned int max_n, unsigned int maxNumThreads=256);
+void ncc_init(unsigned int max_n, unsigned int maxNumThreads = 256);
 
 void ncc_deinit();
 
-float ncc(float* f, float* g,float* mask, unsigned int n);
-
+float ncc(float* f, float* g, float* mask, unsigned int n);
 } // namespace gpu
-
 } // namespace xromm

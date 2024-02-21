@@ -54,7 +54,6 @@
 #include <cuda_runtime_api.h>
 
 namespace xromm { namespace gpu {
-
 static int num_ray_casters = 0;
 
 RayCaster::RayCaster() : volumeDescription_(0),
@@ -63,110 +62,110 @@ RayCaster::RayCaster() : volumeDescription_(0),
                          cutoff_(0.0f),
                          name_("")
 {
-    std::stringstream name_stream;
-    name_stream << "DrrRenderer" << (++num_ray_casters);
-    name_ = name_stream.str();
-    visible_ = true;
+  std::stringstream name_stream;
+  name_stream << "DrrRenderer" << (++num_ray_casters);
+  name_ = name_stream.str();
+  visible_ = true;
 
-    viewport_[0] = -1.0f;
-    viewport_[1] = -1.0f;
-    viewport_[2] =  2.0f;
-    viewport_[3] =  2.0f;
+  viewport_[0] = -1.0f;
+  viewport_[1] = -1.0f;
+  viewport_[2] =  2.0f;
+  viewport_[3] =  2.0f;
 }
 
 RayCaster::~RayCaster()
 {
-    num_ray_casters = 0;
+  num_ray_casters = 0;
 }
 
 void
 RayCaster::setVolume(VolumeDescription& volume)
 {
-    volumeDescription_ = &volume;
+  volumeDescription_ = &volume;
 }
 
 void
 RayCaster::setInvModelView(const double* invModelView)
 {
-    if (!volumeDescription_) {
-        std::cerr << "RayCaster: ERROR: Unable to calculate matrix." << std::endl;
-        exit(0);
-    }
+  if (!volumeDescription_) {
+    std::cerr << "RayCaster: ERROR: Unable to calculate matrix." << std::endl;
+    exit(0);
+  }
 
-    const float* invScale = volumeDescription_->invScale();
-    const float* invTrans = volumeDescription_->invTrans();
+  const float* invScale = volumeDescription_->invScale();
+  const float* invTrans = volumeDescription_->invTrans();
 
-    invModelView_[0]  = invModelView[0]*invScale[0]+
-                        invModelView[12]*invTrans[0];
-    invModelView_[1]  = invModelView[1]*invScale[0]+
-                        invModelView[13]*invTrans[0];
-    invModelView_[2]  = invModelView[2]*invScale[0]+
-                        invModelView[14]*invTrans[0];
-    invModelView_[3]  = invModelView[3]*invScale[0]+
-                        invModelView[15]*invTrans[0];
-    invModelView_[4]  = invModelView[4]*invScale[1]+
-                        invModelView[12]*invTrans[1];
-    invModelView_[5]  = invModelView[5]*invScale[1]+
-                        invModelView[13]*invTrans[1];
-    invModelView_[6]  = invModelView[6]*invScale[1]+
-                        invModelView[14]*invTrans[1];
-    invModelView_[7]  = invModelView[7]*invScale[1]+
-                        invModelView[15]*invTrans[1];
-    invModelView_[8]  = invModelView[8]*invScale[2]+
-                        invModelView[12]*invTrans[2];
-    invModelView_[9]  = invModelView[9]*invScale[2]+
-                        invModelView[13]*invTrans[2];
-    invModelView_[10] = invModelView[10]*invScale[2]+
-                        invModelView[14]*invTrans[2];
-    invModelView_[11] = invModelView[11]*invScale[2]+
-                        invModelView[15]*invTrans[2];
-    invModelView_[12] = invModelView[12];
-    invModelView_[13] = invModelView[13];
-    invModelView_[14] = invModelView[14];
-    invModelView_[15] = invModelView[15];
+  invModelView_[0]  = invModelView[0] * invScale[0] +
+                      invModelView[12] * invTrans[0];
+  invModelView_[1]  = invModelView[1] * invScale[0] +
+                      invModelView[13] * invTrans[0];
+  invModelView_[2]  = invModelView[2] * invScale[0] +
+                      invModelView[14] * invTrans[0];
+  invModelView_[3]  = invModelView[3] * invScale[0] +
+                      invModelView[15] * invTrans[0];
+  invModelView_[4]  = invModelView[4] * invScale[1] +
+                      invModelView[12] * invTrans[1];
+  invModelView_[5]  = invModelView[5] * invScale[1] +
+                      invModelView[13] * invTrans[1];
+  invModelView_[6]  = invModelView[6] * invScale[1] +
+                      invModelView[14] * invTrans[1];
+  invModelView_[7]  = invModelView[7] * invScale[1] +
+                      invModelView[15] * invTrans[1];
+  invModelView_[8]  = invModelView[8] * invScale[2] +
+                      invModelView[12] * invTrans[2];
+  invModelView_[9]  = invModelView[9] * invScale[2] +
+                      invModelView[13] * invTrans[2];
+  invModelView_[10] = invModelView[10] * invScale[2] +
+                      invModelView[14] * invTrans[2];
+  invModelView_[11] = invModelView[11] * invScale[2] +
+                      invModelView[15] * invTrans[2];
+  invModelView_[12] = invModelView[12];
+  invModelView_[13] = invModelView[13];
+  invModelView_[14] = invModelView[14];
+  invModelView_[15] = invModelView[15];
 }
 
 void
 RayCaster::setViewport(float x, float y, float width, float height)
 {
-    viewport_[0] = x;
-    viewport_[1] = y;
-    viewport_[2] = width;
-    viewport_[3] = height;
+  viewport_[0] = x;
+  viewport_[1] = y;
+  viewport_[2] = width;
+  viewport_[3] = height;
 }
 
 void
 RayCaster::render(float* buffer, size_t width, size_t height)
 {
-    if (!volumeDescription_) {
-        std::cerr << "RayCaster: WARNING: No volume loaded. " << std::endl;
-        return;
-    }
+  if (!volumeDescription_) {
+    std::cerr << "RayCaster: WARNING: No volume loaded. " << std::endl;
+    return;
+  }
 
-    if (!visible_) {
-        cudaMemset(buffer, 0, width * height * sizeof(float));
-        return;
-    }
+  if (!visible_) {
+    cudaMemset(buffer, 0, width * height * sizeof(float));
+    return;
+  }
 
-    cudaTextureObject_t tex = createTexureObjectFromArray((cudaArray_t)volumeDescription_->image(), cudaReadModeNormalizedFloat);
+  cudaTextureObject_t tex = createTexureObjectFromArray((cudaArray_t)volumeDescription_->image(), cudaReadModeNormalizedFloat);
 
-    volume_viewport(viewport_[0], viewport_[1], viewport_[2], viewport_[3]);
-    volume_render(tex,buffer,
-                  width,
-                  height,
-                  invModelView_,
-                  sampleDistance_,
-                  rayIntensity_,
-                  cutoff_);
+  volume_viewport(viewport_[0], viewport_[1], viewport_[2], viewport_[3]);
+  volume_render(tex, buffer,
+                width,
+                height,
+                invModelView_,
+                sampleDistance_,
+                rayIntensity_,
+                cutoff_);
 
-    cudaDestroyTextureObject(tex);
+  cudaDestroyTextureObject(tex);
 }
 
 /*
-template <class T>
-bool
-RayCaster::load(const Volume<T>& volume)
-{
+   template <class T>
+   bool
+   RayCaster::load(const Volume<T>& volume)
+   {
     // Crop the volume
     int min[3] = { volume.width(), volume.height(), volume.depth() };
     int max[3] = { 0 };
@@ -219,7 +218,7 @@ RayCaster::load(const Volume<T>& volume)
     for (int k = min[2]; k < max[2]+1; k++) {
         for (int i = min[1]; i < max[1]+1; i++) {
             for (int j = min[0]; j < max[0]+1; j++) {
-                *dp2++ = volume.data()[k*volume.width()*volume.height()+
+ * dp2++ = volume.data()[k*volume.width()*volume.height()+
                                        i*volume.width()+j];
             }
         }
@@ -253,8 +252,7 @@ RayCaster::load(const Volume<T>& volume)
     cutilSafeCall(cudaMemcpy3D(&copyParams));
 
     return true;
-}
-*/
-
+   }
+ */
 } } // namespace xromm::cuda
 

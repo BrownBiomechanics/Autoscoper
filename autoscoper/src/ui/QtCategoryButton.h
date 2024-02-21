@@ -49,16 +49,17 @@ class QTreeWidgetItem;
 
 class QtCategoryButton : public QPushButton
 {
-    Q_OBJECT
+  Q_OBJECT
+
 public:
-    QtCategoryButton(const QString& a_Text, QTreeWidget* a_pParent,
-        QTreeWidgetItem* a_pItem);
+  QtCategoryButton(const QString& a_Text, QTreeWidget* a_pParent,
+                   QTreeWidgetItem* a_pItem);
 
 private slots:
-    void ButtonPressed();
+  void ButtonPressed();
 
 private:
-    QTreeWidgetItem* m_pItem;
+  QTreeWidgetItem* m_pItem;
 };
 
 #endif  // QTCATEGORYBUTTON_H

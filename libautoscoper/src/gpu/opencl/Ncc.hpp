@@ -45,17 +45,13 @@
 #include "OpenCL.hpp"
 
 namespace xromm {
-
 namespace gpu {
-
 void ncc_init(unsigned max_n);
 
 void ncc_deinit();
 
 float ncc(Buffer* f, Buffer* g, Buffer* mask, unsigned n);
-
 } // namespace gpu
-
 } // namespace xromm
 
 #endif // XROMM_NCC_HPP

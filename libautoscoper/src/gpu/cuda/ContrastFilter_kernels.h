@@ -42,7 +42,6 @@
 #pragma once
 
 namespace xromm { namespace gpu {
-
 void contrast_filter_apply(const float* input,
                            float* output,
                            int width,
@@ -50,5 +49,4 @@ void contrast_filter_apply(const float* input,
                            float alpha,
                            float beta,
                            int size);
-
 } } // namespace xromm::cuda

@@ -16,22 +16,23 @@ class AutoscoperMainWindow;
 
 class WorldViewWindow : public QDockWidget
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    WorldViewWindow(QWidget *parent);
-  GLView *openGL;
-  void setSharedGLContext(QOpenGLContext * sharedContext);
+  WorldViewWindow(QWidget* parent);
+  GLView* openGL;
+  void setSharedGLContext(QOpenGLContext* sharedContext);
 
-  AutoscoperMainWindow * getMainWindow(){return mainwindow;};
+  AutoscoperMainWindow* getMainWindow() { return mainwindow; };
   void draw();
 
 private:
-  QGridLayout *layout;
+  QGridLayout* layout;
 
-  AutoscoperMainWindow * mainwindow;
+  AutoscoperMainWindow* mainwindow;
+
 protected:
-  void  resizeEvent ( QResizeEvent * event );
+  void  resizeEvent ( QResizeEvent* event );
 };
 
 

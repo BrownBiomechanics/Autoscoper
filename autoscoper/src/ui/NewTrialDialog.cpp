@@ -49,19 +49,20 @@
 #include <QFileDialog>
 
 #include <iostream>
-//#include <sstream>
+// #include <sstream>
 #include <stdexcept>
 
 
-NewTrialDialog::NewTrialDialog(QWidget *parent) :
-                        QDialog(parent),
-                        diag(new Ui::NewTrialDialog){
+NewTrialDialog::NewTrialDialog(QWidget* parent) :
+  QDialog(parent),
+  diag(new Ui::NewTrialDialog)
+{
   diag->setupUi(this);
 
   nbCams = 1;
   diag->label_CameraNb->setText(QString::number(nbCams));
 
-  for (int i = 0; i < nbCams; i++){
+  for (int i = 0; i < nbCams; i++) {
     CameraBox* box = new CameraBox();
     box->widget->groupBox_Camera->setTitle("Camera " + QString::number(i + 1));
     diag->gridLayout_6->addWidget(box, i, 0, 1, 1);
@@ -71,7 +72,7 @@ NewTrialDialog::NewTrialDialog(QWidget *parent) :
   nbVolumes = 1;
   diag->label_VolumeNb->setText(QString::number(nbVolumes));
 
-  for (int i = 0; i < nbVolumes; i++){
+  for (int i = 0; i < nbVolumes; i++) {
     VolumeBox* box = new VolumeBox();
     box->widget->groupBox_Volume->setTitle("Volume " + QString::number(i + 1));
     diag->gridLayout_8->addWidget(box, i, 0, 1, 1);
@@ -79,19 +80,21 @@ NewTrialDialog::NewTrialDialog(QWidget *parent) :
   }
 }
 
-NewTrialDialog::~NewTrialDialog(){
+NewTrialDialog::~NewTrialDialog()
+{
   delete diag;
 
-  for (int i = 0; i < nbCams ; i ++){
+  for (int i = 0; i < nbCams; i ++) {
     delete cameras[i];
   }
   cameras.clear();
 }
 
-void NewTrialDialog::on_toolButton_CameraMinus_clicked(){
-  if(nbCams > 1){
-    diag->gridLayout_6->removeWidget(cameras[nbCams-1]);
-    delete cameras[nbCams-1];
+void NewTrialDialog::on_toolButton_CameraMinus_clicked()
+{
+  if (nbCams > 1) {
+    diag->gridLayout_6->removeWidget(cameras[nbCams - 1]);
+    delete cameras[nbCams - 1];
     cameras.pop_back();
 
     nbCams -= 1;
@@ -100,7 +103,8 @@ void NewTrialDialog::on_toolButton_CameraMinus_clicked(){
 }
 
 
-void NewTrialDialog::on_toolButton_CameraPlus_clicked(){
+void NewTrialDialog::on_toolButton_CameraPlus_clicked()
+{
   nbCams += 1;
   diag->label_CameraNb->setText(QString::number(nbCams));
 
@@ -112,13 +116,13 @@ void NewTrialDialog::on_toolButton_CameraPlus_clicked(){
 
 void NewTrialDialog::on_toolButton_VolumeMinus_clicked()
 {
-  if (nbCams >= 1 && nbVolumes!=0){
+  if (nbCams >= 1 && nbVolumes != 0) {
 
     diag->gridLayout_8->removeWidget(volumes[nbVolumes - 1]);
     delete volumes[nbVolumes - 1];
     volumes.pop_back();
 
-        nbVolumes -= 1;
+    nbVolumes -= 1;
 
     diag->label_VolumeNb->setText(QString::number(nbVolumes));
   }
@@ -135,52 +139,54 @@ void NewTrialDialog::on_toolButton_VolumePlus_clicked()
   volumes.push_back(box);
 }
 
-void NewTrialDialog::on_pushButton_OK_clicked(){
-  if(run()) this->accept();
+void NewTrialDialog::on_pushButton_OK_clicked()
+{
+  if (run())this->accept();
 }
-void NewTrialDialog::on_pushButton_Cancel_clicked(){
+void NewTrialDialog::on_pushButton_Cancel_clicked()
+{
   this->reject();
 }
 
 bool
 NewTrialDialog::run()
 {
-  std::vector <QString> cameras_mayaCam;
-  std::vector <QString> cameras_videoPath;
+  std::vector<QString> cameras_mayaCam;
+  std::vector<QString> cameras_videoPath;
 
-  for(int i = 0; i < nbCams; i++){
-    if(!cameras[i]->widget->lineEdit_MayaCam->text().isEmpty()
-      && !cameras[i]->widget->lineEdit_VideoPath->text().isEmpty()){
+  for (int i = 0; i < nbCams; i++) {
+    if (!cameras[i]->widget->lineEdit_MayaCam->text().isEmpty()
+        && !cameras[i]->widget->lineEdit_VideoPath->text().isEmpty()) {
       cameras_mayaCam.push_back(cameras[i]->widget->lineEdit_MayaCam->text());
       cameras_videoPath.push_back(cameras[i]->widget->lineEdit_VideoPath->text());
-    }else{
+    } else {
       return false;
     }
   }
 
-    try {
-        trial = xromm::Trial();
+  try {
+    trial = xromm::Trial();
     int maxFrames = 0;
-    for(int i = 0; i < nbCams; i++){
+    for (int i = 0; i < nbCams; i++) {
       trial.cameras.push_back(xromm::Camera(cameras_mayaCam[i].toStdString().c_str()));
       trial.videos.push_back(xromm::Video(cameras_videoPath[i].toStdString().c_str()));
 
       maxFrames = (maxFrames > trial.videos.at(i).num_frames()) ? maxFrames : trial.videos.at(i).num_frames() ;
     }
 
-        trial.num_frames = maxFrames;
+    trial.num_frames = maxFrames;
 
 
-    for (int i = 0; i < nbVolumes; i++){
+    for (int i = 0; i < nbVolumes; i++) {
       if (volumes[i]->widget->lineEdit_VolumeFile->text().isEmpty())
         continue;
 
       QString volume_filename = volumes[i]->widget->lineEdit_VolumeFile->text();
 
       if (volumes[i]->widget->lineEdit_ScaleX->text().isEmpty() ||
-        volumes[i]->widget->lineEdit_ScaleY->text().isEmpty() ||
-        volumes[i]->widget->lineEdit_ScaleZ->text().isEmpty())
-          continue;
+          volumes[i]->widget->lineEdit_ScaleY->text().isEmpty() ||
+          volumes[i]->widget->lineEdit_ScaleZ->text().isEmpty())
+        continue;
 
       double volume_scale_x = volumes[i]->widget->lineEdit_ScaleX->text().toDouble();
       double volume_scale_y = volumes[i]->widget->lineEdit_ScaleY->text().toDouble();
@@ -189,22 +195,22 @@ NewTrialDialog::run()
       int units = volumes[i]->widget->comboBox_Units->currentIndex();
 
       switch (units) {
-      case 0: { // micrometers->millimeters
-            volume_scale_x /= 1000;
-            volume_scale_y /= 1000;
-            volume_scale_z /= 1000;
-            break;
-      }
-      default:
-      case 1: { // milimeters->millimeters
-            break;
-      }
-      case 2: { // centemeters->millimeters
-            volume_scale_x *= 10;
-            volume_scale_y *= 10;
-            volume_scale_z *= 10;
-            break;
-      }
+        case 0: { // micrometers->millimeters
+          volume_scale_x /= 1000;
+          volume_scale_y /= 1000;
+          volume_scale_z /= 1000;
+          break;
+        }
+        default:
+        case 1: { // milimeters->millimeters
+          break;
+        }
+        case 2: { // centemeters->millimeters
+          volume_scale_x *= 10;
+          volume_scale_y *= 10;
+          volume_scale_z *= 10;
+          break;
+        }
       }
 
       bool volume_flip_x = volumes[i]->widget->toolButton_FlipX->isChecked();
@@ -226,20 +232,20 @@ NewTrialDialog::run()
       trial.num_volumes += 1;
     }
 
-        trial.offsets[0] = 0.1;
-        trial.offsets[1] = 0.1;
-        trial.offsets[2] = 0.1;
-        trial.offsets[3] = 0.1;
-        trial.offsets[4] = 0.1;
-        trial.offsets[5] = 0.1;
+    trial.offsets[0] = 0.1;
+    trial.offsets[1] = 0.1;
+    trial.offsets[2] = 0.1;
+    trial.offsets[3] = 0.1;
+    trial.offsets[4] = 0.1;
+    trial.offsets[5] = 0.1;
 
-        trial.render_width = 512;
-        trial.render_height = 512;
+    trial.render_width = 512;
+    trial.render_height = 512;
 
-        return true;
-    }
-    catch ( std::exception& e) {
-        std::cerr << e.what() << std::endl;
-        return false;
-    }
+    return true;
+  }
+  catch (std::exception& e) {
+    std::cerr << e.what() << std::endl;
+    return false;
+  }
 }

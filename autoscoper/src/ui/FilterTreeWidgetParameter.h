@@ -45,31 +45,32 @@
 #include <QObject>
 #include <QDoubleSpinBox>
 
-class FilterTreeWidgetParameter : public QObject{
+class FilterTreeWidgetParameter : public QObject
+{
 
   Q_OBJECT
 
-  public:
-    FilterTreeWidgetParameter(QString _name, double _value, double _minimumValue, double _maximumValue, double _step);
-    ~FilterTreeWidgetParameter();
+public:
+  FilterTreeWidgetParameter(QString _name, double _value, double _minimumValue, double _maximumValue, double _step);
+  ~FilterTreeWidgetParameter();
 
-    QString name;
-    double value;
-    double minimumValue;
-    double maximumValue;
-    double step;
-    QDoubleSpinBox * spinbox;
+  QString name;
+  double value;
+  double minimumValue;
+  double maximumValue;
+  double step;
+  QDoubleSpinBox* spinbox;
 
-  private:
+private:
 
-  protected:
+protected:
 
-  public slots:
-    void valueChanged(double _value);
-    //void action_RemoveFilter_triggered();
+public slots:
+  void valueChanged(double _value);
+  // void action_RemoveFilter_triggered();
 
-   signals:
-    void parameterChanged();
+signals:
+  void parameterChanged();
 
 };
 

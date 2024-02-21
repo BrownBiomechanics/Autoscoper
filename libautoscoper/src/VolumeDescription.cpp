@@ -60,26 +60,26 @@
 
 template <class T>
 void flipVolume(const T* data,
-        T* dest,
+                T* dest,
                 int width,
                 int height,
                 int depth,
                 bool flipX,
-        bool flipY,
-        bool flipZ)
+                bool flipY,
+                bool flipZ)
 {
-  int x,y,z;
-    for (int k = 0; k < depth; k++) {
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                x = flipX ? (width-1) - j : j;
-        y = flipY ? (height-1) - i : i;
-        z = flipZ ? (depth-1) - k : k;
+  int x, y, z;
+  for (int k = 0; k < depth; k++) {
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        x = flipX ? (width - 1) - j : j;
+        y = flipY ? (height - 1) - i : i;
+        z = flipZ ? (depth - 1) - k : k;
 
-        dest[z*width*height+y*width+x]= data[k*width*height+i*width+j];
-            }
-        }
+        dest[z * width * height + y * width + x] = data[k * width * height + i * width + j];
+      }
     }
+  }
 }
 
 template <class T>
@@ -90,47 +90,47 @@ void cropVolume(const T* data,
                 int* min,
                 int* max)
 {
-    min[0] = width;
-    min[1] = height;
-    min[2] = depth;
-    max[0] = 0;
-    max[1] = 0;
-    max[2] = 0;
-    const T* dp1 = data;
-    for (int k = 0; k < depth; k++) {
-        bool nonZeroCol = false;
-        for (int i = 0; i < height; i++) {
-            bool nonZeroRow = false;
-            for (int j = 0; j < width; j++) {
-                if (*dp1++ != T(0)) {
-                    if (j < min[0]) {
-                        min[0] = j;
-                    }
-                    if (j > max[0]) {
-                        max[0] = j;
-                    }
-                    nonZeroRow = true;
-                }
-            }
-            if (nonZeroRow) {
-                if (i < min[1]) {
-                    min[1] = i;
-                }
-                if (i > max[1]) {
-                    max[1] = i;
-                }
-                nonZeroCol = true;
-            }
+  min[0] = width;
+  min[1] = height;
+  min[2] = depth;
+  max[0] = 0;
+  max[1] = 0;
+  max[2] = 0;
+  const T* dp1 = data;
+  for (int k = 0; k < depth; k++) {
+    bool nonZeroCol = false;
+    for (int i = 0; i < height; i++) {
+      bool nonZeroRow = false;
+      for (int j = 0; j < width; j++) {
+        if (*dp1++ != T(0)) {
+          if (j < min[0]) {
+            min[0] = j;
+          }
+          if (j > max[0]) {
+            max[0] = j;
+          }
+          nonZeroRow = true;
         }
-        if (nonZeroCol) {
-            if (k < min[2]) {
-                min[2] = k;
-            }
-            if (k > max[2]) {
-                max[2] = k;
-            }
+      }
+      if (nonZeroRow) {
+        if (i < min[1]) {
+          min[1] = i;
         }
+        if (i > max[1]) {
+          max[1] = i;
+        }
+        nonZeroCol = true;
+      }
     }
+    if (nonZeroCol) {
+      if (k < min[2]) {
+        min[2] = k;
+      }
+      if (k > max[2]) {
+        max[2] = k;
+      }
+    }
+  }
 }
 
 template <class T>
@@ -144,179 +144,178 @@ void copyVolume(T* dest,
                 T* minVal,
                 T* maxVal)
 {
-    *minVal = std::numeric_limits<T>::max();
-    *maxVal = std::numeric_limits<T>::min();
-    for (int k = min[2]; k < max[2]+1; k++) {
-        for (int i = min[1]; i < max[1]+1; i++) {
-            for (int j = min[0]; j < max[0]+1; j++) {
-                if (src[k*width*height+i*width+j] < *minVal) {
-                    *minVal = src[k*width*height+i*width+j];
-                }
-                if (src[k*width*height+i*width+j] > *maxVal) {
-                    *maxVal = src[k*width*height+i*width+j];
-                }
-                *dest++ = src[k*width*height+i*width+j];
-            }
+  *minVal = std::numeric_limits<T>::max();
+  *maxVal = std::numeric_limits<T>::min();
+  for (int k = min[2]; k < max[2] + 1; k++) {
+    for (int i = min[1]; i < max[1] + 1; i++) {
+      for (int j = min[0]; j < max[0] + 1; j++) {
+        if (src[k * width * height + i * width + j] < *minVal) {
+          *minVal = src[k * width * height + i * width + j];
         }
+        if (src[k * width * height + i * width + j] > *maxVal) {
+          *maxVal = src[k * width * height + i * width + j];
+        }
+        *dest++ = src[k * width * height + i * width + j];
+      }
     }
+  }
 }
 
 namespace xromm { namespace gpu
 {
-
 VolumeDescription::VolumeDescription(const Volume& volume)
-    : minValue_(0.0f), maxValue_(1.0f), image_(0)
+  : minValue_(0.0f), maxValue_(1.0f), image_(0)
 {
-    // Crop the volume
-    int min[3], max[3];
-  std::vector<char> data_flipped(volume.width()*volume.height()*volume.depth()*(volume.bps()/8));
+  // Crop the volume
+  int min[3], max[3];
+  std::vector<char> data_flipped(volume.width() * volume.height() * volume.depth() * (volume.bps() / 8));
 
-    switch(volume.bps()) {
-        case 8: {
+  switch (volume.bps()) {
+    case 8: {
       flipVolume((unsigned char*)volume.data(),
-          (unsigned char*)&data_flipped[0],
-                    (int)volume.width(),
-                    (int)volume.height(),
-                    (int)volume.depth(),
-          (bool)volume.flipX(),
-                    (bool)volume.flipY(),
-                    (bool)volume.flipZ()
-      );
+                 (unsigned char*)&data_flipped[0],
+                 (int)volume.width(),
+                 (int)volume.height(),
+                 (int)volume.depth(),
+                 (bool)volume.flipX(),
+                 (bool)volume.flipY(),
+                 (bool)volume.flipZ()
+                 );
 
-            cropVolume((unsigned char*)&data_flipped[0],
-                    (int)volume.width(),
-                    (int)volume.height(),
-                    (int)volume.depth(),
-                    min,
-                    max);
-            break;
-        }
-        case 16: {
+      cropVolume((unsigned char*)&data_flipped[0],
+                 (int)volume.width(),
+                 (int)volume.height(),
+                 (int)volume.depth(),
+                 min,
+                 max);
+      break;
+    }
+    case 16: {
       flipVolume((unsigned short*)volume.data(),
-          (unsigned short*)&data_flipped[0],
-                    (int)volume.width(),
-                    (int)volume.height(),
-                    (int)volume.depth(),
-          (bool)volume.flipX(),
-                    (bool)volume.flipY(),
-                    (bool)volume.flipZ()
-      );
-            cropVolume((unsigned short*)&data_flipped[0],
-                    (int)volume.width(),
-                    (int)volume.height(),
-                    (int)volume.depth(),
-                    min,
-                    max);
-            break;
-        }
-        default: {
-            std::cerr << "VolumeDescription(): Unsupported bit-depth "
-                                          << volume.bps() << std::endl;
-            exit(0);
-        }
+                 (unsigned short*)&data_flipped[0],
+                 (int)volume.width(),
+                 (int)volume.height(),
+                 (int)volume.depth(),
+                 (bool)volume.flipX(),
+                 (bool)volume.flipY(),
+                 (bool)volume.flipZ()
+                 );
+      cropVolume((unsigned short*)&data_flipped[0],
+                 (int)volume.width(),
+                 (int)volume.height(),
+                 (int)volume.depth(),
+                 min,
+                 max);
+      break;
     }
-
-    // The volume is empty
-    if (min[0] > max[0] || min[1] > max[1] || min[2] > max[2]) {
-        std::cerr << "Empty Volume" << std::endl;
-        exit(0);
+    default: {
+      std::cerr << "VolumeDescription(): Unsupported bit-depth "
+                << volume.bps() << std::endl;
+      exit(0);
     }
+  }
 
-    // Copy to the cropped volume
-    int dim[3] = { max[0]-min[0]+1, max[1]-min[1]+1, max[2]-min[2]+1 };
-    std::vector<char> data(dim[0]*dim[1]*dim[2]*(volume.bps()/8));
-    switch(volume.bps()) {
-        case 8: {
-            unsigned char minVal, maxVal;
-            copyVolume((unsigned char*)&data[0],
-                    (unsigned char*)&data_flipped[0],
-                    (int)volume.width(),
-                    (int)volume.height(),
-                    (int)volume.depth(),
-                    min,
-                    max,
-                    &minVal,
-                    &maxVal);
-            minValue_ = minVal / (float)std::numeric_limits<unsigned char>::max();
-            maxValue_ = maxVal / (float)std::numeric_limits<unsigned char>::max();
-            break;
-        }
-        case 16: {
-            unsigned short minVal, maxVal;
-            copyVolume((unsigned short*)&data[0],
-                    (unsigned short*)&data_flipped[0],
-                    (int)volume.width(),
-                    (int)volume.height(),
-                    (int)volume.depth(),
-                    min,
-                    max,
-                    &minVal,
-                    &maxVal);
-            minValue_ = minVal / (float)std::numeric_limits<unsigned short>::max();
-            maxValue_ = maxVal / (float)std::numeric_limits<unsigned short>::max();
-            break;
-        }
-        default:
-            std::cerr << "VolumeDescription(): Unsupported bit-depth "
-                                          << volume.bps() << std::endl;
-            exit(0);
+  // The volume is empty
+  if (min[0] > max[0] || min[1] > max[1] || min[2] > max[2]) {
+    std::cerr << "Empty Volume" << std::endl;
+    exit(0);
+  }
+
+  // Copy to the cropped volume
+  int dim[3] = { max[0] - min[0] + 1, max[1] - min[1] + 1, max[2] - min[2] + 1 };
+  std::vector<char> data(dim[0] * dim[1] * dim[2] * (volume.bps() / 8));
+  switch (volume.bps()) {
+    case 8: {
+      unsigned char minVal, maxVal;
+      copyVolume((unsigned char*)&data[0],
+                 (unsigned char*)&data_flipped[0],
+                 (int)volume.width(),
+                 (int)volume.height(),
+                 (int)volume.depth(),
+                 min,
+                 max,
+                 &minVal,
+                 &maxVal);
+      minValue_ = minVal / (float)std::numeric_limits<unsigned char>::max();
+      maxValue_ = maxVal / (float)std::numeric_limits<unsigned char>::max();
+      break;
     }
+    case 16: {
+      unsigned short minVal, maxVal;
+      copyVolume((unsigned short*)&data[0],
+                 (unsigned short*)&data_flipped[0],
+                 (int)volume.width(),
+                 (int)volume.height(),
+                 (int)volume.depth(),
+                 min,
+                 max,
+                 &minVal,
+                 &maxVal);
+      minValue_ = minVal / (float)std::numeric_limits<unsigned short>::max();
+      maxValue_ = maxVal / (float)std::numeric_limits<unsigned short>::max();
+      break;
+    }
+    default:
+      std::cerr << "VolumeDescription(): Unsupported bit-depth "
+                << volume.bps() << std::endl;
+      exit(0);
+  }
 
-  //calculate translation to center pivot
-  transCenter_[0] = - volume.scaleX() * 0.5 * (min[0] + max[0]);
-  transCenter_[1] = - volume.scaleY() * 0.5 * (min[1] + max[1]);
+  // calculate translation to center pivot
+  transCenter_[0] = -volume.scaleX() * 0.5 * (min[0] + max[0]);
+  transCenter_[1] = -volume.scaleY() * 0.5 * (min[1] + max[1]);
   transCenter_[2] = volume.scaleZ() * 0.5 * (min[2] + max[2]);
 
-    // Calculate the offset and size of the sub-volume
-    invScale_[0] = 1.0f/(float)(volume.scaleX()*dim[0]);
-    invScale_[1] = 1.0f/(float)(volume.scaleY()*dim[1]);
-    invScale_[2] = 1.0f/(float)(volume.scaleZ()*dim[2]);
+  // Calculate the offset and size of the sub-volume
+  invScale_[0] = 1.0f / (float)(volume.scaleX() * dim[0]);
+  invScale_[1] = 1.0f / (float)(volume.scaleY() * dim[1]);
+  invScale_[2] = 1.0f / (float)(volume.scaleZ() * dim[2]);
 
-    invTrans_[0] = -min[0]/(float)dim[0];
-    invTrans_[1] = -((volume.height()-max[1]-1)/(float)dim[1]);
-    invTrans_[2] = min[2]/(float)dim[2];
-    // Free any previously allocated memory.
+  invTrans_[0] = -min[0] / (float)dim[0];
+  invTrans_[1] = -((volume.height() - max[1] - 1) / (float)dim[1]);
+  invTrans_[2] = min[2] / (float)dim[2];
+  // Free any previously allocated memory.
 
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   // Free any previously allocated memory.
-    cutilSafeCall(cudaFreeArray(image_));
+  cutilSafeCall(cudaFreeArray(image_));
 
-    // Create a 3D array.
-    cudaChannelFormatDesc desc;
-    switch(volume.bps()) {
-        case 8: desc = cudaCreateChannelDesc<unsigned char>(); break;
-        case 16: desc = cudaCreateChannelDesc<unsigned short>(); break;
-        default:
-                 std::cerr << "VolumeDescription(): Unsupported bit-depth "
-                                               << volume.bps() << std::endl;
-                 exit(0);
-    }
-    cudaExtent extent = make_cudaExtent(dim[0], dim[1], dim[2]);
-    cutilSafeCall(cudaMalloc3DArray(&image_, &desc, extent));
+  // Create a 3D array.
+  cudaChannelFormatDesc desc;
+  switch (volume.bps()) {
+    case 8: desc = cudaCreateChannelDesc<unsigned char>(); break;
+    case 16: desc = cudaCreateChannelDesc<unsigned short>(); break;
+    default:
+      std::cerr << "VolumeDescription(): Unsupported bit-depth "
+                << volume.bps() << std::endl;
+      exit(0);
+  }
+  cudaExtent extent = make_cudaExtent(dim[0], dim[1], dim[2]);
+  cutilSafeCall(cudaMalloc3DArray(&image_, &desc, extent));
 
-    // Copy volume to 3D array.
-    cudaMemcpy3DParms copyParams = {0};
-    copyParams.srcPtr = make_cudaPitchedPtr(&data[0],
-            extent.width*(volume.bps()/8),
-            extent.width, extent.height);
-    copyParams.dstArray = image_;
-    copyParams.extent = extent;
-    copyParams.kind = cudaMemcpyHostToDevice;
-    cutilSafeCall(cudaMemcpy3D(&copyParams));
+  // Copy volume to 3D array.
+  cudaMemcpy3DParms copyParams = { 0 };
+  copyParams.srcPtr = make_cudaPitchedPtr(&data[0],
+                                          extent.width * (volume.bps() / 8),
+                                          extent.width, extent.height);
+  copyParams.dstArray = image_;
+  copyParams.extent = extent;
+  copyParams.kind = cudaMemcpyHostToDevice;
+  cutilSafeCall(cudaMemcpy3D(&copyParams));
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   if (image_) delete image_;
 
-    // Create a 3D array.
+  // Create a 3D array.
   cl_image_format format;
   format.image_channel_order = CL_R;
-    switch (volume.bps()) {
-        case 8:  format.image_channel_data_type = CL_UNORM_INT8; break;
-        case 16: format.image_channel_data_type = CL_UNORM_INT16; break;
-        default:
-            std::cerr << "VolumeDescription(): unsupported bit depth "
-                 << volume.bps() << std::endl;
-            return;
-    }
+  switch (volume.bps()) {
+    case 8:  format.image_channel_data_type = CL_UNORM_INT8; break;
+    case 16: format.image_channel_data_type = CL_UNORM_INT16; break;
+    default:
+      std::cerr << "VolumeDescription(): unsupported bit depth "
+                << volume.bps() << std::endl;
+      return;
+  }
 
   size_t sdim[3] = { (size_t)dim[0], (size_t)dim[1], (size_t)dim[2] };
   image_ = new Image(sdim, &format, CL_MEM_READ_ONLY);
@@ -332,6 +331,5 @@ VolumeDescription::~VolumeDescription()
   if (image_) delete image_;
 #endif
 }
-
 } } // namespace xromm::opencl
 

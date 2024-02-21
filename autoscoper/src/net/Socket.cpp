@@ -35,9 +35,9 @@
 // FOREGOING, AND ACCEPTS ALL RISKS AND LIABILITIES THAT MAY ARISE FROM
 // THEIR USE OF THE SOFTWARE.
 // ---------------------------------
-///\file Socket.cpp
-///\author Benjamin Knorlein
-///\date 5/14/2018
+/// \file Socket.cpp
+/// \author Benjamin Knorlein
+/// \date 5/14/2018
 
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS
@@ -62,7 +62,7 @@ Socket::Socket(AutoscoperMainWindow* mainwindow, unsigned long long int listenPo
 
 Socket::~Socket()
 {
-  for (auto &a : clientConnections){
+  for (auto& a : clientConnections) {
     a->disconnectFromHost();
   }
 }
@@ -74,7 +74,7 @@ QString Socket::versionString()
   return QString::number(Socket::version());
 }
 
-void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
+void Socket::handleMessage(QTcpSocket* connection, char* data, qint64 length)
 {
   unsigned char message_type = data[0];
   size_t preamble_offset = 1;
@@ -83,36 +83,34 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
     fieldPtrType* fieldName = reinterpret_cast<fieldPtrType*>(&data[offset]); \
     offset = offset + sizeof(fieldPtrType)
 
-  switch (message_type)
-  {
-  case 0:
-  {
+  switch (message_type) {
+    case 0:
+    {
       // Used for testing socket connection
       connection->write(QByteArray(1, 0));
-  }
-  break;
-  case 1:
+    }
+    break;
+    case 1:
     {
       size_t offset = preamble_offset;
 
-      //load trial
+      // load trial
       std::string filename = std::string(&data[offset], length - offset);
 
       std::ifstream test(filename.c_str());
       if (!test) {
-          std::cerr << "Cannot find " << filename.c_str() << std::endl;
-          connection->write(QByteArray(1, 0));
-      }
-      else {
-          std::cerr << "load trial " << filename.c_str() << std::endl;
-          bool success = m_mainwindow->openTrial(QString(filename.c_str()));
+        std::cerr << "Cannot find " << filename.c_str() << std::endl;
+        connection->write(QByteArray(1, 0));
+      } else {
+        std::cerr << "load trial " << filename.c_str() << std::endl;
+        bool success = m_mainwindow->openTrial(QString(filename.c_str()));
 
-          connection->write(QByteArray(1, success ? 1 : 0));
+        connection->write(QByteArray(1, success ? 1 : 0));
       }
     }
     break;
-  case 2:
-    //load tracking data
+    case 2:
+      // load tracking data
     {
       size_t offset = preamble_offset;
 
@@ -127,20 +125,20 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       std::string filename = std::string(&data[offset], length - offset);
 
       bool success = m_mainwindow->load_tracking_results(
-            QString(filename.c_str()),
-            *save_as_matrix,
-            *save_as_rows,
-            *save_with_commas,
-            *convert_to_cm,
-            *convert_to_rad,
-            *interpolate,
-            *volume);
+        QString(filename.c_str()),
+        *save_as_matrix,
+        *save_as_rows,
+        *save_with_commas,
+        *convert_to_cm,
+        *convert_to_rad,
+        *interpolate,
+        *volume);
 
       connection->write(QByteArray(1, success ? 2 : 0));
     }
     break;
-  case 3:
-    //save tracking data
+    case 3:
+      // save tracking data
     {
       size_t offset = preamble_offset;
 
@@ -157,53 +155,49 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       // If needed, create parent directory
       bool parent_directory_exists = false;
       if (!std::filesystem::is_directory(filename)) {
-          auto parent_directory = std::filesystem::path(filename).parent_path();
-          parent_directory_exists = std::filesystem::exists(parent_directory);
-          if (!parent_directory_exists){
-              std::error_code ec;
-              if (std::filesystem::create_directories(parent_directory, ec)) {
-                  parent_directory_exists = true;
-              }
-              else {
-                  std::cerr << "save tracking data: failed to create directory " << parent_directory << ": " << ec.message() << std::endl;
-              }
+        auto parent_directory = std::filesystem::path(filename).parent_path();
+        parent_directory_exists = std::filesystem::exists(parent_directory);
+        if (!parent_directory_exists) {
+          std::error_code ec;
+          if (std::filesystem::create_directories(parent_directory, ec)) {
+            parent_directory_exists = true;
+          } else {
+            std::cerr << "save tracking data: failed to create directory " << parent_directory << ": " << ec.message() << std::endl;
           }
-      }
-      else {
-          std::cerr << "save tracking data: failed because filename " << filename << " is a directory" << std::endl;
+        }
+      } else {
+        std::cerr << "save tracking data: failed because filename " << filename << " is a directory" << std::endl;
       }
 
       // Check permissions
       bool parent_directory_writable = false;
-      if (parent_directory_exists){
-          auto parent_directory = std::filesystem::path(filename).parent_path();
-          std::filesystem::file_status status = std::filesystem::status(parent_directory);
-          std::filesystem::perms permissions = status.permissions();
-          if ((permissions & (std::filesystem::perms::owner_write
-                              | std::filesystem::perms::group_write
-                              | std::filesystem::perms::others_write)) != std::filesystem::perms::none) {
-              parent_directory_writable = true;
-          }
-          else {
-              std::cerr << "save tracking data: failed because directory " << parent_directory << " is not writable" << std::endl;
-          }
+      if (parent_directory_exists) {
+        auto parent_directory = std::filesystem::path(filename).parent_path();
+        std::filesystem::file_status status = std::filesystem::status(parent_directory);
+        std::filesystem::perms permissions = status.permissions();
+        if ((permissions & (std::filesystem::perms::owner_write
+                            | std::filesystem::perms::group_write
+                            | std::filesystem::perms::others_write)) != std::filesystem::perms::none) {
+          parent_directory_writable = true;
+        } else {
+          std::cerr << "save tracking data: failed because directory " << parent_directory << " is not writable" << std::endl;
+        }
       }
 
       if (!parent_directory_exists || !parent_directory_writable) {
-          connection->write(QByteArray(1, 0));
-      }
-      else {
-          std::cerr << "save tracking data Volume " << *volume << " : " << filename.c_str() << std::endl;
-          std::cerr << "Save as matrix: " << *save_as_matrix << " save as rows: " << *save_as_rows << " save with commas: " << *save_with_commas << " convert to cm: " << *convert_to_cm << " convert to rad: " << *convert_to_rad << " interpolate: " << *interpolate << std::endl;
+        connection->write(QByteArray(1, 0));
+      } else {
+        std::cerr << "save tracking data Volume " << *volume << " : " << filename.c_str() << std::endl;
+        std::cerr << "Save as matrix: " << *save_as_matrix << " save as rows: " << *save_as_rows << " save with commas: " << *save_with_commas << " convert to cm: " << *convert_to_cm << " convert to rad: " << *convert_to_rad << " interpolate: " << *interpolate << std::endl;
 
-          m_mainwindow->save_tracking_results(QString(filename.c_str()), *save_as_matrix, *save_as_rows, *save_with_commas, *convert_to_cm, *convert_to_rad, *interpolate, *volume);
+        m_mainwindow->save_tracking_results(QString(filename.c_str()), *save_as_matrix, *save_as_rows, *save_with_commas, *convert_to_cm, *convert_to_rad, *interpolate, *volume);
 
-          connection->write(QByteArray(1, 3));
+        connection->write(QByteArray(1, 3));
       }
     }
     break;
-  case 4:
-    //load filter settings
+    case 4:
+      // load filter settings
     {
       size_t offset = preamble_offset;
 
@@ -212,20 +206,19 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       std::string filename = std::string(&data[offset], length - offset);
 
       if (!std::filesystem::exists(filename)) {
-          std::cerr << "Cannot find " << filename.c_str() << std::endl;
-          connection->write(QByteArray(1, 0));
-      }
-      else {
+        std::cerr << "Cannot find " << filename.c_str() << std::endl;
+        connection->write(QByteArray(1, 0));
+      } else {
 
-          std::cerr << "load filter settings for camera " << *camera << " : " << filename.c_str() << std::endl;
-          m_mainwindow->loadFilterSettings(*camera, QString(filename.c_str()));
+        std::cerr << "load filter settings for camera " << *camera << " : " << filename.c_str() << std::endl;
+        m_mainwindow->loadFilterSettings(*camera, QString(filename.c_str()));
 
-          connection->write(QByteArray(1, 4));
+        connection->write(QByteArray(1, 4));
       }
     }
     break;
-  case 5:
-    //set current frame
+    case 5:
+      // set current frame
     {
       size_t offset = preamble_offset;
 
@@ -237,8 +230,8 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       connection->write(QByteArray(1, 5));
     }
     break;
-  case 6:
-    //get Pose
+    case 6:
+      // get Pose
     {
       size_t offset = preamble_offset;
 
@@ -246,16 +239,16 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       SocketReadValuePointerMacro(frame, qint32);
 
       std::cerr << "get pose for volume " << *volume << " frame " << *frame << std::endl;
-      std::vector<double> pose = m_mainwindow->getPose(*volume,*frame);
+      std::vector<double> pose = m_mainwindow->getPose(*volume, *frame);
 
-      char * ptr = reinterpret_cast<char*>(&pose[0]);
+      char* ptr = reinterpret_cast<char*>(&pose[0]);
       QByteArray array = QByteArray(1, 6);
       array.append(ptr, sizeof(double) * 6);
       connection->write(array);
     }
     break;
-  case 7:
-    //set Pose
+    case 7:
+      // set Pose
     {
       size_t offset = preamble_offset;
 
@@ -275,8 +268,8 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       connection->write(QByteArray(1, 7));
     }
     break;
-  case 8:
-    //get NCC
+    case 8:
+      // get NCC
     {
       size_t offset = preamble_offset;
 
@@ -288,16 +281,16 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 
       std::vector<double> ncc = m_mainwindow->getNCC(*volume, &pose_data[0]);
 
-      //Return double
-      char * ptr = reinterpret_cast<char*>(&ncc[0]);
+      // Return double
+      char* ptr = reinterpret_cast<char*>(&ncc[0]);
       QByteArray array = QByteArray(1, 8);
       array.append(QByteArray(1, ncc.size()));
       array.append(ptr, sizeof(double) * ncc.size());
       connection->write(array);
     }
-  break;
-  case 9:
-    //set Background
+    break;
+    case 9:
+      // set Background
     {
       size_t offset = preamble_offset;
 
@@ -308,9 +301,9 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 
       connection->write(QByteArray(1, 9));
     }
-  break;
-  case 10:
-    //get the image - cropped
+    break;
+    case 10:
+      // get the image - cropped
     {
       size_t offset = preamble_offset;
 
@@ -324,12 +317,12 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       pose.assign(pose_data, pose_data + 6);
 
       unsigned int width, height;
-      std::vector<unsigned char> img_Data = m_mainwindow->getImageData(*volume,*camera, &pose_data[0], width, height );
+      std::vector<unsigned char> img_Data = m_mainwindow->getImageData(*volume, *camera, &pose_data[0], width, height );
 
       QByteArray array = QByteArray(1, 10);
-      char * ptr = reinterpret_cast<char*>(&width);
+      char* ptr = reinterpret_cast<char*>(&width);
       array.append(ptr, sizeof(qint32));
-        ptr = reinterpret_cast<char*>(&height);
+      ptr = reinterpret_cast<char*>(&height);
       array.append(ptr, sizeof(qint32));
       ptr = reinterpret_cast<char*>(&img_Data[0]);
       array.append(ptr, img_Data.size());
@@ -338,8 +331,8 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
 
     }
     break;
-  case 11:
-    //optimize from matlab
+    case 11:
+      // optimize from matlab
     {
       size_t offset = preamble_offset;
 
@@ -361,16 +354,16 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
       m_mainwindow->getTracker()->trial()->guess = *opt_init_heuristic;
 
       m_mainwindow->optimizeFrame(*volumeID, *frame, *dframe, *repeats,
-        *opt_method,
-        *max_iter, *min_limit, *max_limit,
-        *cf_model, *stall_iter);
+                                  *opt_method,
+                                  *max_iter, *min_limit, *max_limit,
+                                  *cf_model, *stall_iter);
 
       connection->write(QByteArray(1, 11));
     }
     break;
 
-  case 12:
-    //save full drr image
+    case 12:
+      // save full drr image
     {
       std::cerr << "Saving the full DRR image: " << std::endl;
 
@@ -380,16 +373,16 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
     }
     break;
 
-  case 13:
-    // close connection
+    case 13:
+      // close connection
     {
       std::cerr << "Closing connection to Client..." << std::endl;
       connection->disconnectFromHost();
     }
     break;
 
-  case 14:
-    // get number of volumes
+    case 14:
+      // get number of volumes
     {
       int nvol = m_mainwindow->getNumVolumes();
       QByteArray array = QByteArray(1, 14);
@@ -398,8 +391,8 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
     }
     break;
 
-  case 15:
-    // get number of frames
+    case 15:
+      // get number of frames
     {
       int nframe = m_mainwindow->getNumFrames();
       QByteArray array = QByteArray(1, 15);
@@ -408,8 +401,8 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
     }
     break;
 
-  case 16:
-    // get the version of the server
+    case 16:
+      // get the version of the server
     {
       int version = this->version();
       QByteArray array = QByteArray(1, 16);
@@ -418,8 +411,8 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
     }
     break;
 
-  case 17:
-    // Set the visablity of a volume
+    case 17:
+      // Set the visablity of a volume
     {
       size_t offset = preamble_offset;
 
@@ -434,17 +427,17 @@ void Socket::handleMessage(QTcpSocket * connection, char* data, qint64 length)
     }
     break;
 
-  default:
-    std::cerr << "Cannot handle message" << std::endl;
-    connection->write(QByteArray(1,0));
-    break;
+    default:
+      std::cerr << "Cannot handle message" << std::endl;
+      connection->write(QByteArray(1, 0));
+      break;
   }
 }
 
 void Socket::onNewConnectionEstablished()
 {
   std::cerr << "New Client is Connected..." << std::endl;
-  QTcpSocket *clientConnection = tcpServer->nextPendingConnection();
+  QTcpSocket* clientConnection = tcpServer->nextPendingConnection();
   connect(clientConnection, &QAbstractSocket::disconnected, this, &Socket::onClientDisconnected);
   connect(clientConnection, &QIODevice::readyRead, this, &Socket::reading);
 
@@ -453,10 +446,9 @@ void Socket::onNewConnectionEstablished()
 
 void Socket::onClientDisconnected()
 {
-  //std::cerr << "client disconnected" << std::endl;
-  QTcpSocket * obj = dynamic_cast<QTcpSocket *>(sender());
-  if (obj != NULL)
-  {
+  // std::cerr << "client disconnected" << std::endl;
+  QTcpSocket* obj = dynamic_cast<QTcpSocket*>(sender());
+  if (obj != NULL) {
     clientConnections.erase(std::remove(clientConnections.begin(), clientConnections.end(), obj), clientConnections.end());
     obj->deleteLater();
   }
@@ -464,11 +456,10 @@ void Socket::onClientDisconnected()
 
 void Socket::reading()
 {
-  QTcpSocket * obj = dynamic_cast<QTcpSocket *>(sender());
-  if (obj)
-  {
+  QTcpSocket* obj = dynamic_cast<QTcpSocket*>(sender());
+  if (obj) {
     qint64 avail = obj->bytesAvailable();
-    char *data = new char[avail];
+    char* data = new char[avail];
     obj->read(data, avail);
     handleMessage(obj, data, avail);
     delete[] data;

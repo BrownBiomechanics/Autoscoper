@@ -52,27 +52,26 @@ namespace xromm { namespace gpu {
 class SobelFilter : public Filter
 {
 public:
-    SobelFilter();
+  SobelFilter();
   virtual ~SobelFilter() {}
 
-    // Apply the filter to the input image
-    virtual void apply(const Buffer* input,
-                       Buffer* output,
-                       int width,
-                       int height);
+  // Apply the filter to the input image
+  virtual void apply(const Buffer* input,
+                     Buffer* output,
+                     int width,
+                     int height);
 
-    // Accessors and mutators
-    float getScale() const { return scale_; }
-    void setScale(float scale) { scale_ = scale; }
+  // Accessors and mutators
+  float getScale() const { return scale_; }
+  void setScale(float scale) { scale_ = scale; }
 
-    float getBlend() const { return blend_; }
-    void setBlend(float blend) { blend_ = blend; }
+  float getBlend() const { return blend_; }
+  void setBlend(float blend) { blend_ = blend; }
 
 private:
-    float scale_;
-    float blend_;
+  float scale_;
+  float blend_;
 };
-
 } } // namespace xromm::opencl
 
 #endif // XROMM_GPU_SOBEL_FILTER_HPP

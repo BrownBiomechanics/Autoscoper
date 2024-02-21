@@ -55,50 +55,51 @@ class QToolButton;
 class QCheckBox;
 
 namespace xromm{
-  namespace gpu{
-    class Filter;
-  }
+namespace gpu{
+class Filter;
+}
 }
 using xromm::gpu::Filter;
 
-class ModelViewTreeWidgetItem : public QObject ,public  QTreeWidgetItem
+class ModelViewTreeWidgetItem : public QObject, public  QTreeWidgetItem
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    ModelViewTreeWidgetItem(int type, std::vector<Filter*>* filters);
+  ModelViewTreeWidgetItem(int type, std::vector<Filter*>* filters);
   ~ModelViewTreeWidgetItem();
 
-  QString getName(){return name;}
-  void setName(QString _name){name = _name;}
-  int getType(){return m_type;}
+  QString getName() { return name; }
+  void setName(QString _name) { name = _name; }
+  int getType() { return m_type; }
 
-  std::vector<FilterTreeWidgetParameter * >* getParameters(){return &parameters;}
-  void addToCameraTreeWidgetItem(QTreeWidget * treewidget, CameraTreeWidgetItem * cameraWidget);
+  std::vector<FilterTreeWidgetParameter*>* getParameters() { return &parameters; }
+  void addToCameraTreeWidgetItem(QTreeWidget* treewidget, CameraTreeWidgetItem* cameraWidget);
 
   void addFilter(FilterTreeWidgetItem* filterItem, bool addToTree = true);
-  void removeFilter(FilterTreeWidgetItem* filterItem,bool removeFromTree = true);
+  void removeFilter(FilterTreeWidgetItem* filterItem, bool removeFromTree = true);
   void printFilters();
   void resetVectors();
-  void save(std::ofstream & file);
-  void loadSettings(std::ifstream & file);
-  void loadFilters(std::ifstream & file);
+  void save(std::ofstream& file);
+  void loadSettings(std::ifstream& file);
+  void loadFilters(std::ifstream& file);
   void toggleVisible();
 
 private:
   void init();
   QString name;
 
-  std::vector<FilterTreeWidgetParameter * > parameters;
+  std::vector<FilterTreeWidgetParameter*> parameters;
   bool settingsShown;
 
-  QFrame *pFrameSettings;
+  QFrame* pFrameSettings;
   QToolButton* settingsButton;
   QCheckBox* visibleCheckBox;
 
-  std::vector <FilterTreeWidgetItem *> filterTreeWidgets;
+  std::vector<FilterTreeWidgetItem*> filterTreeWidgets;
   std::vector<Filter*>* m_filters;
   int m_type;
+
 protected:
 
 public slots:

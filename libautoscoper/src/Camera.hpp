@@ -60,31 +60,31 @@ class Camera
 {
 public:
 
-    // Loads a mayaCam.csv file
+  // Loads a mayaCam.csv file
 
-    Camera(const std::string& mayacam);
+  Camera(const std::string& mayacam);
 
-    // Accessors
+  // Accessors
 
-    const std::string& mayacam() const { return mayacam_; }
+  const std::string& mayacam() const { return mayacam_; }
 
-    const CoordFrame& coord_frame() const { return coord_frame_; }
+  const CoordFrame& coord_frame() const { return coord_frame_; }
 
-    const double* image_plane() const { return image_plane_; }
+  const double* image_plane() const { return image_plane_; }
 
-    const double* viewport() const { return viewport_; }
+  const double* viewport() const { return viewport_; }
 
   const double* size() const { return size_; }
 
 private:
 
-    std::string mayacam_; // filename
+  std::string mayacam_; // filename
 
-    CoordFrame coord_frame_;
+  CoordFrame coord_frame_;
 
-    double image_plane_[12];
+  double image_plane_[12];
 
-    double viewport_[4];
+  double viewport_[4];
 
   double size_[2];
 
@@ -95,13 +95,12 @@ private:
   void loadVTKCamera(const std::string& filename);
 
   // helper functions
-  void calculateViewport(const double &cx, const double &cy, const double &fx, const double &fy);
-  void calculateImagePlane(const double &cx, const double &cy, const double &z);
+  void calculateViewport(const double& cx, const double& cy, const double& fx, const double& fy);
+  void calculateImagePlane(const double& cx, const double& cy, const double& z);
   void calculateFocalLength(const double& view_angle, double focal_lengths[2]);
   void calculateLookAtMatrix(const Vec3d& eye, const Vec3d& center, const Vec3d& up, double matrix[9]);
 
 };
-
 } // namespace xromm
 
 #endif // XROMM_CAMERA_HPP

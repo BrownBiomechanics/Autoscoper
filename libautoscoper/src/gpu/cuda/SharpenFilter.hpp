@@ -52,42 +52,41 @@ class SharpenFilter : public Filter
 {
 public:
 
-    SharpenFilter();
+  SharpenFilter();
 
-    virtual
-    ~SharpenFilter();
+  virtual
+  ~SharpenFilter();
 
-    // Apply the filter to the input image
+  // Apply the filter to the input image
 
-    virtual
-    void apply(const float* input, float* output, int width, int height);
+  virtual
+  void apply(const float* input, float* output, int width, int height);
 
-    // Accessors and mutators
+  // Accessors and mutators
 
-    float radius() const { return radius_; }
+  float radius() const { return radius_; }
 
-    void set_radius(float radius);
+  void set_radius(float radius);
 
-    float contrast() const { return contrast_; }
+  float contrast() const { return contrast_; }
 
-    void set_contrast(float contrast);
+  void set_contrast(float contrast);
 
-    float threshold() const {return threshold_; }
+  float threshold() const { return threshold_; }
 
-    void set_threshold(float threshold);
+  void set_threshold(float threshold);
 
 private:
 
-    float radius_;
-    float contrast_;
-    float threshold_;
+  float radius_;
+  float contrast_;
+  float threshold_;
 
-    float* sharpen_;
-    int filterSize_;
+  float* sharpen_;
+  int filterSize_;
 
-    void makeFilter();
+  void makeFilter();
 };
-
 } } // namespace xromm::cuda
 
 #endif // XROMM_GPU_SHARPEN_FILTER_HPP

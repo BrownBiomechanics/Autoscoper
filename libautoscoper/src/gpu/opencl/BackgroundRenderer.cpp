@@ -49,7 +49,6 @@
 
 namespace xromm { namespace gpu
 {
-
 #include "gpu/opencl/kernel/BackgroundRenderer.cl.h"
 
 static Program background_renderer_program_;
@@ -57,15 +56,15 @@ static Program background_renderer_program_;
 
 BackgroundRenderer::BackgroundRenderer() : image_(0)
 {
-    image_plane_[0] = -1.0f;
-    image_plane_[1] = -1.0f;
-    image_plane_[2] =  2.0f;
-    image_plane_[3] =  2.0f;
+  image_plane_[0] = -1.0f;
+  image_plane_[1] = -1.0f;
+  image_plane_[2] =  2.0f;
+  image_plane_[3] =  2.0f;
 
-    viewport_[0] = -1.0f;
-    viewport_[1] = -1.0f;
-    viewport_[2] =  2.0f;
-    viewport_[3] =  2.0f;
+  viewport_[0] = -1.0f;
+  viewport_[1] = -1.0f;
+  viewport_[2] =  2.0f;
+  viewport_[3] =  2.0f;
 }
 
 BackgroundRenderer::~BackgroundRenderer()
@@ -90,26 +89,26 @@ BackgroundRenderer::set_back(const void* data, size_t width, size_t height)
 void
 BackgroundRenderer::set_image_plane(float x, float y, float width, float height)
 {
-    image_plane_[0] = x;
-    image_plane_[1] = y;
-    image_plane_[2] = width;
-    image_plane_[3] = height;
+  image_plane_[0] = x;
+  image_plane_[1] = y;
+  image_plane_[2] = width;
+  image_plane_[3] = height;
 }
 
 void
 BackgroundRenderer::set_viewport(float x, float y, float width, float height)
 {
-    viewport_[0] = x;
-    viewport_[1] = y;
-    viewport_[2] = width;
-    viewport_[3] = height;
+  viewport_[0] = x;
+  viewport_[1] = y;
+  viewport_[2] = width;
+  viewport_[3] = height;
 }
 
 void
 BackgroundRenderer::render(const Buffer* buffer, unsigned width, unsigned height, float threshold) const
 {
   Kernel* kernel = background_renderer_program_.compile(
-        BackgroundRenderer_cl, "background_render_kernel");
+    BackgroundRenderer_cl, "background_render_kernel");
 
   kernel->addBufferArg(buffer);
   kernel->addArg(width);
@@ -125,13 +124,12 @@ BackgroundRenderer::render(const Buffer* buffer, unsigned width, unsigned height
   kernel->addArg(threshold),
   kernel->addImageArg(image_);
 
-    // Calculate the block and grid sizes.
+  // Calculate the block and grid sizes.
   kernel->block2d(BX, BY);
-    kernel->grid2d((width+BX-1)/BX, (height+BY-1)/BY);
+  kernel->grid2d((width + BX - 1) / BX, (height + BY - 1) / BY);
 
   kernel->launch();
 
   delete kernel;
 }
-
 } } // namespace xromm::opencl

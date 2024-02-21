@@ -50,40 +50,46 @@
 #include <iostream>
 
 
-FilterDockWidget::FilterDockWidget(QWidget *parent) :
-                    QDockWidget(parent),
-                    dock(new Ui::FilterDockWidget){
+FilterDockWidget::FilterDockWidget(QWidget* parent) :
+  QDockWidget(parent),
+  dock(new Ui::FilterDockWidget)
+{
   dock->setupUi(this);
 
-  mainwindow  = dynamic_cast <AutoscoperMainWindow *> ( parent);
+  mainwindow  = dynamic_cast<AutoscoperMainWindow*> ( parent);
 }
 
-FilterDockWidget::~FilterDockWidget(){
+FilterDockWidget::~FilterDockWidget()
+{
   delete dock;
 }
 
-void FilterDockWidget::clearTree(){
+void FilterDockWidget::clearTree()
+{
   int n = dock->treeWidget->topLevelItemCount();
-  while (n != 0)
-  {
+  while (n != 0) {
     n = dock->treeWidget->topLevelItemCount();
     dock->treeWidget->takeTopLevelItem(0);
   }
 }
 
-void FilterDockWidget::toggle_drrs(){
+void FilterDockWidget::toggle_drrs()
+{
   dock->treeWidget->toggle_drrs();
 }
 
-void FilterDockWidget::saveAllSettings(QString directory){
+void FilterDockWidget::saveAllSettings(QString directory)
+{
   dock->treeWidget->saveAllSettings(directory);
 }
 
-void FilterDockWidget::printAllSettings(std::ofstream& os) {
+void FilterDockWidget::printAllSettings(std::ofstream& os)
+{
   dock->treeWidget->printAllSettings(os);
 }
 
-void FilterDockWidget::loadAllSettings(QString directory){
+void FilterDockWidget::loadAllSettings(QString directory)
+{
   dock->treeWidget->loadAllSettings(directory);
 }
 
@@ -92,6 +98,7 @@ void FilterDockWidget::loadFilterSettings(int camera, QString filename)
   dock->treeWidget->loadFilterSettings(camera, filename);
 }
 
-void FilterDockWidget::addCamera(View * view){
+void FilterDockWidget::addCamera(View* view)
+{
   dock->treeWidget->addCamera(view);
 }

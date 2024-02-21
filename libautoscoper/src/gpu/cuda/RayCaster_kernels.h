@@ -46,10 +46,8 @@ struct cudaArray;
 
 namespace xromm
 {
-
 namespace gpu
 {
-
 void volume_viewport(float x, float y, float width, float height);
 
 void volume_render(cudaTextureObject_t tex, float* buffer,
@@ -59,9 +57,7 @@ void volume_render(cudaTextureObject_t tex, float* buffer,
                    float step,
                    float intensity,
                    float cutoff);
-
 } // namespace gpu
-
 } // namespace xromm
 
 #endif // XROMM_GPU_VOLUME_RENERER_KERNELS_H

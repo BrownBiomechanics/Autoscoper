@@ -54,6 +54,7 @@
 
 namespace xromm
 {
+
 // The trial class contains all of the state information for an autoscoper run.
 // It should eventually become an in-memory representation of the xromm
 // autoscoper file format. Currently that file format does not however hold the
@@ -63,85 +64,84 @@ class Trial
 {
 public:
 
-    // Loads a trial file
+  // Loads a trial file
 
-    Trial(const std::string& filename = "");
+  Trial(const std::string& filename = "");
 
-    void save(const std::string& filename);
+  void save(const std::string& filename);
 
-    std::vector<Camera> cameras;
-    std::vector<Video>  videos;
-    std::vector<Volume> volumes;
+  std::vector<Camera> cameras;
+  std::vector<Video> videos;
+  std::vector<Volume> volumes;
   std::vector<VolumeTransform> volumestransform;
 
-    // State information
-    int frame;
-    int num_frames;
+  // State information
+  int frame;
+  int num_frames;
   int current_volume;
   int num_volumes;
 
-    //Controls for the optimization process
-    int guess;
-    double offsets[6];
-    int render_width;
-    int render_height;
+  // Controls for the optimization process
+  int guess;
+  double offsets[6];
+  int render_width;
+  int render_height;
 
-  KeyCurve * getXCurve(int volumeID);
-  KeyCurve * getYCurve(int volumeID);
-  KeyCurve * getZCurve(int volumeID);
-  KeyCurve * getYawCurve(int volumeID);
-  KeyCurve * getPitchCurve(int volumeID);
-  KeyCurve * getRollCurve(int volumeID);
+  KeyCurve* getXCurve(int volumeID);
+  KeyCurve* getYCurve(int volumeID);
+  KeyCurve* getZCurve(int volumeID);
+  KeyCurve* getYawCurve(int volumeID);
+  KeyCurve* getPitchCurve(int volumeID);
+  KeyCurve* getRollCurve(int volumeID);
 
-  CoordFrame * getVolumeMatrix(int volumeID); // Pivot
+  CoordFrame* getVolumeMatrix(int volumeID); // Pivot
 
 private:
 
 
-    void parse(std::ifstream& file,
-               std::vector<int>& version,
-               std::vector<std::string>& mayaCams,
-               std::vector<std::string>& camRootDirs,
-               std::vector<std::string>& volumeFiles,
-               std::vector<std::string>& voxelSizes,
-               std::vector<std::string>& volumeFlips,
-               std::vector<std::string>& renderResolution,
-               std::vector<std::string>& optimizationOffsets);
+  void parse(std::ifstream& file,
+             std::vector<int>& version,
+             std::vector<std::string>& mayaCams,
+             std::vector<std::string>& camRootDirs,
+             std::vector<std::string>& volumeFiles,
+             std::vector<std::string>& voxelSizes,
+             std::vector<std::string>& volumeFlips,
+             std::vector<std::string>& renderResolution,
+             std::vector<std::string>& optimizationOffsets);
 
-    void parseVersion(const std::string& text, std::vector<int>& version);
+  void parseVersion(const std::string& text, std::vector<int>& version);
 
-    // Trim line endings from a string
-    void trimLineEndings(std::string& str);
+  // Trim line endings from a string
+  void trimLineEndings(std::string& str);
 
-    // Convert to path to Unix slashes and remove trailing slash if
-    // the path is more than a single /
-    static void convertToUnixSlashes(std::string& path);
+  // Convert to path to Unix slashes and remove trailing slash if
+  // the path is more than a single /
+  static void convertToUnixSlashes(std::string& path);
 
-    void convertToAbsolutePaths(std::vector<std::string>& paths, const std::string& basePath);
-    std::string toAbsolutePath(const std::string& path, const std::string& basePath);
+  void convertToAbsolutePaths(std::vector<std::string>& paths, const std::string& basePath);
+  std::string toAbsolutePath(const std::string& path, const std::string& basePath);
 
-    void convertToRelativePaths(std::vector<std::string>& paths, const std::string& basePath);
-    std::string toRelativePath(const std::string& path, const std::string& basePath);
+  void convertToRelativePaths(std::vector<std::string>& paths, const std::string& basePath);
+  std::string toRelativePath(const std::string& path, const std::string& basePath);
 
-    void validate(const std::vector<std::string>& mayaCams,
-                  const std::vector<std::string>& camRootDirs,
-                  const std::vector<std::string>& volumeFiles,
-                  const std::vector<std::string>& voxelSizes,
-                  const std::string& filename);
+  void validate(const std::vector<std::string>& mayaCams,
+                const std::vector<std::string>& camRootDirs,
+                const std::vector<std::string>& volumeFiles,
+                const std::vector<std::string>& voxelSizes,
+                const std::string& filename);
 
-    void loadCameras(std::vector<std::string>& mayaCams);
+  void loadCameras(std::vector<std::string>& mayaCams);
 
-    void loadVideos(std::vector<std::string>& camRootDirs);
+  void loadVideos(std::vector<std::string>& camRootDirs);
 
-    void loadVolumes(std::vector<std::string>& volumeFiles,
-                     std::vector<std::string>& voxelSizes,
-                     std::vector<std::string>& volumeFlips);
+  void loadVolumes(std::vector<std::string>& volumeFiles,
+                   std::vector<std::string>& voxelSizes,
+                   std::vector<std::string>& volumeFlips);
 
-    void loadOffsets(std::vector<std::string>& offsets);
+  void loadOffsets(std::vector<std::string>& offsets);
 
-    void loadRenderResolution(std::vector<std::string>& renderResolution);
+  void loadRenderResolution(std::vector<std::string>& renderResolution);
 };
-
 } // namespace xromm
 
 #endif // XROMM_TRIAL_HPP
