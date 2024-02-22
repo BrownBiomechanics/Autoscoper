@@ -67,9 +67,11 @@ public:
       // Setup the quadratic equation
 
       T a = lensq(direction);
+      // clang-format off
       T b = 2 * (origin.x * direction.x +
                  origin.y * direction.y +
                  origin.z * direction.z);
+      // clang-format on
       T c = lensq(origin) - radius * radius;
 
       // Solve the equation. We don't need to check the determinant

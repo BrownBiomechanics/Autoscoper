@@ -127,6 +127,7 @@ RadRenderer::render(float* buffer, size_t width, size_t height) const
 {
   cudaTextureObject_t tex = createTexureObjectFromArray(array_, cudaReadModeNormalizedFloat);
 
+  // clang-format off
   video_render(tex, buffer,
                (int)width,
                (int)height,
@@ -138,6 +139,7 @@ RadRenderer::render(float* buffer, size_t width, size_t height) const
                viewport_[1],
                viewport_[2],
                viewport_[3]);
+  // clang-format on
 
   cudaDestroyTextureObject(tex);
 }

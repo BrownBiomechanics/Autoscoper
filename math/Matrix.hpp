@@ -258,24 +258,30 @@ struct Mat2
 
   friend Mat2 operator+(const Mat2& m, const Mat2& n)
   {
+    // clang-format off
     return Mat2(m(0, 0) + n(0, 0), m(0, 1) + n(0, 1),
                 m(1, 0) + n(1, 0), m(1, 1) + n(1, 1));
+    // clang-format on
   }
 
   //! Returns the difference of the specified matricies
 
   friend Mat2 operator-(const Mat2& m, const Mat2& n)
   {
+    // clang-format off
     return Mat2(m(0, 0) - n(0, 0), m(0, 1) - n(0, 1),
                 m(1, 0) - n(1, 0), m(1, 1) - n(1, 1));
+    // clang-format on
   }
 
   //! Returns the product of the specified matricies
 
   friend Mat2 operator*(const Mat2& m, const Mat2& n)
   {
+    // clang-format off
     return Mat2(m(0, 0) * n(0, 0) + m(0, 1) * n(1, 0), m(0, 0) * n(0, 1) + m(0, 1) * n(1, 1),
                 m(1, 0) * n(0, 0) + m(1, 1) * n(1, 0), m(1, 0) * n(0, 1) + m(1, 1) * n(1, 1));
+    // clang-format on
   }
 
   //! Returns the product of the specified matrix and vector
@@ -375,16 +381,20 @@ struct Mat2
 
   friend bool operator==(const Mat2& m, const Mat2& n)
   {
+    // clang-format off
     return m(0, 0) == n(0, 0) && m(0, 1) == n(0, 1) &&
            m(1, 0) == n(1, 0) && m(1, 1) == n(1, 1);
+    // clang-format on
   }
 
   //! Returns true if the specified matrices are not equal and false otherwise
 
   friend bool operator!=(const Mat2& m, const Mat2& n)
   {
+    // clang-format off
     return m(0, 0) != n(0, 0) || m(0, 1) != n(0, 1) ||
            m(1, 0) != n(1, 0) || m(1, 1) != n(1, 1);
+    // clang-format on
   }
 
   //! Writes the elements of the specified matrix to the output stream
@@ -428,9 +438,11 @@ struct Mat3
 
   //! Constructs a matrix from the specified elements
 
+  // clang-format off
   Mat3(const T& m00, const T& m01, const T& m02,
        const T& m10, const T& m11, const T& m12,
        const T& m20, const T& m21, const T& m22)
+  // clang-format on
   {
     data[0][0] = m00;
     data[0][1] = m01;
@@ -547,9 +559,11 @@ struct Mat3
   {
     T sin_rad = sin(rad);
     T cos_rad = cos(rad);
+    // clang-format off
     return Mat3(T(1), T(0), T(0),
                 T(0), cos_rad, -sin_rad,
                 T(0), sin_rad, cos_rad);
+    // clang-format on
   }
 
   //! Returns a matrix representing a rotation around the y-axis
@@ -558,9 +572,11 @@ struct Mat3
   {
     T sin_rad = sin(rad);
     T cos_rad = cos(rad);
+    // clang-format off
     return Mat3( cos_rad, T(0), sin_rad,
                  T(0), T(1), T(0),
                  -sin_rad, T(0), cos_rad);
+    // clang-format on
   }
 
   //! Returns a matrix representing a rotation around the z-axis
@@ -569,9 +585,11 @@ struct Mat3
   {
     T sin_rad = sin(rad);
     T cos_rad = cos(rad);
+    // clang-format off
     return Mat3(cos_rad, -sin_rad, T(0),
                 sin_rad, cos_rad, T(0),
                 T(0), T(0), T(1));
+    // clang-format on
   }
 
   //! Returns a matrix representing a rotation around specified axis
@@ -587,6 +605,7 @@ struct Mat3
     T sin_rad = sin(rad);
     T cos_rad = cos(rad);
     T one_minus_cos_rad = T(1) - cos_rad;
+    // clang-format off
     return Mat3(u.x * u.x * one_minus_cos_rad + cos_rad,
                 u.x * u.y * one_minus_cos_rad - sin_rad * u.z,
                 u.x * u.z * one_minus_cos_rad + sin_rad * u.y,
@@ -596,6 +615,7 @@ struct Mat3
                 u.z * u.x * one_minus_cos_rad - sin_rad * u.y,
                 u.z * u.y * one_minus_cos_rad + sin_rad * u.x,
                 u.z * u.z * one_minus_cos_rad + cos_rad);
+    // clang-format on
   }
 
   //! Returns a matrix representing a rotation by the specified quaternion
@@ -618,9 +638,11 @@ struct Mat3
     T zz = p.z * p.z;
     T zw = p.z * p.w;
     T ww = p.w * p.w;
+    // clang-format off
     return Mat3(ww + xx - yy - zz, T(2) * (xy - zw), T(2) * (xz + yw),
                 T(2) * (xy + zw), ww - xx + yy - zz, T(2) * (yz - xw),
                 T(2) * (xz - yw), T(2) * (yz + xw), ww - xx - yy + zz);
+    // clang-format on
   }
 
   //! Swaps this matrix with the specified matrix
@@ -714,17 +736,21 @@ struct Mat3
 
   friend T det(const Mat3& m)
   {
+    // clang-format off
     return m(0, 0) * m(1, 1) * m(2, 2) - m(0, 0) * m(1, 2) * m(2, 1) - m(0, 1) * m(1, 0) * m(2, 2) +
            m(0, 1) * m(1, 2) * m(2, 0) + m(0, 2) * m(1, 0) * m(2, 1) - m(0, 2) * m(1, 1) * m(2, 0);
+    // clang-format on
   }
 
   //! Returns the transpose of the specified matrix
 
   friend Mat3 trans(const Mat3& m)
   {
+    // clang-format off
     return Mat3(m(0, 0), m(1, 0), m(2, 0),
                 m(0, 1), m(1, 1), m(2, 1),
                 m(0, 2), m(1, 2), m(2, 2));
+    // clang-format on
   }
 
   //! Returns the inverse of the specified matrix
@@ -741,6 +767,7 @@ struct Mat3
 
     T det = m(0, 0) * minor_b - m(0, 1) * minor_d + m(0, 2) * minor_F;
 
+    // clang-format off
     return Mat3(minor_b / det,
                 (m(0, 2) * m(2, 1) - m(0, 1) * m(2, 2)) / det,
                 (m(0, 1) * m(1, 2) - m(0, 2) * m(1, 1)) / det,
@@ -750,6 +777,7 @@ struct Mat3
                 minor_F / det,
                 (m(0, 1) * m(2, 0) - m(0, 0) * m(2, 1)) / det,
                 (m(0, 0) * m(1, 1) - m(0, 1) * m(1, 0)) / det);
+    // clang-format on
   }
 
   //! Returns a copy of the specified matrix
@@ -763,33 +791,40 @@ struct Mat3
 
   friend Mat3 operator-(const Mat3& m)
   {
+    // clang-format off
     return Mat3(-m(0, 0), -m(0, 1), -m(0, 2),
                 -m(1, 0), -m(1, 1), -m(1, 2),
                 -m(2, 0), -m(2, 1), -m(2, 2));
+    // clang-format on
   }
 
   //! Returns the sum of the specified matricies
 
   friend Mat3 operator+(const Mat3& m, const Mat3& n)
   {
+    // clang-format off
     return Mat3(m(0, 0) + n(0, 0), m(0, 1) + n(0, 1), m(0, 2) + n(0, 2),
                 m(1, 0) + n(1, 0), m(1, 1) + n(1, 1), m(1, 2) + n(1, 2),
                 m(2, 0) + n(2, 0), m(2, 1) + n(2, 1), m(2, 2) + n(2, 2));
+    // clang-format on
   }
 
   //! Returns the difference of the specified matricies
 
   friend Mat3 operator-(const Mat3& m, const Mat3& n)
   {
+    // clang-format off
     return Mat3(m(0, 0) - n(0, 0), m(0, 1) - n(0, 1), m(0, 2) - n(0, 2),
                 m(1, 0) - n(1, 0), m(1, 1) - n(1, 1), m(1, 2) - n(1, 2),
                 m(2, 0) - n(2, 0), m(2, 1) - n(2, 1), m(2, 2) - n(2, 2));
+    // clang-format on
   }
 
   //! Returns the product of the specified matricies
 
   friend Mat3 operator*(const Mat3& m, const Mat3& n)
   {
+    // clang-format off
     return Mat3(m(0, 0) * n(0, 0) + m(0, 1) * n(1, 0) + m(0, 2) * n(2, 0),
                 m(0, 0) * n(0, 1) + m(0, 1) * n(1, 1) + m(0, 2) * n(2, 1),
                 m(0, 0) * n(0, 2) + m(0, 1) * n(1, 2) + m(0, 2) * n(2, 2),
@@ -799,15 +834,18 @@ struct Mat3
                 m(2, 0) * n(0, 0) + m(2, 1) * n(1, 0) + m(2, 2) * n(2, 0),
                 m(2, 0) * n(0, 1) + m(2, 1) * n(1, 1) + m(2, 2) * n(2, 1),
                 m(2, 0) * n(0, 2) + m(2, 1) * n(1, 2) + m(2, 2) * n(2, 2));
+    // clang-format on
   }
 
   //! Returns the product of the specified matrix and vector
 
   friend Vec3<T> operator*(const Mat3& m, const Vec3<T>& v)
   {
+    // clang-format off
     return Vec3<T>(m(0, 0) * v.x + m(0, 1) * v.y + m(0, 2) * v.z,
                    m(1, 0) * v.x + m(1, 1) * v.y + m(1, 2) * v.z,
                    m(2, 0) * v.x + m(2, 1) * v.y + m(2, 2) * v.z);
+    // clang-format on
   }
 
   //! Returns the point transformed by the specified matrix
@@ -815,8 +853,10 @@ struct Mat3
   friend Vec2<T> mul_pt(const Mat3& m, const Vec2<T>& p)
   {
     T w = m(2, 0) * p.x + m(2, 1) * p.y + m(2, 2);
+    // clang-format off
     return Vec3<T>((m(0, 0) * p.x + m(0, 1) * p.y + m(0, 2)) / w,
                    (m(1, 0) * p.x + m(1, 1) * p.y + m(1, 2)) / w);
+    // clang-format on
   }
 
   //! Returns the vector transformed by the specified matrix
@@ -837,27 +877,33 @@ struct Mat3
 
   friend Mat3 operator*(const T& s, const Mat3& m)
   {
+    // clang-format off
     return Mat3(s * m(0, 0), s * m(0, 1), s * m(0, 2),
                 s * m(1, 0), s * m(1, 1), s * m(1, 2),
                 s * m(2, 0), s * m(2, 1), s * m(2, 2));
+    // clang-format on
   }
 
   //! Returns the product of the specified matrix and scalar
 
   friend Mat3 operator*(const Mat3& m, const T& s)
   {
+    // clang-format off
     return Mat3(m(0, 0) * s, m(0, 1) * s, m(0, 2) * s,
                 m(1, 0) * s, m(1, 1) * s, m(1, 2) * s,
                 m(2, 0) * s, m(2, 1) * s, m(2, 2) * s);
+    // clang-format on
   }
 
   //! Returns the quotient of the specified matrix and scalar
 
   friend Mat3 operator/(const Mat3& m, const T& s)
   {
+    // clang-format off
     return Mat3(m(0, 0) / s, m(0, 1) / s, m(0, 2) / s,
                 m(1, 0) / s, m(1, 1) / s, m(1, 2) / s,
                 m(2, 0) / s, m(2, 1) / s, m(2, 2) / s);
+    // clang-format on
   }
 
   //! Assigns a matrix to the sum of the specified matricies
@@ -942,18 +988,22 @@ struct Mat3
 
   friend bool operator==(const Mat3& m, const Mat3& n)
   {
+    // clang-format off
     return m(0, 0) == n(0, 0) && m(0, 1) == n(0, 1) && m(0, 2) == n(0, 2) &&
            m(1, 0) == n(1, 0) && m(1, 1) == n(1, 1) && m(1, 2) == n(1, 2) &&
            m(2, 0) == n(2, 0) && m(2, 1) == n(2, 1) && m(2, 2) == n(2, 2);
+    // clang-format on
   }
 
   //! Returns true if the specified matrices are not equal and false otherwise
 
   friend bool operator!=(const Mat3& m, const Mat3& n)
   {
+    // clang-format off
     return m(0, 0) != n(0, 0) || m(0, 1) != n(0, 1) || m(0, 2) != n(0, 2) ||
            m(1, 0) != n(1, 0) || m(1, 1) != n(1, 1) || m(1, 2) != n(1, 2) ||
            m(2, 0) != n(2, 0) || m(2, 1) != n(2, 1) || m(2, 2) != n(2, 2);
+    // clang-format on
   }
 
   //! Writes the elements of the specified matrix to the output stream
@@ -1008,10 +1058,12 @@ struct Mat4
 
   //! Constructs a matrix from the specified elements
 
+  // clang-format off
   Mat4(const T& m00, const T& m01, const T& m02, const T& m03,
        const T& m10, const T& m11, const T& m12, const T& m13,
        const T& m20, const T& m21, const T& m22, const T& m23,
        const T& m30, const T& m31, const T& m32, const T& m33)
+  // clang-format on
   {
     data[0][0] = m00;
     data[0][1] = m01;
@@ -1161,16 +1213,20 @@ struct Mat4
 
   static Mat4 scale(const T& sx, const T& sy, const T& sz, const T& sw)
   {
+    // clang-format off
     return Mat4(sx, T(0), T(0), T(0),
                 T(0), sy, T(0), T(0),
                 T(0), T(0), sz, T(0),
                 T(0), T(0), T(0), sw);
+    // clang-format on
   }
 
   //! Returns a perspective projection matrix
 
+  // clang-format off
   static Mat4 persp(const T& fovy, const T& aspect,
                     const T& near, const T& far)
+  // clang-format on
   {
     T top = near * tan(fovy / T(2));
     T right = aspect * top;
@@ -1179,18 +1235,22 @@ struct Mat4
 
   //! Returns a perspective projection matrix
 
+  // clang-format off
   static Mat4 frustum(const T& left, const T& right,
                       const T& bottom, const T& top,
                       const T& near, const T& far)
+  // clang-format on
   {
     T two_times_near = T(2) * near;
     T width = right - left;
     T height = top - bottom;
     T depth = far - near;
+    // clang-format off
     return Mat4(two_times_near / width, T(0), (right + left) / width, T(0),
                 T(0), two_times_near / height, (top + bottom) / height, T(0),
                 T(0), T(0), -(far + near) / depth, -T(2) * far * near / depth,
                 T(0), T(0), -T(1), T(0));
+    // clang-format on
   }
 
   //! Swaps this matrix with the specified matrix
@@ -1321,18 +1381,22 @@ struct Mat4
     T minor_k = m(0, 2) * m(1, 3) - m(0, 3) * m(1, 2);
     T minor_l = m(2, 0) * m(3, 1) - m(2, 1) * m(3, 0);
 
+    // clang-format off
     return minor_a * minor_b - minor_c * minor_d + minor_e * minor_F +
            minor_g * minor_h - minor_i * minor_j + minor_k * minor_l;
+    // clang-format on
   }
 
   //! Returns the transpose of the specified matrix
 
   friend Mat4 trans(const Mat4& m)
   {
+    // clang-format off
     return Mat4(m(0, 0), m(1, 0), m(2, 0), m(3, 0),
                 m(0, 1), m(1, 1), m(2, 1), m(3, 1),
                 m(0, 2), m(1, 2), m(2, 2), m(3, 2),
                 m(0, 3), m(1, 3), m(2, 3), m(3, 3));
+    // clang-format on
   }
 
   //! Returns the inverse of the specified matrix
@@ -1362,6 +1426,7 @@ struct Mat4
     T minor_k = m(0, 2) * m(1, 3) - m(0, 3) * m(1, 2);
     T minor_l = m(2, 0) * m(3, 1) - m(2, 1) * m(3, 0);
 
+    // clang-format off
     T det = minor_a * minor_b - minor_c * minor_d + minor_e * minor_F +
             minor_g * minor_h - minor_i * minor_j + minor_k * minor_l;
 
@@ -1381,6 +1446,7 @@ struct Mat4
                 ( m(0, 0) * minor_F - m(0, 1) * minor_j + m(0, 2) * minor_l) / det,
                 (-m(3, 0) * minor_g + m(3, 1) * minor_c - m(3, 2) * minor_a) / det,
                 ( m(2, 0) * minor_g - m(2, 1) * minor_c + m(2, 2) * minor_a) / det);
+    // clang-format on
   }
 
   //! Returns a copy of the specified matrix
@@ -1394,36 +1460,43 @@ struct Mat4
 
   friend Mat4 operator-(const Mat4& m)
   {
+    // clang-format off
     return Mat4(-m(0, 0), -m(0, 1), -m(0, 2), -m(0, 3),
                 -m(1, 0), -m(1, 1), -m(1, 2), -m(1, 3),
                 -m(2, 0), -m(2, 1), -m(2, 2), -m(2, 3),
                 -m(3, 0), -m(3, 1), -m(3, 2), -m(3, 3));
+    // clang-format on
   }
 
   //! Returns the sum of the specified matricies
 
   friend Mat4 operator+(const Mat4& m, const Mat4& n)
   {
+    // clang-format off
     return Mat4(m(0, 0) + n(0, 0), m(0, 1) + n(0, 1), m(0, 2) + n(0, 2), m(0, 3) + n(0, 3),
                 m(1, 0) + n(1, 0), m(1, 1) + n(1, 1), m(1, 2) + n(1, 2), m(1, 3) + n(1, 3),
                 m(2, 0) + n(2, 0), m(2, 1) + n(2, 1), m(2, 2) + n(2, 2), m(2, 3) + n(2, 3),
                 m(3, 0) + n(3, 0), m(3, 1) + n(3, 1), m(3, 2) + n(3, 2), m(3, 3) + n(3, 3));
+    // clang-format on
   }
 
   //! Returns the difference of the specified matricies
 
   friend Mat4 operator-(const Mat4& m, const Mat4& n)
   {
+    // clang-format off
     return Mat4(m(0, 0) - n(0, 0), m(0, 1) - n(0, 1), m(0, 2) - n(0, 2), m(0, 3) - n(0, 3),
                 m(1, 0) - n(1, 0), m(1, 1) - n(1, 1), m(1, 2) - n(1, 2), m(1, 3) - n(1, 3),
                 m(2, 0) - n(2, 0), m(2, 1) - n(2, 1), m(2, 2) - n(2, 2), m(2, 3) - n(2, 3),
                 m(3, 0) - n(3, 0), m(3, 1) - n(3, 1), m(3, 2) - n(3, 2), m(3, 3) - n(3, 3));
+    // clang-format on
   }
 
   //! Returns the product of the specified matricies
 
   friend Mat4 operator*(const Mat4& m, const Mat4& n)
   {
+    // clang-format off
     return Mat4(m(0, 0) * n(0, 0) + m(0, 1) * n(1, 0) + m(0, 2) * n(2, 0) + m(0, 3) * n(3, 0),
                 m(0, 0) * n(0, 1) + m(0, 1) * n(1, 1) + m(0, 2) * n(2, 1) + m(0, 3) * n(3, 1),
                 m(0, 0) * n(0, 2) + m(0, 1) * n(1, 2) + m(0, 2) * n(2, 2) + m(0, 3) * n(3, 2),
@@ -1440,16 +1513,19 @@ struct Mat4
                 m(3, 0) * n(0, 1) + m(3, 1) * n(1, 1) + m(3, 2) * n(2, 1) + m(3, 3) * n(3, 1),
                 m(3, 0) * n(0, 2) + m(3, 1) * n(1, 2) + m(3, 2) * n(2, 2) + m(3, 3) * n(3, 2),
                 m(3, 0) * n(0, 3) + m(3, 1) * n(1, 3) + m(3, 2) * n(2, 3) + m(3, 3) * n(3, 3));
+    // clang-format on
   }
 
   //! Returns the product of the specified matrix and vector
 
   friend Vec4<T> operator*(const Mat4& m, const Vec4<T>& v)
   {
+    // clang-format off
     return Vec4<T>(m(0, 0) * v.x + m(0, 1) * v.y + m(0, 2) * v.z + m(0, 3) * v.w,
                    m(1, 0) * v.x + m(1, 1) * v.y + m(1, 2) * v.z + m(1, 3) * v.w,
                    m(2, 0) * v.x + m(2, 1) * v.y + m(2, 2) * v.z + m(2, 3) * v.w,
                    m(3, 0) * v.x + m(3, 1) * v.y + m(3, 2) * v.z + m(3, 3) * v.w);
+    // clang-format on
   }
 
   //! Returns the point transformed by the specified matrix
@@ -1457,18 +1533,22 @@ struct Mat4
   friend Vec3<T> mul_pt(const Mat4& m, const Vec3<T>& p)
   {
     T w = m(3, 0) * p.x + m(3, 1) * p.y + m(3, 2) * p.z + m(3, 3);
+    // clang-format off
     return Vec3<T>((m(0, 0) * p.x + m(0, 1) * p.y + m(0, 2) * p.z + m(0, 3)) / w,
                    (m(1, 0) * p.x + m(1, 1) * p.y + m(1, 2) * p.z + m(1, 3)) / w,
                    (m(2, 0) * p.x + m(2, 1) * p.y + m(2, 2) * p.z + m(2, 3)) / w);
+    // clang-format on
   }
 
   //! Returns the vector transformed by the specified matrix
 
   friend Vec3<T> mul_vec(const Mat4& m, const Vec3<T>& v)
   {
+    // clang-format off
     return Vec3<T>(m(0, 0) * v.x + m(0, 1) * v.y + m(0, 2) * v.z,
                    m(1, 0) * v.x + m(1, 1) * v.y + m(1, 2) * v.z,
                    m(2, 0) * v.x + m(2, 1) * v.y + m(2, 2) * v.z);
+    // clang-format on
   }
 
   //! Returns the result of m*inv(n)
@@ -1482,30 +1562,36 @@ struct Mat4
 
   friend Mat4 operator*(const T& s, const Mat4& m)
   {
+    // clang-format off
     return Mat4(s * m(0, 0), s * m(0, 1), s * m(0, 2), s * m(0, 3),
                 s * m(1, 0), s * m(1, 1), s * m(1, 2), s * m(1, 3),
                 s * m(2, 0), s * m(2, 1), s * m(2, 2), s * m(2, 3),
                 s * m(3, 0), s * m(3, 1), s * m(3, 2), s * m(3, 3));
+    // clang-format on
   }
 
   //! Returns the product of the specified matrix and scalar
 
   friend Mat4 operator*(const Mat4& m, const T& s)
   {
+    // clang-format off
     return Mat4(m(0, 0) * s, m(0, 1) * s, m(0, 2) * s, m(0, 3) * s,
                 m(1, 0) * s, m(1, 1) * s, m(1, 2) * s, m(1, 3) * s,
                 m(2, 0) * s, m(2, 1) * s, m(2, 2) * s, m(2, 3) * s,
                 m(3, 0) * s, m(3, 1) * s, m(3, 2) * s, m(3, 3) * s);
+    // clang-format on
   }
 
   //! Returns the quotient of the specified matrix and scalar
 
   friend Mat4 operator/(const Mat4& m, const T& s)
   {
+    // clang-format off
     return Mat4(m(0, 0) / s, m(0, 1) / s, m(0, 2) / s, m(0, 3) / s,
                 m(1, 0) / s, m(1, 1) / s, m(1, 2) / s, m(1, 3) / s,
                 m(2, 0) / s, m(2, 1) / s, m(2, 2) / s, m(2, 3) / s,
                 m(3, 0) / s, m(3, 1) / s, m(3, 2) / s, m(3, 3) / s);
+    // clang-format on
   }
 
   //! Assigns a matrix to the sum of the specified matricies
@@ -1618,24 +1704,28 @@ struct Mat4
 
   friend bool operator==(const Mat4& m, const Mat4& n)
   {
+    // clang-format off
     return m(0, 0) == n(0, 0) && m(0, 1) == n(0, 1) && m(0, 2) == n(0, 2) &&
            m(0, 3) == n(0, 3) && m(1, 0) == n(1, 0) && m(1, 1) == n(1, 1) &&
            m(1, 2) == n(1, 2) && m(1, 3) == n(1, 3) && m(2, 0) == n(2, 0) &&
            m(2, 1) == n(2, 1) && m(2, 2) == n(2, 2) && m(2, 3) == n(2, 3) &&
            m(3, 0) == n(3, 0) && m(3, 1) == n(3, 1) && m(3, 2) == n(3, 2) &&
            m(3, 3) == n(3, 3);
+    // clang-format on
   }
 
   //! Returns true if the specified matrices are not equal and false otherwise
 
   friend bool operator!=(const Mat4& m, const Mat4& n)
   {
+    // clang-format off
     return m(0, 0) != n(0, 0) || m(0, 1) != n(0, 1) || m(0, 2) != n(0, 2) ||
            m(0, 3) != n(0, 3) || m(1, 0) != n(1, 0) || m(1, 1) != n(1, 1) ||
            m(1, 2) != n(1, 2) || m(1, 3) != n(1, 3) || m(2, 0) != n(2, 0) ||
            m(2, 1) != n(2, 1) || m(2, 2) != n(2, 2) || m(2, 3) != n(2, 3) ||
            m(3, 0) != n(3, 0) || m(3, 1) != n(3, 1) || m(3, 2) != n(3, 2) ||
            m(3, 3) != n(3, 3);
+    // clang-format on
   }
 
   //! Writes the elements of the specified matrix to the output stream

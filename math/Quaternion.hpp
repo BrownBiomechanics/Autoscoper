@@ -87,10 +87,12 @@ struct Quat
     }
 
     T sin_rad_over_len = sin(rad / T(2)) / sqrt(_lensq);
+    // clang-format off
     return Quat(cos(rad / T(2)),
                 sin_rad_over_len * v.x,
                 sin_rad_over_len * v.y,
                 sin_rad_over_len * v.z);
+    // clang-format on
   }
 
   //! Returns a quaternion representing a rotation by the specified matrix
@@ -107,20 +109,26 @@ struct Quat
     }
 
     if (i == 0) {
+      // clang-format off
       return Quat((m(2, 1) - m(1, 2)) / r,
                   r / T(4),
                   (m(0, 1) + m(1, 0)) / r,
                   (m(2, 0) + m(0, 2)) / r);
+      // clang-format on
     } else if (i == 1) {
+      // clang-format off
       return Quat((m(0, 2) - m(2, 0)) / r,
                   (m(0, 1) + m(1, 0)) / r,
                   r / T(4),
                   (m(1, 2) + m(2, 1)) / r);
+      // clang-format on
     } else {
+      // clang-format off
       return Quat((m(1, 0) - m(0, 1)) / r,
                   (m(2, 0) + m(0, 2)) / r,
                   (m(1, 2) + m(2, 1)) / r,
                   r / T(4));
+      // clang-format on
     }
   }
 

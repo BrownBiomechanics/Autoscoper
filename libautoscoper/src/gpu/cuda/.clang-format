@@ -1,0 +1,25 @@
+---
+BasedOnStyle: InheritParentConfig
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  # Mozilla-style defaults
+  AfterCaseLabel: false
+  AfterClass: true
+  AfterControlStatement: Never
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: false
+  AfterObjCDeclaration: false
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: false
+  BeforeElse: false
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: true
+  # Mozilla-style overides
+  AfterExternBlock: false

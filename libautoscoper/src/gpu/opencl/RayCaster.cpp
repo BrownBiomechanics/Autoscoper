@@ -98,6 +98,7 @@ RayCaster::setInvModelView(const double* invModelView)
   const float* invScale = volumeDescription_->invScale();
   const float* invTrans = volumeDescription_->invTrans();
 
+  // clang-format off
   invModelView_[0]  = invModelView[0] * invScale[0] +
                       invModelView[12] * invTrans[0];
   invModelView_[1]  = invModelView[1] * invScale[0] +
@@ -126,13 +127,16 @@ RayCaster::setInvModelView(const double* invModelView)
   invModelView_[13] = invModelView[13];
   invModelView_[14] = invModelView[14];
   invModelView_[15] = invModelView[15];
+  // clang-format on
 
 #if DEBUG
+  // clang-format off
   fprintf(stdout, "RayCaster: new invModelView:\n %f, %f, %f, %f\n %f, %f, %f, %f\n %f, %f, %f, %f\n %f, %f, %f, %f\n",
           invModelView[0], invModelView[1], invModelView[2], invModelView[3],
           invModelView[4], invModelView[5], invModelView[6], invModelView[7],
           invModelView[8], invModelView[9], invModelView[10], invModelView[11],
           invModelView[12], invModelView[13], invModelView[14], invModelView[15]);
+  // clang-format on
 #endif
 }
 
