@@ -45,25 +45,12 @@
 #include <thrust/fill.h>
 
 // Define the cuda compositiing kernel
-__global__
-void composite_kernel(float* src1,
-                      float* src2,
-                      float* src3,
-                      float* src4,
-                      float* dest,
-                      size_t width,
-                      size_t height);
-
+__global__ void
+composite_kernel(float* src1, float* src2, float* src3, float* src4, float* dest, size_t width, size_t height);
 
 namespace xromm {
 namespace gpu {
-void composite(float* src1,
-               float* src2,
-               float* src3,
-               float* src4,
-               float* dest,
-               size_t width,
-               size_t height)
+void composite(float* src1, float* src2, float* src3, float* src4, float* dest, size_t width, size_t height)
 {
   // Calculate the block and grid sizes.
   dim3 blockDim(32, 32);
@@ -71,26 +58,19 @@ void composite(float* src1,
                ((unsigned int)height + blockDim.y - 1) / blockDim.y);
 
   // Call the kernel
-  composite_kernel << < gridDim, blockDim >> > (src1, src2, src3, src4, dest, width, height);
+  composite_kernel<<<gridDim, blockDim>>>(src1, src2, src3, src4, dest, width, height);
 }
 
 void fill(float* src1, unsigned int size, float val)
 {
   thrust::device_ptr<float> dev_ptr(src1);
   thrust::fill(dev_ptr, dev_ptr + size, 1.0);
-
 }
 } // namespace gpu
 } // namespace xromm
 
-__global__
-void composite_kernel(float* src1,
-                      float* src2,
-                      float* src3,
-                      float* src4,
-                      float* dest,
-                      size_t width,
-                      size_t height)
+__global__ void
+composite_kernel(float* src1, float* src2, float* src3, float* src4, float* dest, size_t width, size_t height)
 {
   int x = blockIdx.x * blockDim.x + threadIdx.x;
   int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -106,4 +86,3 @@ void composite_kernel(float* src1,
   dest[3 * (y * width + x) + 1] = multi * (src1[y * width + x] / 2.0f + src2[y * width + x] / 2.0f);
   dest[3 * (y * width + x) + 2] = src2[y * width + x];
 }
-

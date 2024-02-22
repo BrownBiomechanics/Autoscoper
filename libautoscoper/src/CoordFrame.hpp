@@ -44,8 +44,7 @@
 
 #include <string>
 
-namespace xromm
-{
+namespace xromm {
 
 // Class representing a coordinate transformation
 // Based on the G3D Coordinate Frame class
@@ -54,7 +53,6 @@ namespace xromm
 class CoordFrame
 {
 public:
-
   CoordFrame();
 
   CoordFrame(const double* rotation, const double* translation);
@@ -112,7 +110,6 @@ public:
   void from_string(std::string str);
 
 private:
-
   double rotation_[9];
 
   double translation_[3];
@@ -121,6 +118,6 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& os, const CoordFrame& frame);
-} // namespace XROMM
+} // namespace xromm
 
 #endif // XROMM_COORD_FRAME_HPP

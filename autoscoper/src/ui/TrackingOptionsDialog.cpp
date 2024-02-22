@@ -48,9 +48,9 @@
 #include "Trial.hpp"
 #include "Manip3D.hpp"
 
-TrackingOptionsDialog::TrackingOptionsDialog(QWidget* parent) :
-  QDialog(parent),
-  diag(new Ui::TrackingOptionsDialog)
+TrackingOptionsDialog::TrackingOptionsDialog(QWidget* parent)
+  : QDialog(parent)
+  , diag(new Ui::TrackingOptionsDialog)
 {
 
   diag->setupUi(this);
@@ -86,11 +86,10 @@ TrackingOptionsDialog::~TrackingOptionsDialog()
   delete diag;
 }
 
-
 void TrackingOptionsDialog::frame_optimize()
 {
   frame_optimizing = true;
-  AutoscoperMainWindow* mainwindow  = dynamic_cast<AutoscoperMainWindow*> ( parent());
+  AutoscoperMainWindow* mainwindow = dynamic_cast<AutoscoperMainWindow*>(parent());
 
   if (!mainwindow || frame == -1) {
 
@@ -121,7 +120,6 @@ void TrackingOptionsDialog::frame_optimize()
       return;
     }
 
-
     // Read random search limits and iterations
     max_iter = diag->spinBox_max_iter->value();
     min_lim = diag->spinBox_min_lim->value();
@@ -136,7 +134,8 @@ void TrackingOptionsDialog::frame_optimize()
      */
 
     // Optimization
-    mainwindow->getTracker()->optimize(frame, d_frame, num_repeats, opt_method, max_iter, min_lim, max_lim, cf_model, max_stall_iter);
+    mainwindow->getTracker()->optimize(
+      frame, d_frame, num_repeats, opt_method, max_iter, min_lim, max_lim, cf_model, max_stall_iter);
 
     mainwindow->update_graph_min_max(mainwindow->getPosition_graph(), mainwindow->getTracker()->trial()->frame);
 
@@ -175,13 +174,14 @@ void TrackingOptionsDialog::frame_optimize()
 void TrackingOptionsDialog::trackCurrent()
 {
 
-  AutoscoperMainWindow* mainwindow = dynamic_cast<AutoscoperMainWindow*> (parent());
+  AutoscoperMainWindow* mainwindow = dynamic_cast<AutoscoperMainWindow*>(parent());
 
   mainwindow->getTracker()->trial()->guess = 0;
 
   curFrame = mainwindow->getCurrentFrame(); // Read Current Frame
 
-  if (!mainwindow) return;
+  if (!mainwindow)
+    return;
 
   if (!frame_optimizing) {
     doExit = false;
@@ -190,7 +190,6 @@ void TrackingOptionsDialog::trackCurrent()
     frame = from_frame;
     frame_optimize();
   }
-
 }
 
 void TrackingOptionsDialog::setRange(int from, int to, int max)
@@ -207,8 +206,9 @@ void TrackingOptionsDialog::setRange(int from, int to, int max)
 void TrackingOptionsDialog::on_pushButton_OK_clicked(bool checked)
 {
   if (!inActive) {
-    AutoscoperMainWindow* mainwindow  = dynamic_cast<AutoscoperMainWindow*> ( parent());
-    if (!mainwindow)return;
+    AutoscoperMainWindow* mainwindow = dynamic_cast<AutoscoperMainWindow*>(parent());
+    if (!mainwindow)
+      return;
 
     from_frame = diag->spinBox_FrameStart->value();
     to_frame = diag->spinBox_FrameEnd->value();
@@ -232,14 +232,15 @@ void TrackingOptionsDialog::on_pushButton_OK_clicked(bool checked)
       cf_model = 1; // runs implant
     }
 
-
     bool reverse = diag->checkBox_Reverse->checkState() != Qt::Unchecked;
 
     mainwindow->push_state();
 
     if (mainwindow->getTracker()->trial()->guess == 0) {
       double xyzypr[6];
-      (CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform())) * (*mainwindow->getTracker()->trial()->getVolumeMatrix(-1))).to_xyzypr(xyzypr);
+      (CoordFrame::from_matrix(trans(mainwindow->getManipulator()->transform()))
+       * (*mainwindow->getTracker()->trial()->getVolumeMatrix(-1)))
+        .to_xyzypr(xyzypr);
 
       mainwindow->getTracker()->trial()->getXCurve(-1)->insert(from_frame, xyzypr[0]);
       mainwindow->getTracker()->trial()->getYCurve(-1)->insert(from_frame, xyzypr[1]);
@@ -273,7 +274,8 @@ void TrackingOptionsDialog::on_pushButton_Cancel_clicked(bool checked)
 {
   if (!inActive) {
     doExit = true;
-    if (!frame_optimizing)frame_optimize();
+    if (!frame_optimizing)
+      frame_optimize();
     frame_optimizing = false;
   } else {
     this->reject();
@@ -282,25 +284,25 @@ void TrackingOptionsDialog::on_pushButton_Cancel_clicked(bool checked)
 
 void TrackingOptionsDialog::on_radioButton_CurrentFrame_clicked(bool checked)
 {
-  AutoscoperMainWindow* mainwindow  = dynamic_cast<AutoscoperMainWindow*> ( parent());
+  AutoscoperMainWindow* mainwindow = dynamic_cast<AutoscoperMainWindow*>(parent());
 
   mainwindow->getTracker()->trial()->guess = 0;
 }
 void TrackingOptionsDialog::on_radioButton_PreviousFrame_clicked(bool checked)
 {
-  AutoscoperMainWindow* mainwindow  = dynamic_cast<AutoscoperMainWindow*> ( parent());
+  AutoscoperMainWindow* mainwindow = dynamic_cast<AutoscoperMainWindow*>(parent());
 
   mainwindow->getTracker()->trial()->guess = 1;
 }
 void TrackingOptionsDialog::on_radioButton_LinearExtrapolation_clicked(bool checked)
 {
-  AutoscoperMainWindow* mainwindow  = dynamic_cast<AutoscoperMainWindow*> ( parent());
+  AutoscoperMainWindow* mainwindow = dynamic_cast<AutoscoperMainWindow*>(parent());
 
   mainwindow->getTracker()->trial()->guess = 2;
 }
 void TrackingOptionsDialog::on_radioButton_SplineInterpolation_clicked(bool checked)
 {
-  AutoscoperMainWindow* mainwindow  = dynamic_cast<AutoscoperMainWindow*> ( parent());
+  AutoscoperMainWindow* mainwindow = dynamic_cast<AutoscoperMainWindow*>(parent());
 
   mainwindow->getTracker()->trial()->guess = 3;
 }

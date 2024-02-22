@@ -39,17 +39,15 @@
 /// \file VolumeDescription.cpp
 /// \author Andy Loomis, Mark Howison, Benjamin Knorlein
 
-
-
 #include <iostream>
 #include <limits>
 #include <fstream>
 #include <vector>
 
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
-#include <cuda.h>
-#include <cutil_inline.h>
-#include <cutil_math.h>
+#  include <cuda.h>
+#  include <cutil_inline.h>
+#  include <cutil_math.h>
 #endif
 
 #include "Volume.hpp"
@@ -59,14 +57,7 @@
 #undef min
 
 template <class T>
-void flipVolume(const T* data,
-                T* dest,
-                int width,
-                int height,
-                int depth,
-                bool flipX,
-                bool flipY,
-                bool flipZ)
+void flipVolume(const T* data, T* dest, int width, int height, int depth, bool flipX, bool flipY, bool flipZ)
 {
   int x, y, z;
   for (int k = 0; k < depth; k++) {
@@ -83,12 +74,7 @@ void flipVolume(const T* data,
 }
 
 template <class T>
-void cropVolume(const T* data,
-                int width,
-                int height,
-                int depth,
-                int* min,
-                int* max)
+void cropVolume(const T* data, int width, int height, int depth, int* min, int* max)
 {
   min[0] = width;
   min[1] = height;
@@ -161,10 +147,12 @@ void copyVolume(T* dest,
   }
 }
 
-namespace xromm { namespace gpu
-{
+namespace xromm {
+namespace gpu {
 VolumeDescription::VolumeDescription(const Volume& volume)
-  : minValue_(0.0f), maxValue_(1.0f), image_(0)
+  : minValue_(0.0f)
+  , maxValue_(1.0f)
+  , image_(0)
 {
   // Crop the volume
   int min[3], max[3];
@@ -179,15 +167,10 @@ VolumeDescription::VolumeDescription(const Volume& volume)
                  (int)volume.depth(),
                  (bool)volume.flipX(),
                  (bool)volume.flipY(),
-                 (bool)volume.flipZ()
-                 );
+                 (bool)volume.flipZ());
 
-      cropVolume((unsigned char*)&data_flipped[0],
-                 (int)volume.width(),
-                 (int)volume.height(),
-                 (int)volume.depth(),
-                 min,
-                 max);
+      cropVolume(
+        (unsigned char*)&data_flipped[0], (int)volume.width(), (int)volume.height(), (int)volume.depth(), min, max);
       break;
     }
     case 16: {
@@ -198,19 +181,13 @@ VolumeDescription::VolumeDescription(const Volume& volume)
                  (int)volume.depth(),
                  (bool)volume.flipX(),
                  (bool)volume.flipY(),
-                 (bool)volume.flipZ()
-                 );
-      cropVolume((unsigned short*)&data_flipped[0],
-                 (int)volume.width(),
-                 (int)volume.height(),
-                 (int)volume.depth(),
-                 min,
-                 max);
+                 (bool)volume.flipZ());
+      cropVolume(
+        (unsigned short*)&data_flipped[0], (int)volume.width(), (int)volume.height(), (int)volume.depth(), min, max);
       break;
     }
     default: {
-      std::cerr << "VolumeDescription(): Unsupported bit-depth "
-                << volume.bps() << std::endl;
+      std::cerr << "VolumeDescription(): Unsupported bit-depth " << volume.bps() << std::endl;
       exit(0);
     }
   }
@@ -256,8 +233,7 @@ VolumeDescription::VolumeDescription(const Volume& volume)
       break;
     }
     default:
-      std::cerr << "VolumeDescription(): Unsupported bit-depth "
-                << volume.bps() << std::endl;
+      std::cerr << "VolumeDescription(): Unsupported bit-depth " << volume.bps() << std::endl;
       exit(0);
   }
 
@@ -283,11 +259,14 @@ VolumeDescription::VolumeDescription(const Volume& volume)
   // Create a 3D array.
   cudaChannelFormatDesc desc;
   switch (volume.bps()) {
-    case 8: desc = cudaCreateChannelDesc<unsigned char>(); break;
-    case 16: desc = cudaCreateChannelDesc<unsigned short>(); break;
+    case 8:
+      desc = cudaCreateChannelDesc<unsigned char>();
+      break;
+    case 16:
+      desc = cudaCreateChannelDesc<unsigned short>();
+      break;
     default:
-      std::cerr << "VolumeDescription(): Unsupported bit-depth "
-                << volume.bps() << std::endl;
+      std::cerr << "VolumeDescription(): Unsupported bit-depth " << volume.bps() << std::endl;
       exit(0);
   }
   cudaExtent extent = make_cudaExtent(dim[0], dim[1], dim[2]);
@@ -295,25 +274,27 @@ VolumeDescription::VolumeDescription(const Volume& volume)
 
   // Copy volume to 3D array.
   cudaMemcpy3DParms copyParams = { 0 };
-  copyParams.srcPtr = make_cudaPitchedPtr(&data[0],
-                                          extent.width * (volume.bps() / 8),
-                                          extent.width, extent.height);
+  copyParams.srcPtr = make_cudaPitchedPtr(&data[0], extent.width * (volume.bps() / 8), extent.width, extent.height);
   copyParams.dstArray = image_;
   copyParams.extent = extent;
   copyParams.kind = cudaMemcpyHostToDevice;
   cutilSafeCall(cudaMemcpy3D(&copyParams));
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-  if (image_) delete image_;
+  if (image_)
+    delete image_;
 
   // Create a 3D array.
   cl_image_format format;
   format.image_channel_order = CL_R;
   switch (volume.bps()) {
-    case 8:  format.image_channel_data_type = CL_UNORM_INT8; break;
-    case 16: format.image_channel_data_type = CL_UNORM_INT16; break;
+    case 8:
+      format.image_channel_data_type = CL_UNORM_INT8;
+      break;
+    case 16:
+      format.image_channel_data_type = CL_UNORM_INT16;
+      break;
     default:
-      std::cerr << "VolumeDescription(): unsupported bit depth "
-                << volume.bps() << std::endl;
+      std::cerr << "VolumeDescription(): unsupported bit depth " << volume.bps() << std::endl;
       return;
   }
 
@@ -328,8 +309,9 @@ VolumeDescription::~VolumeDescription()
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   cutilSafeCall(cudaFreeArray(image_));
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-  if (image_) delete image_;
+  if (image_)
+    delete image_;
 #endif
 }
-} } // namespace xromm::opencl
-
+} // namespace gpu
+} // namespace xromm

@@ -45,35 +45,59 @@
 
 //////// Image Rendering Kernel ////////
 
-__global__
-void background_render_kernel(cudaTextureObject_t tex, float* output, int width, int height, float u0,
-                              float v0, float u1, float v1, float u2, float v2,
-                              float u3, float v3, float threshold);
+__global__ void background_render_kernel(cudaTextureObject_t tex,
+                                         float* output,
+                                         int width,
+                                         int height,
+                                         float u0,
+                                         float v0,
+                                         float u1,
+                                         float v1,
+                                         float u2,
+                                         float v2,
+                                         float u3,
+                                         float v3,
+                                         float threshold);
 
-namespace xromm
-{
-namespace gpu
-{
-void background_render(cudaTextureObject_t tex, float* output, int width, int height, float u0,
-                       float v0, float u1, float v1, float u2, float v2,
-                       float u3, float v3, float threshold)
+namespace xromm {
+namespace gpu {
+void background_render(cudaTextureObject_t tex,
+                       float* output,
+                       int width,
+                       int height,
+                       float u0,
+                       float v0,
+                       float u1,
+                       float v1,
+                       float u2,
+                       float v2,
+                       float u3,
+                       float v3,
+                       float threshold)
 {
   // Calculate the block and grid sizes.
   dim3 blockDim(32, 32);
-  dim3 gridDim((width + blockDim.x - 1) / blockDim.x,
-               (height + blockDim.y - 1) / blockDim.y);
+  dim3 gridDim((width + blockDim.x - 1) / blockDim.x, (height + blockDim.y - 1) / blockDim.y);
 
-  background_render_kernel << < gridDim, blockDim >> > (tex, output, width, height,
-                                                        u0, v0, u1, v1, u2, v2,
-                                                        u3, v3, threshold);
+  background_render_kernel<<<gridDim, blockDim>>>(
+    tex, output, width, height, u0, v0, u1, v1, u2, v2, u3, v3, threshold);
 }
 } // namespace gpu
 } // namespace xromm
 
-__global__
-void background_render_kernel(cudaTextureObject_t tex, float* output, int width, int height, float u0,
-                              float v0, float u1, float v1, float u2, float v2,
-                              float u3, float v3, float threshold)
+__global__ void background_render_kernel(cudaTextureObject_t tex,
+                                         float* output,
+                                         int width,
+                                         int height,
+                                         float u0,
+                                         float v0,
+                                         float u1,
+                                         float v1,
+                                         float u2,
+                                         float v2,
+                                         float u3,
+                                         float v3,
+                                         float threshold)
 {
   int x = blockIdx.x * blockDim.x + threadIdx.x;
   int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -94,4 +118,3 @@ void background_render_kernel(cudaTextureObject_t tex, float* output, int width,
     output[width * y + x] = (threshold <= tex2D<float>(tex, s, t)) ? 1.0f : 0.0f;
   }
 }
-

@@ -57,33 +57,38 @@ struct float3x4
 
 // Forward declarations
 
-__global__
-void cuda_volume_render_kernel(cudaTextureObject_t tex, float* output, size_t width, size_t height,
-                               float step, float intensity, float cutoff);
+__global__ void cuda_volume_render_kernel(cudaTextureObject_t tex,
+                                          float* output,
+                                          size_t width,
+                                          size_t height,
+                                          float step,
+                                          float intensity,
+                                          float cutoff);
 
 // Global variables
 
 static __constant__ float4 d_viewport;
 static __constant__ float3x4 d_invModelView;
 
-namespace xromm
-{
-namespace gpu
-{
+namespace xromm {
+namespace gpu {
 void volume_viewport(float x, float y, float width, float height)
 {
   float4 viewport = make_float4(x, y, width, height);
   cutilSafeCall(cudaMemcpyToSymbol(d_viewport, &viewport, sizeof(float4)));
 }
 
-void volume_render(cudaTextureObject_t tex, float* buffer, size_t width, size_t height,
-                   const float* invModelView, float step, float intensity,
+void volume_render(cudaTextureObject_t tex,
+                   float* buffer,
+                   size_t width,
+                   size_t height,
+                   const float* invModelView,
+                   float step,
+                   float intensity,
                    float cutoff)
 {
   // Copy the matrix to the device.
-  cutilSafeCall(cudaMemcpyToSymbol(d_invModelView,
-                                   invModelView,
-                                   sizeof(float3x4)));
+  cutilSafeCall(cudaMemcpyToSymbol(d_invModelView, invModelView, sizeof(float3x4)));
 
   // Calculate the block and grid sizes.
   dim3 blockDim(32, 32);
@@ -91,8 +96,7 @@ void volume_render(cudaTextureObject_t tex, float* buffer, size_t width, size_t 
                ((unsigned int)height + blockDim.y - 1) / blockDim.y);
 
   // Call the kernel
-  cuda_volume_render_kernel << < gridDim, blockDim >> > (tex, buffer, width, height,
-                                                         step, intensity, cutoff);
+  cuda_volume_render_kernel<<<gridDim, blockDim>>>(tex, buffer, width, height, step, intensity, cutoff);
 
   // This crashes it under windows
   // cutilSafeCall(cudaThreadSynchronize());
@@ -101,17 +105,12 @@ void volume_render(cudaTextureObject_t tex, float* buffer, size_t width, size_t 
 } // namespace gpu
 } // namespace xromm
 
-
-
-
 // Device and Kernel functions
 
 // Intersect a ray with an axis aligned box.
 // http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter3.htm
 // https://education.siggraph.org/static/HyperGraph/raytrace/rtrace1.htm
-__device__
-int box_intersect(Ray ray, float3 boxMin, float3 boxMax, float* _near,
-                  float* _far)
+__device__ int box_intersect(Ray ray, float3 boxMin, float3 boxMax, float* _near, float* _far)
 {
   // Compute intersection of ray with all six planes.
   float3 invDirection = make_float3(1.0f) / ray.direction;
@@ -130,28 +129,25 @@ int box_intersect(Ray ray, float3 boxMin, float3 boxMax, float* _near,
 }
 
 // Transform vector by matrix (no translation).
-__device__
-float3 mul(const float3x4& M, const float3& v)
+__device__ float3 mul(const float3x4& M, const float3& v)
 {
-  return make_float3(dot(v, make_float3(M.m[0])),
-                     dot(v, make_float3(M.m[1])),
-                     dot(v, make_float3(M.m[2])));
+  return make_float3(dot(v, make_float3(M.m[0])), dot(v, make_float3(M.m[1])), dot(v, make_float3(M.m[2])));
 }
 
 // Transform vector by matrix with translation.
-__device__
-float4 mul(const float3x4& M, const float4& v)
+__device__ float4 mul(const float3x4& M, const float4& v)
 {
-  return make_float4(dot(v, M.m[0]),
-                     dot(v, M.m[1]),
-                     dot(v, M.m[2]),
-                     1.0f);
+  return make_float4(dot(v, M.m[0]), dot(v, M.m[1]), dot(v, M.m[2]), 1.0f);
 }
 
 // Render the volume using ray marching.
-__global__
-void cuda_volume_render_kernel(cudaTextureObject_t tex, float* buffer, size_t width, size_t height,
-                               float step, float intensity, float cutoff)
+__global__ void cuda_volume_render_kernel(cudaTextureObject_t tex,
+                                          float* buffer,
+                                          size_t width,
+                                          size_t height,
+                                          float step,
+                                          float intensity,
+                                          float cutoff)
 {
   uint x = blockIdx.x * blockDim.x + threadIdx.x;
   uint y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -169,8 +165,7 @@ void cuda_volume_render_kernel(cudaTextureObject_t tex, float* buffer, size_t wi
   float3 look = step * normalize(make_float3(u, v, -2.0f));
 
   // Calculate the ray in world space.
-  Ray ray = { make_float3(mul(d_invModelView, eye)),
-              mul(d_invModelView, look) };
+  Ray ray = { make_float3(mul(d_invModelView, eye)), mul(d_invModelView, look) };
 
   // Find intersection with box.
   float3 boxMin = make_float3(0.0f, 0.0f, -1.0f);
@@ -183,7 +178,8 @@ void cuda_volume_render_kernel(cudaTextureObject_t tex, float* buffer, size_t wi
   }
 
   // Clamp to near plane.
-  if (_near < 0.0f) _near = 0.0f;
+  if (_near < 0.0f)
+    _near = 0.0f;
 
   // Perform the ray marching from back to front.
   float t = _far;

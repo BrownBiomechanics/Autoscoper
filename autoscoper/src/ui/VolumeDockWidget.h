@@ -26,7 +26,6 @@ public:
   void addVolume(const std::string& filename, int idx);
   void setVolumeVisibility(unsigned int volume_index, bool visible);
 
-
   QString getVolumeName(int volume_index);
 
 private:
@@ -37,10 +36,8 @@ private:
   std::vector<std::string> model_names_list;
 
 protected:
-
 public slots:
-  void on_listWidget_currentItemChanged( QListWidgetItem* current, QListWidgetItem* previous);
-
+  void on_listWidget_currentItemChanged(QListWidgetItem* current, QListWidgetItem* previous);
 };
 
-#endif  // UAUTOSCOPERMAINWINDOW_H
+#endif // UAUTOSCOPERMAINWINDOW_H

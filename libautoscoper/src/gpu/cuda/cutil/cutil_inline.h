@@ -30,5 +30,4 @@ inline void print_NVCC_min_spec(const char* sSDKsample, const char* sNVCCReq, co
 
 #define ALIGN_OFFSET(offset, alignment) offset = (offset + (alignment - 1)) & ~((alignment - 1))
 
-
 #endif // _CUTIL_INLINE_H_

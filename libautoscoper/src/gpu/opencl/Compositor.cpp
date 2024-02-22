@@ -44,7 +44,8 @@
 #define BX 16
 #define BY 16
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 #include "gpu/opencl/kernel/Compositor.cl.h"
 
 static Program compositor_kernel_;
@@ -57,8 +58,7 @@ void composite(const Buffer* src1,
                unsigned width,
                unsigned height)
 {
-  Kernel* kernel = compositor_kernel_.compile(
-    Compositor_cl, "composite_kernel");
+  Kernel* kernel = compositor_kernel_.compile(Compositor_cl, "composite_kernel");
 
   kernel->block2d(BX, BY);
   kernel->grid2d((width + BX - 1) / BX, (height + BY - 1) / BY);

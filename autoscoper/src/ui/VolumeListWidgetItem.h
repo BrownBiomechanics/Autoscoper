@@ -10,22 +10,27 @@ namespace xromm {
 namespace gpu {
 class RayCaster;
 }
-}
+} // namespace xromm
 
-class VolumeListWidgetItem : public QObject, public QListWidgetItem
+class VolumeListWidgetItem
+  : public QObject
+  , public QListWidgetItem
 {
   // List Object to display the volume name and a checkbox to toggle visibility
   Q_OBJECT
 
 public:
-  VolumeListWidgetItem(QListWidget* listWidget, const QString& name, AutoscoperMainWindow* main_window, std::vector<xromm::gpu::RayCaster*>* renderers);
+  VolumeListWidgetItem(QListWidget* listWidget,
+                       const QString& name,
+                       AutoscoperMainWindow* main_window,
+                       std::vector<xromm::gpu::RayCaster*>* renderers);
   void setVisibility(bool visible);
 
 private:
   std::vector<xromm::gpu::RayCaster*> renderers_;
   QCheckBox* visibilityCheckBox_;
   QString name_;
-  AutoscoperMainWindow*  main_window_;
+  AutoscoperMainWindow* main_window_;
 
   void setup(QListWidget* listWidget);
 

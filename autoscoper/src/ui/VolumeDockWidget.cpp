@@ -1,5 +1,5 @@
 #ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
+#  define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #include "ui_VolumeDockWidget.h"
@@ -15,13 +15,13 @@
 
 #include <iostream>
 
-VolumeDockWidget::VolumeDockWidget(QWidget* parent) :
-  QDockWidget(parent),
-  dock(new Ui::VolumeDockWidget)
+VolumeDockWidget::VolumeDockWidget(QWidget* parent)
+  : QDockWidget(parent)
+  , dock(new Ui::VolumeDockWidget)
 {
   dock->setupUi(this);
 
-  mainwindow  = dynamic_cast<AutoscoperMainWindow*> ( parent);
+  mainwindow = dynamic_cast<AutoscoperMainWindow*>(parent);
 }
 
 VolumeDockWidget::~VolumeDockWidget()
@@ -49,20 +49,20 @@ void VolumeDockWidget::clearVol()
 
 void VolumeDockWidget::addVolume(const std::string& filename, int idx)
 {
-  QFileInfo fi (QString::fromStdString(filename));
+  QFileInfo fi(QString::fromStdString(filename));
 
   std::vector<xromm::gpu::RayCaster*> renderers = {};
   for (xromm::gpu::View* view : mainwindow->getTracker()->views()) {
     renderers.push_back(view->drrRenderer(idx));
   }
 
-  QListWidgetItem* volumeItem = new VolumeListWidgetItem(dock->listWidget, fi.completeBaseName(), mainwindow, &renderers);
+  QListWidgetItem* volumeItem =
+    new VolumeListWidgetItem(dock->listWidget, fi.completeBaseName(), mainwindow, &renderers);
   dock->listWidget->addItem(volumeItem);
   dock->listWidget->setCurrentItem(volumeItem);
 
   // Store Model Name
   model_names_list.push_back(fi.completeBaseName().toStdString().c_str());
-
 }
 
 void VolumeDockWidget::setVolumeVisibility(unsigned int volume_index, bool visible)
@@ -71,7 +71,7 @@ void VolumeDockWidget::setVolumeVisibility(unsigned int volume_index, bool visib
   item->setVisibility(visible);
 }
 
-void VolumeDockWidget::on_listWidget_currentItemChanged (QListWidgetItem* current, QListWidgetItem* previous)
+void VolumeDockWidget::on_listWidget_currentItemChanged(QListWidgetItem* current, QListWidgetItem* previous)
 {
   if (current != NULL) {
     mainwindow->getTracker()->trial()->current_volume = dock->listWidget->row(current);
@@ -80,7 +80,6 @@ void VolumeDockWidget::on_listWidget_currentItemChanged (QListWidgetItem* curren
     mainwindow->getTracker()->trial()->current_volume = -1;
   }
 }
-
 
 QString VolumeDockWidget::getVolumeName(int volume_index)
 {

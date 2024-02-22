@@ -41,40 +41,26 @@
 
 #include "SobelFilter_kernels.h"
 
-__global__
-void sobel_filter_kernel(const float* input, float* output, int width, int height,
-                         float scale, float blend);
+__global__ void sobel_filter_kernel(const float* input, float* output, int width, int height, float scale, float blend);
 
-namespace xromm
-{
-namespace gpu
-{
-void sobel_filter(const float* input, float* output, int width, int height,
-                  float scale)
+namespace xromm {
+namespace gpu {
+void sobel_filter(const float* input, float* output, int width, int height, float scale)
 {
   sobel_filter_blend(input, output, width, height, scale, 0.0f);
 }
 
-void sobel_filter_blend(const float* input, float* output, int width,
-                        int height, float scale, float blend)
+void sobel_filter_blend(const float* input, float* output, int width, int height, float scale, float blend)
 {
   dim3 blockDim(32, 32);
-  dim3 gridDim((width + blockDim.x - 1) / blockDim.x,
-               (height + blockDim.y - 1) / blockDim.y);
+  dim3 gridDim((width + blockDim.x - 1) / blockDim.x, (height + blockDim.y - 1) / blockDim.y);
 
-  sobel_filter_kernel << < gridDim, blockDim >> > (input, output, width,
-                                                   height, scale, blend);
+  sobel_filter_kernel<<<gridDim, blockDim>>>(input, output, width, height, scale, blend);
 }
 } // namespace gpu
 } // namespace xromm
 
-__global__
-void sobel_filter_kernel(const float* input,
-                         float* output,
-                         int width,
-                         int height,
-                         float scale,
-                         float blend)
+__global__ void sobel_filter_kernel(const float* input, float* output, int width, int height, float scale, float blend)
 {
   short x1 = blockIdx.x * blockDim.x + threadIdx.x;
   short y1 = blockIdx.y * blockDim.y + threadIdx.y;
@@ -83,11 +69,19 @@ void sobel_filter_kernel(const float* input,
     return;
   }
 
-  short x0 = x1 - 1; if (x0 < 0) x0 = 0;
-  short y0 = y1 - 1; if (y0 < 0) y0 = 0;
+  short x0 = x1 - 1;
+  if (x0 < 0)
+    x0 = 0;
+  short y0 = y1 - 1;
+  if (y0 < 0)
+    y0 = 0;
 
-  short x2 = x1 + 1; if (x2 > width - 1) x2 = width - 1;
-  short y2 = y1 + 1; if (y2 > height - 1) y2 = height - 1;
+  short x2 = x1 + 1;
+  if (x2 > width - 1)
+    x2 = width - 1;
+  short y2 = y1 + 1;
+  if (y2 > height - 1)
+    y2 = height - 1;
 
   float pix00 = input[y0 * width + x0];
   float pix01 = input[y0 * width + x1];

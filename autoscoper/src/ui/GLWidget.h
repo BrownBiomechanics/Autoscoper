@@ -46,14 +46,14 @@
 
 // OpenGL error checking
 #if defined GLDEBUG
-#define CALL_GL(exp) do{ \
-    exp; \
-    if (glGetError() != GL_NO_ERROR) \
-    cerr << "Error in OpenGL call at " \
-         << __FILE__ << ':' << __LINE__ << endl; \
-} while (0)
+#  define CALL_GL(exp)                                                             \
+    do {                                                                           \
+      exp;                                                                         \
+      if (glGetError() != GL_NO_ERROR)                                             \
+        cerr << "Error in OpenGL call at " << __FILE__ << ':' << __LINE__ << endl; \
+    } while (0)
 #else
-#define CALL_GL(exp) exp
+#  define CALL_GL(exp) exp
 #endif
 
 struct ViewData
@@ -82,7 +82,6 @@ struct ViewData
   GLuint pbo;
 };
 
-
 class GLWidget : public QOpenGLWidget
 {
   Q_OBJECT
@@ -103,9 +102,6 @@ protected:
 
 private:
   int w, h;
-
 };
-
-
 
 #endif /* GLWIDGET_H */

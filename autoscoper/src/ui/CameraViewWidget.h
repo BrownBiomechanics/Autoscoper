@@ -39,8 +39,6 @@
 /// \file CameraViewWidget.h
 /// \author Benjamin Knorlein, Andy Loomis
 
-
-
 #ifndef CAMERAVIEWWIDGET_H
 #define CAMERAVIEWWIDGET_H
 
@@ -54,11 +52,11 @@ class CameraViewWidget;
 }
 class Camera;
 
-namespace xromm{
-namespace gpu{
+namespace xromm {
+namespace gpu {
 class View;
 }
-}
+} // namespace xromm
 using xromm::gpu::View;
 
 class AutoscoperMainWindow;
@@ -87,7 +85,6 @@ public:
   void saveFrame(QString filename);
 
 protected:
-
 public slots:
 
 private:
@@ -97,4 +94,4 @@ private:
   AutoscoperMainWindow* mainwindow;
 };
 
-#endif  // CAMERAVIEWWIDGET_H
+#endif // CAMERAVIEWWIDGET_H

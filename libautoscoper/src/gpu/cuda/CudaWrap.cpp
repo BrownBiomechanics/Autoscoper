@@ -42,14 +42,15 @@
 #include "CudaWrap.hpp"
 
 #ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#  define WIN32_LEAN_AND_MEAN
+#  include <windows.h>
 #endif
 
 #include <cutil_inline.h>
 #include <cutil_gl_inline.h>
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 /*void cudaInitWrap()
    {
     cutilSafeCall(cudaGLSetGLDevice(cutGetMaxGflopsDeviceId()));
@@ -59,4 +60,5 @@ void cudaMallocWrap(float*& ptr, size_t size)
 {
   cutilSafeCall(cudaMalloc((void**)&ptr, size));
 }
-} } // namespace xromm::cuda
+} // namespace gpu
+} // namespace xromm

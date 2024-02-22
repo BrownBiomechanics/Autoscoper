@@ -52,8 +52,7 @@
 #include "Volume.hpp"
 #include "VolumeTransform.hpp"
 
-namespace xromm
-{
+namespace xromm {
 
 // The trial class contains all of the state information for an autoscoper run.
 // It should eventually become an in-memory representation of the xromm
@@ -63,7 +62,6 @@ namespace xromm
 class Trial
 {
 public:
-
   // Loads a trial file
 
   Trial(const std::string& filename = "");
@@ -97,8 +95,6 @@ public:
   CoordFrame* getVolumeMatrix(int volumeID); // Pivot
 
 private:
-
-
   void parse(std::ifstream& file,
              std::vector<int>& version,
              std::vector<std::string>& mayaCams,

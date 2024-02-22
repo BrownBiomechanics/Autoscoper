@@ -44,19 +44,15 @@
 #define BX 16
 #define BY 16
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 #include "gpu/opencl/kernel/Merger.cl.h"
 
 static Program Merger_kernel_;
 
-void merge(const Buffer* src1,
-           const Buffer* src2,
-           const Buffer* dest,
-           unsigned width,
-           unsigned height)
+void merge(const Buffer* src1, const Buffer* src2, const Buffer* dest, unsigned width, unsigned height)
 {
-  Kernel* kernel = Merger_kernel_.compile(
-    Merger_cl, "merge_kernel");
+  Kernel* kernel = Merger_kernel_.compile(Merger_cl, "merge_kernel");
 
   kernel->block2d(BX, BY);
   kernel->grid2d((width + BX - 1) / BX, (height + BY - 1) / BY);

@@ -47,7 +47,7 @@
 namespace xromm {
 class Trial;
 class Tracker;
-}
+} // namespace xromm
 using xromm::Tracker;
 
 class GLTracker : public QOpenGLWidget
@@ -71,7 +71,5 @@ private:
   // Tracker * m_tracker;
   // QOpenGLContext * shared_context;
 };
-
-
 
 #endif /* GLTRACKER_H */

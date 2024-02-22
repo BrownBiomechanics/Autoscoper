@@ -42,32 +42,24 @@
 #include "GaussianFilter_kernels.h"
 #include "stdlib.h"
 
-__global__
-void filter_kernel(const float* input, float* output,
-                   int width, int height,
-                   float* filter, int filterSize );
+__global__ void filter_kernel(const float* input, float* output, int width, int height, float* filter, int filterSize);
 
-namespace xromm { namespace gpu {
-void gaussian_filter_apply(const float* input, float* output,
-                           int width, int height, float* filter, int filterSize)
+namespace xromm {
+namespace gpu {
+void gaussian_filter_apply(const float* input, float* output, int width, int height, float* filter, int filterSize)
 {
   dim3 blockDim(32, 32);
-  dim3 gridDim((width + blockDim.x - 1) / blockDim.x,
-               (height + blockDim.y - 1) / blockDim.y);
+  dim3 gridDim((width + blockDim.x - 1) / blockDim.x, (height + blockDim.y - 1) / blockDim.y);
 
-
-  filter_kernel << < gridDim, blockDim >> > (input, output,
-                                             width, height,
-                                             filter, filterSize);
-
+  filter_kernel<<<gridDim, blockDim>>>(input, output, width, height, filter, filterSize);
 }
-} } // namespace xromm::cuda
-
+} // namespace gpu
+} // namespace xromm
 
 // convolves filter by setting (x,y) to sum of neighboring values multiplied by corresponding filter values
 
-static __device__
-float filterConvolution(const float* input, int width, int height, int x, int y, float* filter, int filterSize)
+static __device__ float
+filterConvolution(const float* input, int width, int height, int x, int y, float* filter, int filterSize)
 {
 
   float centerValue = 0.0f;
@@ -90,13 +82,9 @@ float filterConvolution(const float* input, int width, int height, int x, int y,
     centerValue = 0;
 
   return centerValue;
-
 }
 
-__global__
-void filter_kernel(const float* input, float* output,
-                   int width, int height,
-                   float* filter, int filterSize)
+__global__ void filter_kernel(const float* input, float* output, int width, int height, float* filter, int filterSize)
 {
   short x = blockIdx.x * blockDim.x + threadIdx.x;
   short y = blockIdx.y * blockDim.y + threadIdx.y;

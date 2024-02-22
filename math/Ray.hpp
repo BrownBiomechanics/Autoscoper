@@ -10,19 +10,18 @@ template <class T = float>
 class Ray
 {
 public:
-
   //! Constructs a ray with the specified origin and direction
 
   Ray(const Vec3<T>& origin, const Vec3<T>& direction)
-    : origin(origin), direction(direction) {}
+    : origin(origin)
+    , direction(direction)
+  {
+  }
 
   //! Returns the point on the ray at the specified distance from the
   //! origin.
 
-  Vec3<T> at(const T& t) const
-  {
-    return origin + t * direction;
-  }
+  Vec3<T> at(const T& t) const { return origin + t * direction; }
 
   //! Returns the closest distance between this ray the specified point.
   //! Optionally, returns the point on this ray closes to this point.
@@ -42,10 +41,7 @@ public:
   //! Optionally, returns the point on this ray and the sphere that satisfies
   //! this distance.
 
-  T intersect_sphere(const Vec3<T>& center,
-                     const T& radius,
-                     Vec3<T>* ray_point = 0,
-                     Vec3<T>* sphere_point = 0) const
+  T intersect_sphere(const Vec3<T>& center, const T& radius, Vec3<T>* ray_point = 0, Vec3<T>* sphere_point = 0) const
   {
     Vec3d u = origin + dot(center - origin, direction) * direction;
     T distance = len(center - u);
@@ -95,10 +91,7 @@ public:
   //! Optionally returns the point on this ray and the plane that satisfy this
   //! distance.
 
-  T intersect_plane(const Vec3<T>& point,
-                    const Vec3<T>& normal,
-                    Vec3<T>* ray_point = 0,
-                    Vec3<T>* plane_point = 0) const
+  T intersect_plane(const Vec3<T>& point, const Vec3<T>& normal, Vec3<T>* ray_point = 0, Vec3<T>* plane_point = 0) const
   {
     T num = dot(point - origin, normal);
     T den = dot(direction, normal);
@@ -134,10 +127,7 @@ public:
 
   // http://softsurfer.com/Archive/algorithm_0106/algorithm_0106.htm
 
-  T intersect_line(const Vec3<T>& point1,
-                   const Vec3<T>& point2,
-                   Vec3<T>* ray_point = 0,
-                   Vec3<T>* line_point = 0) const
+  T intersect_line(const Vec3<T>& point1, const Vec3<T>& point2, Vec3<T>* ray_point = 0, Vec3<T>* line_point = 0) const
   {
     Vec3<T> v = point2 - point1;
     Vec3<T> w = origin - point1;
@@ -235,22 +225,22 @@ public:
                      Vec3<T>* ray_point = 0,
                      Vec3<T>* circle_point = 0) const
   {
-    double min = normal.x; int i = 0;
-    if (normal.y < min) { min = normal.y; i = 1; }
-    if (normal.z < min) { min = normal.z; i = 2; }
+    double min = normal.x;
+    int i = 0;
+    if (normal.y < min) {
+      min = normal.y;
+      i = 1;
+    }
+    if (normal.z < min) {
+      min = normal.z;
+      i = 2;
+    }
     Vec3d rand(i == 0 ? 1 : 0, i == 1 ? 1 : 0, i == 2 ? 1 : 0);
 
     Vec3d right = unit(cross(normal, rand));
     Vec3d up = unit(cross(normal, right));
 
-    return intersect_arc(center,
-                         right,
-                         up,
-                         radius,
-                         0,
-                         2 * M_PI,
-                         ray_point,
-                         circle_point);
+    return intersect_arc(center, right, up, radius, 0, 2 * M_PI, ray_point, circle_point);
   }
 
   //! Returns the closest distance between this ray and the specified arc.

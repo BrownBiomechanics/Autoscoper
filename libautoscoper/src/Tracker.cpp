@@ -50,19 +50,19 @@
 #include <vector>
 #include <cmath>
 #ifndef M_PI
-#define M_PI 3.14159265358979323846
+#  define M_PI 3.14159265358979323846
 #endif
 
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
-  #include "gpu/cuda/CudaWrap.hpp"
-  #include "gpu/cuda/Ncc_kernels.h"
-  #include "gpu/cuda/HDist_kernels.h"
-  #include "gpu/cuda/Compositor_kernels.h"
-  #include "gpu/cuda/Mult_kernels.h"
-  #include <cuda_runtime_api.h>
+#  include "gpu/cuda/CudaWrap.hpp"
+#  include "gpu/cuda/Ncc_kernels.h"
+#  include "gpu/cuda/HDist_kernels.h"
+#  include "gpu/cuda/Compositor_kernels.h"
+#  include "gpu/cuda/Mult_kernels.h"
+#  include <cuda_runtime_api.h>
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-  #include "gpu/opencl/Ncc.hpp"
-  #include "gpu/opencl/Mult.hpp"
+#  include "gpu/opencl/Ncc.hpp"
+#  include "gpu/opencl/Mult.hpp"
 #endif
 
 #include "VolumeDescription.hpp"
@@ -85,37 +85,44 @@ static bool firstRun = true;
 static xromm::Tracker* g_markerless = NULL;
 
 // This is for Downhill Simplex
-double FUNC(double* P) { return g_markerless->minimizationFunc(P + 1); }
+double FUNC(double* P)
+{
+  return g_markerless->minimizationFunc(P + 1);
+}
 // This is for PSO. P is the 6-DOF manipulator handle.
-double PSO_FUNC(double* P) { return g_markerless->minimizationFunc(P); }
-
+double PSO_FUNC(double* P)
+{
+  return g_markerless->minimizationFunc(P);
+}
 
 namespace xromm {
 #if DEBUG
-#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
+#  if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
 void save_debug_image(const Buffer* dev_image, int width, int height)
-#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
+#  elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
 void save_debug_image(const gpu::Buffer* dev_image, int width, int height)
-#endif
+#  endif
 {
   static int count = 0; // static, so we add to it whenever we run this
   float* host_image = new float[width * height];
   unsigned char* uchar_image = new unsigned char[width * height];
 
-#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
+#  if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   cudaMemcpy(host_image, dev_image, width * height * sizeof(float), cudaMemcpyDeviceToHost);
-#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
+#  elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   dev_image->write(host_image, width * height * sizeof(float));
-#endif
-#undef max
-#undef min
+#  endif
+#  undef max
+#  undef min
   float minim = std::numeric_limits<float>::max();
   float maxim = std::numeric_limits<float>::min();
 
   // Copy to a char array
   for (int i = 0; i < width * height; i++) {
-    if (host_image[i] > maxim) maxim = host_image[i];
-    if (host_image[i] < minim) minim = host_image[i];
+    if (host_image[i] > maxim)
+      maxim = host_image[i];
+    if (host_image[i] < minim)
+      minim = host_image[i];
   }
 
   // Copy to a char array
@@ -124,11 +131,11 @@ void save_debug_image(const gpu::Buffer* dev_image, int width, int height)
   }
 
   char filename[256];
-    #ifdef __APPLE__
+#  ifdef __APPLE__
   sprintf(filename, "/Users/bardiya/autoscoper-v2/debug/image_cam%02d.pgm", count++);
-    #elif _WIN32
+#  elif _WIN32
   sprintf(filename, "C:/Users/anthony.lombardi/Desktop/viewport-clip-test/image_cam%02d.pgm", count++);
-    #endif
+#  endif
 
   std::cout << filename << std::endl;
   std::ofstream file(filename, std::ios::out);
@@ -143,7 +150,6 @@ void save_debug_image(const gpu::Buffer* dev_image, int width, int height)
   delete[] host_image;
 }
 #endif
-
 
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
 void save_full_drr(const Buffer* dev_image, int width, int height)
@@ -167,8 +173,10 @@ void save_full_drr(const gpu::Buffer* dev_image, int width, int height)
 
   // Copy to a char array
   for (int i = 0; i < width * height; i++) {
-    if (host_image[i] > maxim) maxim = host_image[i];
-    if (host_image[i] < minim) minim = host_image[i];
+    if (host_image[i] > maxim)
+      maxim = host_image[i];
+    if (host_image[i] < minim)
+      minim = host_image[i];
   }
 
   // Copy to a char array
@@ -196,16 +204,15 @@ void save_full_drr(const gpu::Buffer* dev_image, int width, int height)
   delete[] host_image;
 }
 
-
 Tracker::Tracker()
-  : rendered_drr_(NULL),
-    rendered_rad_(NULL),
-    drr_mask_(NULL),
-    background_mask_(NULL)
+  : rendered_drr_(NULL)
+  , rendered_rad_(NULL)
+  , drr_mask_(NULL)
+  , background_mask_(NULL)
 {
   g_markerless = this;
   optimization_method = 0; // initialize cost function
-  cf_model_select = 0; // cost function selector
+  cf_model_select = 0;     // cost function selector
   initializeRandom();
 }
 
@@ -268,14 +275,14 @@ void Tracker::load(const Trial& trial)
 #endif
 
   gpu::ncc_init(npixels);
-  #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND) // trying another cost function (Housdorff)
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND) // trying another cost function (Housdorff)
   gpu::hdist_init(npixels);
-  #endif
+#endif
 
   for (unsigned int i = 0; i < trial_.cameras.size(); ++i) {
 
     Camera& camera = trial_.cameras.at(i);
-    Video& video  = trial_.videos.at(i);
+    Video& video = trial_.videos.at(i);
 
     video.set_frame(trial_.frame);
 
@@ -286,25 +293,25 @@ void Tracker::load(const Trial& trial)
       view->drrRenderer(i)->setVolume(*volumeDescription_[i]);
     }
 
-    view->radRenderer()->set_image_plane(camera.viewport()[0],
-                                         camera.viewport()[1],
-                                         camera.viewport()[2],
-                                         camera.viewport()[3]);
-    view->radRenderer()->set_rad(video.data(),
-                                 video.width(),
-                                 video.height(),
-                                 video.bps());
-    view->backgroundRenderer()->set_image_plane(camera.viewport()[0],
-                                                camera.viewport()[1],
-                                                camera.viewport()[2],
-                                                camera.viewport()[3]);
+    view->radRenderer()->set_image_plane(
+      camera.viewport()[0], camera.viewport()[1], camera.viewport()[2], camera.viewport()[3]);
+    view->radRenderer()->set_rad(video.data(), video.width(), video.height(), video.bps());
+    view->backgroundRenderer()->set_image_plane(
+      camera.viewport()[0], camera.viewport()[1], camera.viewport()[2], camera.viewport()[3]);
 
     views_.push_back(view);
   }
-
 }
 
-void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int max_stall_iter)
+void Tracker::optimize(int frame,
+                       int dFrame,
+                       int repeats,
+                       int opt_method,
+                       unsigned int max_iter,
+                       double min_limit,
+                       double max_limit,
+                       int cf_model,
+                       unsigned int max_stall_iter)
 {
 
   // Upon a call to the Tracker::optimize method, the following steps are performed:
@@ -330,11 +337,11 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
     return;
   }
 
-  int NDIM = 6;         // Number of dimensions to optimize over.
-  double FTOL = 1e-3;   // Tolerance for the optimization.
-  MAT P;                // Matrix of points to initialize the routine.
-  double Y[MP];         // The values of the minimization function at the
-                        // initial points.
+  int NDIM = 6;       // Number of dimensions to optimize over.
+  double FTOL = 1e-3; // Tolerance for the optimization.
+  MAT P;              // Matrix of points to initialize the routine.
+  double Y[MP];       // The values of the minimization function at the
+                      // initial points.
 
   int ITER = 0;
 
@@ -343,33 +350,25 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
   for (unsigned int i = 0; i < trial_.videos.size(); ++i) {
 
     trial_.videos.at(i).set_frame(trial_.frame);
-    views_[i]->radRenderer()->set_rad(trial_.videos.at(i).data(),
-                                      trial_.videos.at(i).width(),
-                                      trial_.videos.at(i).height(),
-                                      trial_.videos.at(i).bps());
+    views_[i]->radRenderer()->set_rad(
+      trial_.videos.at(i).data(), trial_.videos.at(i).width(), trial_.videos.at(i).height(), trial_.videos.at(i).bps());
   }
 
-  int framesBehind = (dFrame > 0) ?
-                     (int)trial_.frame :
-                     (int)trial_.num_frames - trial_.frame - 1;
+  int framesBehind = (dFrame > 0) ? (int)trial_.frame : (int)trial_.num_frames - trial_.frame - 1;
 
   if (trial_.guess == 2 && framesBehind > 1) {
-    double xyzypr1[6] = { (*trial_.getXCurve(-1))(trial_.frame - 2 * dFrame),
-                          (*trial_.getYCurve(-1))(trial_.frame - 2 * dFrame),
-                          (*trial_.getZCurve(-1))(trial_.frame - 2 * dFrame),
-                          (*trial_.getYawCurve(-1))(trial_.frame - 2 * dFrame),
-                          (*trial_.getPitchCurve(-1))(trial_.frame - 2 * dFrame),
-                          (*trial_.getRollCurve(-1))(trial_.frame - 2 * dFrame) };
-    double xyzypr2[6] = { (*trial_.getXCurve(-1))(trial_.frame - dFrame),
-                          (*trial_.getYCurve(-1))(trial_.frame - dFrame),
-                          (*trial_.getZCurve(-1))(trial_.frame - dFrame),
-                          (*trial_.getYawCurve(-1))(trial_.frame - dFrame),
-                          (*trial_.getPitchCurve(-1))(trial_.frame - dFrame),
-                          (*trial_.getRollCurve(-1))(trial_.frame - dFrame) };
+    double xyzypr1[6] = {
+      (*trial_.getXCurve(-1))(trial_.frame - 2 * dFrame),     (*trial_.getYCurve(-1))(trial_.frame - 2 * dFrame),
+      (*trial_.getZCurve(-1))(trial_.frame - 2 * dFrame),     (*trial_.getYawCurve(-1))(trial_.frame - 2 * dFrame),
+      (*trial_.getPitchCurve(-1))(trial_.frame - 2 * dFrame), (*trial_.getRollCurve(-1))(trial_.frame - 2 * dFrame)
+    };
+    double xyzypr2[6] = {
+      (*trial_.getXCurve(-1))(trial_.frame - dFrame),     (*trial_.getYCurve(-1))(trial_.frame - dFrame),
+      (*trial_.getZCurve(-1))(trial_.frame - dFrame),     (*trial_.getYawCurve(-1))(trial_.frame - dFrame),
+      (*trial_.getPitchCurve(-1))(trial_.frame - dFrame), (*trial_.getRollCurve(-1))(trial_.frame - dFrame)
+    };
 
-
-    CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr1).linear_extrap(
-      CoordFrame::from_xyzypr(xyzypr2));
+    CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr1).linear_extrap(CoordFrame::from_xyzypr(xyzypr2));
 
     xcframe.to_xyzypr(xyzypr1);
     trial_.getXCurve(-1)->insert(trial_.frame, xyzypr1[0]);
@@ -391,12 +390,9 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
   for (int j = 0; j < repeats; j++) {
 
     // Get Current Pose
-    double xyzypr[6] = { (*trial_.getXCurve(-1))(trial_.frame),
-                         (*trial_.getYCurve(-1))(trial_.frame),
-                         (*trial_.getZCurve(-1))(trial_.frame),
-                         (*trial_.getYawCurve(-1))(trial_.frame),
-                         (*trial_.getPitchCurve(-1))(trial_.frame),
-                         (*trial_.getRollCurve(-1))(trial_.frame) };
+    double xyzypr[6] = { (*trial_.getXCurve(-1))(trial_.frame),     (*trial_.getYCurve(-1))(trial_.frame),
+                         (*trial_.getZCurve(-1))(trial_.frame),     (*trial_.getYawCurve(-1))(trial_.frame),
+                         (*trial_.getPitchCurve(-1))(trial_.frame), (*trial_.getRollCurve(-1))(trial_.frame) };
 
     // Init Manip for saving final optimum
     double init_manip[6] = { 0 };
@@ -526,7 +522,6 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
 
     xcframe = xcframe * trial_.getVolumeMatrix(-1)->inverse() * manip * *trial_.getVolumeMatrix(-1);
 
-
     trial_.getXCurve(-1)->insert(trial_.frame, xyzypr[0]);
     trial_.getYCurve(-1)->insert(trial_.frame, xyzypr[1]);
     trial_.getZCurve(-1)->insert(trial_.frame, xyzypr[2]);
@@ -536,13 +531,13 @@ void Tracker::optimize(int frame, int dFrame, int repeats, int opt_method, unsig
   }
   totalIter += ITER;
 
-  std::cerr << "Tracker::optimize(): Frame " << trial_.frame
-            << " done in " << totalIter << " total iterations" << std::endl;
+  std::cerr << "Tracker::optimize(): Frame " << trial_.frame << " done in " << totalIter << " total iterations"
+            << std::endl;
 
   // Keep track of the optimization parameters
-  this->latest_optimization_parameters_ = OptimizationParameters(repeats, dFrame, opt_method, max_iter, min_limit, max_limit, cf_model, max_stall_iter, trial_.guess);
+  this->latest_optimization_parameters_ = OptimizationParameters(
+    repeats, dFrame, opt_method, max_iter, min_limit, max_limit, cf_model, max_stall_iter, trial_.guess);
 }
-
 
 // Calculate Correlation for Bone Matching
 std::vector<double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) const
@@ -569,7 +564,8 @@ std::vector<double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) c
     // Set the modelview matrix for DRR rendering
     // (1a)
     CoordFrame modelview = views_[i]->camera()->coord_frame().inverse() * xcframe;
-    double imv[16]; modelview.inverse().to_matrix_row_order(imv);
+    double imv[16];
+    modelview.inverse().to_matrix_row_order(imv);
     views_[i]->drrRenderer(volumeID)->setInvModelView(imv);
 
     // Calculate the viewport surrounding the volume
@@ -587,15 +583,15 @@ std::vector<double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) c
     unsigned render_height = viewport[3] * trial_.render_height / views_[i]->camera()->viewport()[3];
 
     if (render_width > trial_.render_width || render_height > trial_.render_height) {
-      throw std::runtime_error("Tracker::trackFrame(): Rendered image is larger than the viewport buffer!\n" + std::to_string(render_width) + " > " + std::to_string(trial_.render_width) + " || " + std::to_string(render_height) + " > " + std::to_string(trial_.render_height));
+      throw std::runtime_error("Tracker::trackFrame(): Rendered image is larger than the viewport buffer!\n"
+                               + std::to_string(render_width) + " > " + std::to_string(trial_.render_width) + " || "
+                               + std::to_string(render_height) + " > " + std::to_string(trial_.render_height));
     }
 
     // Set the viewports
     // (1d)
-    views_[i]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1],
-                                                  viewport[2], viewport[3]);
-    views_[i]->radRenderer()->set_viewport(viewport[0], viewport[1],
-                                           viewport[2], viewport[3]);
+    views_[i]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+    views_[i]->radRenderer()->set_viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 
     // DRR projection
     // Performed by the RayCaster class
@@ -705,8 +701,7 @@ std::vector<double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) c
     views_[i]->renderRad(rendered_rad_, render_width, render_height);
 
     // render masks
-    views_[i]->backgroundRenderer()->set_viewport(viewport[0], viewport[1],
-                                                  viewport[2], viewport[3]);
+    views_[i]->backgroundRenderer()->set_viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 
     views_[i]->renderBackground(background_mask_, render_width, render_height);
     views_[i]->renderDRRMask(rendered_drr_, drr_mask_, render_width, render_height);
@@ -723,17 +718,16 @@ std::vector<double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) c
     // save_debug_image(background_mask_, render_width, render_height);
 #endif
     if (cf_model_select) { // If 1, we do Implant
-      // Calculate the correlation for implant
-      // Calculate Hausdorff Distance for Implant Matching _ FUTURE
-        #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
+                           // Calculate the correlation for implant
+                           // Calculate Hausdorff Distance for Implant Matching _ FUTURE
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
       correlations.push_back(gpu::hdist(rendered_drr_, rendered_rad_, drr_mask_, render_width * render_height));
-        #endif
+#endif
     } else { // If 0, we do bone model
       // Calculate the correlation for ncc
       // (1g) and (1h)
       correlations.push_back(1.0 - gpu::ncc(rendered_drr_, rendered_rad_, drr_mask_, render_width * render_height));
     }
-
   }
   return correlations;
 }
@@ -750,9 +744,9 @@ double Tracker::minimizationFunc(const double* values) const
                        (*(const_cast<Trial&>(trial_)).getRollCurve(-1))(trial_.frame) };
   CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
-
   CoordFrame manip = CoordFrame::from_xyzAxis_angle(values);
-  xcframe = xcframe * (const_cast<Trial&>(trial_)).getVolumeMatrix(-1)->inverse() * manip * *(const_cast<Trial&>(trial_)).getVolumeMatrix(-1);
+  xcframe = xcframe * (const_cast<Trial&>(trial_)).getVolumeMatrix(-1)->inverse() * manip
+            * *(const_cast<Trial&>(trial_)).getVolumeMatrix(-1);
 
   unsigned int idx = trial_.current_volume;
   xcframe.to_xyzypr(xyzypr);
@@ -785,11 +779,10 @@ void Tracker::setBackgroundThreshold(float threshold)
   }
 }
 
-
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
 void get_image(const Buffer* dev_image, int width, int height, std::vector<unsigned char>& data)
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-void get_image(const gpu::Buffer* dev_image, int width, int height, std::vector<unsigned char> &data)
+void get_image(const gpu::Buffer* dev_image, int width, int height, std::vector<unsigned char>& data)
 #endif
 {
   static int count = 0;
@@ -808,15 +801,19 @@ void get_image(const gpu::Buffer* dev_image, int width, int height, std::vector<
   delete[] host_image;
 }
 
-
-std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned camera, double* xyzypr, unsigned& width, unsigned& height)
+std::vector<unsigned char> Tracker::getImageData(unsigned volumeID,
+                                                 unsigned camera,
+                                                 double* xyzypr,
+                                                 unsigned& width,
+                                                 unsigned& height)
 {
   trial()->current_volume = volumeID;
 
   CoordFrame xcframe = CoordFrame::from_xyzypr(xyzypr);
 
   CoordFrame modelview = views_[camera]->camera()->coord_frame().inverse() * xcframe;
-  double imv[16]; modelview.inverse().to_matrix_row_order(imv);
+  double imv[16];
+  modelview.inverse().to_matrix_row_order(imv);
   views_[camera]->drrRenderer(volumeID)->setInvModelView(imv);
 
   // Calculate the viewport surrounding the volume
@@ -834,18 +831,15 @@ std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned cam
   unsigned render_height = viewport[3] * trial_.render_height / views_[camera]->camera()->viewport()[3];
 
   // Set the viewports
-  views_[camera]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1],
-                                                     viewport[2], viewport[3]);
-  views_[camera]->radRenderer()->set_viewport(viewport[0], viewport[1],
-                                              viewport[2], viewport[3]);
+  views_[camera]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+  views_[camera]->radRenderer()->set_viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 
   // Render the DRR and Radiograph
   views_[camera]->renderDrrSingle(volumeID, rendered_drr_, render_width, render_height);
   views_[camera]->renderRad(rendered_rad_, render_width, render_height);
 
   // render masks
-  views_[camera]->backgroundRenderer()->set_viewport(viewport[0], viewport[1],
-                                                     viewport[2], viewport[3]);
+  views_[camera]->backgroundRenderer()->set_viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 
   views_[camera]->renderBackground(background_mask_, render_width, render_height);
   views_[camera]->renderDRRMask(rendered_drr_, drr_mask_, render_width, render_height);
@@ -856,7 +850,6 @@ std::vector<unsigned char> Tracker::getImageData(unsigned volumeID, unsigned cam
 
   width = render_width;
   height = render_height;
-
 
   std::vector<unsigned char> out_data;
   get_image(rendered_rad_, width, height, out_data);
@@ -889,9 +882,12 @@ bool Tracker::calculate_viewport(const CoordFrame& modelview, const Camera& came
   for (int j = 0; j < 8; j++) {
 
     // Calculate the location of the corner in object space
-    corners[3 * j + 0] = (corners[3 * j + 0] - volumeDescription_[idx]->invTrans()[0]) / volumeDescription_[idx]->invScale()[0];
-    corners[3 * j + 1] = (corners[3 * j + 1] - volumeDescription_[idx]->invTrans()[1]) / volumeDescription_[idx]->invScale()[1];
-    corners[3 * j + 2] = (corners[3 * j + 2] - volumeDescription_[idx]->invTrans()[2]) / volumeDescription_[idx]->invScale()[2];
+    corners[3 * j + 0] =
+      (corners[3 * j + 0] - volumeDescription_[idx]->invTrans()[0]) / volumeDescription_[idx]->invScale()[0];
+    corners[3 * j + 1] =
+      (corners[3 * j + 1] - volumeDescription_[idx]->invTrans()[1]) / volumeDescription_[idx]->invScale()[1];
+    corners[3 * j + 2] =
+      (corners[3 * j + 2] - volumeDescription_[idx]->invTrans()[2]) / volumeDescription_[idx]->invScale()[2];
 
     // Calculate the location of the corner in camera space
     double corner[3];
@@ -924,12 +920,10 @@ bool Tracker::calculate_viewport(const CoordFrame& modelview, const Camera& came
   camera.coord_frame().inverse().point_to_world_space(&(camera.image_plane()[3]), rad_min_x_y_cam_coords);
   double rad_max_x_y_cam_coords[3] = { 0.0, 0.0, 0.0 };
   camera.coord_frame().inverse().point_to_world_space(&(camera.image_plane()[9]), rad_max_x_y_cam_coords);
-  double rad_min_max_film[4]{
-    -2 * rad_min_x_y_cam_coords[0] / rad_min_x_y_cam_coords[2],
-    -2 * rad_min_x_y_cam_coords[1] / rad_min_x_y_cam_coords[2],
-    -2 * rad_max_x_y_cam_coords[0] / rad_max_x_y_cam_coords[2],
-    -2 * rad_max_x_y_cam_coords[1] / rad_max_x_y_cam_coords[2]
-  };
+  double rad_min_max_film[4]{ -2 * rad_min_x_y_cam_coords[0] / rad_min_x_y_cam_coords[2],
+                              -2 * rad_min_x_y_cam_coords[1] / rad_min_x_y_cam_coords[2],
+                              -2 * rad_max_x_y_cam_coords[0] / rad_max_x_y_cam_coords[2],
+                              -2 * rad_max_x_y_cam_coords[1] / rad_max_x_y_cam_coords[2] };
 
   // Need to make sure that the bounding box falls within, at least part of, the rad image bounds
   if (min_max[0] > rad_min_max_film[2] && min_max[2] > rad_min_max_film[2]) {
@@ -970,7 +964,6 @@ bool Tracker::calculate_viewport(const CoordFrame& modelview, const Camera& came
   return true;
 }
 
-
 // Save Full DRR Image
 void Tracker::getFullDRR(unsigned int volumeID) const
 {
@@ -986,7 +979,8 @@ void Tracker::getFullDRR(unsigned int volumeID) const
   for (unsigned int i = 0; i < views_.size(); ++i) {
     // Set the modelview matrix for DRR rendering
     CoordFrame modelview = views_[i]->camera()->coord_frame().inverse() * xcframe;
-    double imv[16]; modelview.inverse().to_matrix_row_order(imv);
+    double imv[16];
+    modelview.inverse().to_matrix_row_order(imv);
     views_[i]->drrRenderer(volumeID)->setInvModelView(imv);
 
     // Calculate the viewport surrounding the volume
@@ -1004,18 +998,15 @@ void Tracker::getFullDRR(unsigned int volumeID) const
     unsigned render_height = viewport[3] * trial_.render_height / views_[i]->camera()->viewport()[3];
 
     // Set the viewports
-    views_[i]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1],
-                                                  viewport[2], viewport[3]);
-    views_[i]->radRenderer()->set_viewport(viewport[0], viewport[1],
-                                           viewport[2], viewport[3]);
+    views_[i]->drrRenderer(volumeID)->setViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+    views_[i]->radRenderer()->set_viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 
     // Render the DRR and Radiograph
     views_[i]->renderDrrSingle(volumeID, rendered_drr_, render_width, render_height);
     views_[i]->renderRad(rendered_rad_, render_width, render_height);
 
     // render masks
-    views_[i]->backgroundRenderer()->set_viewport(viewport[0], viewport[1],
-                                                  viewport[2], viewport[3]);
+    views_[i]->backgroundRenderer()->set_viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 
     views_[i]->renderBackground(background_mask_, render_width, render_height);
     views_[i]->renderDRRMask(rendered_drr_, drr_mask_, render_width, render_height);
@@ -1027,4 +1018,4 @@ void Tracker::getFullDRR(unsigned int volumeID) const
     save_full_drr(rendered_drr_, render_width, render_height);
   }
 }
-} // namespace XROMM
+} // namespace xromm

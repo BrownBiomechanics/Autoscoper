@@ -40,7 +40,7 @@
 /// \author Benjamin Knorlein, Andy Loomis
 
 #ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
+#  define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #include "ui_FilterDockWidget.h"
@@ -49,14 +49,13 @@
 
 #include <iostream>
 
-
-FilterDockWidget::FilterDockWidget(QWidget* parent) :
-  QDockWidget(parent),
-  dock(new Ui::FilterDockWidget)
+FilterDockWidget::FilterDockWidget(QWidget* parent)
+  : QDockWidget(parent)
+  , dock(new Ui::FilterDockWidget)
 {
   dock->setupUi(this);
 
-  mainwindow  = dynamic_cast<AutoscoperMainWindow*> ( parent);
+  mainwindow = dynamic_cast<AutoscoperMainWindow*>(parent);
 }
 
 FilterDockWidget::~FilterDockWidget()

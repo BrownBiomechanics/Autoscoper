@@ -44,13 +44,12 @@
 
 struct cudaArray;
 
-namespace xromm
-{
-namespace gpu
-{
+namespace xromm {
+namespace gpu {
 void volume_viewport(float x, float y, float width, float height);
 
-void volume_render(cudaTextureObject_t tex, float* buffer,
+void volume_render(cudaTextureObject_t tex,
+                   float* buffer,
                    size_t width,
                    size_t height,
                    const float* invModelViewMat,

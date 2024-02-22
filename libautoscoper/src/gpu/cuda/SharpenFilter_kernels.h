@@ -42,12 +42,17 @@
 #ifndef XROMM_GPU_SHARPEN_FILTER_KERNELS_H
 #define XROMM_GPU_SHARPEN_FILTER_KERNELS_H
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 void sharpen_filter_apply(const float* input,
                           float* output,
                           int width,
                           int height,
-                          float* filter, int filterSize, float contrast, float threshold);
-} } // namespace xromm::cuda
+                          float* filter,
+                          int filterSize,
+                          float contrast,
+                          float threshold);
+}
+} // namespace xromm
 
 #endif // XROMM_GPU_FILTER_KERNELS_H

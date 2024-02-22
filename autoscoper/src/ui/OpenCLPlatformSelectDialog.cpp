@@ -43,14 +43,14 @@
 #include "ui_OpenCLPlatformSelectDialog.h"
 
 #if defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-#include <gpu/opencl/OpenCL.hpp>
+#  include <gpu/opencl/OpenCL.hpp>
 #endif
 
 #include <QString>
 
-OpenCLPlatformSelectDialog::OpenCLPlatformSelectDialog(QWidget* parent) :
-  QDialog(parent),
-  diag(new Ui::OpenCLPlatformSelectDialog)
+OpenCLPlatformSelectDialog::OpenCLPlatformSelectDialog(QWidget* parent)
+  : QDialog(parent)
+  , diag(new Ui::OpenCLPlatformSelectDialog)
 {
 
   diag->setupUi(this);
@@ -68,7 +68,7 @@ OpenCLPlatformSelectDialog::~OpenCLPlatformSelectDialog()
   delete diag;
 }
 
-void OpenCLPlatformSelectDialog::on_comboBox_currentIndexChanged ( int index )
+void OpenCLPlatformSelectDialog::on_comboBox_currentIndexChanged(int index)
 {
 
   QString text = "";

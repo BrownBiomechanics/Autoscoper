@@ -46,21 +46,19 @@
 
 #include "Filter.hpp"
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 
 class SharpenFilter : public Filter
 {
 public:
-
   SharpenFilter();
 
-  virtual
-  ~SharpenFilter();
+  virtual ~SharpenFilter();
 
   // Apply the filter to the input image
 
-  virtual
-  void apply(const float* input, float* output, int width, int height);
+  virtual void apply(const float* input, float* output, int width, int height);
 
   // Accessors and mutators
 
@@ -77,7 +75,6 @@ public:
   void set_threshold(float threshold);
 
 private:
-
   float radius_;
   float contrast_;
   float threshold_;
@@ -87,6 +84,7 @@ private:
 
   void makeFilter();
 };
-} } // namespace xromm::cuda
+} // namespace gpu
+} // namespace xromm
 
 #endif // XROMM_GPU_SHARPEN_FILTER_HPP

@@ -51,14 +51,16 @@ class FilterTreeWidgetParameter;
 class QToolButton;
 class QCheckBox;
 
-namespace xromm{
-namespace gpu{
+namespace xromm {
+namespace gpu {
 class Filter;
 }
-}
+} // namespace xromm
 using xromm::gpu::Filter;
 
-class FilterTreeWidgetItem :  public QObject, public  QTreeWidgetItem
+class FilterTreeWidgetItem
+  : public QObject
+  , public QTreeWidgetItem
 {
   Q_OBJECT
 
@@ -72,7 +74,9 @@ public:
   void setName(QString _name) { name = _name; }
   std::vector<FilterTreeWidgetParameter*>* getParameters() { return &parameters; }
 
-  void addToModelViewTreeWidgetItem(QTreeWidget* treewidget, ModelViewTreeWidgetItem* modelViewWidget, bool addToTree = true);
+  void addToModelViewTreeWidgetItem(QTreeWidget* treewidget,
+                                    ModelViewTreeWidgetItem* modelViewWidget,
+                                    bool addToTree = true);
 
   Filter* getFilter() { return m_filter; }
   void save(std::ofstream& file);
@@ -93,13 +97,10 @@ private:
   Filter* m_filter;
 
 protected:
-
 public slots:
   void settingsButtonClicked();
   void updateFilter();
-  void on_visibleCheckBox_stateChanged ( int state );
+  void on_visibleCheckBox_stateChanged(int state);
 };
-
-
 
 #endif /* FILTERTREEWIDGETITEM_H */

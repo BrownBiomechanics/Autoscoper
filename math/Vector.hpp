@@ -165,136 +165,79 @@ struct Vec2
 
   //! Returns a pointer to the underlying array
 
-  operator T*()
-  {
-    return data;
-  }
+  operator T*() { return data; }
 
   //! Returns a const pointer to the underlying array
 
-  operator const T*() const
-  {
-    return data;
-  }
+  operator const T*() const { return data; }
 
   //! Returns a reference to the element at the specified index
 
-  T& operator[](int i)
-  {
-    return data[i];
-  }
+  T& operator[](int i) { return data[i]; }
 
   //! Returns a const reference to the element at the specified index
 
-  const T& operator[](int i) const
-  {
-    return data[i];
-  }
+  const T& operator[](int i) const { return data[i]; }
 
   //! Returns a reference to the element at the specified index
 
-  T& operator()(int i)
-  {
-    return data[i];
-  }
+  T& operator()(int i) { return data[i]; }
 
   //! Returns a const reference to the element at the specified index
 
-  const T& operator()(int i) const
-  {
-    return data[i];
-  }
+  const T& operator()(int i) const { return data[i]; }
 
   //! Returns the dot product of the specified vectors
 
-  friend T dot(const Vec2& u, const Vec2& v)
-  {
-    return u.x * v.x + u.y * v.y;
-  }
+  friend T dot(const Vec2& u, const Vec2& v) { return u.x * v.x + u.y * v.y; }
 
   //! Returns the squared length of the specified vector
 
-  friend T lensq(const Vec2& v)
-  {
-    return dot(v, v);
-  }
+  friend T lensq(const Vec2& v) { return dot(v, v); }
 
   //! Returns the length of the specified vector
 
-  friend T len(const Vec2& v)
-  {
-    return sqrt(lensq(v));
-  }
+  friend T len(const Vec2& v) { return sqrt(lensq(v)); }
 
   //! Returns a unit vector in the direction of the specified vector.
 
-  friend Vec2 unit(const Vec2& v)
-  {
-    return v / len(v);
-  }
+  friend Vec2 unit(const Vec2& v) { return v / len(v); }
 
   //! Returns a copy of the specified vector
 
-  friend Vec2 operator+(const Vec2& v)
-  {
-    return v;
-  }
+  friend Vec2 operator+(const Vec2& v) { return v; }
 
   //! Returns the negation of the specified vector
 
-  friend Vec2 operator-(const Vec2& v)
-  {
-    return Vec2(-v.x, -v.y);
-  }
+  friend Vec2 operator-(const Vec2& v) { return Vec2(-v.x, -v.y); }
 
   //! Returns the sum of the specified vectors
 
-  friend Vec2 operator+(const Vec2& u, const Vec2& v)
-  {
-    return Vec2(u.x + v.x, u.y + v.y);
-  }
+  friend Vec2 operator+(const Vec2& u, const Vec2& v) { return Vec2(u.x + v.x, u.y + v.y); }
 
   //! Returns the difference of the specified vectors
 
-  friend Vec2 operator-(const Vec2& u, const Vec2& v)
-  {
-    return Vec2(u.x - v.x, u.y - v.y);
-  }
+  friend Vec2 operator-(const Vec2& u, const Vec2& v) { return Vec2(u.x - v.x, u.y - v.y); }
 
   //! Returns the product by element of the specified vectors
 
-  friend Vec2 operator*(const Vec2& u, const Vec2& v)
-  {
-    return Vec2(u.x * v.x, u.y * v.y);
-  }
+  friend Vec2 operator*(const Vec2& u, const Vec2& v) { return Vec2(u.x * v.x, u.y * v.y); }
 
   //! Returns the quotient by element of the specified vectors
 
-  friend Vec2 operator/(const Vec2& u, const Vec2& v)
-  {
-    return Vec2(u.x / v.x, u.y / v.y);
-  }
+  friend Vec2 operator/(const Vec2& u, const Vec2& v) { return Vec2(u.x / v.x, u.y / v.y); }
 
   //! Returns the product of the specified scalar and vector
 
-  friend Vec2 operator*(const T& s, const Vec2& v)
-  {
-    return Vec2(s * v.x, s * v.y);
-  }
+  friend Vec2 operator*(const T& s, const Vec2& v) { return Vec2(s * v.x, s * v.y); }
 
   //! Returns the product of the specified vector and scalar
 
-  friend Vec2 operator*(const Vec2& v, const T& s)
-  {
-    return Vec2(v.x * s, v.y * s);
-  }
+  friend Vec2 operator*(const Vec2& v, const T& s) { return Vec2(v.x * s, v.y * s); }
 
   //! Returns the quotient of the specified vector and scalar
 
-  friend Vec2 operator/(const Vec2& v, const T& s)
-  {
-    return Vec2(v.x / s, v.y / s);
-  }
+  friend Vec2 operator/(const Vec2& v, const T& s) { return Vec2(v.x / s, v.y / s); }
 
   //! Assigns a vector to the sum of the specified vectors
 
@@ -352,56 +295,42 @@ struct Vec2
 
   //! Returns the minimum by element of the specified vectors
 
-  friend Vec2 vmin(const Vec2& u, const Vec2& v)
-  {
-    return Vec2(((u.x < v.x) ? u.x : v.x), ((u.y < v.y) ? u.y : v.y));
-  }
+  friend Vec2 vmin(const Vec2& u, const Vec2& v) { return Vec2(((u.x < v.x) ? u.x : v.x), ((u.y < v.y) ? u.y : v.y)); }
 
   //! Returns the maximum by element of the specified vectors
 
-  friend Vec2 vmax(const Vec2& u, const Vec2& v)
-  {
-    return Vec2(((u.x > v.x) ? u.x : v.x), ((u.y > v.y) ? u.y : v.y));
-  }
+  friend Vec2 vmax(const Vec2& u, const Vec2& v) { return Vec2(((u.x > v.x) ? u.x : v.x), ((u.y > v.y) ? u.y : v.y)); }
 
   //! Returns a linear interpolation of the specified vectors
 
-  friend Vec2 lerp(const Vec2& u, const Vec2& v, const T& t)
-  {
-    return u + t * (v - u);
-  }
+  friend Vec2 lerp(const Vec2& u, const Vec2& v, const T& t) { return u + t * (v - u); }
 
   //! Returns true if the specified vectors are equal and false otherwise
 
-  friend bool operator==(const Vec2& u, const Vec2& v)
-  {
-    return u.x == v.x && u.y == v.y;
-  }
+  friend bool operator==(const Vec2& u, const Vec2& v) { return u.x == v.x && u.y == v.y; }
 
   //! Returns true if the specified vectors are unequal and false otherwise
 
-  friend bool operator!=(const Vec2& u, const Vec2& v)
-  {
-    return u.x != v.x || u.y != v.y;
-  }
+  friend bool operator!=(const Vec2& u, const Vec2& v) { return u.x != v.x || u.y != v.y; }
 
   //! Writes the elements of the specified vector to the output stream
 
-  friend std::ostream& operator<<(std::ostream& os, const Vec2& v)
-  {
-    return os << v.x << " " << v.y;
-  }
+  friend std::ostream& operator<<(std::ostream& os, const Vec2& v) { return os << v.x << " " << v.y; }
 
   //! Reads the elements from the specified input stream to the vector
 
-  friend std::istream& operator>>(std::ostream& is, Vec2& v)
-  {
-    return is >> v.x >> v.y;
-  }
+  friend std::istream& operator>>(std::ostream& is, Vec2& v) { return is >> v.x >> v.y; }
 
   //! Underlying data array
 
-  union { struct { T x, y; }; T data[2]; };
+  union
+  {
+    struct
+    {
+      T x, y;
+    };
+    T data[2];
+  };
 };
 
 //! Class representing a 3-dimensional Euclidean vector
@@ -543,115 +472,67 @@ struct Vec3
 
   //! Returns a pointer to the underlying array
 
-  operator T*()
-  {
-    return data;
-  }
+  operator T*() { return data; }
 
   //! Returns a const pointer to the underlying array
 
-  operator const T*() const
-  {
-    return data;
-  }
+  operator const T*() const { return data; }
 
   //! Returns a reference to the element at the specified index
 
-  T& operator[](int i)
-  {
-    return data[i];
-  }
+  T& operator[](int i) { return data[i]; }
 
   //! Returns a const reference to the element at the specified index
 
-  const T& operator[](int i) const
-  {
-    return data[i];
-  }
+  const T& operator[](int i) const { return data[i]; }
 
   //! Returns a reference to the element at the specified index
 
-  T& operator()(int i)
-  {
-    return data[i];
-  }
+  T& operator()(int i) { return data[i]; }
 
   //! Returns a const reference to the element at the specified index
 
-  const T& operator()(int i) const
-  {
-    return data[i];
-  }
+  const T& operator()(int i) const { return data[i]; }
 
   //! Returns the dot product of the specified vectors
 
-  friend T dot(const Vec3& u, const Vec3& v)
-  {
-    return u.x * v.x + u.y * v.y + u.z * v.z;
-  }
+  friend T dot(const Vec3& u, const Vec3& v) { return u.x * v.x + u.y * v.y + u.z * v.z; }
 
   //! Returns the squared length of the specified vector
 
-  friend T lensq(const Vec3& v)
-  {
-    return dot(v, v);
-  }
+  friend T lensq(const Vec3& v) { return dot(v, v); }
 
   //! Returns the length of the specified vector
 
-  friend T len(const Vec3& v)
-  {
-    return sqrt(lensq(v));
-  }
+  friend T len(const Vec3& v) { return sqrt(lensq(v)); }
 
   //! Returns a unit vector in the direction of the specified vector.
 
-  friend Vec3 unit(const Vec3& v)
-  {
-    return v / len(v);
-  }
+  friend Vec3 unit(const Vec3& v) { return v / len(v); }
 
   //! Returns a copy of the specified vector
 
-  friend Vec3 operator+(const Vec3& v)
-  {
-    return v;
-  }
+  friend Vec3 operator+(const Vec3& v) { return v; }
 
   //! Returns the negation of the specified vector
 
-  friend Vec3 operator-(const Vec3& v)
-  {
-    return Vec3(-v.x, -v.y, -v.z);
-  }
+  friend Vec3 operator-(const Vec3& v) { return Vec3(-v.x, -v.y, -v.z); }
 
   //! Returns the sum of the specified vectors
 
-  friend Vec3 operator+(const Vec3& u, const Vec3& v)
-  {
-    return Vec3(u.x + v.x, u.y + v.y, u.z + v.z);
-  }
+  friend Vec3 operator+(const Vec3& u, const Vec3& v) { return Vec3(u.x + v.x, u.y + v.y, u.z + v.z); }
 
   //! Returns the difference of the specified vectors
 
-  friend Vec3 operator-(const Vec3& u, const Vec3& v)
-  {
-    return Vec3(u.x - v.x, u.y - v.y, u.z - v.z);
-  }
+  friend Vec3 operator-(const Vec3& u, const Vec3& v) { return Vec3(u.x - v.x, u.y - v.y, u.z - v.z); }
 
   //! Returns the product by element of the specified vectors
 
-  friend Vec3 operator*(const Vec3& u, const Vec3& v)
-  {
-    return Vec3(u.x * v.x, u.y * v.y, u.z * v.z);
-  }
+  friend Vec3 operator*(const Vec3& u, const Vec3& v) { return Vec3(u.x * v.x, u.y * v.y, u.z * v.z); }
 
   //! Returns the quotient by element of the specified vectors
 
-  friend Vec3 operator/(const Vec3& u, const Vec3& v)
-  {
-    return Vec3(u.x / v.x, u.y / v.y, u.z / v.z);
-  }
+  friend Vec3 operator/(const Vec3& u, const Vec3& v) { return Vec3(u.x / v.x, u.y / v.y, u.z / v.z); }
 
   //! Returns the cross product of the specified vectors
 
@@ -662,24 +543,15 @@ struct Vec3
 
   //! Returns the product of the specified scalar and vector
 
-  friend Vec3 operator*(const T& s, const Vec3& v)
-  {
-    return Vec3(s * v.x, s * v.y, s * v.z);
-  }
+  friend Vec3 operator*(const T& s, const Vec3& v) { return Vec3(s * v.x, s * v.y, s * v.z); }
 
   //! Returns the product of the specified vector and scalar
 
-  friend Vec3 operator*(const Vec3& v, const T& s)
-  {
-    return Vec3(v.x * s, v.y * s, v.z * s);
-  }
+  friend Vec3 operator*(const Vec3& v, const T& s) { return Vec3(v.x * s, v.y * s, v.z * s); }
 
   //! Returns the quotient of the specified vector and scalar
 
-  friend Vec3 operator/(const Vec3& v, const T& s)
-  {
-    return Vec3(v.x / s, v.y / s, v.z / s);
-  }
+  friend Vec3 operator/(const Vec3& v, const T& s) { return Vec3(v.x / s, v.y / s, v.z / s); }
 
   //! Assigns a vector to the sum of the specified vectors
 
@@ -745,58 +617,46 @@ struct Vec3
 
   friend Vec3 vmin(const Vec3& u, const Vec3& v)
   {
-    return Vec3(((u.x < v.x) ? u.x : v.x),
-                ((u.y < v.y) ? u.y : v.y),
-                ((u.z < v.z) ? u.z : v.z));
+    return Vec3(((u.x < v.x) ? u.x : v.x), ((u.y < v.y) ? u.y : v.y), ((u.z < v.z) ? u.z : v.z));
   }
 
   //! Returns the maximum by element of the specified vectors
 
   friend Vec3 vmax(const Vec3& u, const Vec3& v)
   {
-    return Vec3(((u.x > v.x) ? u.x : v.x),
-                ((u.y > v.y) ? u.y : v.y),
-                ((u.z > v.z) ? u.z : v.z));
+    return Vec3(((u.x > v.x) ? u.x : v.x), ((u.y > v.y) ? u.y : v.y), ((u.z > v.z) ? u.z : v.z));
   }
 
   //! Returns a linear interpolation of the specified vectors
 
-  friend Vec3 lerp(const Vec3& u, const Vec3& v, const T& t)
-  {
-    return u + t * (v - u);
-  }
+  friend Vec3 lerp(const Vec3& u, const Vec3& v, const T& t) { return u + t * (v - u); }
 
   //! Returns true if the specified vectors are equal and false otherwise
 
-  friend bool operator==(const Vec3& u, const Vec3& v)
-  {
-    return u.x == v.x && u.y == v.y && u.z == v.z;
-  }
+  friend bool operator==(const Vec3& u, const Vec3& v) { return u.x == v.x && u.y == v.y && u.z == v.z; }
 
   //! Returns true if the specified vectors are unequal and false otherwise
 
-  friend bool operator!=(const Vec3& u, const Vec3& v)
-  {
-    return u.x != v.x || u.y != v.y || u.z != v.z;
-  }
+  friend bool operator!=(const Vec3& u, const Vec3& v) { return u.x != v.x || u.y != v.y || u.z != v.z; }
 
   //! Writes the elements of the specified vector to the output stream
 
-  friend std::ostream& operator<<(std::ostream& os, const Vec3& v)
-  {
-    return os << v.x << " " << v.y << " " << v.z;
-  }
+  friend std::ostream& operator<<(std::ostream& os, const Vec3& v) { return os << v.x << " " << v.y << " " << v.z; }
 
   //! Reads the elements from the specified input stream to the vector
 
-  friend std::istream& operator>>(std::istream& is, Vec3& v)
-  {
-    return is >> v.x >> v.y >> v.z;
-  }
+  friend std::istream& operator>>(std::istream& is, Vec3& v) { return is >> v.x >> v.y >> v.z; }
 
   //! Underlying data array
 
-  union { struct { T x, y, z; }; T data[3]; };
+  union
+  {
+    struct
+    {
+      T x, y, z;
+    };
+    T data[3];
+  };
 };
 
 //! Class representing a 4-dimensional Euclidean vector
@@ -956,136 +816,79 @@ struct Vec4
 
   //! Returns a pointer to the underlying array
 
-  operator T*()
-  {
-    return data;
-  }
+  operator T*() { return data; }
 
   //! Returns a const pointer to the underlying array
 
-  operator const T*() const
-  {
-    return data;
-  }
+  operator const T*() const { return data; }
 
   //! Returns a reference to the element at the specified index
 
-  T& operator[](int i)
-  {
-    return data[i];
-  }
+  T& operator[](int i) { return data[i]; }
 
   //! Returns a const reference to the element at the specified index
 
-  const T& operator[](int i) const
-  {
-    return data[i];
-  }
+  const T& operator[](int i) const { return data[i]; }
 
   //! Returns a reference to the element at the specified index
 
-  T& operator()(int i)
-  {
-    return data[i];
-  }
+  T& operator()(int i) { return data[i]; }
 
   //! Returns a const reference to the element at the specified index
 
-  const T& operator()(int i) const
-  {
-    return data[i];
-  }
+  const T& operator()(int i) const { return data[i]; }
 
   //! Returns the dot product of the specified vectors
 
-  friend T dot(const Vec4& u, const Vec4& v)
-  {
-    return u.x * v.x + u.y * v.y + u.z * v.z + u.w * v.w;
-  }
+  friend T dot(const Vec4& u, const Vec4& v) { return u.x * v.x + u.y * v.y + u.z * v.z + u.w * v.w; }
 
   //! Returns the squared length of the specified vector
 
-  friend T lensq(const Vec4& v)
-  {
-    return dot(v, v);
-  }
+  friend T lensq(const Vec4& v) { return dot(v, v); }
 
   //! Returns the length of the specified vector
 
-  friend T len(const Vec4& v)
-  {
-    return sqrt(lensq(v));
-  }
+  friend T len(const Vec4& v) { return sqrt(lensq(v)); }
 
   //! Returns a unit vector in the direction of the specified vector.
 
-  friend Vec4 unit(const Vec4& v)
-  {
-    return v / len(v);
-  }
+  friend Vec4 unit(const Vec4& v) { return v / len(v); }
 
   //! Returns a copy of the specified vector
 
-  friend Vec4 operator+(const Vec4& v)
-  {
-    return v;
-  }
+  friend Vec4 operator+(const Vec4& v) { return v; }
 
   //! Returns the negation of the specified vector
 
-  friend Vec4 operator-(const Vec4& v)
-  {
-    return Vec4(-v.x, -v.y, -v.z, -v.w);
-  }
+  friend Vec4 operator-(const Vec4& v) { return Vec4(-v.x, -v.y, -v.z, -v.w); }
 
   //! Returns the sum of the specified vectors
 
-  friend Vec4 operator+(const Vec4& u, const Vec4& v)
-  {
-    return Vec4(u.x + v.x, u.y + v.y, u.z + v.z, u.w + v.w);
-  }
+  friend Vec4 operator+(const Vec4& u, const Vec4& v) { return Vec4(u.x + v.x, u.y + v.y, u.z + v.z, u.w + v.w); }
 
   //! Returns the difference of the specified vectors
 
-  friend Vec4 operator-(const Vec4& u, const Vec4& v)
-  {
-    return Vec4(u.x - v.x, u.y - v.y, u.z - v.z, u.w - v.w);
-  }
+  friend Vec4 operator-(const Vec4& u, const Vec4& v) { return Vec4(u.x - v.x, u.y - v.y, u.z - v.z, u.w - v.w); }
 
   //! Returns the product by element of the specified vectors
 
-  friend Vec4 operator*(const Vec4& u, const Vec4& v)
-  {
-    return Vec4(u.x * v.x, u.y * v.y, u.z * v.z, u.w * v.w);
-  }
+  friend Vec4 operator*(const Vec4& u, const Vec4& v) { return Vec4(u.x * v.x, u.y * v.y, u.z * v.z, u.w * v.w); }
 
   //! Returns the quotient by element of the specified vectors
 
-  friend Vec4 operator/(const Vec4& u, const Vec4& v)
-  {
-    return Vec4(u.x / v.x, u.y / v.y, u.z / v.z, u.w / v.w);
-  }
+  friend Vec4 operator/(const Vec4& u, const Vec4& v) { return Vec4(u.x / v.x, u.y / v.y, u.z / v.z, u.w / v.w); }
 
   //! Returns the product of the specified scalar and vector
 
-  friend Vec4 operator*(const T& s, const Vec4& v)
-  {
-    return Vec4(s * v.x, s * v.y, s * v.z, s * v.w);
-  }
+  friend Vec4 operator*(const T& s, const Vec4& v) { return Vec4(s * v.x, s * v.y, s * v.z, s * v.w); }
 
   //! Returns the product of the specified vector and scalar
 
-  friend Vec4 operator*(const Vec4& v, const T& s)
-  {
-    return Vec4(v.x * s, v.y * s, v.z * s, v.w * s);
-  }
+  friend Vec4 operator*(const Vec4& v, const T& s) { return Vec4(v.x * s, v.y * s, v.z * s, v.w * s); }
 
   //! Returns the quotient of the specified vector and scalar
 
-  friend Vec4 operator/(const Vec4& v, const T& s)
-  {
-    return Vec4(v.x / s, v.y / s, v.z / s, v.w / s);
-  }
+  friend Vec4 operator/(const Vec4& v, const T& s) { return Vec4(v.x / s, v.y / s, v.z / s, v.w / s); }
 
   //! Assigns a vector to the sum of the specified vectors
 
@@ -1157,42 +960,29 @@ struct Vec4
 
   friend Vec4 vmin(const Vec4& u, const Vec4& v)
   {
-    return Vec4(((u.x < v.x) ? u.x : v.x),
-                ((u.y < v.y) ? u.y : v.y),
-                ((u.z < v.z) ? u.z : v.z),
-                ((u.w < v.w) ? u.w : v.w));
+    return Vec4(
+      ((u.x < v.x) ? u.x : v.x), ((u.y < v.y) ? u.y : v.y), ((u.z < v.z) ? u.z : v.z), ((u.w < v.w) ? u.w : v.w));
   }
 
   //! Returns the maximum by element of the specified vectors
 
   friend Vec4 vmax(const Vec4& u, const Vec4& v)
   {
-    return Vec4(((u.x > v.x) ? u.x : v.x),
-                ((u.y > v.y) ? u.y : v.y),
-                ((u.z < v.z) ? u.z : v.z),
-                ((u.w > v.w) ? u.w : v.w));
+    return Vec4(
+      ((u.x > v.x) ? u.x : v.x), ((u.y > v.y) ? u.y : v.y), ((u.z < v.z) ? u.z : v.z), ((u.w > v.w) ? u.w : v.w));
   }
 
   //! Returns a linear interpolation of the specified vectors
 
-  friend Vec4 lerp(const Vec4& u, const Vec4& v, const T& t)
-  {
-    return u + t * (v - u);
-  }
+  friend Vec4 lerp(const Vec4& u, const Vec4& v, const T& t) { return u + t * (v - u); }
 
   //! Returns true if the specified vectors are equal and false otherwise
 
-  friend bool operator==(const Vec4& u, const Vec4& v)
-  {
-    return u.x == v.x && u.y == v.y && u.z == v.z && u.w == v.w;
-  }
+  friend bool operator==(const Vec4& u, const Vec4& v) { return u.x == v.x && u.y == v.y && u.z == v.z && u.w == v.w; }
 
   //! Returns true if the specified vectors are unequal and false otherwise
 
-  friend bool operator!=(const Vec4& u, const Vec4& v)
-  {
-    return u.x != v.x || u.y != v.y || u.z != v.z || u.w != v.w;
-  }
+  friend bool operator!=(const Vec4& u, const Vec4& v) { return u.x != v.x || u.y != v.y || u.z != v.z || u.w != v.w; }
 
   //! Writes the elements of the specified vector to the output stream
 
@@ -1203,14 +993,18 @@ struct Vec4
 
   //! Reads the elements from the specified input stream to the vector
 
-  friend std::istream& operator>>(std::istream& is, Vec4& v)
-  {
-    return is >> v.x >> v.y >> v.z >> v.w;
-  }
+  friend std::istream& operator>>(std::istream& is, Vec4& v) { return is >> v.x >> v.y >> v.z >> v.w; }
 
   //! Underlying data array
 
-  union { struct { T x, y, z, w; }; T data[4]; };
+  union
+  {
+    struct
+    {
+      T x, y, z, w;
+    };
+    T data[4];
+  };
 };
 
 #endif // VECTOR_HPP

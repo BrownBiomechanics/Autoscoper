@@ -40,7 +40,7 @@
 /// \author Benjamin Knorlein, Andy Loomis
 
 #ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
+#  define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #include "ui/FilterTreeWidgetItem.h"
@@ -56,15 +56,15 @@
 #include <QCheckBox>
 
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
-#include <gpu/cuda/SobelFilter.hpp>
-#include <gpu/cuda/ContrastFilter.hpp>
-#include <gpu/cuda/SharpenFilter.hpp>
-#include <gpu/cuda/GaussianFilter.hpp>
+#  include <gpu/cuda/SobelFilter.hpp>
+#  include <gpu/cuda/ContrastFilter.hpp>
+#  include <gpu/cuda/SharpenFilter.hpp>
+#  include <gpu/cuda/GaussianFilter.hpp>
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-#include <gpu/opencl/SobelFilter.hpp>
-#include <gpu/opencl/ContrastFilter.hpp>
-#include <gpu/opencl/SharpenFilter.hpp>
-#include <gpu/opencl/GaussianFilter.hpp>
+#  include <gpu/opencl/SobelFilter.hpp>
+#  include <gpu/opencl/ContrastFilter.hpp>
+#  include <gpu/opencl/SharpenFilter.hpp>
+#  include <gpu/opencl/GaussianFilter.hpp>
 #endif
 #include <Filter.hpp>
 
@@ -72,7 +72,9 @@
 #include <fstream>
 #include <sstream>
 
-FilterTreeWidgetItem::FilterTreeWidgetItem(int type):QTreeWidgetItem(FILTER), QObject()
+FilterTreeWidgetItem::FilterTreeWidgetItem(int type)
+  : QTreeWidgetItem(FILTER)
+  , QObject()
 {
   m_type = type;
   switch (type) {
@@ -103,8 +105,6 @@ FilterTreeWidgetItem::FilterTreeWidgetItem(int type):QTreeWidgetItem(FILTER), QO
   }
   settingsShown = false;
   init();
-
-
 }
 
 // FilterTreeWidgetItem::FilterTreeWidgetItem(QString _name):QTreeWidgetItem(FILTER), QObject()
@@ -113,7 +113,8 @@ FilterTreeWidgetItem::FilterTreeWidgetItem(int type):QTreeWidgetItem(FILTER), QO
 //  settingsShown = false;
 // }
 //
-// FilterTreeWidgetItem::FilterTreeWidgetItem(QString _name, QTreeWidget * parent):QTreeWidgetItem(parent, FILTER), QObject(parent)
+// FilterTreeWidgetItem::FilterTreeWidgetItem(QString _name, QTreeWidget * parent):QTreeWidgetItem(parent, FILTER),
+// QObject(parent)
 // {
 //  setName(_name);
 //  settingsShown = false;
@@ -137,7 +138,7 @@ void FilterTreeWidgetItem::save(std::ofstream& file)
     file << "GaussianFilter_end" << std::endl;
   } else if (m_type == 3) {
     file << "SharpenFilter_begin" << std::endl;
-    file << "Radius "   << parameters[0]->value << std::endl;
+    file << "Radius " << parameters[0]->value << std::endl;
     file << "Contrast " << parameters[1]->value << std::endl;
     file << "SharpenFilter_end" << std::endl;
   }
@@ -146,9 +147,8 @@ void FilterTreeWidgetItem::save(std::ofstream& file)
 void FilterTreeWidgetItem::load(std::ifstream& file)
 {
   std::string line, key;
-  while (std::getline(file, line) && line.compare("SobelFilter_end") != 0
-         && line.compare("ContrastFilter_end") != 0 && line.compare("GaussianFilter_end") != 0
-         && line.compare("SharpenFilter_end") != 0) {
+  while (std::getline(file, line) && line.compare("SobelFilter_end") != 0 && line.compare("ContrastFilter_end") != 0
+         && line.compare("GaussianFilter_end") != 0 && line.compare("SharpenFilter_end") != 0) {
     std::istringstream lineStream(line);
     lineStream >> key;
 
@@ -188,7 +188,6 @@ void FilterTreeWidgetItem::load(std::ifstream& file)
         lineStream >> value;
         parameters[1]->spinbox->setValue(value);
       }
-
     }
   }
 }
@@ -213,7 +212,9 @@ FilterTreeWidgetItem::~FilterTreeWidgetItem()
   parameters.clear();
 }
 
-void FilterTreeWidgetItem::addToModelViewTreeWidgetItem(QTreeWidget* treewidget, ModelViewTreeWidgetItem* modelViewWidget, bool addToTree)
+void FilterTreeWidgetItem::addToModelViewTreeWidgetItem(QTreeWidget* treewidget,
+                                                        ModelViewTreeWidgetItem* modelViewWidget,
+                                                        bool addToTree)
 {
 
   QFrame* pFrame = new QFrame(treewidget);
@@ -222,7 +223,7 @@ void FilterTreeWidgetItem::addToModelViewTreeWidgetItem(QTreeWidget* treewidget,
   pLayout->addWidget(new QLabel(name), 0, 1);
   visibleCheckBox = new QCheckBox();
   visibleCheckBox->setChecked(m_filter->enabled());
-  connect(visibleCheckBox, SIGNAL(stateChanged (int)), this, SLOT(on_visibleCheckBox_stateChanged(int)));
+  connect(visibleCheckBox, SIGNAL(stateChanged(int)), this, SLOT(on_visibleCheckBox_stateChanged(int)));
   pLayout->addWidget(visibleCheckBox, 0, 0);
   pLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum), 0, 2);
 
@@ -272,7 +273,8 @@ void FilterTreeWidgetItem::settingsButtonClicked()
   if (settingsShown) {
     this->setBackground(0, QColor::fromRgb(235, 235, 235));
     QIcon icon;
-    icon.addFile(QString::fromUtf8(":/images/resource-files/icons/settings_cancel.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon.addFile(
+      QString::fromUtf8(":/images/resource-files/icons/settings_cancel.png"), QSize(), QIcon::Normal, QIcon::Off);
     settingsButton->setIcon(icon);
   } else {
     this->setBackground(0, QColor::fromRgb(255, 255, 255));
@@ -291,26 +293,26 @@ void FilterTreeWidgetItem::updateFilter()
   switch (m_type) {
     default:
     case 0:
-      ((xromm::gpu::SobelFilter*) (m_filter))->setBlend(parameters[0]->value);
-      ((xromm::gpu::SobelFilter*) (m_filter))->setScale(parameters[1]->value);
+      ((xromm::gpu::SobelFilter*)(m_filter))->setBlend(parameters[0]->value);
+      ((xromm::gpu::SobelFilter*)(m_filter))->setScale(parameters[1]->value);
       break;
     case 1:
-      ((xromm::gpu::ContrastFilter*) (m_filter))->set_alpha(parameters[0]->value);
-      ((xromm::gpu::ContrastFilter*) (m_filter))->set_beta(parameters[1]->value);
+      ((xromm::gpu::ContrastFilter*)(m_filter))->set_alpha(parameters[0]->value);
+      ((xromm::gpu::ContrastFilter*)(m_filter))->set_beta(parameters[1]->value);
       break;
     case 2:
-      ((xromm::gpu::GaussianFilter*) (m_filter))->set_radius(parameters[0]->value);
+      ((xromm::gpu::GaussianFilter*)(m_filter))->set_radius(parameters[0]->value);
       break;
     case 3:
-      ((xromm::gpu::SharpenFilter*) (m_filter))->set_radius(parameters[0]->value);
-      ((xromm::gpu::SharpenFilter*) (m_filter))->set_contrast(parameters[1]->value);
+      ((xromm::gpu::SharpenFilter*)(m_filter))->set_radius(parameters[0]->value);
+      ((xromm::gpu::SharpenFilter*)(m_filter))->set_contrast(parameters[1]->value);
       break;
   }
   FilterTreeWidget* filterTreeWidget = dynamic_cast<FilterTreeWidget*>(treeWidget());
   filterTreeWidget->redrawGL();
 }
 
-void FilterTreeWidgetItem::on_visibleCheckBox_stateChanged ( int state )
+void FilterTreeWidgetItem::on_visibleCheckBox_stateChanged(int state)
 {
   if (state == 0) {
     m_filter->set_enabled(false);

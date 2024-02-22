@@ -40,7 +40,7 @@
 /// \author Benjamin Knorlein, Andy Loomis
 
 #ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
+#  define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #include "ui/FilterTreeWidget.h"
@@ -65,21 +65,19 @@
 #include <fstream>
 #include <sstream>
 
-FilterTreeWidget::FilterTreeWidget(QWidget* parent) :QTreeWidget(parent)
+FilterTreeWidget::FilterTreeWidget(QWidget* parent)
+  : QTreeWidget(parent)
 {
-  setContentsMargins( 0, 0, 0, 0 );
+  setContentsMargins(0, 0, 0, 0);
 
   // Setup the context Menu actions
   setContextMenuPolicy(Qt::CustomContextMenu);
-  connect(this,
-          SIGNAL(customContextMenuRequested(const QPoint&)),
-          SLOT(onCustomContextMenuRequested(const QPoint&)));
+  connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), SLOT(onCustomContextMenuRequested(const QPoint&)));
 
   action_LoadSettings = new QAction(tr("&Load Settings"), this);
   connect(action_LoadSettings, SIGNAL(triggered()), this, SLOT(action_LoadSettings_triggered()));
   action_SaveSettings = new QAction(tr("&Save Settings"), this);
   connect(action_SaveSettings, SIGNAL(triggered()), this, SLOT(action_SaveSettings_triggered()));
-
 
   action_AddSobelFilter = new QAction(tr("&Add Sobelfilter"), this);
   connect(action_AddSobelFilter, SIGNAL(triggered()), this, SLOT(action_AddSobelFilter_triggered()));
@@ -99,10 +97,7 @@ FilterTreeWidget::FilterTreeWidget(QWidget* parent) :QTreeWidget(parent)
   setDragDropMode(QAbstractItemView::InternalMove);
 }
 
-FilterTreeWidget::~FilterTreeWidget()
-{
-
-}
+FilterTreeWidget::~FilterTreeWidget() {}
 
 void FilterTreeWidget::addCamera(View* view)
 {
@@ -149,7 +144,7 @@ void FilterTreeWidget::showContextMenu(QTreeWidgetItem* item_contextMenu, const 
 
 void FilterTreeWidget::action_LoadSettings_triggered()
 {
-  CameraTreeWidgetItem* cameraTreeItem = dynamic_cast<CameraTreeWidgetItem*> (item_contextMenu);
+  CameraTreeWidgetItem* cameraTreeItem = dynamic_cast<CameraTreeWidgetItem*>(item_contextMenu);
   FilterDockWidget* dock_widget = dynamic_cast<FilterDockWidget*>(parent()->parent());
 
   if (cameraTreeItem && dock_widget) {
@@ -167,22 +162,22 @@ void FilterTreeWidget::action_LoadSettings_triggered()
     std::string line, key;
     while (std::getline(file, line)) {
       if (line.compare("DrrRenderer_begin") == 0) {
-        for (int i = 0; i < cameraTreeItem->childCount(); i ++) {
-          ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (cameraTreeItem->child(i));
+        for (int i = 0; i < cameraTreeItem->childCount(); i++) {
+          ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(cameraTreeItem->child(i));
           if (modelviewItem && modelviewItem->getType() == 1) {
             modelviewItem->loadSettings(file);
           }
         }
       } else if (line.compare("DrrFilters_begin") == 0) {
-        for (int i = 0; i < cameraTreeItem->childCount(); i ++) {
-          ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (cameraTreeItem->child(i));
+        for (int i = 0; i < cameraTreeItem->childCount(); i++) {
+          ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(cameraTreeItem->child(i));
           if (modelviewItem && modelviewItem->getType() == 1) {
             modelviewItem->loadFilters(file);
           }
         }
       } else if (line.compare("RadFilters_begin") == 0) {
-        for (int i = 0; i < cameraTreeItem->childCount(); i ++) {
-          ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (cameraTreeItem->child(i));
+        for (int i = 0; i < cameraTreeItem->childCount(); i++) {
+          ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(cameraTreeItem->child(i));
           if (modelviewItem && modelviewItem->getType() == 0) {
             modelviewItem->loadFilters(file);
           }
@@ -193,7 +188,7 @@ void FilterTreeWidget::action_LoadSettings_triggered()
 }
 void FilterTreeWidget::action_SaveSettings_triggered()
 {
-  CameraTreeWidgetItem* cameraTreeItem = dynamic_cast<CameraTreeWidgetItem*> (item_contextMenu);
+  CameraTreeWidgetItem* cameraTreeItem = dynamic_cast<CameraTreeWidgetItem*>(item_contextMenu);
   FilterDockWidget* dock_widget = dynamic_cast<FilterDockWidget*>(parent()->parent());
 
   if (cameraTreeItem && dock_widget) {
@@ -208,8 +203,8 @@ void FilterTreeWidget::action_SaveSettings_triggered()
       return;
     }
 
-    for (int i = 0; i < cameraTreeItem->childCount(); i ++) {
-      ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (cameraTreeItem->child(i));
+    for (int i = 0; i < cameraTreeItem->childCount(); i++) {
+      ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(cameraTreeItem->child(i));
       if (modelviewItem) {
         modelviewItem->save(file);
       }
@@ -222,12 +217,12 @@ void FilterTreeWidget::action_SaveSettings_triggered()
 void FilterTreeWidget::saveAllSettings(QString directory)
 {
   for (int i = 0; i < this->topLevelItemCount(); ++i) {
-    CameraTreeWidgetItem* camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));
+    CameraTreeWidgetItem* camera = dynamic_cast<CameraTreeWidgetItem*>(topLevelItem(i));
     if (camera) {
       QString filename = directory + camera->getName() + ".vie";
       std::ofstream file(filename.toStdString().c_str(), std::ios::out);
       for (int j = 0; j < camera->childCount(); ++j) {
-        ModelViewTreeWidgetItem* model = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(j));
+        ModelViewTreeWidgetItem* model = dynamic_cast<ModelViewTreeWidgetItem*>(camera->child(j));
         if (model) {
           model->save(file);
         }
@@ -240,11 +235,11 @@ void FilterTreeWidget::saveAllSettings(QString directory)
 void FilterTreeWidget::printAllSettings(std::ofstream& os)
 {
   for (int i = 0; i < this->topLevelItemCount(); ++i) {
-    CameraTreeWidgetItem* camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));
+    CameraTreeWidgetItem* camera = dynamic_cast<CameraTreeWidgetItem*>(topLevelItem(i));
     if (camera) {
       os << "camera_begin " << i << std::endl;
       for (int j = 0; j < camera->childCount(); ++j) {
-        ModelViewTreeWidgetItem* model = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(j));
+        ModelViewTreeWidgetItem* model = dynamic_cast<ModelViewTreeWidgetItem*>(camera->child(j));
         if (model) {
           model->save(os);
         }
@@ -257,29 +252,29 @@ void FilterTreeWidget::printAllSettings(std::ofstream& os)
 void FilterTreeWidget::loadAllSettings(QString directory)
 {
   for (int i = 0; i < this->topLevelItemCount(); ++i) {
-    CameraTreeWidgetItem* camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));
+    CameraTreeWidgetItem* camera = dynamic_cast<CameraTreeWidgetItem*>(topLevelItem(i));
     if (camera) {
       QString filename = directory + camera->getName() + ".vie";
       std::ifstream file(filename.toStdString().c_str(), std::ios::in);
       std::string line, key;
       while (std::getline(file, line)) {
         if (line.compare("DrrRenderer_begin") == 0) {
-          for (int i = 0; i < camera->childCount(); i ++) {
-            ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(i));
+          for (int i = 0; i < camera->childCount(); i++) {
+            ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(camera->child(i));
             if (modelviewItem && modelviewItem->getType() == 1) {
               modelviewItem->loadSettings(file);
             }
           }
         } else if (line.compare("DrrFilters_begin") == 0) {
-          for (int i = 0; i < camera->childCount(); i ++) {
-            ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(i));
+          for (int i = 0; i < camera->childCount(); i++) {
+            ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(camera->child(i));
             if (modelviewItem && modelviewItem->getType() == 1) {
               modelviewItem->loadFilters(file);
             }
           }
         } else if (line.compare("RadFilters_begin") == 0) {
-          for (int i = 0; i < camera->childCount(); i ++) {
-            ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(i));
+          for (int i = 0; i < camera->childCount(); i++) {
+            ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(camera->child(i));
             if (modelviewItem && modelviewItem->getType() == 0) {
               modelviewItem->loadFilters(file);
             }
@@ -299,28 +294,28 @@ void FilterTreeWidget::loadFilterSettings(int camera, QString filename)
   // std::cout << "Test Load Filter: " << filename.toStdString() << std::endl;
 
   for (unsigned int i = start; i < stop; ++i) {
-    CameraTreeWidgetItem* camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));
+    CameraTreeWidgetItem* camera = dynamic_cast<CameraTreeWidgetItem*>(topLevelItem(i));
     if (camera) {
       std::ifstream file(filename.toStdString().c_str(), std::ios::in);
       std::string line, key;
       while (std::getline(file, line)) {
         if (line.compare("DrrRenderer_begin") == 0) {
           for (int i = 0; i < camera->childCount(); i++) {
-            ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(i));
+            ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(camera->child(i));
             if (modelviewItem && modelviewItem->getType() == 1) {
               modelviewItem->loadSettings(file);
             }
           }
         } else if (line.compare("DrrFilters_begin") == 0) {
           for (int i = 0; i < camera->childCount(); i++) {
-            ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(i));
+            ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(camera->child(i));
             if (modelviewItem && modelviewItem->getType() == 1) {
               modelviewItem->loadFilters(file);
             }
           }
         } else if (line.compare("RadFilters_begin") == 0) {
           for (int i = 0; i < camera->childCount(); i++) {
-            ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(i));
+            ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(camera->child(i));
             if (modelviewItem && modelviewItem->getType() == 0) {
               modelviewItem->loadFilters(file);
             }
@@ -335,22 +330,21 @@ void FilterTreeWidget::loadFilterSettings(int camera, QString filename)
 void FilterTreeWidget::toggle_drrs()
 {
   for (int i = 0; i < this->topLevelItemCount(); ++i) {
-    CameraTreeWidgetItem* camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));
+    CameraTreeWidgetItem* camera = dynamic_cast<CameraTreeWidgetItem*>(topLevelItem(i));
     if (camera) {
       for (int j = 0; j < camera->childCount(); ++j) {
-        ModelViewTreeWidgetItem* model = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(j));
+        ModelViewTreeWidgetItem* model = dynamic_cast<ModelViewTreeWidgetItem*>(camera->child(j));
         if (model && model->getType() == 1) {
           model->toggleVisible();
         }
       }
     }
   }
-
 }
 
 void FilterTreeWidget::action_AddSobelFilter_triggered()
 {
-  ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (item_contextMenu);
+  ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(item_contextMenu);
   if (modelviewItem) {
     FilterTreeWidgetItem* filter = new FilterTreeWidgetItem(0);
     filter->addToModelViewTreeWidgetItem(this, modelviewItem);
@@ -359,7 +353,7 @@ void FilterTreeWidget::action_AddSobelFilter_triggered()
 }
 void FilterTreeWidget::action_AddContrastFilter_triggered()
 {
-  ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (item_contextMenu);
+  ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(item_contextMenu);
   if (modelviewItem) {
     FilterTreeWidgetItem* filter = new FilterTreeWidgetItem(1);
     filter->addToModelViewTreeWidgetItem(this, modelviewItem);
@@ -368,7 +362,7 @@ void FilterTreeWidget::action_AddContrastFilter_triggered()
 }
 void FilterTreeWidget::action_AddGaussianFilter_triggered()
 {
-  ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (item_contextMenu);
+  ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(item_contextMenu);
   if (modelviewItem) {
     FilterTreeWidgetItem* filter = new FilterTreeWidgetItem(2);
     filter->addToModelViewTreeWidgetItem(this, modelviewItem);
@@ -377,7 +371,7 @@ void FilterTreeWidget::action_AddGaussianFilter_triggered()
 }
 void FilterTreeWidget::action_AddSharpenFilter_triggered()
 {
-  ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (item_contextMenu);
+  ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(item_contextMenu);
   if (modelviewItem) {
     FilterTreeWidgetItem* filter = new FilterTreeWidgetItem(3);
     filter->addToModelViewTreeWidgetItem(this, modelviewItem);
@@ -386,8 +380,8 @@ void FilterTreeWidget::action_AddSharpenFilter_triggered()
 }
 void FilterTreeWidget::action_RemoveFilter_triggered()
 {
-  FilterTreeWidgetItem* filterItem = dynamic_cast<FilterTreeWidgetItem*> (item_contextMenu);
-  ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*> (item_contextMenu->parent());
+  FilterTreeWidgetItem* filterItem = dynamic_cast<FilterTreeWidgetItem*>(item_contextMenu);
+  ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(item_contextMenu->parent());
   if (filterItem && modelviewItem) {
     modelviewItem->removeFilter(filterItem);
     delete filterItem;
@@ -397,11 +391,11 @@ void FilterTreeWidget::action_RemoveFilter_triggered()
 
 void FilterTreeWidget::dragMoveEvent(QDragMoveEvent* event)
 {
-  QTreeWidgetItem* dropped = itemAt( event->pos() );
+  QTreeWidgetItem* dropped = itemAt(event->pos());
   QRect r = visualItemRect(dropped);
 
-  if (r.x() + 2  > event->pos().x() || r.y() + 2 > event->pos().y()
-      || r.x() + r.width() - 3 < event->pos().x() || r.y() + r.height() - 3 < event->pos().y()) {
+  if (r.x() + 2 > event->pos().x() || r.y() + 2 > event->pos().y() || r.x() + r.width() - 3 < event->pos().x()
+      || r.y() + r.height() - 3 < event->pos().y()) {
     event->ignore();
   } else if (dropped && dropped->type() == MODEL_VIEW) {
     event->acceptProposedAction();
@@ -411,18 +405,20 @@ void FilterTreeWidget::dragMoveEvent(QDragMoveEvent* event)
     event->ignore();
   }
 }
-void FilterTreeWidget::dropEvent ( QDropEvent* event )
+void FilterTreeWidget::dropEvent(QDropEvent* event)
 {
-  QTreeWidgetItem* dropped = itemAt( event->pos() );
+  QTreeWidgetItem* dropped = itemAt(event->pos());
   QTreeWidgetItem* dragged = currentItem();
   ModelViewTreeWidgetItem* modelviewItemDragged = NULL;
   ModelViewTreeWidgetItem* modelviewItemDropped = NULL;
 
-  FilterTreeWidgetItem* draggedFilter = dynamic_cast<FilterTreeWidgetItem*> (dragged);
+  FilterTreeWidgetItem* draggedFilter = dynamic_cast<FilterTreeWidgetItem*>(dragged);
   QTreeWidget::dropEvent(event);
 
-  if (dropped->type() == MODEL_VIEW)modelviewItemDropped = dynamic_cast<ModelViewTreeWidgetItem*> (dropped);
-  if (dropped->type() == FILTER && dropped->parent())modelviewItemDropped = dynamic_cast<ModelViewTreeWidgetItem*> (dropped->parent());
+  if (dropped->type() == MODEL_VIEW)
+    modelviewItemDropped = dynamic_cast<ModelViewTreeWidgetItem*>(dropped);
+  if (dropped->type() == FILTER && dropped->parent())
+    modelviewItemDropped = dynamic_cast<ModelViewTreeWidgetItem*>(dropped->parent());
 
   if (draggedFilter && modelviewItemDropped) {
     draggedFilter->addToModelViewTreeWidgetItem(this, modelviewItemDropped, false);
@@ -438,10 +434,10 @@ void FilterTreeWidget::dropEvent ( QDropEvent* event )
 void FilterTreeWidget::resetFilterTree()
 {
   for (int i = 0; i < this->topLevelItemCount(); ++i) {
-    CameraTreeWidgetItem* camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));
+    CameraTreeWidgetItem* camera = dynamic_cast<CameraTreeWidgetItem*>(topLevelItem(i));
     if (camera) {
       for (int j = 0; j < camera->childCount(); ++j) {
-        ModelViewTreeWidgetItem* model = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(j));
+        ModelViewTreeWidgetItem* model = dynamic_cast<ModelViewTreeWidgetItem*>(camera->child(j));
         if (model) {
           model->resetVectors();
         }
@@ -453,18 +449,18 @@ void FilterTreeWidget::printTree()
 {
   fprintf(stderr, "\n");
   for (int i = 0; i < this->topLevelItemCount(); ++i) {
-    CameraTreeWidgetItem* camera = dynamic_cast<CameraTreeWidgetItem*> (topLevelItem(i));
+    CameraTreeWidgetItem* camera = dynamic_cast<CameraTreeWidgetItem*>(topLevelItem(i));
     if (camera) {
       fprintf(stderr, "Camera%d %s\n", i, camera->getName().toStdString().c_str());
       for (int j = 0; j < camera->childCount(); ++j) {
-        ModelViewTreeWidgetItem* model = dynamic_cast<ModelViewTreeWidgetItem*> (camera->child(j));
+        ModelViewTreeWidgetItem* model = dynamic_cast<ModelViewTreeWidgetItem*>(camera->child(j));
         if (model) {
           fprintf(stderr, "    Model%d %s\n", j, model->getName().toStdString().c_str());
           fprintf(stderr, "---------------------\n");
           model->printFilters();
           fprintf(stderr, "---------------------\n");
           for (int k = 0; k < model->childCount(); ++k) {
-            FilterTreeWidgetItem* filter = dynamic_cast<FilterTreeWidgetItem*> (model->child(k));
+            FilterTreeWidgetItem* filter = dynamic_cast<FilterTreeWidgetItem*>(model->child(k));
             if (filter) {
 
               fprintf(stderr, "          Filter%d %s\n", k, filter->getName().toStdString().c_str());
@@ -485,28 +481,28 @@ void FilterTreeWidget::printTree()
   }
 }
 
-void FilterTreeWidget::drawRow( QPainter* p, const QStyleOptionViewItem& opt, const QModelIndex& idx ) const
+void FilterTreeWidget::drawRow(QPainter* p, const QStyleOptionViewItem& opt, const QModelIndex& idx) const
 {
 
-  QTreeWidget::drawRow( p, opt, idx );
-  QModelIndex s = idx.sibling( idx.row(), 0 );
-  if (s.isValid() ) {
-    QRect rect = visualRect( s );
+  QTreeWidget::drawRow(p, opt, idx);
+  QModelIndex s = idx.sibling(idx.row(), 0);
+  if (s.isValid()) {
+    QRect rect = visualRect(s);
     int py = rect.y();
     int ph = rect.height();
     int pw = rect.width();
     int px = rect.x();
     if (itemFromIndex(s)->type() == CAMERA_VIEW) {
-      p->setPen( QColor( 0, 0, 0 ) );
-      p->drawLine( px, py + ph - 1, pw + px, py + ph - 1);
-      p->drawLine( px, py, pw + px, py );
+      p->setPen(QColor(0, 0, 0));
+      p->drawLine(px, py + ph - 1, pw + px, py + ph - 1);
+      p->drawLine(px, py, pw + px, py);
     } else if (itemFromIndex(s)->type() == MODEL_VIEW) {
-      p->setPen( QColor( 150, 150, 150 ) );
-      p->drawLine( px, py + ph - 1, pw + px, py + ph - 1);
-      p->drawLine( px, py, pw + px, py );
+      p->setPen(QColor(150, 150, 150));
+      p->drawLine(px, py + ph - 1, pw + px, py + ph - 1);
+      p->drawLine(px, py, pw + px, py);
     } else if (itemFromIndex(s)->type() == FILTER) {
-      p->setPen( QColor( 200, 200, 200 ) );
-      p->drawLine( px, py + ph - 1, pw + px, py + ph - 1);
+      p->setPen(QColor(200, 200, 200));
+      p->drawLine(px, py + ph - 1, pw + px, py + ph - 1);
     }
   }
 }
@@ -514,5 +510,6 @@ void FilterTreeWidget::drawRow( QPainter* p, const QStyleOptionViewItem& opt, co
 void FilterTreeWidget::redrawGL()
 {
   FilterDockWidget* dock_widget = dynamic_cast<FilterDockWidget*>(parent()->parent());
-  if (dock_widget)dock_widget->getMainWindow()->redrawGL();
+  if (dock_widget)
+    dock_widget->getMainWindow()->redrawGL();
 }

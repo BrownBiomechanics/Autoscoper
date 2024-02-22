@@ -44,18 +44,15 @@
 #define BX 16
 #define BY 16
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 #include "gpu/opencl/kernel/DRRBackground.cl.h"
 
 static Program DRRBackground_kernel_;
 
-void drr_background(const Buffer* src1,
-                    const Buffer* dest,
-                    unsigned width,
-                    unsigned height)
+void drr_background(const Buffer* src1, const Buffer* dest, unsigned width, unsigned height)
 {
-  Kernel* kernel = DRRBackground_kernel_.compile(
-    DRRBackground_cl, "drr_background_kernel");
+  Kernel* kernel = DRRBackground_kernel_.compile(DRRBackground_cl, "drr_background_kernel");
 
   kernel->block2d(BX, BY);
   kernel->grid2d((width + BX - 1) / BX, (height + BY - 1) / BY);

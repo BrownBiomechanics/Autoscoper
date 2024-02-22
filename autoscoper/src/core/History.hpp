@@ -60,8 +60,8 @@ struct State
 class History
 {
 public:
-
-  History(unsigned size) : size(size)
+  History(unsigned size)
+    : size(size)
   {
     it = states.begin();
   }
@@ -82,10 +82,7 @@ public:
     it = states.end();
   }
 
-  bool can_undo() const
-  {
-    return it != states.begin();
-  }
+  bool can_undo() const { return it != states.begin(); }
 
   State undo()
   {
@@ -110,7 +107,6 @@ public:
   }
 
 private:
-
   unsigned size;
 
   std::list<State> states;

@@ -101,8 +101,6 @@ int tiffImageWriteStripped(TIFF* tif, TiffImage* img, uint32_t rowsPerStrip);
 // TIFF file. The data is written in tiles of the specified dimension. If the
 // tileWidth or tileHeight is set to zero than default values will be chosen
 // by the tiff library. It returns 1 on success and 0 on failure.
-int tiffImageWriteTiled(TIFF* tif, TiffImage* img, uint32_t tileWidth,
-                        uint32_t tileHeight);
+int tiffImageWriteTiled(TIFF* tif, TiffImage* img, uint32_t tileWidth, uint32_t tileHeight);
 
 #endif // TIFF_IMAGE_H
-

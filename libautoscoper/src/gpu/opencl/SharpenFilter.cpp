@@ -47,7 +47,8 @@
 #define BX 16
 #define BY 16
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 #include "gpu/opencl/kernel/SharpenFilter.cl.h"
 
 static Program sharpen_program_;
@@ -55,10 +56,10 @@ static Program sharpen_program_;
 static int num_sharpen_filters = 0;
 
 SharpenFilter::SharpenFilter()
-  : Filter(XROMM_GPU_SHARPEN_FILTER, ""),
-    radius_(1),
-    contrast_(1),
-    sharpen_(NULL)
+  : Filter(XROMM_GPU_SHARPEN_FILTER, "")
+  , radius_(1)
+  , contrast_(1)
+  , sharpen_(NULL)
 {
   std::stringstream name_stream;
   name_stream << "SharpenFilter" << (++num_sharpen_filters);
@@ -72,7 +73,8 @@ SharpenFilter::SharpenFilter()
 
 SharpenFilter::~SharpenFilter()
 {
-  if (sharpen_ != NULL) delete sharpen_;
+  if (sharpen_ != NULL)
+    delete sharpen_;
 }
 
 void SharpenFilter::set_radius(float radius)
@@ -104,7 +106,8 @@ void SharpenFilter::makeFilter()
   int filterRadius = 3 * radius_;
   filterSize_ = 2 * filterRadius + 1;
 
-  if (filterSize_ == 1)return;
+  if (filterSize_ == 1)
+    return;
 
   size_t nBytes = sizeof(float) * filterSize_ * filterSize_;
   float* sharpen = new float[nBytes];
@@ -135,26 +138,21 @@ void SharpenFilter::makeFilter()
   }
 
   /* copy the filter to GPU */
-  if (sharpen_ != NULL) delete sharpen_;
+  if (sharpen_ != NULL)
+    delete sharpen_;
   sharpen_ = new Buffer(nBytes, CL_MEM_READ_ONLY);
   sharpen_->read((void*)sharpen);
 
   delete[] sharpen;
 }
 
-void
-SharpenFilter::apply(
-  const Buffer* input,
-  Buffer* output,
-  int width,
-  int height)
+void SharpenFilter::apply(const Buffer* input, Buffer* output, int width, int height)
 {
   if (filterSize_ == 1) {
     /* if filterSize_ = 1, filter does not change image */
     input->copy(output);
   } else {
-    Kernel* kernel = sharpen_program_.compile(
-      SharpenFilter_cl, "sharpen_filter_kernel");
+    Kernel* kernel = sharpen_program_.compile(SharpenFilter_cl, "sharpen_filter_kernel");
 
     kernel->block2d(BX, BY);
     kernel->grid2d((width - 1) / BX + 1, (height - 1) / BY + 1);
@@ -173,4 +171,5 @@ SharpenFilter::apply(
     delete kernel;
   }
 }
-} } // namespace xromm::cuda
+} // namespace gpu
+} // namespace xromm

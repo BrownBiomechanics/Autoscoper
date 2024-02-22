@@ -50,21 +50,22 @@
 #include "RadRenderer.hpp"
 #include "RadRenderer_kernels.h"
 
-namespace xromm { namespace gpu
-{
+namespace xromm {
+namespace gpu {
 static int num_rad_renderers = 0;
 
-RadRenderer::RadRenderer() : array_(0)
+RadRenderer::RadRenderer()
+  : array_(0)
 {
   image_plane_[0] = -1.0f;
   image_plane_[1] = -1.0f;
-  image_plane_[2] =  2.0f;
-  image_plane_[3] =  2.0f;
+  image_plane_[2] = 2.0f;
+  image_plane_[3] = 2.0f;
 
   viewport_[0] = -1.0f;
   viewport_[1] = -1.0f;
-  viewport_[2] =  2.0f;
-  viewport_[3] =  2.0f;
+  viewport_[2] = 2.0f;
+  viewport_[3] = 2.0f;
 
   std::stringstream name_stream;
   name_stream << "RadRenderer" << (++num_rad_renderers);
@@ -77,35 +78,33 @@ RadRenderer::~RadRenderer()
   cutilSafeCall(cudaFreeArray(array_));
 }
 
-void
-RadRenderer::set_rad(const void* data, size_t width, size_t height, size_t bps)
+void RadRenderer::set_rad(const void* data, size_t width, size_t height, size_t bps)
 {
   cutilSafeCall(cudaFreeArray(array_));
 
   // Create a 2D array.
   cudaChannelFormatDesc desc;
   switch (bps) {
-    case 8:  desc = cudaCreateChannelDesc<unsigned char>(); break;
-    case 16: desc = cudaCreateChannelDesc<unsigned short>(); break;
-    case 32: desc = cudaCreateChannelDesc<unsigned int>(); break;
+    case 8:
+      desc = cudaCreateChannelDesc<unsigned char>();
+      break;
+    case 16:
+      desc = cudaCreateChannelDesc<unsigned short>();
+      break;
+    case 32:
+      desc = cudaCreateChannelDesc<unsigned int>();
+      break;
     default:
-      std::cerr << "RadRenderer::rad(): Unsupported bit depth "
-                << bps << std::endl;
+      std::cerr << "RadRenderer::rad(): Unsupported bit depth " << bps << std::endl;
       return;
   }
   cutilSafeCall(cudaMallocArray(&array_, &desc, width, height));
 
   // Copy data to 2D array.
-  cutilSafeCall(cudaMemcpyToArray(array_,
-                                  0,
-                                  0,
-                                  data,
-                                  width * height * (bps / 8),
-                                  cudaMemcpyHostToDevice));
+  cutilSafeCall(cudaMemcpyToArray(array_, 0, 0, data, width * height * (bps / 8), cudaMemcpyHostToDevice));
 }
 
-void
-RadRenderer::set_image_plane(float x, float y, float width, float height)
+void RadRenderer::set_image_plane(float x, float y, float width, float height)
 {
   image_plane_[0] = x;
   image_plane_[1] = y;
@@ -113,8 +112,7 @@ RadRenderer::set_image_plane(float x, float y, float width, float height)
   image_plane_[3] = height;
 }
 
-void
-RadRenderer::set_viewport(float x, float y, float width, float height)
+void RadRenderer::set_viewport(float x, float y, float width, float height)
 {
   viewport_[0] = x;
   viewport_[1] = y;
@@ -122,8 +120,7 @@ RadRenderer::set_viewport(float x, float y, float width, float height)
   viewport_[3] = height;
 }
 
-void
-RadRenderer::render(float* buffer, size_t width, size_t height) const
+void RadRenderer::render(float* buffer, size_t width, size_t height) const
 {
   cudaTextureObject_t tex = createTexureObjectFromArray(array_, cudaReadModeNormalizedFloat);
 
@@ -143,4 +140,5 @@ RadRenderer::render(float* buffer, size_t width, size_t height) const
 
   cudaDestroyTextureObject(tex);
 }
-} } // namespace xromm::cuda
+} // namespace gpu
+} // namespace xromm

@@ -48,26 +48,23 @@
 #include "Filter.hpp"
 
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
-#include "gpu/cuda/RayCaster.hpp"
-#include "gpu/cuda/RadRenderer.hpp"
-#include "gpu/cuda/BackgroundRenderer.hpp"
+#  include "gpu/cuda/RayCaster.hpp"
+#  include "gpu/cuda/RadRenderer.hpp"
+#  include "gpu/cuda/BackgroundRenderer.hpp"
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-#include "gpu/opencl/RayCaster.hpp"
-#include "gpu/opencl/RadRenderer.hpp"
-#include "gpu/opencl/BackgroundRenderer.hpp"
-#include "gpu/opencl/OpenCL.hpp"
+#  include "gpu/opencl/RayCaster.hpp"
+#  include "gpu/opencl/RadRenderer.hpp"
+#  include "gpu/opencl/BackgroundRenderer.hpp"
+#  include "gpu/opencl/OpenCL.hpp"
 #endif
 
 #include "Trial.hpp"
 
-
-namespace xromm
-{
+namespace xromm {
 class Camera;
 class CoordFrame;
 
-namespace gpu
-{
+namespace gpu {
 class Filter;
 class View;
 class VolumeDescription;
@@ -76,16 +73,24 @@ class VolumeDescription;
 struct OptimizationParameters
 {
   OptimizationParameters() = default;
-  OptimizationParameters(unsigned int repeats, int dframe, unsigned int method, unsigned int max_iter, double min_limit, double max_limit, unsigned int cf_model, unsigned int max_stall_iter, unsigned int opt_init_heuristic) :
-    repeats(repeats),
-    dframe(dframe),
-    method(method),
-    max_iter(max_iter),
-    min_limit(min_limit),
-    max_limit(max_limit),
-    cf_model(cf_model),
-    max_stall_iter(max_stall_iter),
-    opt_init_heuristic(opt_init_heuristic)
+  OptimizationParameters(unsigned int repeats,
+                         int dframe,
+                         unsigned int method,
+                         unsigned int max_iter,
+                         double min_limit,
+                         double max_limit,
+                         unsigned int cf_model,
+                         unsigned int max_stall_iter,
+                         unsigned int opt_init_heuristic)
+    : repeats(repeats)
+    , dframe(dframe)
+    , method(method)
+    , max_iter(max_iter)
+    , min_limit(min_limit)
+    , max_limit(max_limit)
+    , cf_model(cf_model)
+    , max_stall_iter(max_stall_iter)
+    , opt_init_heuristic(opt_init_heuristic)
   {
   }
   void PrintSelf(std::ostream& os) const
@@ -112,17 +117,23 @@ struct OptimizationParameters
   unsigned int opt_init_heuristic{ 0 };
 };
 
-
 class Tracker
 {
 public:
-
   Tracker();
   ~Tracker();
   void init();
   void load(const Trial& trial);
   Trial* trial() { return &trial_; }
-  void optimize(int frame, int dframe, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int max_stall_iter);
+  void optimize(int frame,
+                int dframe,
+                int repeats,
+                int opt_method,
+                unsigned int max_iter,
+                double min_limit,
+                double max_limit,
+                int cf_model,
+                unsigned int max_stall_iter);
   double minimizationFunc(const double* values) const;
   std::vector<double> trackFrame(unsigned int volumeID, double* xyzpr) const;
   std::vector<gpu::View*>& views() { return views_; }
@@ -131,7 +142,11 @@ public:
   const gpu::View* view(size_t i) const { return views_.at(i); }
   void updateBackground();
   void setBackgroundThreshold(float threshold);
-  std::vector<unsigned char> getImageData(unsigned volumeID, unsigned camera, double* xyzpr, unsigned& width, unsigned& height);
+  std::vector<unsigned char> getImageData(unsigned volumeID,
+                                          unsigned camera,
+                                          double* xyzpr,
+                                          unsigned& width,
+                                          unsigned& height);
   OptimizationParameters& getLatestOptimizationParameters() { return latest_optimization_parameters_; }
   void printLatestOptimizationParameters(std::ostream& os) const { latest_optimization_parameters_.PrintSelf(os); }
 
@@ -162,6 +177,6 @@ private:
   gpu::Buffer* drr_mask_;
 #endif
 };
-} // namespace XROMM
+} // namespace xromm
 
 #endif // XROMM_TRACKER_H

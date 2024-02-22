@@ -52,16 +52,25 @@
 class KeyCurve
 {
 private:
-
   class Key;
 
   typedef std::map<int, Key> key_map;
 
 public:
+  enum Tangent_type
+  {
+    SMOOTH
+  };
 
-  enum Tangent_type { SMOOTH };
-
-  enum Curve_type { X_CURVE, Y_CURVE, Z_CURVE, YAW_CURVE, PITCH_CURVE, ROLL_CURVE };
+  enum Curve_type
+  {
+    X_CURVE,
+    Y_CURVE,
+    Z_CURVE,
+    YAW_CURVE,
+    PITCH_CURVE,
+    ROLL_CURVE
+  };
 
   // Typedefs
 
@@ -121,10 +130,7 @@ public:
 
   iterator set_time(iterator position, int time);
 
-  float value(const_iterator position) const
-  {
-    return position->second.value;
-  }
+  float value(const_iterator position) const { return position->second.value; }
 
   void set_value(iterator position, float value)
   {
@@ -132,10 +138,7 @@ public:
     key_changed(position);
   }
 
-  Tangent_type in_tangent_type(const_iterator position) const
-  {
-    return position->second.in_tangent_type;
-  }
+  Tangent_type in_tangent_type(const_iterator position) const { return position->second.in_tangent_type; }
 
   void set_in_tangent_type(iterator position, Tangent_type type)
   {
@@ -144,10 +147,7 @@ public:
     key_changed(position);
   }
 
-  Tangent_type out_tangent_type(const_iterator position) const
-  {
-    return position->second.out_tangent_type;
-  }
+  Tangent_type out_tangent_type(const_iterator position) const { return position->second.out_tangent_type; }
 
   void set_out_tangent_type(iterator position, Tangent_type type)
   {
@@ -156,40 +156,19 @@ public:
     key_changed(position);
   }
 
-  bool bind_tangents(iterator position) const
-  {
-    return position->second.bind_tangents;
-  }
+  bool bind_tangents(iterator position) const { return position->second.bind_tangents; }
 
-  void set_bind_tangents(iterator position, bool bind)
-  {
-    position->second.bind_tangents = bind;
-  }
+  void set_bind_tangents(iterator position, bool bind) { position->second.bind_tangents = bind; }
 
-  bool in_tangent_lock(const_iterator position) const
-  {
-    return position->second.in_tangent_lock;
-  }
+  bool in_tangent_lock(const_iterator position) const { return position->second.in_tangent_lock; }
 
-  void set_in_tangent_lock(iterator position, bool lock)
-  {
-    position->second.in_tangent_lock = lock;
-  }
+  void set_in_tangent_lock(iterator position, bool lock) { position->second.in_tangent_lock = lock; }
 
-  bool out_tangent_lock(const_iterator position) const
-  {
-    return position->second.out_tangent_lock;
-  }
+  bool out_tangent_lock(const_iterator position) const { return position->second.out_tangent_lock; }
 
-  void set_out_tangent_lock(iterator position, bool lock)
-  {
-    position->second.out_tangent_lock = lock;
-  }
+  void set_out_tangent_lock(iterator position, bool lock) { position->second.out_tangent_lock = lock; }
 
-  float in_tangent(const_iterator position) const
-  {
-    return position->second.in_tangent;
-  }
+  float in_tangent(const_iterator position) const { return position->second.in_tangent; }
 
   void set_in_tangent(iterator position, float tangent)
   {
@@ -202,10 +181,7 @@ public:
     key_changed(position);
   }
 
-  float out_tangent(const_iterator position) const
-  {
-    return position->second.out_tangent;
-  }
+  float out_tangent(const_iterator position) const { return position->second.out_tangent; }
 
   void set_out_tangent(iterator position, float tangent)
   {
@@ -225,7 +201,6 @@ public:
   float operator()(float time) const;
 
 private:
-
   // Internal structure to store keyframes and Bezier curves
 
   class Key

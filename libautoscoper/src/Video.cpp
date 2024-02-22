@@ -43,18 +43,18 @@
 #include <algorithm>
 #include <iostream>
 #ifdef WIN32
-#ifndef NOMINMAX // Otherwise windows.h defines min/max macros
-#define NOMINMAX
-#endif // NOMINMAX
-#include <windows.h>
-#include "Win32/dirent.h"
+#  ifndef NOMINMAX // Otherwise windows.h defines min/max macros
+#    define NOMINMAX
+#  endif // NOMINMAX
+#  include <windows.h>
+#  include "Win32/dirent.h"
 #elif __APPLE__
-#include <sys/types.h>
-#include <sys/dir.h>
+#  include <sys/types.h>
+#  include <sys/dir.h>
 #endif
 #ifdef __linux__
-#include <sys/types.h>
-#include <sys/dir.h>
+#  include <sys/types.h>
+#  include <sys/dir.h>
 #endif
 
 #include <stdexcept>
@@ -62,14 +62,13 @@
 #include "Video.hpp"
 #include "TiffImage.h"
 
-namespace xromm
-{
+namespace xromm {
 Video::Video(const std::string& dirname)
-  : dirname_(dirname),
-    filenames_(),
-    frame_(),
-    image_(new TiffImage()),
-    background_(NULL)
+  : dirname_(dirname)
+  , filenames_()
+  , frame_()
+  , image_(new TiffImage())
+  , background_(NULL)
 {
   DIR* dir = opendir(dirname_.c_str());
   if (dir == 0) {
@@ -106,10 +105,10 @@ Video::Video(const std::string& dirname)
 }
 
 Video::Video(const Video& video)
-  : dirname_(video.dirname_),
-    filenames_(video.filenames_),
-    frame_(),
-    background_(NULL)
+  : dirname_(video.dirname_)
+  , filenames_(video.filenames_)
+  , frame_()
+  , background_(NULL)
 {
   image_ = tiffImageCopy(video.image_);
   if (video.background_) {
@@ -120,22 +119,25 @@ Video::Video(const Video& video)
 
 Video::~Video()
 {
-  if (image_) tiffImageFree(image_);
-  if (background_) delete[] background_;
+  if (image_)
+    tiffImageFree(image_);
+  if (background_)
+    delete[] background_;
 }
 
-Video&
-Video::operator=(const Video& video)
+Video& Video::operator=(const Video& video)
 {
-  dirname_   = video.dirname_;
+  dirname_ = video.dirname_;
   filenames_ = video.filenames_;
-  frame_     = video.frame_;
+  frame_ = video.frame_;
 
-  if (image_) tiffImageFree(image_);
+  if (image_)
+    tiffImageFree(image_);
   image_ = tiffImageCopy(video.image_);
 
   if (video.background_) {
-    if (background_) delete[] background_;
+    if (background_)
+      delete[] background_;
     background_ = new float[image_->width * image_->height];
     memcpy(background_, video.background_, image_->width * image_->height * sizeof(float));
   }
@@ -149,7 +151,8 @@ bool Video::create_background_image()
     return false;
   }
 
-  if (background_) delete[] background_;
+  if (background_)
+    delete[] background_;
   background_ = new float[width() * height()];
   memset(background_, 0, width() * height() * sizeof(float));
 
@@ -194,15 +197,12 @@ bool Video::create_background_image()
 template <typename T>
 void Video::create_background_image_internal(TiffImage* tmp_img)
 {
-  static_assert(
-    std::is_same<T, unsigned char>::value
-    || std::is_same<T, unsigned short>::value
-    || std::is_same<T, unsigned int>::value, "T must be of type unsigned char, unsigned short, or unsigned int");
+  static_assert(std::is_same<T, unsigned char>::value || std::is_same<T, unsigned short>::value
+                  || std::is_same<T, unsigned int>::value,
+                "T must be of type unsigned char, unsigned short, or unsigned int");
   constexpr unsigned int normalization_factor = std::numeric_limits<T>::max();
-  static_assert(
-    normalization_factor == 255
-    || normalization_factor == 65535
-    || normalization_factor == 4294967295, "normalization_factor must be one of 255, 65535 or 4294967295");
+  static_assert(normalization_factor == 255 || normalization_factor == 65535 || normalization_factor == 4294967295,
+                "normalization_factor must be one of 255, 65535 or 4294967295");
   T* start = reinterpret_cast<T*>(tmp_img->data);
   T* end = start + (tmp_img->dataSize / sizeof(T));
   T* iter = start;
@@ -217,8 +217,7 @@ void Video::create_background_image_internal(TiffImage* tmp_img)
   }
 }
 
-void
-Video::set_frame(size_type i)
+void Video::set_frame(size_type i)
 {
   if (i >= filenames_.size()) {
     i = filenames_.size() - 1;
@@ -236,31 +235,26 @@ Video::set_frame(size_type i)
 
   TIFFClose(tif);
 
-  frame_  = i;
+  frame_ = i;
 }
 
-Video::size_type
-Video::width() const
+Video::size_type Video::width() const
 {
   return image_->width;
 }
 
-Video::size_type
-Video::height() const
+Video::size_type Video::height() const
 {
   return image_->height;
 }
 
-Video::size_type
-Video::bps() const
+Video::size_type Video::bps() const
 {
   return image_->bitsPerSample;
 }
 
-const void*
-Video::data() const
+const void* Video::data() const
 {
   return image_->data;
 }
 } // namespace xromm
-

@@ -47,7 +47,8 @@
 #include "Filter.hpp"
 #include "OpenCL.hpp"
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 
 class SharpenFilter : public Filter
 {
@@ -56,10 +57,7 @@ public:
   virtual ~SharpenFilter();
 
   // Apply the filter to the input image
-  virtual void apply(const Buffer* input,
-                     Buffer* output,
-                     int width,
-                     int height);
+  virtual void apply(const Buffer* input, Buffer* output, int width, int height);
 
   // Accessors and mutators
   float radius() const { return radius_; }
@@ -81,6 +79,7 @@ private:
 
   void makeFilter();
 };
-} } // namespace xromm::opencl
+} // namespace gpu
+} // namespace xromm
 
 #endif // XROMM_GPU_SHARPEN_FILTER_HPP

@@ -48,9 +48,9 @@
 #include "Trial.hpp"
 #include "Manip3D.hpp"
 
-AdvancedOptionsDialog::AdvancedOptionsDialog(QWidget* parent) :
-  QDialog(parent),
-  adv_diag(new Ui::AdvancedOptionsDialog)
+AdvancedOptionsDialog::AdvancedOptionsDialog(QWidget* parent)
+  : QDialog(parent)
+  , adv_diag(new Ui::AdvancedOptionsDialog)
 {
 
   adv_diag->setupUi(this);
@@ -88,8 +88,9 @@ void AdvancedOptionsDialog::setRangeAdvanced(int from, int to, int max)
 void AdvancedOptionsDialog::on_pushButton_Delete_clicked(bool checked)
 {
   if (!inActive) {
-    AutoscoperMainWindow* mainwindow = dynamic_cast<AutoscoperMainWindow*> (parent());
-    if (!mainwindow) return;
+    AutoscoperMainWindow* mainwindow = dynamic_cast<AutoscoperMainWindow*>(parent());
+    if (!mainwindow)
+      return;
 
     from_frame = adv_diag->spinBox_FrameStart_adv->value();
     to_frame = adv_diag->spinBox_FrameEnd_adv->value();
@@ -113,8 +114,9 @@ void AdvancedOptionsDialog::on_pushButton_Delete_clicked(bool checked)
 void AdvancedOptionsDialog::on_pushButton_Smooth_clicked(bool checked)
 {
   if (!inActive) {
-    AutoscoperMainWindow* mainwindow = dynamic_cast<AutoscoperMainWindow*> (parent());
-    if (!mainwindow) return;
+    AutoscoperMainWindow* mainwindow = dynamic_cast<AutoscoperMainWindow*>(parent());
+    if (!mainwindow)
+      return;
 
     from_frame = adv_diag->spinBox_FrameStart_adv->value();
     to_frame = adv_diag->spinBox_FrameEnd_adv->value();
@@ -147,7 +149,11 @@ void AdvancedOptionsDialog::on_radioButton_AnotherMethod_clicked(bool checked)
   // mainwindow->getTracker()->trial()->guess = 1;
 }
 
-void AdvancedOptionsDialog::setDefPaths(QString root_path, QString filter_folder, QString filter_name, QString tracking_folder, QString task_name)
+void AdvancedOptionsDialog::setDefPaths(QString root_path,
+                                        QString filter_folder,
+                                        QString filter_name,
+                                        QString tracking_folder,
+                                        QString task_name)
 {
 
   adv_diag->lineEdit_rootPath->setText(root_path);

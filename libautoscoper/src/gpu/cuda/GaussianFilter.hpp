@@ -46,21 +46,19 @@
 
 #include "Filter.hpp"
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 
 class GaussianFilter : public Filter
 {
 public:
-
   GaussianFilter();
 
-  virtual
-  ~GaussianFilter();
+  virtual ~GaussianFilter();
 
   // Apply the filter to the input image
 
-  virtual
-  void apply(const float* input, float* output, int width, int height);
+  virtual void apply(const float* input, float* output, int width, int height);
 
   // Accessors and mutators
 
@@ -69,11 +67,11 @@ public:
   void set_radius(float radius);
 
 private:
-
   float radius_;
   float* gaussian_;
   int filterSize_;
 };
-} } // namespace xromm::cuda
+} // namespace gpu
+} // namespace xromm
 
 #endif // XROMM_GPU_GAUSSIAN_FILTER_HPP

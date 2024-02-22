@@ -66,10 +66,8 @@ void Particle::updateVelocityAndPosition(const Particle& pBest, const Particle& 
     float rp = getRandomClamped();
     float rg = getRandomClamped();
 
-    this->Velocity[dim] =
-      omega * this->Velocity[dim]
-      + c1 * rp * (pBest.Position[dim] - this->Position[dim])
-      + c2 * rg * (gBest.Position[dim] - this->Position[dim]);
+    this->Velocity[dim] = omega * this->Velocity[dim] + c1 * rp * (pBest.Position[dim] - this->Position[dim])
+                          + c2 * rg * (gBest.Position[dim] - this->Position[dim]);
 
     this->Position[dim] += this->Velocity[dim];
   }
@@ -103,12 +101,10 @@ void initializeRandom()
     try {
       std::cout << "Autoscoper_RANDOM_SEED env. variable is set to " << randomSeed << std::endl;
       seed = std::stoi(std::string(randomSeed));
-    }
-    catch (const std::invalid_argument& e) {
+    } catch (const std::invalid_argument& e) {
       std::cerr << "Autoscoper_RANDOM_SEED is not a valid integer" << std::endl;
       exit(1);
-    }
-    catch (const std::out_of_range& e) {
+    } catch (const std::out_of_range& e) {
       std::cerr << "Autoscoper_RANDOM_SEED is out of range" << std::endl;
       exit(1);
     }

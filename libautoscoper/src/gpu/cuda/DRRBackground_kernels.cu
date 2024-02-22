@@ -42,18 +42,11 @@
 #include "Merger_kernels.h"
 
 // Define the cuda compositiing kernel
-__global__
-void drr_background_kernel(float* src1,
-                           float* dest,
-                           size_t width,
-                           size_t height);
+__global__ void drr_background_kernel(float* src1, float* dest, size_t width, size_t height);
 
 namespace xromm {
 namespace gpu {
-void drr_background(float* src1,
-                    float* dest,
-                    size_t width,
-                    size_t height)
+void drr_background(float* src1, float* dest, size_t width, size_t height)
 {
   // Calculate the block and grid sizes.
   dim3 blockDim(32, 32);
@@ -61,16 +54,12 @@ void drr_background(float* src1,
                ((unsigned int)height + blockDim.y - 1) / blockDim.y);
 
   // Call the kernel
-  drr_background_kernel << < gridDim, blockDim >> > (src1, dest, width, height);
+  drr_background_kernel<<<gridDim, blockDim>>>(src1, dest, width, height);
 }
 } // namespace gpu
 } // namespace xromm
 
-__global__
-void drr_background_kernel(float* src1,
-                           float* dest,
-                           size_t width,
-                           size_t height)
+__global__ void drr_background_kernel(float* src1, float* dest, size_t width, size_t height)
 {
   int x = blockIdx.x * blockDim.x + threadIdx.x;
   int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -84,4 +73,3 @@ void drr_background_kernel(float* src1,
   // src1 maps to orange and src2 to blue
   dest[xy] = (src1[xy] != 0.0f) ? 1.0f : 0.0f;
 }
-

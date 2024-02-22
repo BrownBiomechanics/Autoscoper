@@ -57,19 +57,28 @@
 
 namespace fs = std::filesystem;
 
-namespace xromm
-{
+namespace xromm {
 std::string trialReadingError(const std::string& filename, const std::string& message)
 {
-  return std::string("Invalid trial configuration file. ") + message + "\n"
-         "See " + filename + ".\n"
-         "\n"
-         "Please check the trial configuration specification.\n"
-         "See https://autoscoper.readthedocs.io/en/latest/file-specifications/config.html";
+  return std::string("Invalid trial configuration file. ") + message
+         + "\n"
+           "See "
+         + filename
+         + ".\n"
+           "\n"
+           "Please check the trial configuration specification.\n"
+           "See https://autoscoper.readthedocs.io/en/latest/file-specifications/config.html";
 }
 
 Trial::Trial(const std::string& filename)
-  : cameras(), videos(), volumes(), frame(0), num_frames(0), guess(0), current_volume(0), num_volumes(0)
+  : cameras()
+  , videos()
+  , volumes()
+  , frame(0)
+  , num_frames(0)
+  , guess(0)
+  , current_volume(0)
+  , num_volumes(0)
 {
   if (filename.compare("") == 0) {
     return;
@@ -89,15 +98,8 @@ Trial::Trial(const std::string& filename)
   std::vector<std::string> renderResolution;
   std::vector<std::string> optimizationOffsets;
 
-  parse(file,
-        version,
-        mayaCams,
-        camRootDirs,
-        volumeFiles,
-        voxelSizes,
-        volumeFlips,
-        renderResolution,
-        optimizationOffsets);
+  parse(
+    file, version, mayaCams, camRootDirs, volumeFiles, voxelSizes, volumeFlips, renderResolution, optimizationOffsets);
 
   file.close();
 
@@ -119,11 +121,7 @@ Trial::Trial(const std::string& filename)
     convertToAbsolutePaths(volumeFiles, configLocation);
   }
 
-  validate(mayaCams,
-           camRootDirs,
-           volumeFiles,
-           voxelSizes,
-           filename);
+  validate(mayaCams, camRootDirs, volumeFiles, voxelSizes, filename);
 
   loadCameras(mayaCams);
 
@@ -262,33 +260,36 @@ void Trial::trimLineEndings(std::string& str)
   str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
 }
 
-void  Trial::validate(const std::vector<std::string>& mayaCams,
-                      const std::vector<std::string>& camRootDirs,
-                      const std::vector<std::string>& volumeFiles,
-                      const std::vector<std::string>& voxelSizes,
-                      const std::string& filename)
+void Trial::validate(const std::vector<std::string>& mayaCams,
+                     const std::vector<std::string>& camRootDirs,
+                     const std::vector<std::string>& volumeFiles,
+                     const std::vector<std::string>& voxelSizes,
+                     const std::string& filename)
 {
 
   // Check that this is a valid trial
   if (mayaCams.size() < 1) {
-    throw std::runtime_error(
-            trialReadingError(filename, "There must be at least one mayacam files."));
+    throw std::runtime_error(trialReadingError(filename, "There must be at least one mayacam files."));
   }
   if (mayaCams.size() != camRootDirs.size()) {
-    throw std::runtime_error(
-            trialReadingError(filename, std::string("The number of cameras and videos must match.\n") +
-                              "Found " + std::to_string(mayaCams.size()) + " cameras "
-                              "and " + std::to_string(camRootDirs.size()) + " videos."));
+    throw std::runtime_error(trialReadingError(filename,
+                                               std::string("The number of cameras and videos must match.\n") + "Found "
+                                                 + std::to_string(mayaCams.size())
+                                                 + " cameras "
+                                                   "and "
+                                                 + std::to_string(camRootDirs.size()) + " videos."));
   }
   if (volumeFiles.size() < 1) {
-    throw std::runtime_error(
-            trialReadingError(filename, "There must be at least one volume file."));
+    throw std::runtime_error(trialReadingError(filename, "There must be at least one volume file."));
   }
   if (volumeFiles.size() != voxelSizes.size()) {
     throw std::runtime_error(
-            trialReadingError(filename, std::string("Each volume must be associated with its corresponding voxel sizes.\n") +
-                              "Found " + std::to_string(volumeFiles.size()) + " volumes "
-                              "and " + std::to_string(voxelSizes.size()) + " voxel sizes."));
+      trialReadingError(filename,
+                        std::string("Each volume must be associated with its corresponding voxel sizes.\n") + "Found "
+                          + std::to_string(volumeFiles.size())
+                          + " volumes "
+                            "and "
+                          + std::to_string(voxelSizes.size()) + " voxel sizes."));
   }
 }
 
@@ -355,12 +356,15 @@ void Trial::loadVideos(std::vector<std::string>& camRootDirs)
 void Trial::loadOffsets(std::vector<std::string>& optimizationOffsets)
 {
   // Read in the offsets, otherwise default to 0.1
-  offsets[0] = 0.1; offsets[1] = 0.1; offsets[2] = 0.1;
-  offsets[3] = 0.1; offsets[4] = 0.1; offsets[5] = 0.1;
+  offsets[0] = 0.1;
+  offsets[1] = 0.1;
+  offsets[2] = 0.1;
+  offsets[3] = 0.1;
+  offsets[4] = 0.1;
+  offsets[5] = 0.1;
   if (!optimizationOffsets.empty()) {
     std::stringstream offset_stream(optimizationOffsets.back());
-    offset_stream >> offsets[0] >> offsets[1] >> offsets[2] >>
-    offsets[3] >> offsets[4] >> offsets[5];
+    offset_stream >> offsets[0] >> offsets[1] >> offsets[2] >> offsets[3] >> offsets[4] >> offsets[5];
   }
 }
 
@@ -417,23 +421,16 @@ void Trial::save(const std::string& filename)
 
   for (unsigned i = 0; i < volumes.size(); ++i) {
     file << "VolumeFile " << volumeFiles.at(i) << std::endl;
-    file << "VolumeFlip " << volumes.at(i).flipX() << " "
-         << volumes.at(i).flipY() << " "
-         << volumes.at(i).flipZ() << std::endl;
-    file << "VoxelSize " << volumes.at(i).scaleX() << " "
-         << volumes.at(i).scaleY() << " "
-         << volumes.at(i).scaleZ() << std::endl;
+    file << "VolumeFlip " << volumes.at(i).flipX() << " " << volumes.at(i).flipY() << " " << volumes.at(i).flipZ()
+         << std::endl;
+    file << "VoxelSize " << volumes.at(i).scaleX() << " " << volumes.at(i).scaleY() << " " << volumes.at(i).scaleZ()
+         << std::endl;
   }
 
-  file << "RenderResolution " << render_width << " "
-       << render_height << std::endl;
+  file << "RenderResolution " << render_width << " " << render_height << std::endl;
 
-  file << "OptimizationOffsets " << offsets[0] << " "
-       << offsets[1] << " "
-       << offsets[2] << " "
-       << offsets[3] << " "
-       << offsets[4] << " "
-       << offsets[5] << std::endl;
+  file << "OptimizationOffsets " << offsets[0] << " " << offsets[1] << " " << offsets[2] << " " << offsets[3] << " "
+       << offsets[4] << " " << offsets[5] << std::endl;
 
   file.close();
 }
@@ -443,8 +440,7 @@ KeyCurve* Trial::getXCurve(int volumeID)
   if (volumestransform.size() <= 0)
     return NULL;
 
-  if (volumeID < volumestransform.size() &&
-      volumeID >= 0) {
+  if (volumeID < volumestransform.size() && volumeID >= 0) {
     return &volumestransform[volumeID].x_curve;
   } else {
     return &volumestransform[current_volume].x_curve;
@@ -456,8 +452,7 @@ KeyCurve* Trial::getYCurve(int volumeID)
   if (volumestransform.size() <= 0)
     return NULL;
 
-  if (volumeID < volumestransform.size() &&
-      volumeID >= 0) {
+  if (volumeID < volumestransform.size() && volumeID >= 0) {
     return &volumestransform[volumeID].y_curve;
   } else {
     return &volumestransform[current_volume].y_curve;
@@ -469,8 +464,7 @@ KeyCurve* Trial::getZCurve(int volumeID)
   if (volumestransform.size() <= 0)
     return NULL;
 
-  if (volumeID < volumestransform.size() &&
-      volumeID >= 0) {
+  if (volumeID < volumestransform.size() && volumeID >= 0) {
     return &volumestransform[volumeID].z_curve;
   } else {
     return &volumestransform[current_volume].z_curve;
@@ -482,8 +476,7 @@ KeyCurve* Trial::getYawCurve(int volumeID)
   if (volumestransform.size() <= 0)
     return NULL;
 
-  if (volumeID < volumestransform.size() &&
-      volumeID >= 0) {
+  if (volumeID < volumestransform.size() && volumeID >= 0) {
     return &volumestransform[volumeID].yaw_curve;
   } else {
     return &volumestransform[current_volume].yaw_curve;
@@ -495,8 +488,7 @@ KeyCurve* Trial::getPitchCurve(int volumeID)
   if (volumestransform.size() <= 0)
     return NULL;
 
-  if (volumeID < volumestransform.size() &&
-      volumeID >= 0) {
+  if (volumeID < volumestransform.size() && volumeID >= 0) {
     return &volumestransform[volumeID].pitch_curve;
   } else {
     return &volumestransform[current_volume].pitch_curve;
@@ -508,8 +500,7 @@ KeyCurve* Trial::getRollCurve(int volumeID)
   if (volumestransform.size() <= 0)
     return NULL;
 
-  if (volumeID < volumestransform.size() &&
-      volumeID >= 0) {
+  if (volumeID < volumestransform.size() && volumeID >= 0) {
     return &volumestransform[volumeID].roll_curve;
   } else {
     return &volumestransform[current_volume].roll_curve;
@@ -521,8 +512,7 @@ CoordFrame* Trial::getVolumeMatrix(int volumeID)
   if (volumestransform.size() <= 0)
     return NULL;
 
-  if (volumeID < volumestransform.size() &&
-      volumeID >= 0) {
+  if (volumeID < volumestransform.size() && volumeID >= 0) {
     return &volumestransform[volumeID].volumeMatrix;
   } else {
     return &volumestransform[current_volume].volumeMatrix;

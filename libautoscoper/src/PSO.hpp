@@ -28,7 +28,8 @@ float getRandom(float low, float high);
 float getRandomClamped();
 float host_fitness_function(const std::vector<float>& x);
 
-struct Particle {
+struct Particle
+{
   float NCC;
   std::vector<float> Position;
   std::vector<float> Velocity;

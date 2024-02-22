@@ -44,8 +44,7 @@
 
 #include <string>
 
-namespace xromm
-{
+namespace xromm {
 
 // This class represents a volumetric image. It is created from a single tiff
 // file, which stores a stack of tiff images. It has some immutable properties,
@@ -56,7 +55,6 @@ namespace xromm
 class Volume
 {
 public:
-
   // Loads a tiff volume
 
   Volume(const std::string& filename);
@@ -68,7 +66,6 @@ public:
   Volume& operator=(const Volume&);
 
 public:
-
   // Accessors
 
   const std::string& name() const { return name_; }
@@ -110,7 +107,6 @@ public:
   void flipZ(bool flip) { flipZ_ = flip; }
 
 private:
-
   std::string name_;
 
   size_t width_;

@@ -46,8 +46,8 @@
 
 #include "gpu/opencl/OpenCL.hpp"
 
-namespace xromm { namespace gpu
-{
+namespace xromm {
+namespace gpu {
 
 class BackgroundRenderer
 {
@@ -68,7 +68,7 @@ private:
   float image_plane_[4];
   float viewport_[4];
 };
-} } // namespace xromm::opencl
+} // namespace gpu
+} // namespace xromm
 
 #endif // XROMM_BACKGROUND_RENDERER_HPP
-

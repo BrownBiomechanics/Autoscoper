@@ -62,16 +62,13 @@ public:
   QDoubleSpinBox* spinbox;
 
 private:
-
 protected:
-
 public slots:
   void valueChanged(double _value);
   // void action_RemoveFilter_triggered();
 
 signals:
   void parameterChanged();
-
 };
 
-#endif  // FILTERTREEWIDGETPARAMETER_H
+#endif // FILTERTREEWIDGETPARAMETER_H

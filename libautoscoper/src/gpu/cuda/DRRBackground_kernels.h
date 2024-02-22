@@ -42,11 +42,10 @@
 #ifndef XROMM_DRR_BACKGROUND_KERNELS_H
 #define XROMM_DRR_BACKGROUND_KERNELS_H
 
-namespace xromm { namespace gpu {
-void drr_background(float* src1,
-                    float* dest,
-                    size_t width,
-                    size_t height);
-} } // namespace xromm::cuda
+namespace xromm {
+namespace gpu {
+void drr_background(float* src1, float* dest, size_t width, size_t height);
+}
+} // namespace xromm
 
 #endif // XROMM_GPU_MERGER_KERNELS_H

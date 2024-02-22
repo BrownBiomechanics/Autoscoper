@@ -44,7 +44,8 @@
 #include <iostream>
 #include <cmath>
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 //////// Global variables ////////
 
 static unsigned g_max_n = 0;
@@ -91,10 +92,7 @@ static void get_max_threads()
   }
 }
 
-static void get_device_params(unsigned n,
-                              size_t& numThreads,
-                              size_t& numBlocks,
-                              size_t& sizeMem)
+static void get_device_params(unsigned n, size_t& numThreads, size_t& numBlocks, size_t& sizeMem)
 {
   numThreads = n < g_maxNumThreads ? n : g_maxNumThreads;
   numBlocks = (n + numThreads - 1) / numThreads;
@@ -222,4 +220,3 @@ float ncc(Buffer* f, Buffer* g, Buffer* mask, unsigned n)
 }
 } // namespace gpu
 } // namespace xromm
-

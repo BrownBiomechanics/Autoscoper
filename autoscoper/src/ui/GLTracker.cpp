@@ -40,7 +40,7 @@
 /// \author Benjamin Knorlein, Andy Loomis
 
 #ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
+#  define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #define GL_GLEXT_PROTOTYPES 1
@@ -53,7 +53,7 @@
 // #include <QOpenGLFunctions>
 
 #if defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-#include <gpu/opencl/OpenCL.hpp>
+#  include <gpu/opencl/OpenCL.hpp>
 #endif
 
 GLTracker::GLTracker(Tracker* tracker, QWidget* parent)
@@ -81,12 +81,11 @@ void GLTracker::initializeGL()
 
   std::cout << "Graphics Card Vendor: " << glGetString(GL_VENDOR) << std::endl;
   std::cout << glGetString(GL_RENDERER) << std::endl;
-  std::cout << glGetString(GL_VERSION)  << std::endl;
+  std::cout << glGetString(GL_VERSION) << std::endl;
 
   // m_tracker->init();
 
   std::cerr << "Initializing OpenGL..." << std::endl;
-
 
   glDisable(GL_LIGHTING);
   glEnable(GL_DEPTH_TEST);

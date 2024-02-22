@@ -48,14 +48,15 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 // Unique identifier for each contrast filter
 
 static int num_gaussian_filters = 0;
 
 GaussianFilter::GaussianFilter()
-  : Filter(XROMM_GPU_GAUSSIAN_FILTER, ""),
-    gaussian_(NULL)
+  : Filter(XROMM_GPU_GAUSSIAN_FILTER, "")
+  , gaussian_(NULL)
 {
   std::stringstream name_stream;
   name_stream << "GaussianFilter" << (++num_gaussian_filters);
@@ -74,7 +75,7 @@ void GaussianFilter::set_radius(float radius)
   if (radius < 0)
     radius = 0;
 
-// filter is (filterSize_*filterSize_) pixels with each radius being 3 stdevs (3*radius_) of the Gaussian
+  // filter is (filterSize_*filterSize_) pixels with each radius being 3 stdevs (3*radius_) of the Gaussian
 
   radius_ = radius;
   int filterRadius = 3 * radius_;
@@ -83,20 +84,22 @@ void GaussianFilter::set_radius(float radius)
   if (filterSize_ == 1)
     return;
 
-  float* gaussian = (float*)malloc(sizeof(float ) * (filterSize_ * filterSize_));
+  float* gaussian = (float*)malloc(sizeof(float) * (filterSize_ * filterSize_));
 
   float sum = 0.0f;
 
   for (int i = 0; i < filterSize_; ++i) {
     for (int j = 0; j < filterSize_; ++j) {
-      gaussian[i * filterSize_ + j] = pow(2.71828, (-( pow((double)(i - filterRadius), 2) + pow((double)(j - filterRadius), 2) ) / (2 * radius_))); // equation for a gaussian with stdev radius_
-      sum = sum +  gaussian[i * filterSize_ + j];
+      gaussian[i * filterSize_ + j] = pow(2.71828,
+                                          (-(pow((double)(i - filterRadius), 2) + pow((double)(j - filterRadius), 2))
+                                           / (2 * radius_))); // equation for a gaussian with stdev radius_
+      sum = sum + gaussian[i * filterSize_ + j];
     }
   }
 
   float temp = 0.0f;
 
-// normalize the filter
+  // normalize the filter
 
   for (int i = 0; i < filterSize_; ++i) {
     for (int j = 0; j < filterSize_; ++j) {
@@ -105,17 +108,16 @@ void GaussianFilter::set_radius(float radius)
     }
   }
 
-// copies gaussian filter over to GPU
+  // copies gaussian filter over to GPU
 
   float* gaussianGPU;
-  cudaMalloc(&gaussianGPU, sizeof(float ) * (filterSize_ * filterSize_));
-  cudaMemcpy(gaussianGPU, gaussian, (sizeof(float ) * (filterSize_ * filterSize_)), cudaMemcpyHostToDevice);
+  cudaMalloc(&gaussianGPU, sizeof(float) * (filterSize_ * filterSize_));
+  cudaMemcpy(gaussianGPU, gaussian, (sizeof(float) * (filterSize_ * filterSize_)), cudaMemcpyHostToDevice);
 
   free(gaussian);
   cudaFree(gaussian_);
 
   gaussian_ = gaussianGPU;
-
 }
 
 void
@@ -125,9 +127,10 @@ GaussianFilter::apply(const float* input,
                       int width,
                       int height)
 {
-  if (filterSize_ == 1)   // if filterSize_ = 1, image is unchanged
-    cudaMemcpy(output, input, (sizeof(float ) * (filterSize_ * filterSize_)), cudaMemcpyDeviceToDevice);
+  if (filterSize_ == 1) // if filterSize_ = 1, image is unchanged
+    cudaMemcpy(output, input, (sizeof(float) * (filterSize_ * filterSize_)), cudaMemcpyDeviceToDevice);
   else
     gaussian_filter_apply(input, output, width, height, gaussian_, filterSize_);
 }
-} } // namespace xromm::cuda
+} // namespace gpu
+} // namespace xromm

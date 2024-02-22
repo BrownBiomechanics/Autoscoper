@@ -50,34 +50,34 @@
 
 /* OpenCL-OpenGL interoperability */
 #if defined(__APPLE__) || defined(__MACOSX)
-#include <OpenGL/CGLDevice.h>
-#include <OpenCL/cl_gl_ext.h>
+#  include <OpenGL/CGLDevice.h>
+#  include <OpenCL/cl_gl_ext.h>
 #elif defined(_WIN32)
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <CL/cl_gl.h>
+#  define WIN32_LEAN_AND_MEAN
+#  include <windows.h>
+#  include <CL/cl_gl.h>
 static clGetGLContextInfoKHR_fn pfn_clGetGLContextInfoKHR;
 #else
-#include <GL/glx.h>
-#include <CL/cl_gl.h>
+#  include <GL/glx.h>
+#  include <CL/cl_gl.h>
 static clGetGLContextInfoKHR_fn pfn_clGetGLContextInfoKHR;
 #endif
 
 #define TYPE CL_DEVICE_TYPE_GPU
 
-#define ERROR(msg) do{\
-    std::cerr << "Error at " << __FILE__ << ':' << __LINE__ \
-              << "\n  " << msg << std::endl; \
-    xromm::bt(); \
-    exit(1); \
-} while (0)
+#define ERROR(msg)                                                                         \
+  do {                                                                                     \
+    std::cerr << "Error at " << __FILE__ << ':' << __LINE__ << "\n  " << msg << std::endl; \
+    xromm::bt();                                                                           \
+    exit(1);                                                                               \
+  } while (0)
 
-#define CHECK_CL \
-  if (err_ != CL_SUCCESS) {\
-    std::cerr << "OpenCL error at " << __FILE__ << ':' << __LINE__ \
-              << "\n  " << err_ << ' ' << opencl_error(err_) << std::endl; \
-    xromm::bt(); \
-    exit(1); \
+#define CHECK_CL                                                                                                  \
+  if (err_ != CL_SUCCESS) {                                                                                       \
+    std::cerr << "OpenCL error at " << __FILE__ << ':' << __LINE__ << "\n  " << err_ << ' ' << opencl_error(err_) \
+              << std::endl;                                                                                       \
+    xromm::bt();                                                                                                  \
+    exit(1);                                                                                                      \
   }
 
 static bool inited_ = false;
@@ -104,77 +104,140 @@ static cl_command_queue queue_;
 static const char* opencl_error(cl_int err)
 {
   switch (err) {
-    case CL_DEVICE_NOT_FOUND: return "CL_DEVICE_NOT_FOUND";
-    case CL_DEVICE_NOT_AVAILABLE: return "CL_DEVICE_NOT_AVAILABLE";
-    case CL_COMPILER_NOT_AVAILABLE: return "CL_COMPILER_NOT_AVAILABLE";
-    case CL_MEM_OBJECT_ALLOCATION_FAILURE: return "CL_MEM_OBJECT_ALLOCATION_FAILURE";
-    case CL_OUT_OF_RESOURCES: return "CL_OUT_OF_RESOURCES";
-    case CL_OUT_OF_HOST_MEMORY: return "CL_OUT_OF_HOST_MEMORY";
-    case CL_PROFILING_INFO_NOT_AVAILABLE: return "CL_PROFILING_INFO_NOT_AVAILABLE";
-    case CL_MEM_COPY_OVERLAP: return "CL_MEM_COPY_OVERLAP";
-    case CL_IMAGE_FORMAT_MISMATCH: return "CL_IMAGE_FORMAT_MISMATCH";
-    case CL_IMAGE_FORMAT_NOT_SUPPORTED: return "CL_IMAGE_FORMAT_NOT_SUPPORTED";
-    case CL_BUILD_PROGRAM_FAILURE: return "CL_BUILD_PROGRAM_FAILURE";
-    case CL_MAP_FAILURE: return "CL_MAP_FAILURE";
-    case CL_MISALIGNED_SUB_BUFFER_OFFSET: return "CL_MISALIGNED_SUB_BUFFER_OFFSET";
-    case CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST: return "CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST";
+    case CL_DEVICE_NOT_FOUND:
+      return "CL_DEVICE_NOT_FOUND";
+    case CL_DEVICE_NOT_AVAILABLE:
+      return "CL_DEVICE_NOT_AVAILABLE";
+    case CL_COMPILER_NOT_AVAILABLE:
+      return "CL_COMPILER_NOT_AVAILABLE";
+    case CL_MEM_OBJECT_ALLOCATION_FAILURE:
+      return "CL_MEM_OBJECT_ALLOCATION_FAILURE";
+    case CL_OUT_OF_RESOURCES:
+      return "CL_OUT_OF_RESOURCES";
+    case CL_OUT_OF_HOST_MEMORY:
+      return "CL_OUT_OF_HOST_MEMORY";
+    case CL_PROFILING_INFO_NOT_AVAILABLE:
+      return "CL_PROFILING_INFO_NOT_AVAILABLE";
+    case CL_MEM_COPY_OVERLAP:
+      return "CL_MEM_COPY_OVERLAP";
+    case CL_IMAGE_FORMAT_MISMATCH:
+      return "CL_IMAGE_FORMAT_MISMATCH";
+    case CL_IMAGE_FORMAT_NOT_SUPPORTED:
+      return "CL_IMAGE_FORMAT_NOT_SUPPORTED";
+    case CL_BUILD_PROGRAM_FAILURE:
+      return "CL_BUILD_PROGRAM_FAILURE";
+    case CL_MAP_FAILURE:
+      return "CL_MAP_FAILURE";
+    case CL_MISALIGNED_SUB_BUFFER_OFFSET:
+      return "CL_MISALIGNED_SUB_BUFFER_OFFSET";
+    case CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST:
+      return "CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST";
 #ifdef CL_VERSION_1_2
-    case CL_COMPILE_PROGRAM_FAILURE: return "CL_COMPILE_PROGRAM_FAILURE";
-    case CL_LINKER_NOT_AVAILABLE: return "CL_LINKER_NOT_AVAILABLE";
-    case CL_LINK_PROGRAM_FAILURE: return "CL_LINK_PROGRAM_FAILURE";
-    case CL_DEVICE_PARTITION_FAILED: return "CL_DEVICE_PARTITION_FAILED";
-    case CL_KERNEL_ARG_INFO_NOT_AVAILABLE: return "CL_KERNEL_ARG_INFO_NOT_AVAILABLE";
+    case CL_COMPILE_PROGRAM_FAILURE:
+      return "CL_COMPILE_PROGRAM_FAILURE";
+    case CL_LINKER_NOT_AVAILABLE:
+      return "CL_LINKER_NOT_AVAILABLE";
+    case CL_LINK_PROGRAM_FAILURE:
+      return "CL_LINK_PROGRAM_FAILURE";
+    case CL_DEVICE_PARTITION_FAILED:
+      return "CL_DEVICE_PARTITION_FAILED";
+    case CL_KERNEL_ARG_INFO_NOT_AVAILABLE:
+      return "CL_KERNEL_ARG_INFO_NOT_AVAILABLE";
 #endif
-    case CL_INVALID_VALUE: return "CL_INVALID_VALUE";
-    case CL_INVALID_DEVICE_TYPE: return "CL_INVALID_DEVICE_TYPE";
-    case CL_INVALID_PLATFORM: return "CL_INVALID_PLATFORM";
-    case CL_INVALID_DEVICE: return "CL_INVALID_DEVICE";
-    case CL_INVALID_CONTEXT: return "CL_INVALID_CONTEXT";
-    case CL_INVALID_QUEUE_PROPERTIES: return "CL_INVALID_QUEUE_PROPERTIES";
-    case CL_INVALID_COMMAND_QUEUE: return "CL_INVALID_COMMAND_QUEUE";
-    case CL_INVALID_HOST_PTR: return "CL_INVALID_HOST_PTR";
-    case CL_INVALID_MEM_OBJECT: return "CL_INVALID_MEM_OBJECT";
-    case CL_INVALID_IMAGE_FORMAT_DESCRIPTOR: return "CL_INVALID_IMAGE_FORMAT_DESCRIPTOR";
-    case CL_INVALID_IMAGE_SIZE: return "CL_INVALID_IMAGE_SIZE";
-    case CL_INVALID_SAMPLER: return "CL_INVALID_SAMPLER";
-    case CL_INVALID_BINARY: return "CL_INVALID_BINARY";
-    case CL_INVALID_BUILD_OPTIONS: return "CL_INVALID_BUILD_OPTIONS";
-    case CL_INVALID_PROGRAM: return "CL_INVALID_PROGRAM";
-    case CL_INVALID_PROGRAM_EXECUTABLE: return "CL_INVALID_PROGRAM_EXECUTABLE";
-    case CL_INVALID_KERNEL_NAME: return "CL_INVALID_KERNEL_NAME";
-    case CL_INVALID_KERNEL_DEFINITION: return "CL_INVALID_KERNEL_DEFINITION";
-    case CL_INVALID_KERNEL: return "CL_INVALID_KERNEL";
-    case CL_INVALID_ARG_INDEX: return "CL_INVALID_ARG_INDEX";
-    case CL_INVALID_ARG_VALUE: return "CL_INVALID_ARG_VALUE";
-    case CL_INVALID_ARG_SIZE: return "CL_INVALID_ARG_SIZE";
-    case CL_INVALID_KERNEL_ARGS: return "CL_INVALID_KERNEL_ARGS";
-    case CL_INVALID_WORK_DIMENSION: return "CL_INVALID_WORK_DIMENSION";
-    case CL_INVALID_WORK_GROUP_SIZE: return "CL_INVALID_WORK_GROUP_SIZE";
-    case CL_INVALID_WORK_ITEM_SIZE: return "CL_INVALID_WORK_ITEM_SIZE";
-    case CL_INVALID_GLOBAL_OFFSET: return "CL_INVALID_GLOBAL_OFFSET";
-    case CL_INVALID_EVENT_WAIT_LIST: return "CL_INVALID_EVENT_WAIT_LIST";
-    case CL_INVALID_EVENT: return "CL_INVALID_EVENT";
-    case CL_INVALID_OPERATION: return "CL_INVALID_OPERATION";
-    case CL_INVALID_GL_OBJECT: return "CL_INVALID_GL_OBJECT";
-    case CL_INVALID_BUFFER_SIZE: return "CL_INVALID_BUFFER_SIZE";
-    case CL_INVALID_MIP_LEVEL: return "CL_INVALID_MIP_LEVEL";
-    case CL_INVALID_GLOBAL_WORK_SIZE: return "CL_INVALID_GLOBAL_WORK_SIZE";
-    case CL_INVALID_PROPERTY: return "CL_INVALID_PROPERTY";
+    case CL_INVALID_VALUE:
+      return "CL_INVALID_VALUE";
+    case CL_INVALID_DEVICE_TYPE:
+      return "CL_INVALID_DEVICE_TYPE";
+    case CL_INVALID_PLATFORM:
+      return "CL_INVALID_PLATFORM";
+    case CL_INVALID_DEVICE:
+      return "CL_INVALID_DEVICE";
+    case CL_INVALID_CONTEXT:
+      return "CL_INVALID_CONTEXT";
+    case CL_INVALID_QUEUE_PROPERTIES:
+      return "CL_INVALID_QUEUE_PROPERTIES";
+    case CL_INVALID_COMMAND_QUEUE:
+      return "CL_INVALID_COMMAND_QUEUE";
+    case CL_INVALID_HOST_PTR:
+      return "CL_INVALID_HOST_PTR";
+    case CL_INVALID_MEM_OBJECT:
+      return "CL_INVALID_MEM_OBJECT";
+    case CL_INVALID_IMAGE_FORMAT_DESCRIPTOR:
+      return "CL_INVALID_IMAGE_FORMAT_DESCRIPTOR";
+    case CL_INVALID_IMAGE_SIZE:
+      return "CL_INVALID_IMAGE_SIZE";
+    case CL_INVALID_SAMPLER:
+      return "CL_INVALID_SAMPLER";
+    case CL_INVALID_BINARY:
+      return "CL_INVALID_BINARY";
+    case CL_INVALID_BUILD_OPTIONS:
+      return "CL_INVALID_BUILD_OPTIONS";
+    case CL_INVALID_PROGRAM:
+      return "CL_INVALID_PROGRAM";
+    case CL_INVALID_PROGRAM_EXECUTABLE:
+      return "CL_INVALID_PROGRAM_EXECUTABLE";
+    case CL_INVALID_KERNEL_NAME:
+      return "CL_INVALID_KERNEL_NAME";
+    case CL_INVALID_KERNEL_DEFINITION:
+      return "CL_INVALID_KERNEL_DEFINITION";
+    case CL_INVALID_KERNEL:
+      return "CL_INVALID_KERNEL";
+    case CL_INVALID_ARG_INDEX:
+      return "CL_INVALID_ARG_INDEX";
+    case CL_INVALID_ARG_VALUE:
+      return "CL_INVALID_ARG_VALUE";
+    case CL_INVALID_ARG_SIZE:
+      return "CL_INVALID_ARG_SIZE";
+    case CL_INVALID_KERNEL_ARGS:
+      return "CL_INVALID_KERNEL_ARGS";
+    case CL_INVALID_WORK_DIMENSION:
+      return "CL_INVALID_WORK_DIMENSION";
+    case CL_INVALID_WORK_GROUP_SIZE:
+      return "CL_INVALID_WORK_GROUP_SIZE";
+    case CL_INVALID_WORK_ITEM_SIZE:
+      return "CL_INVALID_WORK_ITEM_SIZE";
+    case CL_INVALID_GLOBAL_OFFSET:
+      return "CL_INVALID_GLOBAL_OFFSET";
+    case CL_INVALID_EVENT_WAIT_LIST:
+      return "CL_INVALID_EVENT_WAIT_LIST";
+    case CL_INVALID_EVENT:
+      return "CL_INVALID_EVENT";
+    case CL_INVALID_OPERATION:
+      return "CL_INVALID_OPERATION";
+    case CL_INVALID_GL_OBJECT:
+      return "CL_INVALID_GL_OBJECT";
+    case CL_INVALID_BUFFER_SIZE:
+      return "CL_INVALID_BUFFER_SIZE";
+    case CL_INVALID_MIP_LEVEL:
+      return "CL_INVALID_MIP_LEVEL";
+    case CL_INVALID_GLOBAL_WORK_SIZE:
+      return "CL_INVALID_GLOBAL_WORK_SIZE";
+    case CL_INVALID_PROPERTY:
+      return "CL_INVALID_PROPERTY";
 #ifdef CL_VERSION_1_2
-    case CL_INVALID_IMAGE_DESCRIPTOR: return "CL_INVALID_IMAGE_DESCRIPTOR";
-    case CL_INVALID_COMPILER_OPTIONS: return "CL_INVALID_COMPILER_OPTIONS";
-    case CL_INVALID_LINKER_OPTIONS: return "CL_INVALID_LINKER_OPTIONS";
-    case CL_INVALID_DEVICE_PARTITION_COUNT: return "CL_INVALID_DEVICE_PARTITION_COUNT";
+    case CL_INVALID_IMAGE_DESCRIPTOR:
+      return "CL_INVALID_IMAGE_DESCRIPTOR";
+    case CL_INVALID_COMPILER_OPTIONS:
+      return "CL_INVALID_COMPILER_OPTIONS";
+    case CL_INVALID_LINKER_OPTIONS:
+      return "CL_INVALID_LINKER_OPTIONS";
+    case CL_INVALID_DEVICE_PARTITION_COUNT:
+      return "CL_INVALID_DEVICE_PARTITION_COUNT";
 #endif
 #ifdef CL_VERSION_2_0
-    case CL_INVALID_PIPE_SIZE: return "CL_INVALID_PIPE_SIZE";
-    case CL_INVALID_DEVICE_QUEUE: return "CL_INVALID_DEVICE_QUEUE";
+    case CL_INVALID_PIPE_SIZE:
+      return "CL_INVALID_PIPE_SIZE";
+    case CL_INVALID_DEVICE_QUEUE:
+      return "CL_INVALID_DEVICE_QUEUE";
 #endif
 #ifdef CL_VERSION_2_2
-    case CL_INVALID_SPEC_ID: return "CL_INVALID_SPEC_ID";
-    case CL_MAX_SIZE_RESTRICTION_EXCEEDED: return "CL_MAX_SIZE_RESTRICTION_EXCEEDED";
+    case CL_INVALID_SPEC_ID:
+      return "CL_INVALID_SPEC_ID";
+    case CL_MAX_SIZE_RESTRICTION_EXCEEDED:
+      return "CL_MAX_SIZE_RESTRICTION_EXCEEDED";
 #endif
-    default: return "Unknown";
+    default:
+      return "Unknown";
   }
 }
 
@@ -184,22 +247,18 @@ static void print_platform(cl_platform_id platform)
 
   char buffer[1024];
 
-  err_ = clGetPlatformInfo(
-    platform, CL_PLATFORM_VERSION, sizeof(buffer), buffer, NULL);
+  err_ = clGetPlatformInfo(platform, CL_PLATFORM_VERSION, sizeof(buffer), buffer, NULL);
   CHECK_CL
   std::cerr << "# Version    : " << buffer << std::endl;
 
-  err_ = clGetPlatformInfo(
-    platform, CL_PLATFORM_NAME, sizeof(buffer), buffer, NULL);
+  err_ = clGetPlatformInfo(platform, CL_PLATFORM_NAME, sizeof(buffer), buffer, NULL);
   CHECK_CL
   std::cerr << "# Name       : " << buffer << std::endl;
 
-  err_ = clGetPlatformInfo(
-    platform, CL_PLATFORM_VENDOR, sizeof(buffer), buffer, NULL);
+  err_ = clGetPlatformInfo(platform, CL_PLATFORM_VENDOR, sizeof(buffer), buffer, NULL);
   CHECK_CL
   std::cerr << "# Vendor     : " << buffer << std::endl;
 }
-
 
 static void print_device(cl_device_id device)
 {
@@ -210,133 +269,125 @@ static void print_device(cl_device_id device)
   cl_uint ui;
   size_t s[3];
 
-  std::cerr << "# OpenCL Device" << "\n";
+  std::cerr << "# OpenCL Device"
+            << "\n";
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
   CHECK_CL
   std::cerr << "# Name          : " << buffer << "\n";
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_TYPE, sizeof(t), &t, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_TYPE, sizeof(t), &t, NULL);
   std::cerr << "# Type          : ";
   switch (t) {
-    case CL_DEVICE_TYPE_CPU: std::cerr << "CPU\n"; break;
-    case CL_DEVICE_TYPE_GPU: std::cerr << "GPU\n"; break;
-    case CL_DEVICE_TYPE_ACCELERATOR: std::cerr << "Accelerator\n"; break;
-    case CL_DEVICE_TYPE_DEFAULT: std::cerr << "Default\n"; break;
-    default: std::cerr << "Unknown\n";
+    case CL_DEVICE_TYPE_CPU:
+      std::cerr << "CPU\n";
+      break;
+    case CL_DEVICE_TYPE_GPU:
+      std::cerr << "GPU\n";
+      break;
+    case CL_DEVICE_TYPE_ACCELERATOR:
+      std::cerr << "Accelerator\n";
+      break;
+    case CL_DEVICE_TYPE_DEFAULT:
+      std::cerr << "Default\n";
+      break;
+    default:
+      std::cerr << "Unknown\n";
   }
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(ui), &ui, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(ui), &ui, NULL);
   CHECK_CL
   std::cerr << "# Compute Cores : " << ui << "\n";
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(ui), &ui, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(ui), &ui, NULL);
   CHECK_CL
   std::cerr << "# Core Freq.    : " << ui << " Mhz\n";
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_VENDOR, sizeof(buffer), buffer, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_VENDOR, sizeof(buffer), buffer, NULL);
   CHECK_CL
   std::cerr << "# Vendor        : " << buffer << "\n";
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_VENDOR_ID, sizeof(ui), &ui, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_VENDOR_ID, sizeof(ui), &ui, NULL);
   CHECK_CL
   std::cerr << "# Vendor ID     : " << ui << "\n";
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_VERSION, sizeof(buffer), buffer, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_VERSION, sizeof(buffer), buffer, NULL);
   CHECK_CL
   std::cerr << "# Version       : " << buffer << "\n";
 
-  err_ = clGetDeviceInfo(
-    device, CL_DRIVER_VERSION, sizeof(buffer), buffer, NULL);
+  err_ = clGetDeviceInfo(device, CL_DRIVER_VERSION, sizeof(buffer), buffer, NULL);
   CHECK_CL
   std::cerr << "# Driver Ver.   : " << buffer << "\n";
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_AVAILABLE, sizeof(b), &b, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_AVAILABLE, sizeof(b), &b, NULL);
   CHECK_CL
   std::cerr << "# Available     : ";
   switch (b) {
-    case CL_TRUE: std::cerr << "Yes\n"; break;
-    case CL_FALSE: std::cerr << "No\n"; break;
-    default: std::cerr << "Unknown\n";
+    case CL_TRUE:
+      std::cerr << "Yes\n";
+      break;
+    case CL_FALSE:
+      std::cerr << "No\n";
+      break;
+    default:
+      std::cerr << "Unknown\n";
   }
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(s), s, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(s), s, NULL);
   CHECK_CL
-  std::cerr << "# Max Items     : ("
-            << s[0] << ',' << s[1] << ',' << s[2] << ")\n";
+  std::cerr << "# Max Items     : (" << s[0] << ',' << s[1] << ',' << s[2] << ")\n";
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), s, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), s, NULL);
   CHECK_CL
   std::cerr << "# Max Group     : " << s[0] << "\n";
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE, sizeof(ul), &ul, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE, sizeof(ul), &ul, NULL);
   CHECK_CL
   std::cerr << "# Max Constant  : " << ul << " kB\n";
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_MAX_CONSTANT_ARGS, sizeof(ui), &ui, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_MAX_CONSTANT_ARGS, sizeof(ui), &ui, NULL);
   CHECK_CL
   std::cerr << "# Max Constants : " << ui << "\n";
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_LOCAL_MEM_SIZE, sizeof(ul), &ul, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_LOCAL_MEM_SIZE, sizeof(ul), &ul, NULL);
   CHECK_CL
   std::cerr << "# Local Mem.    : " << (ul / 1024) << " kB\n";
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(ul), &ul, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(ul), &ul, NULL);
   CHECK_CL
   std::cerr << "# Global Mem.   : " << (ul / 1024) << " kB\n";
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_GLOBAL_MEM_CACHE_SIZE, sizeof(ul), &ul, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_GLOBAL_MEM_CACHE_SIZE, sizeof(ul), &ul, NULL);
   CHECK_CL
   std::cerr << "# Global Cache  : " << ul << " B\n";
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_IMAGE_SUPPORT, sizeof(b), &b, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_IMAGE_SUPPORT, sizeof(b), &b, NULL);
   CHECK_CL
   std::cerr << "# Image Support : " << b << "\n";
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_IMAGE2D_MAX_WIDTH, sizeof(size_t), s + 0, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_IMAGE2D_MAX_WIDTH, sizeof(size_t), s + 0, NULL);
   CHECK_CL
-    err_ = clGetDeviceInfo(
-    device, CL_DEVICE_IMAGE2D_MAX_HEIGHT, sizeof(size_t), s + 1, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_IMAGE2D_MAX_HEIGHT, sizeof(size_t), s + 1, NULL);
   CHECK_CL
   std::cerr << "# Max 2D Image  : (" << s[0] << ',' << s[1] << ")\n";
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_IMAGE3D_MAX_WIDTH, sizeof(size_t), s + 0, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_IMAGE3D_MAX_WIDTH, sizeof(size_t), s + 0, NULL);
   CHECK_CL
-    err_ = clGetDeviceInfo(
-    device, CL_DEVICE_IMAGE3D_MAX_HEIGHT, sizeof(size_t), s + 1, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_IMAGE3D_MAX_HEIGHT, sizeof(size_t), s + 1, NULL);
   CHECK_CL
-    err_ = clGetDeviceInfo(
-    device, CL_DEVICE_IMAGE3D_MAX_DEPTH, sizeof(size_t), s + 2, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_IMAGE3D_MAX_DEPTH, sizeof(size_t), s + 2, NULL);
   CHECK_CL
   std::cerr << "# Max 3D Image  : ("
 
             << s[0] << ',' << s[1] << ',' << s[2] << ")\n";
 
-  err_ = clGetDeviceInfo(
-    device, CL_DEVICE_EXTENSIONS, sizeof(buffer), buffer, NULL);
+  err_ = clGetDeviceInfo(device, CL_DEVICE_EXTENSIONS, sizeof(buffer), buffer, NULL);
   CHECK_CL
-  std::cerr << "# Extensions    :  "  << buffer << " \n";
+  std::cerr << "# Extensions    :  " << buffer << " \n";
 }
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 std::vector<std::vector<std::string>> get_platforms()
 {
   cl_uint num_platforms;
@@ -344,12 +395,13 @@ std::vector<std::vector<std::string>> get_platforms()
   err_ = clGetPlatformIDs(10, platforms, &num_platforms);
   CHECK_CL
 
-  if (num_platforms < 1) ERROR("no OpenCL platforms found");
+  if (num_platforms < 1)
+    ERROR("no OpenCL platforms found");
 
   std::vector<std::vector<std::string>> platforms_desc;
   char buffer[1024];
 
-  for (int i = 0; i < num_platforms; i ++) {
+  for (int i = 0; i < num_platforms; i++) {
     cl_uint num_devices;
     err_ = clGetDeviceIDs(platforms[i], TYPE, 1, devices_, &num_devices);
     for (int d = 0; d < num_devices; d++) {
@@ -407,11 +459,20 @@ std::vector<std::vector<std::string>> get_platforms()
       err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_TYPE, sizeof(t), &t, NULL);
       ss << "# Type          : ";
       switch (t) {
-        case CL_DEVICE_TYPE_CPU: ss << "CPU"; break;
-        case CL_DEVICE_TYPE_GPU: ss << "GPU"; break;
-        case CL_DEVICE_TYPE_ACCELERATOR: ss << "Accelerator"; break;
-        case CL_DEVICE_TYPE_DEFAULT: ss << "Default"; break;
-        default: ss << "Unknown";
+        case CL_DEVICE_TYPE_CPU:
+          ss << "CPU";
+          break;
+        case CL_DEVICE_TYPE_GPU:
+          ss << "GPU";
+          break;
+        case CL_DEVICE_TYPE_ACCELERATOR:
+          ss << "Accelerator";
+          break;
+        case CL_DEVICE_TYPE_DEFAULT:
+          ss << "Default";
+          break;
+        default:
+          ss << "Unknown";
       }
       platform_desc.push_back(ss.str());
       ss.str("");
@@ -463,9 +524,14 @@ std::vector<std::vector<std::string>> get_platforms()
       isvalid = (err_ == CL_SUCCESS) ? isvalid : false;
       ss << "# Available     : ";
       switch (b) {
-        case CL_TRUE: ss << "Yes"; break;
-        case CL_FALSE: ss << "No"; break;
-        default: ss << "Unknown";
+        case CL_TRUE:
+          ss << "Yes";
+          break;
+        case CL_FALSE:
+          ss << "No";
+          break;
+        default:
+          ss << "Unknown";
       }
       platform_desc.push_back(ss.str());
       ss.str("");
@@ -549,7 +615,7 @@ std::vector<std::vector<std::string>> get_platforms()
 
       err_ = clGetDeviceInfo(devices_[d], CL_DEVICE_EXTENSIONS, sizeof(buffer), buffer, NULL);
       isvalid = (err_ == CL_SUCCESS) ? isvalid : false;
-      ss << "# Extensions    :  "  << buffer;
+      ss << "# Extensions    :  " << buffer;
       platform_desc.push_back(ss.str());
       ss.str("");
       ss.clear(); // Clear state flags.
@@ -585,13 +651,16 @@ void opencl_global_gl_context()
 #if defined(__APPLE__) || defined(__MACOSX)
   glContext = CGLGetCurrentContext();
   share_group_ = CGLGetShareGroup(glContext);
-  if (!share_group_) ERROR("invalid CGL sharegroup");
+  if (!share_group_)
+    ERROR("invalid CGL sharegroup");
 #elif defined(_WIN32)
 #else
   glx_context_ = glXGetCurrentContext();
-  if (!glx_context_) ERROR("invalid GLX context");
+  if (!glx_context_)
+    ERROR("invalid GLX context");
   glx_display_ = glXGetCurrentDisplay();
-  if (!glx_display_) ERROR("invalid GLX display");
+  if (!glx_display_)
+    ERROR("invalid GLX display");
 #endif
   gl_inited_ = true;
 }
@@ -599,7 +668,8 @@ void opencl_global_gl_context()
 cl_int opencl_global_context()
 {
   if (!inited_) {
-    if (!gl_inited_) return CL_INVALID_CONTEXT;
+    if (!gl_inited_)
+      return CL_INVALID_CONTEXT;
 
     /* find platform */
 
@@ -607,17 +677,20 @@ cl_int opencl_global_context()
     cl_platform_id platforms[10];
     err_ = clGetPlatformIDs(10, platforms, &num_platforms);
     CHECK_CL
-    if (num_platforms < used_platform) used_platform = 0;
-    if (num_platforms < 1) ERROR("no OpenCL platforms found");
+    if (num_platforms < used_platform)
+      used_platform = 0;
+    if (num_platforms < 1)
+      ERROR("no OpenCL platforms found");
 
-    /* create context */
+      /* create context */
 
 #if defined(__APPLE__) || defined(__MACOSX)
-#pragma OPENCL EXTENSION cl_APPLE_gl_sharing : enable
-    cl_context_properties prop[] = {
-      CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE, (intptr_t)share_group_,
-      CL_CONTEXT_PLATFORM, (cl_context_properties)(platforms[used_platform]),
-      0 };
+#  pragma OPENCL EXTENSION cl_APPLE_gl_sharing : enable
+    cl_context_properties prop[] = { CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE,
+                                     (intptr_t)share_group_,
+                                     CL_CONTEXT_PLATFORM,
+                                     (cl_context_properties)(platforms[used_platform]),
+                                     0 };
 
     /* omit the device, according to this:
        http://www.khronos.org/message_boards/viewtopic.php?f=28&t=2548 */
@@ -626,28 +699,30 @@ cl_int opencl_global_context()
 
     size_t num_gl_devices;
     err_ = clGetGLContextInfoAPPLE(
-      context_, glContext,
-      CL_CGL_DEVICE_FOR_CURRENT_VIRTUAL_SCREEN_APPLE,
-      sizeof(devices_), devices_, &num_gl_devices);
-    int  _count = num_gl_devices / sizeof(cl_device_id);
-    if (used_device >= _count)used_device = 0;
+      context_, glContext, CL_CGL_DEVICE_FOR_CURRENT_VIRTUAL_SCREEN_APPLE, sizeof(devices_), devices_, &num_gl_devices);
+    int _count = num_gl_devices / sizeof(cl_device_id);
+    if (used_device >= _count)
+      used_device = 0;
     CHECK_CL
 
 #elif defined(_WIN32)
-#pragma OPENCL EXTENSION cl_khr_gl_sharing : enable
+#  pragma OPENCL EXTENSION cl_khr_gl_sharing : enable
     /* TODO: test this */
-    cl_context_properties prop[] = {
-      CL_GL_CONTEXT_KHR, (cl_context_properties) wglGetCurrentContext(),
-      CL_WGL_HDC_KHR, (cl_context_properties) wglGetCurrentDC(),
-      CL_CONTEXT_PLATFORM, (cl_context_properties)(platforms[used_platform]),
-      0 };
+    cl_context_properties prop[] = { CL_GL_CONTEXT_KHR,
+                                     (cl_context_properties)wglGetCurrentContext(),
+                                     CL_WGL_HDC_KHR,
+                                     (cl_context_properties)wglGetCurrentDC(),
+                                     CL_CONTEXT_PLATFORM,
+                                     (cl_context_properties)(platforms[used_platform]),
+                                     0 };
 
     if (!pfn_clGetGLContextInfoKHR) {
-#ifdef CL_VERSION_1_2
-      pfn_clGetGLContextInfoKHR = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddressForPlatform(platforms[used_platform], "clGetGLContextInfoKHR");
-#else
+#  ifdef CL_VERSION_1_2
+      pfn_clGetGLContextInfoKHR = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddressForPlatform(
+        platforms[used_platform], "clGetGLContextInfoKHR");
+#  else
       pfn_clGetGLContextInfoKHR = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddress("clGetGLContextInfoKHR");
-#endif
+#  endif
       if (!pfn_clGetGLContextInfoKHR) {
         std::cout << "Failed to query proc address for clGetGLContextInfoKHR." << std::endl;
         exit(EXIT_FAILURE);
@@ -657,27 +732,28 @@ cl_int opencl_global_context()
     pfn_clGetGLContextInfoKHR(prop, CL_DEVICES_FOR_GL_CONTEXT_KHR, 10 * sizeof(cl_device_id), devices_, &size);
     // Create a context using the supported devices
     int _count = size / sizeof(cl_device_id);
-    if (used_device >= _count)used_device = 0;
+    if (used_device >= _count)
+      used_device = 0;
     // fprintf(stderr,"%d Devices \n",_count);
     context_ = clCreateContext(prop, 1, &devices_[used_device], NULL, NULL, &err_);
     CHECK_CL
 #else
-#pragma OPENCL EXTENSION cl_khr_gl_sharing : enable
-    cl_context_properties prop[] = {
-      CL_GL_CONTEXT_KHR,
-      (cl_context_properties)glXGetCurrentContext(),
-      CL_GLX_DISPLAY_KHR,
-      (cl_context_properties)glXGetCurrentDisplay(),
-      CL_CONTEXT_PLATFORM,
-      (cl_context_properties)(platforms[used_platform]),
-      0 };
+#  pragma OPENCL EXTENSION cl_khr_gl_sharing : enable
+    cl_context_properties prop[] = { CL_GL_CONTEXT_KHR,
+                                     (cl_context_properties)glXGetCurrentContext(),
+                                     CL_GLX_DISPLAY_KHR,
+                                     (cl_context_properties)glXGetCurrentDisplay(),
+                                     CL_CONTEXT_PLATFORM,
+                                     (cl_context_properties)(platforms[used_platform]),
+                                     0 };
 
     if (!pfn_clGetGLContextInfoKHR) {
-#ifdef CL_VERSION_1_2
-      pfn_clGetGLContextInfoKHR = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddressForPlatform(platforms[used_platform], "clGetGLContextInfoKHR");
-#else
+#  ifdef CL_VERSION_1_2
+      pfn_clGetGLContextInfoKHR = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddressForPlatform(
+        platforms[used_platform], "clGetGLContextInfoKHR");
+#  else
       pfn_clGetGLContextInfoKHR = (clGetGLContextInfoKHR_fn)clGetExtensionFunctionAddress("clGetGLContextInfoKHR");
-#endif
+#  endif
       if (!pfn_clGetGLContextInfoKHR) {
         std::cout << "Failed to query proc address for clGetGLContextInfoKHR." << std::endl;
         exit(EXIT_FAILURE);
@@ -688,7 +764,8 @@ cl_int opencl_global_context()
     pfn_clGetGLContextInfoKHR(prop, CL_DEVICES_FOR_GL_CONTEXT_KHR, 10 * sizeof(cl_device_id), devices_, &size);
 
     int _count = size / sizeof(cl_device_id);
-    if (used_device >= _count)used_device = 0;
+    if (used_device >= _count)
+      used_device = 0;
 
     context_ = clCreateContext(prop, 1, &devices_[used_device], NULL, NULL, &err_);
     CHECK_CL
@@ -699,7 +776,7 @@ cl_int opencl_global_context()
     queue_ = clCreateCommandQueue(context_, devices_[used_device], 0, &err_);
     CHECK_CL
 
-      inited_ = true;
+    inited_ = true;
   }
   return CL_SUCCESS;
 }
@@ -708,7 +785,7 @@ Kernel::Kernel(cl_program program, const char* func)
 {
   err_ = opencl_global_context();
   CHECK_CL
-    reset();
+  reset();
   kernel_ = clCreateKernel(program, func, &err_);
   CHECK_CL
 }
@@ -730,8 +807,7 @@ size_t Kernel::getLocalMemSize()
   err_ = opencl_global_context();
   CHECK_CL
   cl_ulong s;
-  err_ = clGetDeviceInfo(devices_[used_device],
-                         CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &s, NULL);
+  err_ = clGetDeviceInfo(devices_[used_device], CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &s, NULL);
   CHECK_CL
   return s;
 }
@@ -741,8 +817,7 @@ size_t* Kernel::getMaxItems()
   err_ = opencl_global_context();
   CHECK_CL
   size_t* s = new size_t[3];
-  err_ = clGetDeviceInfo(devices_[used_device],
-                         CL_DEVICE_MAX_WORK_ITEM_SIZES, 3 * sizeof(s), s, NULL);
+  err_ = clGetDeviceInfo(devices_[used_device], CL_DEVICE_MAX_WORK_ITEM_SIZES, 3 * sizeof(s), s, NULL);
   CHECK_CL
   return s;
 }
@@ -752,8 +827,7 @@ size_t Kernel::getMaxGroup()
   err_ = opencl_global_context();
   CHECK_CL
   size_t s;
-  err_ = clGetDeviceInfo(devices_[used_device],
-                         CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), &s, NULL);
+  err_ = clGetDeviceInfo(devices_[used_device], CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), &s, NULL);
   CHECK_CL
   return s;
 }
@@ -862,10 +936,12 @@ void Kernel::launch()
 {
 #if DEBUG
   std::cerr << "block:";
-  for (unsigned i = 0; i < grid_dim_; i++)std::cerr << ' ' << block_[i];
+  for (unsigned i = 0; i < grid_dim_; i++)
+    std::cerr << ' ' << block_[i];
   std::cerr << std::endl;
   std::cerr << "grid:";
-  for (unsigned i = 0; i < grid_dim_; i++)std::cerr << ' ' << grid_[i];
+  for (unsigned i = 0; i < grid_dim_; i++)
+    std::cerr << ' ' << grid_[i];
   std::cerr << std::endl;
 #endif
   if (!block_dim_) {
@@ -885,19 +961,15 @@ void Kernel::launch()
       gl_mem[i] = gl_buffers[i]->buffer_;
     }
 
-    err_ = clEnqueueAcquireGLObjects(
-      queue_, n_gl_buffers, gl_mem, 0, NULL, NULL);
+    err_ = clEnqueueAcquireGLObjects(queue_, n_gl_buffers, gl_mem, 0, NULL, NULL);
     CHECK_CL
   }
 
-  err_ = clEnqueueNDRangeKernel(
-    queue_, kernel_, grid_dim_, NULL,
-    grid_, block_, 0, NULL, NULL);
+  err_ = clEnqueueNDRangeKernel(queue_, kernel_, grid_dim_, NULL, grid_, block_, 0, NULL, NULL);
   CHECK_CL
 
   if (n_gl_buffers) {
-    err_ = clEnqueueReleaseGLObjects(
-      queue_, n_gl_buffers, gl_mem, 0, NULL, NULL);
+    err_ = clEnqueueReleaseGLObjects(queue_, n_gl_buffers, gl_mem, 0, NULL, NULL);
     CHECK_CL
 
     delete gl_mem;
@@ -913,7 +985,10 @@ void Kernel::setArg(cl_uint i, size_t size, const void* value)
   CHECK_CL
 }
 
-Program::Program() { compiled_ = false; }
+Program::Program()
+{
+  compiled_ = false;
+}
 
 Kernel* Program::compile(const char* code, const char* func)
 {
@@ -925,22 +1000,18 @@ Kernel* Program::compile(const char* code, const char* func)
     program_ = clCreateProgramWithSource(context_, 1, &code, &len, &err_);
     CHECK_CL
 
-      err_ = clBuildProgram(program_, 1, devices_, NULL, NULL, NULL);
+    err_ = clBuildProgram(program_, 1, devices_, NULL, NULL, NULL);
     if (err_ == CL_BUILD_PROGRAM_FAILURE) {
       size_t log_size;
-      err_ = clGetProgramBuildInfo(
-        program_, devices_[0], CL_PROGRAM_BUILD_LOG,
-        0, NULL, &log_size);
+      err_ = clGetProgramBuildInfo(program_, devices_[0], CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
       CHECK_CL
       char* build_log = (char*)malloc(log_size + 1);
-      if (!build_log) ERROR("malloc for build log");
-      err_ = clGetProgramBuildInfo(
-        program_, devices_[0], CL_PROGRAM_BUILD_LOG,
-        log_size, build_log, NULL);
+      if (!build_log)
+        ERROR("malloc for build log");
+      err_ = clGetProgramBuildInfo(program_, devices_[0], CL_PROGRAM_BUILD_LOG, log_size, build_log, NULL);
       CHECK_CL
-        build_log[log_size] = '\0';
-      std::cerr << "OpenCL build failure for kernel function '" << func
-                << "':\n" << build_log << std::endl;
+      build_log[log_size] = '\0';
+      std::cerr << "OpenCL build failure for kernel function '" << func << "':\n" << build_log << std::endl;
       free(build_log);
       exit(1);
     } else {
@@ -957,7 +1028,7 @@ Buffer::Buffer(size_t size, cl_mem_flags access)
 {
   err_ = opencl_global_context();
   CHECK_CL
-    size_ = size;
+  size_ = size;
   access_ = access;
   buffer_ = clCreateBuffer(context_, access, size, NULL, &err_);
   CHECK_CL
@@ -971,28 +1042,27 @@ Buffer::~Buffer()
 
 void Buffer::read(const void* buf, size_t size) const
 {
-  if (size == 0) size = size_;
-  err_ = clEnqueueWriteBuffer(
-    queue_, buffer_, CL_TRUE, 0, size, buf, 0, NULL, NULL);
+  if (size == 0)
+    size = size_;
+  err_ = clEnqueueWriteBuffer(queue_, buffer_, CL_TRUE, 0, size, buf, 0, NULL, NULL);
   CHECK_CL
 }
 
 void Buffer::write(void* buf, size_t size) const
 {
-  if (size == 0) size = size_;
-  err_ = clEnqueueReadBuffer(
-    queue_, buffer_, CL_TRUE, 0, size, buf, 0, NULL, NULL);
+  if (size == 0)
+    size = size_;
+  err_ = clEnqueueReadBuffer(queue_, buffer_, CL_TRUE, 0, size, buf, 0, NULL, NULL);
   CHECK_CL
 }
 
 void Buffer::copy(const Buffer* dst, size_t size) const
 {
-  if (size == 0) size = size_;
+  if (size == 0)
+    size = size_;
   if (size > dst->size_)
-    ERROR("Destination buffer does not have enough room! ("
-          << size << " > " << dst->size_ << ")");
-  err_ = clEnqueueCopyBuffer(
-    queue_, buffer_, dst->buffer_, 0, 0, size, 0, NULL, NULL);
+    ERROR("Destination buffer does not have enough room! (" << size << " > " << dst->size_ << ")");
+  err_ = clEnqueueCopyBuffer(queue_, buffer_, dst->buffer_, 0, 0, size, 0, NULL, NULL);
   CHECK_CL
 }
 
@@ -1004,8 +1074,7 @@ void Buffer::fill(const char c) const
 #else
   char* tmp = (char*)new char[size_];
   memset(tmp, c, size_);
-  err_ = clEnqueueWriteBuffer(
-    queue_, buffer_, CL_TRUE, 0, size_, (void*)tmp, 0, NULL, NULL);
+  err_ = clEnqueueWriteBuffer(queue_, buffer_, CL_TRUE, 0, size_, (void*)tmp, 0, NULL, NULL);
   CHECK_CL
   delete tmp;
 #endif
@@ -1019,8 +1088,7 @@ void Buffer::fill(const float val) const
 #else
   float* tmp = (float*)new char[size_];
   memset(tmp, val, size_);
-  err_ = clEnqueueWriteBuffer(
-    queue_, buffer_, CL_TRUE, 0, size_, (void*)tmp, 0, NULL, NULL);
+  err_ = clEnqueueWriteBuffer(queue_, buffer_, CL_TRUE, 0, size_, (void*)tmp, 0, NULL, NULL);
   CHECK_CL
   delete tmp;
 #endif
@@ -1030,7 +1098,7 @@ GLBuffer::GLBuffer(cl_GLuint pbo, cl_mem_flags access)
 {
   err_ = opencl_global_context();
   CHECK_CL
-    access_ = access;
+  access_ = access;
   buffer_ = clCreateFromGLBuffer(context_, access, pbo, &err_);
   CHECK_CL
 }
@@ -1045,14 +1113,13 @@ Image::Image(size_t* dims, cl_image_format* format, cl_mem_flags access)
 {
   err_ = opencl_global_context();
   CHECK_CL
-    dims_[0] = dims[0];
+  dims_[0] = dims[0];
   dims_[1] = dims[1];
   dims_[2] = dims[2];
   access_ = access;
 
 #if DEBUG
-  std::cerr << "OpenCL::Image dims (" << dims[0] << ',' << dims[1] << ','
-            << dims[2] << ')' << std::endl;
+  std::cerr << "OpenCL::Image dims (" << dims[0] << ',' << dims[1] << ',' << dims[2] << ')' << std::endl;
 #endif
 
   if (dims[0] == 0 || dims[1] == 0 || dims[2] == 0)
@@ -1062,31 +1129,27 @@ Image::Image(size_t* dims, cl_image_format* format, cl_mem_flags access)
   cl_image_desc desc;
 
   if (dims[2] == 1) {
-    desc.image_type  = CL_MEM_OBJECT_IMAGE2D;
+    desc.image_type = CL_MEM_OBJECT_IMAGE2D;
     desc.image_depth = 0;
   } else {
-    desc.image_type  = CL_MEM_OBJECT_IMAGE3D;
+    desc.image_type = CL_MEM_OBJECT_IMAGE3D;
     desc.image_depth = dims[2];
   }
 
-  desc.image_width       = dims[0];
-  desc.image_height      = dims[1];
-  desc.image_row_pitch   = 0;
+  desc.image_width = dims[0];
+  desc.image_height = dims[1];
+  desc.image_row_pitch = 0;
   desc.image_slice_pitch = 0;
-  desc.num_mip_levels    = 0;
-  desc.num_samples       = 0;
-  desc.buffer            = NULL;
+  desc.num_mip_levels = 0;
+  desc.num_samples = 0;
+  desc.buffer = NULL;
 
   image_ = clCreateImage(context_, access, format, &desc, NULL, &err_);
 #else
   if (dims[2] == 1) {
-    image_ = clCreateImage2D(context_,
-                             access, format, dims[0], dims[1], 0, NULL, &err_);
+    image_ = clCreateImage2D(context_, access, format, dims[0], dims[1], 0, NULL, &err_);
   } else {
-    image_ = clCreateImage3D(
-      context_, access, format,
-      dims[0], dims[1], dims[2],
-      0, 0, NULL, &err_);
+    image_ = clCreateImage3D(context_, access, format, dims[0], dims[1], dims[2], 0, 0, NULL, &err_);
   }
 #endif
 
@@ -1102,16 +1165,15 @@ Image::~Image()
 void Image::read(const void* buf) const
 {
   size_t origin[3] = { 0, 0, 0 };
-  err_ = clEnqueueWriteImage(
-    queue_, image_, CL_TRUE, origin, dims_, 0, 0, buf, 0, NULL, NULL);
+  err_ = clEnqueueWriteImage(queue_, image_, CL_TRUE, origin, dims_, 0, 0, buf, 0, NULL, NULL);
   CHECK_CL
 }
 
 void Image::write(void* buf) const
 {
   size_t origin[3] = { 0, 0, 0 };
-  err_ = clEnqueueReadImage(
-    queue_, image_, CL_TRUE, origin, dims_, 0, 0, buf, 0, NULL, NULL);
+  err_ = clEnqueueReadImage(queue_, image_, CL_TRUE, origin, dims_, 0, 0, buf, 0, NULL, NULL);
   CHECK_CL
 }
-} } // namespace xromm::opencl
+} // namespace gpu
+} // namespace xromm

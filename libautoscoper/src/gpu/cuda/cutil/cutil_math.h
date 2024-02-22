@@ -26,7 +26,7 @@ typedef unsigned int uint;
 typedef unsigned short ushort;
 
 #ifndef __CUDACC__
-#include <math.h>
+#  include <math.h>
 
 inline float fminf(float a, float b)
 {
@@ -92,7 +92,8 @@ inline __host__ __device__ int2 operator+(int2 a, int2 b)
 }
 inline __host__ __device__ void operator+=(int2& a, int2 b)
 {
-  a.x += b.x; a.y += b.y;
+  a.x += b.x;
+  a.y += b.y;
 }
 
 // subtract
@@ -102,7 +103,8 @@ inline __host__ __device__ int2 operator-(int2 a, int2 b)
 }
 inline __host__ __device__ void operator-=(int2& a, int2 b)
 {
-  a.x -= b.x; a.y -= b.y;
+  a.x -= b.x;
+  a.y -= b.y;
 }
 
 // multiply
@@ -120,7 +122,8 @@ inline __host__ __device__ int2 operator*(int s, int2 a)
 }
 inline __host__ __device__ void operator*=(int2& a, int s)
 {
-  a.x *= s; a.y *= s;
+  a.x *= s;
+  a.y *= s;
 }
 
 // float2 functions
@@ -161,7 +164,8 @@ inline __host__ __device__ float2 operator+(float2 a, float2 b)
 }
 inline __host__ __device__ void operator+=(float2& a, float2 b)
 {
-  a.x += b.x; a.y += b.y;
+  a.x += b.x;
+  a.y += b.y;
 }
 
 // subtract
@@ -171,7 +175,8 @@ inline __host__ __device__ float2 operator-(float2 a, float2 b)
 }
 inline __host__ __device__ void operator-=(float2& a, float2 b)
 {
-  a.x -= b.x; a.y -= b.y;
+  a.x -= b.x;
+  a.y -= b.y;
 }
 
 // multiply
@@ -189,7 +194,8 @@ inline __host__ __device__ float2 operator*(float s, float2 a)
 }
 inline __host__ __device__ void operator*=(float2& a, float s)
 {
-  a.x *= s; a.y *= s;
+  a.x *= s;
+  a.y *= s;
 }
 
 // divide
@@ -321,7 +327,9 @@ inline __host__ __device__ float3 operator+(float3 a, float b)
 }
 inline __host__ __device__ void operator+=(float3& a, float3 b)
 {
-  a.x += b.x; a.y += b.y; a.z += b.z;
+  a.x += b.x;
+  a.y += b.y;
+  a.z += b.z;
 }
 
 // subtract
@@ -335,7 +343,9 @@ inline __host__ __device__ float3 operator-(float3 a, float b)
 }
 inline __host__ __device__ void operator-=(float3& a, float3 b)
 {
-  a.x -= b.x; a.y -= b.y; a.z -= b.z;
+  a.x -= b.x;
+  a.y -= b.y;
+  a.z -= b.z;
 }
 
 // multiply
@@ -353,7 +363,9 @@ inline __host__ __device__ float3 operator*(float s, float3 a)
 }
 inline __host__ __device__ void operator*=(float3& a, float s)
 {
-  a.x *= s; a.y *= s; a.z *= s;
+  a.x *= s;
+  a.y *= s;
+  a.z *= s;
 }
 
 // divide
@@ -479,21 +491,27 @@ static __inline__ __host__ __device__ float4 fmaxf(float4 a, float4 b)
 // addition
 inline __host__ __device__ float4 operator+(float4 a, float4 b)
 {
-  return make_float4(a.x + b.x, a.y + b.y, a.z + b.z,  a.w + b.w);
+  return make_float4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
 }
 inline __host__ __device__ void operator+=(float4& a, float4 b)
 {
-  a.x += b.x; a.y += b.y; a.z += b.z; a.w += b.w;
+  a.x += b.x;
+  a.y += b.y;
+  a.z += b.z;
+  a.w += b.w;
 }
 
 // subtract
 inline __host__ __device__ float4 operator-(float4 a, float4 b)
 {
-  return make_float4(a.x - b.x, a.y - b.y, a.z - b.z,  a.w - b.w);
+  return make_float4(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
 }
 inline __host__ __device__ void operator-=(float4& a, float4 b)
 {
-  a.x -= b.x; a.y -= b.y; a.z -= b.z; a.w -= b.w;
+  a.x -= b.x;
+  a.y -= b.y;
+  a.z -= b.z;
+  a.w -= b.w;
 }
 
 // multiply
@@ -507,7 +525,10 @@ inline __host__ __device__ float4 operator*(float s, float4 a)
 }
 inline __host__ __device__ void operator*=(float4& a, float s)
 {
-  a.x *= s; a.y *= s; a.z *= s; a.w *= s;
+  a.x *= s;
+  a.y *= s;
+  a.z *= s;
+  a.w *= s;
 }
 
 // divide
@@ -617,7 +638,9 @@ inline __host__ __device__ int3 operator+(int3 a, int3 b)
 }
 inline __host__ __device__ void operator+=(int3& a, int3 b)
 {
-  a.x += b.x; a.y += b.y; a.z += b.z;
+  a.x += b.x;
+  a.y += b.y;
+  a.z += b.z;
 }
 
 // subtract
@@ -628,7 +651,9 @@ inline __host__ __device__ int3 operator-(int3 a, int3 b)
 
 inline __host__ __device__ void operator-=(int3& a, int3 b)
 {
-  a.x -= b.x; a.y -= b.y; a.z -= b.z;
+  a.x -= b.x;
+  a.y -= b.y;
+  a.z -= b.z;
 }
 
 // multiply
@@ -646,7 +671,9 @@ inline __host__ __device__ int3 operator*(int s, int3 a)
 }
 inline __host__ __device__ void operator*=(int3& a, int s)
 {
-  a.x *= s; a.y *= s; a.z *= s;
+  a.x *= s;
+  a.y *= s;
+  a.z *= s;
 }
 
 // divide
@@ -664,7 +691,9 @@ inline __host__ __device__ int3 operator/(int s, int3 a)
 }
 inline __host__ __device__ void operator/=(int3& a, int s)
 {
-  a.x /= s; a.y /= s; a.z /= s;
+  a.x /= s;
+  a.y /= s;
+  a.z /= s;
 }
 
 // clamp
@@ -682,7 +711,6 @@ inline __device__ __host__ int3 clamp(int3 v, int3 a, int3 b)
 {
   return make_int3(clamp(v.x, a.x, b.x), clamp(v.y, a.y, b.y), clamp(v.z, a.z, b.z));
 }
-
 
 // uint3 functions
 ////////////////////////////////////////////////////////////////////////////////
@@ -716,7 +744,9 @@ inline __host__ __device__ uint3 operator+(uint3 a, uint3 b)
 }
 inline __host__ __device__ void operator+=(uint3& a, uint3 b)
 {
-  a.x += b.x; a.y += b.y; a.z += b.z;
+  a.x += b.x;
+  a.y += b.y;
+  a.z += b.z;
 }
 
 // subtract
@@ -727,7 +757,9 @@ inline __host__ __device__ uint3 operator-(uint3 a, uint3 b)
 
 inline __host__ __device__ void operator-=(uint3& a, uint3 b)
 {
-  a.x -= b.x; a.y -= b.y; a.z -= b.z;
+  a.x -= b.x;
+  a.y -= b.y;
+  a.z -= b.z;
 }
 
 // multiply
@@ -745,7 +777,9 @@ inline __host__ __device__ uint3 operator*(uint s, uint3 a)
 }
 inline __host__ __device__ void operator*=(uint3& a, uint s)
 {
-  a.x *= s; a.y *= s; a.z *= s;
+  a.x *= s;
+  a.y *= s;
+  a.z *= s;
 }
 
 // divide
@@ -763,7 +797,9 @@ inline __host__ __device__ uint3 operator/(uint s, uint3 a)
 }
 inline __host__ __device__ void operator/=(uint3& a, uint s)
 {
-  a.x /= s; a.y /= s; a.z /= s;
+  a.x /= s;
+  a.y /= s;
+  a.z /= s;
 }
 
 // clamp

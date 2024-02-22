@@ -48,15 +48,13 @@
 typedef float Buffer;
 typedef float GLBuffer;
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-#include "gpu/opencl/OpenCL.hpp"
+#  include "gpu/opencl/OpenCL.hpp"
 #endif
 
-namespace xromm
-{
+namespace xromm {
 class Camera;
 
-namespace gpu
-{
+namespace gpu {
 class RayCaster;
 class RadRenderer;
 class BackgroundRenderer;
@@ -103,10 +101,10 @@ public:
 
   void renderDrr(Buffer* buffer, unsigned int width, unsigned int height);
   void renderDrrSingle(int volume, Buffer* buffer, unsigned width, unsigned height);
-  void renderDrr(unsigned int  pbo, unsigned int width, unsigned int height);
+  void renderDrr(unsigned int pbo, unsigned int width, unsigned int height);
 
   void render(GLBuffer* buffer, unsigned int width, unsigned int height);
-  void render(unsigned int  pbo, unsigned int width, unsigned int height);
+  void render(unsigned int pbo, unsigned int width, unsigned int height);
 
   bool drr_enabled;
   bool rad_enabled;
@@ -114,10 +112,7 @@ public:
   void updateBackground(const float* buffer, unsigned int width, unsigned int height);
   void setBackgroundThreshold(float threshold) { backgroundThreshold_ = threshold; }
 
-  const unsigned int nbDrrRenderer()
-  {
-    return drrRenderer_.size();
-  }
+  const unsigned int nbDrrRenderer() { return drrRenderer_.size(); }
 
 private:
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
@@ -157,7 +152,7 @@ private:
 
   bool inited_;
 };
-}
-} // namespace xromm::opencl
+} // namespace gpu
+} // namespace xromm
 
 #endif // XROMM_GPU_VIEW_HPP

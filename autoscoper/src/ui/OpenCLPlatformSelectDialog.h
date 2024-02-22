@@ -54,7 +54,6 @@ class OpenCLPlatformSelectDialog : public QDialog
   Q_OBJECT
 
 private:
-
 public:
   explicit OpenCLPlatformSelectDialog(QWidget* parent = 0);
   ~OpenCLPlatformSelectDialog();
@@ -66,7 +65,7 @@ private:
   std::vector<std::vector<std::string>> platforms;
 
 public slots:
-  void on_comboBox_currentIndexChanged ( int index );
+  void on_comboBox_currentIndexChanged(int index);
   void on_pushButton_clicked();
 };
 

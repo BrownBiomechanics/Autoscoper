@@ -40,25 +40,25 @@
 /// \author Benjamin Knorlein, Andy Loomis
 
 #ifdef _WIN32
-#include <windows.h>
-#undef max
-#include <algorithm>
+#  include <windows.h>
+#  undef max
+#  include <algorithm>
 #endif
 
 #include <cmath>
 #ifndef M_PI
-#define M_PI 3.14159265358979323846
+#  define M_PI 3.14159265358979323846
 #endif
 #include <iostream>
 
 #ifdef __APPLE__
-#include <OpenGL/gl.h>
-#include <OpenGL/glext.h>
-#include <OpenGL/glu.h>
+#  include <OpenGL/gl.h>
+#  include <OpenGL/glext.h>
+#  include <OpenGL/glu.h>
 #else
-#include <GL/glew.h> // For windows to support glMultTransposeMatrix
-#include <GL/gl.h>
-#include <GL/glu.h>
+#  include <GL/glew.h> // For windows to support glMultTransposeMatrix
+#  include <GL/gl.h>
+#  include <GL/glu.h>
 #endif
 
 #include "Manip3D.hpp"
@@ -71,8 +71,7 @@
 
 // One quarter coverage stipple pattern
 
-static const GLubyte pattern[128] =
-{
+static const GLubyte pattern[128] = {
   // clang-format off
   0xaa, 0xaa, 0xaa, 0xaa, 0x00, 0x00, 0x00, 0x00, 0xaa, 0xaa, 0xaa, 0xaa,
   0x00, 0x00, 0x00, 0x00, 0xaa, 0xaa, 0xaa, 0xaa, 0x00, 0x00, 0x00, 0x00,
@@ -112,11 +111,7 @@ static double rads_per_pixel = 0.0;
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~// Helper Functions //~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
-static Ray<double> create_ray(int x,
-                              int y,
-                              const double* model,
-                              const double* proj,
-                              const int* view);
+static Ray<double> create_ray(int x, int y, const double* model, const double* proj, const int* view);
 
 static void draw_cone(float base, float height, int slices, int stacks);
 
@@ -125,7 +120,8 @@ static double safe_acos(double x)
   static const float min_x = -1.0 + std::numeric_limits<double>::epsilon();
   static const float max_x = 1.0 - std::numeric_limits<double>::epsilon();
 
-  if (x > max_x) x = max_x;
+  if (x > max_x)
+    x = max_x;
   else if (x < min_x)
     x = min_x;
 
@@ -136,21 +132,21 @@ static double safe_acos(double x)
 
 Manip3D::Manip3D()
 
-  : movePivot_(false),
-    pivotSize_(0.25f),
-    is_visible_(true),
-    is_locked_(false),
-    transform1_(Mat4d::eye()),
-    transform2_(Mat4d::eye()),
-    size_(1.0),
-    prev_size_(1.0),
-    mode_(TRANSLATION),
-    projection_(Mat4d::eye()),
-    modelview_(Mat4d::eye()),
-    selection_(NONE),
-    point1_(Vec3d::zero()),
-    point2_(Vec3d::zero()),
-    is_thick_lines_mode_(false)
+  : movePivot_(false)
+  , pivotSize_(0.25f)
+  , is_visible_(true)
+  , is_locked_(false)
+  , transform1_(Mat4d::eye())
+  , transform2_(Mat4d::eye())
+  , size_(1.0)
+  , prev_size_(1.0)
+  , mode_(TRANSLATION)
+  , projection_(Mat4d::eye())
+  , modelview_(Mat4d::eye())
+  , selection_(NONE)
+  , point1_(Vec3d::zero())
+  , point2_(Vec3d::zero())
+  , is_thick_lines_mode_(false)
 {
   viewport_[0] = 0;
   viewport_[1] = 0;
@@ -248,8 +244,12 @@ void Manip3D::draw()
   // Draw either axes or gimbals
 
   switch (mode_) {
-    case TRANSLATION: draw_axes(); break;
-    case ROTATION: draw_gimbals(); break;
+    case TRANSLATION:
+      draw_axes();
+      break;
+    case ROTATION:
+      draw_gimbals();
+      break;
   }
 
   // Return to the previous state
@@ -270,15 +270,17 @@ void Manip3D::on_mouse_press(int x, int y, int button)
   Ray<double> ray1 = create_ray(x + 1, y, modelview_, projection_, viewport_);
   Ray<double> ray2 = create_ray(x, y + 1, modelview_, projection_, viewport_);
 
-  rads_per_pixel = std::max(safe_acos(dot(ray.direction, ray1.direction) /
-                                      len(ray.direction) / len(ray1.direction)),
-                            safe_acos(dot(ray.direction, ray2.direction) /
-                                      len(ray.direction) / len(ray2.direction)));
+  rads_per_pixel = std::max(safe_acos(dot(ray.direction, ray1.direction) / len(ray.direction) / len(ray1.direction)),
+                            safe_acos(dot(ray.direction, ray2.direction) / len(ray.direction) / len(ray2.direction)));
 
   switch (mode_) {
     default:
-    case TRANSLATION: select_axis(ray); break;
-    case ROTATION: select_gimbal(ray); break;
+    case TRANSLATION:
+      select_axis(ray);
+      break;
+    case ROTATION:
+      select_gimbal(ray);
+      break;
   }
 
   if (selection_ != NONE) {
@@ -298,8 +300,12 @@ void Manip3D::on_mouse_move(int x, int y, int button)
 
   switch (mode_) {
     default:
-    case TRANSLATION: move_axis(ray); break;
-    case ROTATION: move_gimbal(ray); break;
+    case TRANSLATION:
+      move_axis(ray);
+      break;
+    case ROTATION:
+      move_gimbal(ray);
+      break;
   }
 }
 
@@ -361,7 +367,6 @@ void Manip3D::draw_axes() const
   glPopAttrib();
 
   // Draw x-axis if the view angle is large enough
-
 
   if (this->is_thick_lines_mode_)
     glLineWidth(5.0); // For thick lines mode
@@ -493,8 +498,7 @@ void Manip3D::draw_axes() const
 
     glColor4dv(grey);
 
-    if (selection_ == X ||
-        (selection_ == VIEW_PLANE && view_angle.x > min_view_angle)) {
+    if (selection_ == X || (selection_ == VIEW_PLANE && view_angle.x > min_view_angle)) {
       glBegin(GL_LINES);
       glVertex3d(0.0, 0.0, 0.0);
       glVertex3d(prev_size_, 0.0, 0.0);
@@ -505,8 +509,7 @@ void Manip3D::draw_axes() const
       glVertex3d(prev_size_, 0.0, 0.0);
       glEnd();
     }
-    if (selection_ == Y ||
-        (selection_ == VIEW_PLANE && view_angle.y > min_view_angle)) {
+    if (selection_ == Y || (selection_ == VIEW_PLANE && view_angle.y > min_view_angle)) {
       glBegin(GL_LINES);
       glVertex3d(0.0, 0.0, 0.0);
       glVertex3d(0.0, prev_size_, 0.0);
@@ -517,8 +520,7 @@ void Manip3D::draw_axes() const
       glVertex3d(0.0, prev_size_, 0.0);
       glEnd();
     }
-    if (selection_ == Z ||
-        (selection_ == VIEW_PLANE && view_angle.z > min_view_angle)) {
+    if (selection_ == Z || (selection_ == VIEW_PLANE && view_angle.z > min_view_angle)) {
       glBegin(GL_LINES);
       glVertex3d(0.0, 0.0, 0.0);
       glVertex3d(0.0, 0.0, prev_size_);
@@ -550,9 +552,7 @@ void Manip3D::draw_gimbals() const
 
   // Calculate the hemisphere of each gimbal that is visible
 
-  Vec3d alpha = -Vec3d(atan2(eye.y, eye.z),
-                       atan2(eye.x, eye.z),
-                       atan2(eye.x, eye.y));
+  Vec3d alpha = -Vec3d(atan2(eye.y, eye.z), atan2(eye.x, eye.z), atan2(eye.x, eye.y));
 
   // Draw the view plane gimbal. The view plane gimbal is not actually drawn
   // in the view plane, but rather perpendicular to the vector from the eye
@@ -783,21 +783,13 @@ void Manip3D::select_gimbal(const Ray<double>& ray)
 
     // Calculate the hemisphere of each gimbal that is visible
 
-    Vec3d alpha = -Vec3d(atan2(eye.y, eye.z),
-                         atan2(eye.x, eye.z),
-                         atan2(eye.x, eye.y));
+    Vec3d alpha = -Vec3d(atan2(eye.y, eye.z), atan2(eye.x, eye.z), atan2(eye.x, eye.y));
 
     double min_dist = std::numeric_limits<double>::max();
 
     // Determine if there is a selection of the x-axis gimbal
 
-    ray.intersect_arc(Vec3d::zero(),
-                      Vec3d::unit_y(),
-                      Vec3d::unit_z(),
-                      size_,
-                      alpha.x,
-                      alpha.x + M_PI,
-                      &p, &q);
+    ray.intersect_arc(Vec3d::zero(), Vec3d::unit_y(), Vec3d::unit_z(), size_, alpha.x, alpha.x + M_PI, &p, &q);
 
     theta = safe_acos(dot(unit(p - eye), unit(q - eye)));
     double dist = len(p - ray.origin);
@@ -810,13 +802,7 @@ void Manip3D::select_gimbal(const Ray<double>& ray)
 
     // Determine if there is a selection of the y-axis gimbal
 
-    ray.intersect_arc(Vec3d::zero(),
-                      Vec3d::unit_x(),
-                      Vec3d::unit_z(),
-                      size_,
-                      alpha.y,
-                      alpha.y + M_PI,
-                      &p, &q);
+    ray.intersect_arc(Vec3d::zero(), Vec3d::unit_x(), Vec3d::unit_z(), size_, alpha.y, alpha.y + M_PI, &p, &q);
 
     theta = safe_acos(dot(unit(p - eye), unit(q - eye)));
     dist = len(p - ray.origin);
@@ -829,13 +815,7 @@ void Manip3D::select_gimbal(const Ray<double>& ray)
 
     // Determine if there is a selection of the z-axis gimbal
 
-    ray.intersect_arc(Vec3d::zero(),
-                      Vec3d::unit_x(),
-                      Vec3d::unit_y(),
-                      size_,
-                      alpha.z,
-                      alpha.z + M_PI,
-                      &p, &q);
+    ray.intersect_arc(Vec3d::zero(), Vec3d::unit_x(), Vec3d::unit_y(), size_, alpha.z, alpha.z + M_PI, &p, &q);
 
     theta = safe_acos(dot(unit(p - eye), unit(q - eye)));
     dist = len(p - ray.origin);
@@ -852,7 +832,8 @@ void Manip3D::move_axis(const Ray<double>& ray)
 {
   switch (selection_) {
     default:
-    case NONE: break;
+    case NONE:
+      break;
     case X:
       ray.intersect_line(Vec3d::zero(), Vec3d::unit_x(), 0, &point2_);
       break;
@@ -865,8 +846,7 @@ void Manip3D::move_axis(const Ray<double>& ray)
     case VIEW_PLANE: {
       Vec3d normal = unit(Vec3d(col(transform2_ * inv(trans(modelview_)), 2)));
       ray.intersect_plane(Vec3d::zero(), normal, &point2_);
-    }
-    break;
+    } break;
   }
 
   transform2_ = Mat4d(Mat3d::eye(), point2_ - point1_);
@@ -878,13 +858,12 @@ void Manip3D::move_gimbal(const Ray<double>& ray)
 
   // Calculate the hemisphere of each gimbal that is visible
 
-  Vec3d alpha = -Vec3d(atan2(eye.y, eye.z),
-                       atan2(eye.x, eye.z),
-                       atan2(eye.x, eye.y));
+  Vec3d alpha = -Vec3d(atan2(eye.y, eye.z), atan2(eye.x, eye.z), atan2(eye.x, eye.y));
 
   switch (selection_) {
     default:
-    case NONE: break;
+    case NONE:
+      break;
     case X:
       ray.intersect_circle(Vec3d::zero(), Vec3d::unit_x(), size_, 0, &point2_);
       break;
@@ -906,17 +885,14 @@ void Manip3D::move_gimbal(const Ray<double>& ray)
 
   double theta = safe_acos(dot(point1_, point2_) / len(point1_) / len(point2_));
 
-  Vec3d axis = theta < 1e-6 ?  Vec3d(1.0, 0.0, 0.0) : unit(cross(point1_, point2_));
+  Vec3d axis = theta < 1e-6 ? Vec3d(1.0, 0.0, 0.0) : unit(cross(point1_, point2_));
 
   transform2_ = Mat4d(Mat3d::rot(theta, axis));
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~// Helper Function Definitions //~~~~~~~~~~~~~~~~~~~~~~//
 
-Ray<double> create_ray(int x, int y,
-                       const GLdouble* model,
-                       const GLdouble* proj,
-                       const GLint* view)
+Ray<double> create_ray(int x, int y, const GLdouble* model, const GLdouble* proj, const GLint* view)
 {
   // y = view[3]-y; XXX: Fails if the viewport and screen are different sizes
 
@@ -973,4 +949,3 @@ void draw_cone(float base, float height, int slices, int stacks)
     glEnd();
   }
 }
-

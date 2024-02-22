@@ -47,7 +47,8 @@
 #include "Filter.hpp"
 #include "OpenCL.hpp"
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 
 class SobelFilter : public Filter
 {
@@ -56,10 +57,7 @@ public:
   virtual ~SobelFilter() {}
 
   // Apply the filter to the input image
-  virtual void apply(const Buffer* input,
-                     Buffer* output,
-                     int width,
-                     int height);
+  virtual void apply(const Buffer* input, Buffer* output, int width, int height);
 
   // Accessors and mutators
   float getScale() const { return scale_; }
@@ -72,6 +70,7 @@ private:
   float scale_;
   float blend_;
 };
-} } // namespace xromm::opencl
+} // namespace gpu
+} // namespace xromm
 
 #endif // XROMM_GPU_SOBEL_FILTER_HPP

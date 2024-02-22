@@ -52,10 +52,10 @@ namespace xromm {
 class Trial;
 class Tracker;
 class CoordFrame;
-}
-using xromm::Trial;
-using xromm::Tracker;
+} // namespace xromm
 using xromm::CoordFrame;
+using xromm::Tracker;
+using xromm::Trial;
 
 class GLTracker;
 class FilterDockWidget;
@@ -117,20 +117,46 @@ public:
 
   // For socket
   bool openTrial(QString filename);
-  bool load_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume = -1);
-  void save_tracking_results(QString filename, bool save_as_matrix, bool save_as_rows, bool save_with_commas, bool convert_to_cm, bool convert_to_rad, bool interpolate, int volume = -1);
+  bool load_tracking_results(QString filename,
+                             bool save_as_matrix,
+                             bool save_as_rows,
+                             bool save_with_commas,
+                             bool convert_to_cm,
+                             bool convert_to_rad,
+                             bool interpolate,
+                             int volume = -1);
+  void save_tracking_results(QString filename,
+                             bool save_as_matrix,
+                             bool save_as_rows,
+                             bool save_with_commas,
+                             bool convert_to_cm,
+                             bool convert_to_rad,
+                             bool interpolate,
+                             int volume = -1);
   void loadFilterSettings(int camera, QString filename);
   std::vector<double> getPose(unsigned int volume, unsigned int frame);
   void setPose(std::vector<double> pose, unsigned int volume, unsigned int frame);
   void setBackground(double threshold);
   std::vector<double> getNCC(unsigned int volumeID, double* xyzpr);
   void saveFullDRR();
-  std::vector<unsigned char> getImageData(unsigned int volumeID, unsigned int camera, double* xyzpr, unsigned int& width, unsigned int& height);
-  void optimizeFrame(int volumeID, int frame, int dframe, int repeats, int opt_method, unsigned int max_iter, double min_limit, double max_limit, int cf_model, unsigned int stall_iter);
+  std::vector<unsigned char> getImageData(unsigned int volumeID,
+                                          unsigned int camera,
+                                          double* xyzpr,
+                                          unsigned int& width,
+                                          unsigned int& height);
+  void optimizeFrame(int volumeID,
+                     int frame,
+                     int dframe,
+                     int repeats,
+                     int opt_method,
+                     unsigned int max_iter,
+                     double min_limit,
+                     double max_limit,
+                     int cf_model,
+                     unsigned int stall_iter);
   int getNumVolumes();
   int getNumFrames();
   void setVolumeVisibility(int volumeID, bool visible);
-
 
   // Backup Save
   void backup_tracking(bool backup_on);
@@ -257,7 +283,6 @@ public slots:
   void on_actionShow_world_view_triggered(bool checked);
   void on_actionThick_Lines_Mode_triggered(bool checked);
 
-
   // Extra
   void on_actionExport_NCC_as_csv_triggered(bool checked);
   void on_actionExport_all_NCCs_near_this_pose_triggered(bool checked);
@@ -288,7 +313,6 @@ public slots:
   void on_toolButtonTrackCurrent_clicked();
   // void on_toolButtonRetrack_clicked();
 
-
   // Shortcuts
   void key_w_pressed();
   void key_e_pressed();
@@ -303,4 +327,4 @@ public slots:
   void key_minus_pressed();
 };
 
-#endif  // UAUTOSCOPERMAINWINDOW_H
+#endif // UAUTOSCOPERMAINWINDOW_H

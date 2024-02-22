@@ -46,8 +46,8 @@
 
 #include "gpu/opencl/OpenCL.hpp"
 
-namespace xromm { namespace gpu
-{
+namespace xromm {
+namespace gpu {
 
 class RadRenderer
 {
@@ -71,7 +71,7 @@ private:
   float viewport_[4];
   std::string name_;
 };
-} } // namespace xromm::opencl
+} // namespace gpu
+} // namespace xromm
 
 #endif // XROMM_RAD_RENDERER_HPP
-

@@ -99,7 +99,10 @@ struct Quat
 
   static Quat rot(const Mat3<T>& m)
   {
-    int i = m(1, 1) > m(0, 0) ? 1 : 0; if (m(2, 2) > m(i, i)) { i = 2; }
+    int i = m(1, 1) > m(0, 0) ? 1 : 0;
+    if (m(2, 2) > m(i, i)) {
+      i = 2;
+    }
     int j = (i + 1) % 3;
     int k = (j + 1) % 3;
 
@@ -155,45 +158,27 @@ struct Quat
 
   //! Returns a pointer to the underlying array
 
-  operator T*()
-  {
-    return data;
-  }
+  operator T*() { return data; }
 
   //! Returns a const pointer to the underlying array
 
-  operator const T*() const
-  {
-    return data;
-  }
+  operator const T*() const { return data; }
 
   //! Returns a reference to the element at the specified index
 
-  T& operator[](int i)
-  {
-    return data[i];
-  }
+  T& operator[](int i) { return data[i]; }
 
   //! Returns a const reference to the element at the specified index
 
-  const T& operator[](int i) const
-  {
-    return data[i];
-  }
+  const T& operator[](int i) const { return data[i]; }
 
   //! Returns a reference to the element at the specified index
 
-  T& operator()(int i)
-  {
-    return data[i];
-  }
+  T& operator()(int i) { return data[i]; }
 
   //! Returns a const reference to the element at the specified index
 
-  const T& operator()(int i) const
-  {
-    return data[i];
-  }
+  const T& operator()(int i) const { return data[i]; }
 
   //! Returns a vector representing the axis of rotation of the specified
   //! quaternion
@@ -206,80 +191,47 @@ struct Quat
 
   //! Returns the angle of rotation of the specified quaternion
 
-  friend T angle(const Quat& q)
-  {
-    return T(2) * acos(q.w);
-  }
+  friend T angle(const Quat& q) { return T(2) * acos(q.w); }
 
   //! Returns the dot product of the specified quaternions
 
-  friend T dot(const Quat& p, const Quat& q)
-  {
-    return p.w * q.w + p.x * q.x + p.y * q.y + p.z * q.z;
-  }
+  friend T dot(const Quat& p, const Quat& q) { return p.w * q.w + p.x * q.x + p.y * q.y + p.z * q.z; }
 
   //! Returns the squared length of the specified quaternion
 
-  friend T lensq(const Quat& q)
-  {
-    return dot(q, q);
-  }
+  friend T lensq(const Quat& q) { return dot(q, q); }
 
   //! Returns the length of the specified quaternion
 
-  friend T len(const Quat& q)
-  {
-    return sqrt(lensq(q));
-  }
+  friend T len(const Quat& q) { return sqrt(lensq(q)); }
 
   //! Returns a unit quaternion
 
-  friend Quat unit(const Quat& q)
-  {
-    return q / len(q);
-  }
+  friend Quat unit(const Quat& q) { return q / len(q); }
 
   //! Returns the conjugate of the specified quaternion
 
-  friend Quat conj(const Quat& q)
-  {
-    return Quat(q.w, -q.x, -q.y, -q.z);
-  }
+  friend Quat conj(const Quat& q) { return Quat(q.w, -q.x, -q.y, -q.z); }
 
   //! Returns the inverse of the specified quaternion
 
-  friend Quat inv(const Quat& q)
-  {
-    return conj(q) / lensq(q);
-  }
+  friend Quat inv(const Quat& q) { return conj(q) / lensq(q); }
 
   //! Returns a copy of the specified quaternion
 
-  friend Quat operator+(const Quat& q)
-  {
-    return q;
-  }
+  friend Quat operator+(const Quat& q) { return q; }
 
   //! Returns the negation of the specified quaternion
 
-  friend Quat operator-(const Quat& q)
-  {
-    return Quat(-q.w, -q.x, -q.y, -q.z);
-  }
+  friend Quat operator-(const Quat& q) { return Quat(-q.w, -q.x, -q.y, -q.z); }
 
   //! Returns the sum of the specified quaternions
 
-  friend Quat operator+(const Quat& p, const Quat& q)
-  {
-    return Quat(p.w + q.w, p.x + q.x, p.y + q.y, p.z + q.z);
-  }
+  friend Quat operator+(const Quat& p, const Quat& q) { return Quat(p.w + q.w, p.x + q.x, p.y + q.y, p.z + q.z); }
 
   //! Returns the difference of the specified quaternions
 
-  friend Quat operator-(const Quat& p, const Quat& q)
-  {
-    return Quat(p.w - q.w, p.x - q.x, p.y - q.y, p.z - q.z);
-  }
+  friend Quat operator-(const Quat& p, const Quat& q) { return Quat(p.w - q.w, p.x - q.x, p.y - q.y, p.z - q.z); }
 
   //! Returns the product of the specified quaternions
 
@@ -293,31 +245,19 @@ struct Quat
 
   //! Returns the result of p*inv(q)
 
-  friend Quat operator/(const Quat& p, const Quat& q)
-  {
-    return p * inv(q);
-  }
+  friend Quat operator/(const Quat& p, const Quat& q) { return p * inv(q); }
 
   //! Returns the product of the specified scalar and quaternion
 
-  friend Quat operator*(const T& s, const Quat& q)
-  {
-    return Quat(s * q.w, s * q.x, s * q.y, s * q.z);
-  }
+  friend Quat operator*(const T& s, const Quat& q) { return Quat(s * q.w, s * q.x, s * q.y, s * q.z); }
 
   //! Returns the product of the specified quaternion and scalar
 
-  friend Quat operator*(const Quat& q, const T& s)
-  {
-    return Quat(q.w * s, q.x * s, q.y * s, q.z * s);
-  }
+  friend Quat operator*(const Quat& q, const T& s) { return Quat(q.w * s, q.x * s, q.y * s, q.z * s); }
 
   //! Returns the quotient of the specified quaternion and scalar
 
-  friend Quat operator/(const Quat& q, const T& s)
-  {
-    return Quat(q.w / s, q.x / s, q.y / s, q.z / s);
-  }
+  friend Quat operator/(const Quat& q, const T& s) { return Quat(q.w / s, q.x / s, q.y / s, q.z / s); }
 
   //! Assigns a quaternion to the sum of the specified quaternions
 
@@ -343,17 +283,11 @@ struct Quat
 
   //! Assigns a quaternion to the product of the specified quaternions
 
-  friend Quat& operator*=(Quat& p, const Quat& q)
-  {
-    return p = p * q;
-  }
+  friend Quat& operator*=(Quat& p, const Quat& q) { return p = p * q; }
 
   //! Assigns a quaternion to the result of p*inv(q)
 
-  friend Quat& operator/=(Quat& p, const Quat& q)
-  {
-    return p = p / q;
-  }
+  friend Quat& operator/=(Quat& p, const Quat& q) { return p = p / q; }
 
   //! Assigns a quaternion to the product of the specified quaternion and
   //! scalar
@@ -404,18 +338,12 @@ struct Quat
 
   //! Returns true if the specified quaternions are equal and false otherwise
 
-  friend bool operator==(const Quat& p, const Quat& q)
-  {
-    return p.w == q.w && p.x == q.x && p.y == q.y && p.z == q.z;
-  }
+  friend bool operator==(const Quat& p, const Quat& q) { return p.w == q.w && p.x == q.x && p.y == q.y && p.z == q.z; }
 
   //! Returns true if the specified quaternions are not equal and false
   //! otherwise
 
-  friend bool operator!=(const Quat& p, const Quat& q)
-  {
-    return p.w != q.w || p.x != q.x || p.y != q.y || p.z != q.z;
-  }
+  friend bool operator!=(const Quat& p, const Quat& q) { return p.w != q.w || p.x != q.x || p.y != q.y || p.z != q.z; }
 
   //! Writes the elements of the specified quaternion to the output stream
 
@@ -426,14 +354,18 @@ struct Quat
 
   //! Reads the elements of the specified quaternion from the input stream
 
-  friend std::istream& operator<<(std::istream& is, Quat& q)
-  {
-    return is >> q.w >> q.x >> q.y >> q.z;
-  }
+  friend std::istream& operator<<(std::istream& is, Quat& q) { return is >> q.w >> q.x >> q.y >> q.z; }
 
   //! Underlying data array
 
-  union { struct { T w, x, y, z; }; T data[4]; };
+  union
+  {
+    struct
+    {
+      T w, x, y, z;
+    };
+    T data[4];
+  };
 };
 
 #endif // QUATERNION_HPP

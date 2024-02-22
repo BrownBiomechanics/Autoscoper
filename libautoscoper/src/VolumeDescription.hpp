@@ -46,7 +46,7 @@
 struct cudaArray;
 typedef cudaArray Image;
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-#include "gpu/opencl/OpenCL.hpp"
+#  include "gpu/opencl/OpenCL.hpp"
 #endif
 
 namespace xromm {
@@ -85,7 +85,7 @@ private:
 
   Image* image_;
 };
-}
-} // namespace xromm::opencl
+} // namespace gpu
+} // namespace xromm
 
 #endif // XROMM_GPU_VOLUME_DESCRIPTION_HPP

@@ -58,7 +58,8 @@ static float* d_den2s = NULL;
 
 //////// Helper functions ////////
 
-static void get_device_params(unsigned int n, unsigned int maxNumThreads,
+static void get_device_params(unsigned int n,
+                              unsigned int maxNumThreads,
                               unsigned int& numThreads,
                               unsigned int& numBlocks,
                               unsigned int& sizeMem);
@@ -67,21 +68,22 @@ static float sum(float* f, unsigned int n);
 
 //////// Cuda kernels ////////
 
-__global__
-void sum_kernel(float* f, float* sums, unsigned int n);
+__global__ void sum_kernel(float* f, float* sums, unsigned int n);
 
-__global__
-void cuda_ncc_kernel(float* f, float meanF, float* g, float meanG, float* mask,
-                     float* nums, float* den1s, float* den2s,
-                     unsigned int n);
-
+__global__ void cuda_ncc_kernel(float* f,
+                                float meanF,
+                                float* g,
+                                float meanG,
+                                float* mask,
+                                float* nums,
+                                float* den1s,
+                                float* den2s,
+                                unsigned int n);
 
 //////// Interface Definitions ////////
 
-namespace xromm
-{
-namespace gpu
-{
+namespace xromm {
+namespace gpu {
 void ncc_init(unsigned int max_n, unsigned int maxNumThreads)
 {
   if (g_max_n != max_n || g_maxNumThreads != maxNumThreads) {
@@ -120,9 +122,7 @@ float ncc(float* f, float* g, float* mask, unsigned int n)
   unsigned int numThreads, numBlocks, sizeMem;
   get_device_params(n, g_maxNumThreads, numThreads, numBlocks, sizeMem);
 
-  cuda_ncc_kernel << < numBlocks, numThreads, sizeMem >> > (f, meanF, g, meanG, mask,
-                                                            d_nums, d_den1s,
-                                                            d_den2s, n);
+  cuda_ncc_kernel<<<numBlocks, numThreads, sizeMem>>>(f, meanF, g, meanG, mask, d_nums, d_den1s, d_den2s, n);
 
   float den = sqrt(sum(d_den1s, n) * sum(d_den2s, n));
 
@@ -154,22 +154,18 @@ float sum(float* f, unsigned int n)
   get_device_params(n, g_maxNumThreads, numThreads, numBlocks, sizeMem);
 
   while (n > 1) {
-    sum_kernel << < numBlocks, numThreads, sizeMem >> > (f, d_sums, n);
+    sum_kernel<<<numBlocks, numThreads, sizeMem>>>(f, d_sums, n);
     n = numBlocks;
     get_device_params(n, g_maxNumThreads, numThreads, numBlocks, sizeMem);
     f = d_sums;
   }
 
   float h_sum;
-  cutilSafeCall(cudaMemcpy(&h_sum,
-                           d_sums,
-                           sizeof(float),
-                           cudaMemcpyDeviceToHost));
+  cutilSafeCall(cudaMemcpy(&h_sum, d_sums, sizeof(float), cudaMemcpyDeviceToHost));
   return h_sum;
 }
 
-__global__
-void sum_kernel(float* f, float* sums, unsigned int n)
+__global__ void sum_kernel(float* f, float* sums, unsigned int n)
 {
   extern __shared__ float sdata[];
 
@@ -190,10 +186,15 @@ void sum_kernel(float* f, float* sums, unsigned int n)
   }
 }
 
-__global__
-void cuda_ncc_kernel(float* f, float meanF, float* g, float meanG, float* mask,
-                     float* nums, float* den1s, float* den2s,
-                     unsigned int n)
+__global__ void cuda_ncc_kernel(float* f,
+                                float meanF,
+                                float* g,
+                                float meanG,
+                                float* mask,
+                                float* nums,
+                                float* den1s,
+                                float* den2s,
+                                unsigned int n)
 {
   unsigned int i = blockDim.x * blockIdx.x + threadIdx.x;
 
@@ -210,4 +211,3 @@ void cuda_ncc_kernel(float* f, float meanF, float* g, float meanG, float* mask,
     den2s[i] = 0.0f;
   }
 }
-
