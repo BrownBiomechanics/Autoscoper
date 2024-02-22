@@ -93,9 +93,12 @@ void GaussianFilter::set_radius(float radius)
   for (int i = 0; i < filterSize_; ++i) {
     for (int j = 0; j < filterSize_; ++j) {
       /* equation for a gaussian with stdev radius_ */
+      // clang-format off
       gaussian[i * filterSize_ + j] = exp((
                                             (i - filterRadius) * (i - filterRadius) +
-                                            (j - filterRadius) * (j - filterRadius)) / (-2.0 * radius_));
+                                            (j - filterRadius) * (j - filterRadius))
+                                          / (-2.0 * radius_));
+      // clang-format on
       sum = sum + gaussian[i * filterSize_ + j];
     }
   }

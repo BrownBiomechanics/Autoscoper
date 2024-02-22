@@ -323,6 +323,7 @@ static int tiffReadContigTiledData(TIFF* tif, uint8_t* data, uint32_t width,
 
 static int tiffImageWriteMeta(TIFF* tif, TiffImage* img)
 {
+  // clang-format off
   if (TIFFSetField(tif, TIFFTAG_IMAGEWIDTH, img->width) &&
       TIFFSetField(tif, TIFFTAG_IMAGELENGTH, img->height) &&
       TIFFSetField(tif, TIFFTAG_BITSPERSAMPLE, img->bitsPerSample) &&
@@ -332,6 +333,7 @@ static int tiffImageWriteMeta(TIFF* tif, TiffImage* img)
       TIFFSetField(tif, TIFFTAG_PLANARCONFIG, img->planarConfig) &&
       TIFFSetField(tif, TIFFTAG_SAMPLEFORMAT, img->sampleFormat) &&
       TIFFSetField(tif, TIFFTAG_COMPRESSION, img->compression)) {
+    // clang-format on
     return 1;
   } else {
     return 0;

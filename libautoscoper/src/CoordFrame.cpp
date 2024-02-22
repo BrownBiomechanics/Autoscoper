@@ -188,6 +188,7 @@ CoordFrame CoordFrame::from_xyzAxis_angle(const double* xyzijk)
 
 void CoordFrame::to_xyzypr(double* xyzypr) const
 {
+  // clang-format off
   xyzypr[0] = translation_[0];
   xyzypr[1] = translation_[1];
   xyzypr[2] = translation_[2];
@@ -196,14 +197,17 @@ void CoordFrame::to_xyzypr(double* xyzypr) const
                             sqrt(rotation_[5] * rotation_[5] +
                                  rotation_[8] * rotation_[8])) / M_PI;
   xyzypr[5] = 180 * atan2(rotation_[5], rotation_[8]) / M_PI;
+  // clang-format on
 }
 
 CoordFrame CoordFrame::from_matrix(const double* m)
 {
+  // clang-format off
   double rotation[9] = { m[0],  m[1],  m[2],
                          m[4],  m[5],  m[6],
                          m[8],  m[9],  m[10] };
   double translation[3] = { m[12], m[13], m[14] };
+  // clang-format on
 
   return CoordFrame(rotation, translation);
 }
@@ -297,12 +301,15 @@ void CoordFrame::rotate(const double* caxis, double angle)
   double oc = 1.0 - c;
 
   // Calculate the rotation matrix
+  // clang-format off
   double R[9] = { (oc * xx) + c,  (oc * xy) + sz, (oc * xz) - sy,
                   (oc * xy) - sz, (oc * yy) + c,  (oc * yz) + sx,
                   (oc * xz) + sy, (oc * yz) - sx, (oc * zz) + c };
+  // clang-format on
 
   double* M = rotation_;
 
+  // clang-format off
   double temp[9] = { M[0] * R[0] + M[1] * R[3] + M[2] * R[6],
                      M[0] * R[1] + M[1] * R[4] + M[2] * R[7],
                      M[0] * R[2] + M[1] * R[5] + M[2] * R[8],
@@ -312,6 +319,7 @@ void CoordFrame::rotate(const double* caxis, double angle)
                      M[6] * R[0] + M[7] * R[3] + M[8] * R[6],
                      M[6] * R[1] + M[7] * R[4] + M[8] * R[7],
                      M[6] * R[2] + M[7] * R[5] + M[8] * R[8] };
+  // clang-format on
 
   rotation_[0] = temp[0];
   rotation_[1] = temp[1];
@@ -333,6 +341,7 @@ void CoordFrame::translate(const double* v)
 
 CoordFrame CoordFrame::inverse() const
 {
+  // clang-format off
   double rotation[9] = { rotation_[0], rotation_[3], rotation_[6],
                          rotation_[1], rotation_[4], rotation_[7],
                          rotation_[2], rotation_[5], rotation_[8] };
@@ -345,12 +354,14 @@ CoordFrame CoordFrame::inverse() const
                             -(rotation[2] * translation_[0] +
                               rotation[5] * translation_[1] +
                               rotation[8] * translation_[2]) };
+  // clang-format on
 
   return CoordFrame(rotation, translation);
 }
 
 void CoordFrame::point_to_world_space(const double* p, double* q) const
 {
+  // clang-format off
   q[0] = rotation_[0] * p[0] +
          rotation_[3] * p[1] +
          rotation_[6] * p[2] +
@@ -363,10 +374,12 @@ void CoordFrame::point_to_world_space(const double* p, double* q) const
          rotation_[5] * p[1] +
          rotation_[8] * p[2] +
          translation_[2];
+  // clang-format on
 }
 
 void CoordFrame::vector_to_world_space(const double* p, double* q) const
 {
+  // clang-format off
   q[0] = rotation_[0] * p[0] +
          rotation_[3] * p[1] +
          rotation_[6] * p[2];
@@ -376,16 +389,20 @@ void CoordFrame::vector_to_world_space(const double* p, double* q) const
   q[2] = rotation_[2] * p[0] +
          rotation_[5] * p[1] +
          rotation_[8] * p[2];
+  // clang-format on
 }
 
 CoordFrame CoordFrame::linear_extrap(const CoordFrame& x) const
 {
   double t = 2.0;
 
+  // clang-format off
   double trans[3] = { t * (x.translation_[0] - translation_[0]),
                       t * (x.translation_[1] - translation_[1]),
                       t * (x.translation_[2] - translation_[2]) };
+  // clang-format on
 
+  // clang-format off
   double A[9] = {
     x.rotation_[0] * rotation_[0] + x.rotation_[3] * rotation_[3] +
     x.rotation_[6] * rotation_[6],
@@ -405,6 +422,7 @@ CoordFrame CoordFrame::linear_extrap(const CoordFrame& x) const
     x.rotation_[7] * rotation_[8],
     x.rotation_[2] * rotation_[2] + x.rotation_[5] * rotation_[5] +
     x.rotation_[8] * rotation_[8] };
+  // clang-format on
 
   double axis[3];
   double angleRadians;
@@ -437,6 +455,7 @@ CoordFrame CoordFrame::operator*(const CoordFrame& xcframe) const
 {
   double rotation[9], translation[3];
 
+  // clang-format off
   rotation[0] = rotation_[0] * xcframe.rotation_[0] +
                 rotation_[3] * xcframe.rotation_[1] +
                 rotation_[6] * xcframe.rotation_[2];
@@ -479,6 +498,7 @@ CoordFrame CoordFrame::operator*(const CoordFrame& xcframe) const
                    rotation_[5] * xcframe.translation_[1] +
                    rotation_[8] * xcframe.translation_[2] +
                    translation_[2];
+  // clang-format on
 
   return CoordFrame(rotation, translation);
 }

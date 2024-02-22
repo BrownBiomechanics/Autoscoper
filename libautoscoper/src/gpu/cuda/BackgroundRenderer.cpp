@@ -113,6 +113,7 @@ BackgroundRenderer::render(float* buffer, size_t width, size_t height, float thr
 {
   cudaTextureObject_t tex = createTexureObjectFromArray(array_, cudaReadModeElementType);
 
+  // clang-format off
   background_render(tex, buffer,
                     (int)width,
                     (int)height,
@@ -125,6 +126,7 @@ BackgroundRenderer::render(float* buffer, size_t width, size_t height, float thr
                     viewport_[2],
                     viewport_[3],
                     threshold);
+  // clang-format on
 
   cudaDestroyTextureObject(tex);
 }

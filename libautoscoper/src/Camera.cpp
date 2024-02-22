@@ -222,8 +222,10 @@ void Camera::loadMayaCam1(const std::string& mayacam)
   if (size_[1] == 0) size_[1] = 1024;
 
   // Calculate the cameras local coordinate frame
+  // clang-format off
   double xyzypr[6] = { translation[0], translation[1], translation[2],
                        rotation[2], rotation[1], rotation[0] };
+  // clang-format on
   coord_frame_ = CoordFrame::from_xyzypr(xyzypr);
 
   // Calculate the viewport
@@ -444,9 +446,11 @@ void Camera::calculateViewport(const double& cx, const double& cy, const double&
 void Camera::calculateImagePlane(const double& cx, const double& cy, const double& z)
 {
   // Pick a scale factor that places the image plane on the other side of the origin from the camera.
+  // clang-format off
   double distance = sqrt(coord_frame_.translation()[0] * coord_frame_.translation()[0] +
                          coord_frame_.translation()[1] * coord_frame_.translation()[1] +
                          coord_frame_.translation()[2] * coord_frame_.translation()[2]);
+  // clang-format on
   double scale = -1.5 * distance / z;
 
   double image_plane_trans[3];
