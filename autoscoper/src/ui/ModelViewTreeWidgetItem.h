@@ -39,8 +39,6 @@
 /// \file ModelViewTreeWidgetItem.h
 /// \author Benjamin Knorlein, Andy Loomis
 
-
-
 #ifndef MODELVIEWTREEWIDGETITEM_H
 #define MODELVIEWTREEWIDGETITEM_H
 
@@ -54,14 +52,16 @@ class FilterTreeWidgetParameter;
 class QToolButton;
 class QCheckBox;
 
-namespace xromm{
-namespace gpu{
+namespace xromm {
+namespace gpu {
 class Filter;
 }
-}
+} // namespace xromm
 using xromm::gpu::Filter;
 
-class ModelViewTreeWidgetItem : public QObject, public  QTreeWidgetItem
+class ModelViewTreeWidgetItem
+  : public QObject
+  , public QTreeWidgetItem
 {
   Q_OBJECT
 
@@ -101,13 +101,10 @@ private:
   int m_type;
 
 protected:
-
 public slots:
   void settingsButtonClicked();
   void updateModelview();
-  void on_visibleCheckBox_stateChanged ( int state );
+  void on_visibleCheckBox_stateChanged(int state);
 };
-
-
 
 #endif /* MODELVIEWTREEWIDGETITEM_H */

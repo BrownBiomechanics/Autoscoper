@@ -47,12 +47,11 @@
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
 typedef float Buffer;
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-#include "gpu/opencl/OpenCL.hpp"
+#  include "gpu/opencl/OpenCL.hpp"
 #endif
 
-
-
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 
 class Filter
 {
@@ -67,16 +66,16 @@ public:
   };
 
   Filter(int type, const std::string& name)
-    : type_(type), name_(name), enabled_(true) {}
+    : type_(type)
+    , name_(name)
+    , enabled_(true)
+  {
+  }
 
   virtual ~Filter() {}
 
   // Apply the filter to the input image
-  virtual void apply(const Buffer* input,
-                     Buffer* output,
-                     int width,
-                     int height) = 0;
-
+  virtual void apply(const Buffer* input, Buffer* output, int width, int height) = 0;
 
   // Accessors and mutators
   int type() const { return type_; }
@@ -92,6 +91,7 @@ protected:
   std::string name_;
   bool enabled_;
 };
-} } // namespace xromm::opencl
+} // namespace gpu
+} // namespace xromm
 
 #endif // XROMM_GPU_FILTER_HPP

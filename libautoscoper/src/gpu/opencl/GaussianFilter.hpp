@@ -47,7 +47,8 @@
 #include "Filter.hpp"
 #include "OpenCL.hpp"
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 
 class GaussianFilter : public Filter
 {
@@ -56,10 +57,7 @@ public:
   virtual ~GaussianFilter();
 
   // Apply the filter to the input image
-  virtual void apply(const Buffer* input,
-                     Buffer* output,
-                     int width,
-                     int height);
+  virtual void apply(const Buffer* input, Buffer* output, int width, int height);
 
   // Accessors and mutators
   float radius() const { return radius_; }
@@ -70,6 +68,7 @@ private:
   Buffer* gaussian_;
   int filterSize_;
 };
-} } // namespace xromm::opencl
+} // namespace gpu
+} // namespace xromm
 
 #endif // XROMM_GPU_GAUSSIAN_FILTER_HPP

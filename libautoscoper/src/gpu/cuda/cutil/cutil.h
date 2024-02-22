@@ -20,14 +20,13 @@
  *
  */
 
-
 /* CUda UTility Library */
 
 #ifndef _CUTIL_H_
 #define _CUTIL_H_
 
 #ifdef _WIN32
-#   pragma warning( disable : 4996 ) // disable deprecated warning
+#  pragma warning(disable : 4996) // disable deprecated warning
 #endif
 
 #include <stdio.h>
@@ -40,18 +39,18 @@ extern "C" {
 // helper typedefs for building DLL
 #ifdef _WIN32
 #  ifdef BUILD_DLL
-#    define DLL_MAPPING  __declspec(dllexport)
+#    define DLL_MAPPING __declspec(dllexport)
 #  else
-#    define DLL_MAPPING  __declspec(dllimport)
+#    define DLL_MAPPING __declspec(dllimport)
 #  endif
 #else
 #  define DLL_MAPPING
 #endif
 
 #ifdef _WIN32
-    #define CUTIL_API __stdcall
+#  define CUTIL_API __stdcall
 #else
-    #define CUTIL_API
+#  define CUTIL_API
 #endif
 
 ////////////////////////////////////////////////////////////////////////////
@@ -68,8 +67,7 @@ enum CUTBoolean
 //! @param  pointer to memory
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-void CUTIL_API
-cutFree( void* ptr);
+void CUTIL_API cutFree(void* ptr);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Helper for bank conflict checking (should only be used with the
@@ -86,11 +84,16 @@ cutFree( void* ptr);
 //! @param index index into the array
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-void CUTIL_API
-cutCheckBankAccess( unsigned int tidx, unsigned int tidy, unsigned int tidz,
-                    unsigned int bdimx, unsigned int bdimy,
-                    unsigned int bdimz, const char* file, const int line,
-                    const char* aname, const int index);
+void CUTIL_API cutCheckBankAccess(unsigned int tidx,
+                                  unsigned int tidy,
+                                  unsigned int tidz,
+                                  unsigned int bdimx,
+                                  unsigned int bdimy,
+                                  unsigned int bdimz,
+                                  const char* file,
+                                  const int line,
+                                  const char* aname,
+                                  const int index);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Find the path for a filename
@@ -99,8 +102,7 @@ cutCheckBankAccess( unsigned int tidx, unsigned int tidy, unsigned int tidz,
 //! @param executablePath  optional absolute path of the executable
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-char* CUTIL_API
-cutFindFilePath(const char* filename, const char* executablePath);
+char* CUTIL_API cutFindFilePath(const char* filename, const char* executablePath);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Read file \filename containing single precision floating point data
@@ -114,9 +116,7 @@ cutFindFilePath(const char* filename, const char* executablePath);
 //!       deallocate the memory
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutReadFilef( const char* filename, float** data, unsigned int* len,
-              bool verbose = false);
+CUTBoolean CUTIL_API cutReadFilef(const char* filename, float** data, unsigned int* len, bool verbose = false);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Read file \filename containing double precision floating point data
@@ -130,9 +130,7 @@ cutReadFilef( const char* filename, float** data, unsigned int* len,
 //!       deallocate the memory
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutReadFiled( const char* filename, double** data, unsigned int* len,
-              bool verbose = false);
+CUTBoolean CUTIL_API cutReadFiled(const char* filename, double** data, unsigned int* len, bool verbose = false);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Read file \filename containing integer data
@@ -146,8 +144,7 @@ cutReadFiled( const char* filename, double** data, unsigned int* len,
 //!       deallocate the memory
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutReadFilei( const char* filename, int** data, unsigned int* len, bool verbose = false);
+CUTBoolean CUTIL_API cutReadFilei(const char* filename, int** data, unsigned int* len, bool verbose = false);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Read file \filename containing unsigned integer data
@@ -161,9 +158,7 @@ cutReadFilei( const char* filename, int** data, unsigned int* len, bool verbose 
 //!       deallocate the memory
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutReadFileui( const char* filename, unsigned int** data,
-               unsigned int* len, bool verbose = false);
+CUTBoolean CUTIL_API cutReadFileui(const char* filename, unsigned int** data, unsigned int* len, bool verbose = false);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Read file \filename containing char / byte data
@@ -177,9 +172,7 @@ cutReadFileui( const char* filename, unsigned int** data,
 //!       deallocate the memory
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutReadFileb( const char* filename, char** data, unsigned int* len,
-              bool verbose = false);
+CUTBoolean CUTIL_API cutReadFileb(const char* filename, char** data, unsigned int* len, bool verbose = false);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Read file \filename containing unsigned char / byte data
@@ -193,9 +186,7 @@ cutReadFileb( const char* filename, char** data, unsigned int* len,
 //!       deallocate the memory
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutReadFileub( const char* filename, unsigned char** data,
-               unsigned int* len, bool verbose = false);
+CUTBoolean CUTIL_API cutReadFileub(const char* filename, unsigned char** data, unsigned int* len, bool verbose = false);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Write a data file \filename containing single precision floating point
@@ -208,8 +199,7 @@ cutReadFileub( const char* filename, unsigned char** data,
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
 CUTBoolean CUTIL_API
-cutWriteFilef( const char* filename, const float* data, unsigned int len,
-               const float epsilon, bool verbose = false);
+cutWriteFilef(const char* filename, const float* data, unsigned int len, const float epsilon, bool verbose = false);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Write a data file \filename containing double precision floating point
@@ -222,8 +212,7 @@ cutWriteFilef( const char* filename, const float* data, unsigned int len,
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
 CUTBoolean CUTIL_API
-cutWriteFiled( const char* filename, const float* data, unsigned int len,
-               const double epsilon, bool verbose = false);
+cutWriteFiled(const char* filename, const float* data, unsigned int len, const double epsilon, bool verbose = false);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Write a data file \filename containing integer data
@@ -233,9 +222,7 @@ cutWriteFiled( const char* filename, const float* data, unsigned int len,
 //! @param len  number of data elements in data, -1 on error
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutWriteFilei( const char* filename, const int* data, unsigned int len,
-               bool verbose = false);
+CUTBoolean CUTIL_API cutWriteFilei(const char* filename, const int* data, unsigned int len, bool verbose = false);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Write a data file \filename containing unsigned integer data
@@ -245,9 +232,10 @@ cutWriteFilei( const char* filename, const int* data, unsigned int len,
 //! @param len  number of data elements in data, -1 on error
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutWriteFileui( const char* filename, const unsigned int* data,
-                unsigned int len, bool verbose = false);
+CUTBoolean CUTIL_API cutWriteFileui(const char* filename,
+                                    const unsigned int* data,
+                                    unsigned int len,
+                                    bool verbose = false);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Write a data file \filename containing char / byte data
@@ -257,9 +245,7 @@ cutWriteFileui( const char* filename, const unsigned int* data,
 //! @param len  number of data elements in data, -1 on error
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutWriteFileb( const char* filename, const char* data, unsigned int len,
-               bool verbose = false);
+CUTBoolean CUTIL_API cutWriteFileb(const char* filename, const char* data, unsigned int len, bool verbose = false);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Write a data file \filename containing unsigned char / byte data
@@ -269,9 +255,10 @@ cutWriteFileb( const char* filename, const char* data, unsigned int len,
 //! @param len  number of data elements in data, -1 on error
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutWriteFileub( const char* filename, const unsigned char* data,
-                unsigned int len, bool verbose = false);
+CUTBoolean CUTIL_API cutWriteFileub(const char* filename,
+                                    const unsigned char* data,
+                                    unsigned int len,
+                                    bool verbose = false);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Load PGM image file (with unsigned char as data element type)
@@ -285,9 +272,7 @@ cutWriteFileub( const char* filename, const unsigned char* data,
 //!       deallocate the memory
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutLoadPGMub( const char* file, unsigned char** data,
-              unsigned int* w, unsigned int* h);
+CUTBoolean CUTIL_API cutLoadPGMub(const char* file, unsigned char** data, unsigned int* w, unsigned int* h);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Load PPM image file (with unsigned char as data element type)
@@ -298,9 +283,7 @@ cutLoadPGMub( const char* file, unsigned char** data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutLoadPPMub( const char* file, unsigned char** data,
-              unsigned int* w, unsigned int* h);
+CUTBoolean CUTIL_API cutLoadPPMub(const char* file, unsigned char** data, unsigned int* w, unsigned int* h);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Load PPM image file (with unsigned char as data element type), padding
@@ -312,9 +295,7 @@ cutLoadPPMub( const char* file, unsigned char** data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutLoadPPM4ub( const char* file, unsigned char** data,
-               unsigned int* w, unsigned int* h);
+CUTBoolean CUTIL_API cutLoadPPM4ub(const char* file, unsigned char** data, unsigned int* w, unsigned int* h);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Load PGM image file (with unsigned int as data element type)
@@ -328,9 +309,7 @@ cutLoadPPM4ub( const char* file, unsigned char** data,
 //!       deallocate the memory
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutLoadPGMi( const char* file, unsigned int** data,
-             unsigned int* w, unsigned int* h);
+CUTBoolean CUTIL_API cutLoadPGMi(const char* file, unsigned int** data, unsigned int* w, unsigned int* h);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Load PGM image file (with unsigned short as data element type)
@@ -344,9 +323,7 @@ cutLoadPGMi( const char* file, unsigned int** data,
 //!       deallocate the memory
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutLoadPGMs( const char* file, unsigned short** data,
-             unsigned int* w, unsigned int* h);
+CUTBoolean CUTIL_API cutLoadPGMs(const char* file, unsigned short** data, unsigned int* w, unsigned int* h);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Load PGM image file (with float as data element type)
@@ -359,9 +336,7 @@ cutLoadPGMs( const char* file, unsigned short** data,
 //!       deallocate the memory
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutLoadPGMf( const char* file, float** data,
-             unsigned int* w, unsigned int* h);
+CUTBoolean CUTIL_API cutLoadPGMf(const char* file, float** data, unsigned int* w, unsigned int* h);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Save PGM image file (with unsigned char as data element type)
@@ -371,9 +346,7 @@ cutLoadPGMf( const char* file, float** data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutSavePGMub( const char* file, unsigned char* data,
-              unsigned int w, unsigned int h);
+CUTBoolean CUTIL_API cutSavePGMub(const char* file, unsigned char* data, unsigned int w, unsigned int h);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Save PPM image file (with unsigned char as data element type)
@@ -383,9 +356,7 @@ cutSavePGMub( const char* file, unsigned char* data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutSavePPMub( const char* file, unsigned char* data,
-              unsigned int w, unsigned int h);
+CUTBoolean CUTIL_API cutSavePPMub(const char* file, unsigned char* data, unsigned int w, unsigned int h);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Save PPM image file (with unsigned char as data element type, padded to
@@ -396,9 +367,7 @@ cutSavePPMub( const char* file, unsigned char* data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutSavePPM4ub( const char* file, unsigned char* data,
-               unsigned int w, unsigned int h);
+CUTBoolean CUTIL_API cutSavePPM4ub(const char* file, unsigned char* data, unsigned int w, unsigned int h);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Save PGM image file (with unsigned int as data element type)
@@ -408,9 +377,7 @@ cutSavePPM4ub( const char* file, unsigned char* data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutSavePGMi( const char* file, unsigned int* data,
-             unsigned int w, unsigned int h);
+CUTBoolean CUTIL_API cutSavePGMi(const char* file, unsigned int* data, unsigned int w, unsigned int h);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Save PGM image file (with unsigned short as data element type)
@@ -420,9 +387,7 @@ cutSavePGMi( const char* file, unsigned int* data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutSavePGMs( const char* file, unsigned short* data,
-             unsigned int w, unsigned int h);
+CUTBoolean CUTIL_API cutSavePGMs(const char* file, unsigned short* data, unsigned int w, unsigned int h);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Save PGM image file (with float as data element type)
@@ -432,9 +397,7 @@ cutSavePGMs( const char* file, unsigned short* data,
 //! @param h     height of the image
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutSavePGMf( const char* file, float* data,
-             unsigned int w, unsigned int h);
+CUTBoolean CUTIL_API cutSavePGMf(const char* file, float* data, unsigned int w, unsigned int h);
 
 ////////////////////////////////////////////////////////////////////////////
 // Command line arguments: General notes
@@ -453,9 +416,7 @@ cutSavePGMf( const char* file, float* data,
 //! @param flag_name  name of command line flag
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutCheckCmdLineFlag( const int argc, const char** argv,
-                     const char* flag_name);
+CUTBoolean CUTIL_API cutCheckCmdLineFlag(const int argc, const char** argv, const char* flag_name);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Get the value of a command line argument of type int
@@ -467,9 +428,7 @@ cutCheckCmdLineFlag( const int argc, const char** argv,
 //! @param val  value of the command line argument
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutGetCmdLineArgumenti( const int argc, const char** argv,
-                        const char* arg_name, int* val);
+CUTBoolean CUTIL_API cutGetCmdLineArgumenti(const int argc, const char** argv, const char* arg_name, int* val);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Get the value of a command line argument of type float
@@ -481,9 +440,7 @@ cutGetCmdLineArgumenti( const int argc, const char** argv,
 //! @param val  value of the command line argument
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutGetCmdLineArgumentf( const int argc, const char** argv,
-                        const char* arg_name, float* val);
+CUTBoolean CUTIL_API cutGetCmdLineArgumentf(const int argc, const char** argv, const char* arg_name, float* val);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Get the value of a command line argument of type string
@@ -495,9 +452,7 @@ cutGetCmdLineArgumentf( const int argc, const char** argv,
 //! @param val  value of the command line argument
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutGetCmdLineArgumentstr( const int argc, const char** argv,
-                          const char* arg_name, char** val);
+CUTBoolean CUTIL_API cutGetCmdLineArgumentstr(const int argc, const char** argv, const char* arg_name, char** val);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Get the value of a command line argument list those element are strings
@@ -511,9 +466,7 @@ cutGetCmdLineArgumentstr( const int argc, const char** argv,
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
 CUTBoolean CUTIL_API
-cutGetCmdLineArgumentListstr( const int argc, const char** argv,
-                              const char* arg_name, char** val,
-                              unsigned int* len);
+cutGetCmdLineArgumentListstr(const int argc, const char** argv, const char* arg_name, char** val, unsigned int* len);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Extended assert
@@ -524,8 +477,7 @@ cutGetCmdLineArgumentListstr( const int argc, const char** argv,
 //! @note This function should be used via the CONDITION(val) macro
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutCheckCondition( int val, const char* file, const int line);
+CUTBoolean CUTIL_API cutCheckCondition(int val, const char* file, const int line);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Compare two float arrays
@@ -536,9 +488,7 @@ cutCheckCondition( int val, const char* file, const int line);
 //! @param len        number of elements in reference and data
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutComparef( const float* reference, const float* data,
-             const unsigned int len);
+CUTBoolean CUTIL_API cutComparef(const float* reference, const float* data, const unsigned int len);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Compare two integer arrays
@@ -549,9 +499,7 @@ cutComparef( const float* reference, const float* data,
 //! @param len        number of elements in reference and data
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutComparei( const int* reference, const int* data,
-             const unsigned int len );
+CUTBoolean CUTIL_API cutComparei(const int* reference, const int* data, const unsigned int len);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! Compare two unsigned integer arrays, with epsilon and threshold
@@ -563,9 +511,11 @@ cutComparei( const int* reference, const int* data,
 //! @param threshold  tolerance % # of comparison errors (0.15f = 15%)
 ////////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutCompareuit( const unsigned int* reference, const unsigned int* data,
-               const unsigned int len, const float epsilon, const float threshold );
+CUTBoolean CUTIL_API cutCompareuit(const unsigned int* reference,
+                                   const unsigned int* data,
+                                   const unsigned int len,
+                                   const float epsilon,
+                                   const float threshold);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Compare two unsigned char arrays
@@ -576,9 +526,7 @@ cutCompareuit( const unsigned int* reference, const unsigned int* data,
 //! @param len        number of elements in reference and data
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutCompareub( const unsigned char* reference, const unsigned char* data,
-              const unsigned int len );
+CUTBoolean CUTIL_API cutCompareub(const unsigned char* reference, const unsigned char* data, const unsigned int len);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! Compare two integers with a tolernance for # of byte errors
@@ -591,9 +539,11 @@ cutCompareub( const unsigned char* reference, const unsigned char* data,
 //! @param threshold  tolerance % # of comparison errors (0.15f = 15%)
 ////////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutCompareubt( const unsigned char* reference, const unsigned char* data,
-               const unsigned int len, const float epsilon, const float threshold );
+CUTBoolean CUTIL_API cutCompareubt(const unsigned char* reference,
+                                   const unsigned char* data,
+                                   const unsigned int len,
+                                   const float epsilon,
+                                   const float threshold);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! Compare two integer arrays with a n epsilon tolerance for equality
@@ -605,9 +555,10 @@ cutCompareubt( const unsigned char* reference, const unsigned char* data,
 //! @param epsilon    epsilon to use for the comparison
 ////////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutCompareube( const unsigned char* reference, const unsigned char* data,
-               const unsigned int len, const float epsilon );
+CUTBoolean CUTIL_API cutCompareube(const unsigned char* reference,
+                                   const unsigned char* data,
+                                   const unsigned int len,
+                                   const float epsilon);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Compare two float arrays with an epsilon tolerance for equality
@@ -619,9 +570,10 @@ cutCompareube( const unsigned char* reference, const unsigned char* data,
 //! @param epsilon    epsilon to use for the comparison
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutComparefe( const float* reference, const float* data,
-              const unsigned int len, const float epsilon );
+CUTBoolean CUTIL_API cutComparefe(const float* reference,
+                                  const float* data,
+                                  const unsigned int len,
+                                  const float epsilon);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! Compare two float arrays with an epsilon tolerance for equality and a
@@ -634,9 +586,11 @@ cutComparefe( const float* reference, const float* data,
 //! @param epsilon    epsilon to use for the comparison
 ////////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutComparefet( const float* reference, const float* data,
-               const unsigned int len, const float epsilon, const float threshold );
+CUTBoolean CUTIL_API cutComparefet(const float* reference,
+                                   const float* data,
+                                   const unsigned int len,
+                                   const float epsilon,
+                                   const float threshold);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Compare two float arrays using L2-norm with an epsilon tolerance for
@@ -649,9 +603,10 @@ cutComparefet( const float* reference, const float* data,
 //! @param epsilon    epsilon to use for the comparison
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutCompareL2fe( const float* reference, const float* data,
-                const unsigned int len, const float epsilon );
+CUTBoolean CUTIL_API cutCompareL2fe(const float* reference,
+                                    const float* data,
+                                    const unsigned int len,
+                                    const float epsilon);
 
 ////////////////////////////////////////////////////////////////////////////////
 //! Compare two PPM image files with an epsilon tolerance for equality
@@ -664,9 +619,11 @@ cutCompareL2fe( const float* reference, const float* data,
 //! $param verboseErrors output details of image mismatch to std::err
 ////////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutComparePPM( const char* src_file, const char* ref_file, const float epsilon, const float threshold, bool verboseErrors = false );
-
+CUTBoolean CUTIL_API cutComparePPM(const char* src_file,
+                                   const char* ref_file,
+                                   const float epsilon,
+                                   const float threshold,
+                                   bool verboseErrors = false);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Timer functionality
@@ -677,8 +634,7 @@ cutComparePPM( const char* src_file, const char* ref_file, const float epsilon, 
 //! @param  name of the new timer, 0 if the creation failed
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutCreateTimer( unsigned int* name);
+CUTBoolean CUTIL_API cutCreateTimer(unsigned int* name);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Delete a timer
@@ -686,32 +642,28 @@ cutCreateTimer( unsigned int* name);
 //! @param  name of the timer to delete
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutDeleteTimer( unsigned int name);
+CUTBoolean CUTIL_API cutDeleteTimer(unsigned int name);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Start the time with name \a name
 //! @param name  name of the timer to start
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutStartTimer( const unsigned int name);
+CUTBoolean CUTIL_API cutStartTimer(const unsigned int name);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Stop the time with name \a name. Does not reset.
 //! @param name  name of the timer to stop
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutStopTimer( const unsigned int name);
+CUTBoolean CUTIL_API cutStopTimer(const unsigned int name);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Resets the timer's counter.
 //! @param name  name of the timer to reset.
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-CUTBoolean CUTIL_API
-cutResetTimer( const unsigned int name);
+CUTBoolean CUTIL_API cutResetTimer(const unsigned int name);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Returns total execution time in milliseconds for the timer over all
@@ -719,8 +671,7 @@ cutResetTimer( const unsigned int name);
 //! @param name  name of the timer to return the time of
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-float CUTIL_API
-cutGetTimerValue( const unsigned int name);
+float CUTIL_API cutGetTimerValue(const unsigned int name);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Return the average time in milliseconds for timer execution as the
@@ -730,117 +681,144 @@ cutGetTimerValue( const unsigned int name);
 //! @param name  name of the timer to return the time of
 ////////////////////////////////////////////////////////////////////////////
 DLL_MAPPING
-float CUTIL_API
-cutGetAverageTimerValue( const unsigned int name);
+float CUTIL_API cutGetAverageTimerValue(const unsigned int name);
 
 ////////////////////////////////////////////////////////////////////////////
 //! Macros
 
 // This is for the CUTIL bank checker
 #ifdef _DEBUG
-    #if __DEVICE_EMULATION__
+#  if __DEVICE_EMULATION__
 // Interface for bank conflict checker
-    #define CUT_BANK_CHECKER( array, index)                                      \
-      (cutCheckBankAccess( threadIdx.x, threadIdx.y, threadIdx.z, blockDim.x,  \
-                           blockDim.y, blockDim.z,                                                  \
-                           __FILE__, __LINE__, #array, index ),                                     \
+#    define CUT_BANK_CHECKER(array, index) \
+      (cutCheckBankAccess(threadIdx.x,     \
+                          threadIdx.y,     \
+                          threadIdx.z,     \
+                          blockDim.x,      \
+                          blockDim.y,      \
+                          blockDim.z,      \
+                          __FILE__,        \
+                          __LINE__,        \
+                          #array,          \
+                          index),          \
        array[index])
-    #else
-    #define CUT_BANK_CHECKER( array, index)  array[index]
-    #endif
+#  else
+#    define CUT_BANK_CHECKER(array, index) array[index]
+#  endif
 #else
-    #define CUT_BANK_CHECKER( array, index)  array[index]
+#  define CUT_BANK_CHECKER(array, index) array[index]
 #endif
 
-#  define CU_SAFE_CALL_NO_SYNC( call ) {                                     \
-    CUresult err = call;                                                     \
-    if (CUDA_SUCCESS != err) {                                               \
-      fprintf(stderr, "Cuda driver error %x in file '%s' in line %i.\n",   \
-              err, __FILE__, __LINE__ );                                   \
-      exit(EXIT_FAILURE);                                                  \
-    } }
+#define CU_SAFE_CALL_NO_SYNC(call)                                                                 \
+  {                                                                                                \
+    CUresult err = call;                                                                           \
+    if (CUDA_SUCCESS != err) {                                                                     \
+      fprintf(stderr, "Cuda driver error %x in file '%s' in line %i.\n", err, __FILE__, __LINE__); \
+      exit(EXIT_FAILURE);                                                                          \
+    }                                                                                              \
+  }
 
-#  define CU_SAFE_CALL( call )       CU_SAFE_CALL_NO_SYNC(call);
+#define CU_SAFE_CALL(call) CU_SAFE_CALL_NO_SYNC(call);
 
-#  define CU_SAFE_CTX_SYNC( ) {                                              \
-    CUresult err = cuCtxSynchronize();                                       \
-    if (CUDA_SUCCESS != err) {                                               \
-      fprintf(stderr, "Cuda driver error %x in file '%s' in line %i.\n",   \
-              err, __FILE__, __LINE__ );                                   \
-      exit(EXIT_FAILURE);                                                  \
-    } }
+#define CU_SAFE_CTX_SYNC()                                                                         \
+  {                                                                                                \
+    CUresult err = cuCtxSynchronize();                                                             \
+    if (CUDA_SUCCESS != err) {                                                                     \
+      fprintf(stderr, "Cuda driver error %x in file '%s' in line %i.\n", err, __FILE__, __LINE__); \
+      exit(EXIT_FAILURE);                                                                          \
+    }                                                                                              \
+  }
 
-#  define CUDA_SAFE_CALL_NO_SYNC( call) {                                    \
-    cudaError err = call;                                                    \
-    if (cudaSuccess != err) {                                                \
-      fprintf(stderr, "Cuda error in file '%s' in line %i : %s.\n",        \
-              __FILE__, __LINE__, cudaGetErrorString( err) );              \
-      exit(EXIT_FAILURE);                                                  \
-    } }
+#define CUDA_SAFE_CALL_NO_SYNC(call)                                                                              \
+  {                                                                                                               \
+    cudaError err = call;                                                                                         \
+    if (cudaSuccess != err) {                                                                                     \
+      fprintf(stderr, "Cuda error in file '%s' in line %i : %s.\n", __FILE__, __LINE__, cudaGetErrorString(err)); \
+      exit(EXIT_FAILURE);                                                                                         \
+    }                                                                                                             \
+  }
 
-#  define CUDA_SAFE_CALL( call)     CUDA_SAFE_CALL_NO_SYNC(call);                                            \
+#define CUDA_SAFE_CALL(call) CUDA_SAFE_CALL_NO_SYNC(call);
 
-#  define CUDA_SAFE_THREAD_SYNC( ) {                                         \
-    cudaError err = cudaThreadSynchronize();                                 \
-    if (cudaSuccess != err) {                                               \
-      fprintf(stderr, "Cuda error in file '%s' in line %i : %s.\n",        \
-              __FILE__, __LINE__, cudaGetErrorString( err) );              \
-    } }
+#define CUDA_SAFE_THREAD_SYNC()                                                                                   \
+  {                                                                                                               \
+    cudaError err = cudaThreadSynchronize();                                                                      \
+    if (cudaSuccess != err) {                                                                                     \
+      fprintf(stderr, "Cuda error in file '%s' in line %i : %s.\n", __FILE__, __LINE__, cudaGetErrorString(err)); \
+    }                                                                                                             \
+  }
 
-#  define CUFFT_SAFE_CALL( call) {                                           \
-    cufftResult err = call;                                                  \
-    if (CUFFT_SUCCESS != err) {                                              \
-      fprintf(stderr, "CUFFT error in file '%s' in line %i.\n",            \
-              __FILE__, __LINE__);                                         \
-      exit(EXIT_FAILURE);                                                  \
-    } }
+#define CUFFT_SAFE_CALL(call)                                                        \
+  {                                                                                  \
+    cufftResult err = call;                                                          \
+    if (CUFFT_SUCCESS != err) {                                                      \
+      fprintf(stderr, "CUFFT error in file '%s' in line %i.\n", __FILE__, __LINE__); \
+      exit(EXIT_FAILURE);                                                            \
+    }                                                                                \
+  }
 
-#  define CUT_SAFE_CALL( call)                                               \
-  if (CUTTrue != call) {                                                   \
-    fprintf(stderr, "Cut error in file '%s' in line %i.\n",              \
-            __FILE__, __LINE__);                                         \
-    exit(EXIT_FAILURE);                                                  \
+#define CUT_SAFE_CALL(call)                                                      \
+  if (CUTTrue != call) {                                                         \
+    fprintf(stderr, "Cut error in file '%s' in line %i.\n", __FILE__, __LINE__); \
+    exit(EXIT_FAILURE);                                                          \
   }
 
 //! Check for CUDA error
 #ifdef _DEBUG
-#  define CUT_CHECK_ERROR(errorMessage) {                                    \
-    cudaError_t err = cudaGetLastError();                                    \
-    if (cudaSuccess != err) {                                                \
-      fprintf(stderr, "Cuda error: %s in file '%s' in line %i : %s.\n",    \
-              errorMessage, __FILE__, __LINE__, cudaGetErrorString( err) );\
-      exit(EXIT_FAILURE);                                                  \
-    }                                                                        \
-    err = cudaThreadSynchronize();                                           \
-    if (cudaSuccess != err) {                                                \
-      fprintf(stderr, "Cuda error: %s in file '%s' in line %i : %s.\n",    \
-              errorMessage, __FILE__, __LINE__, cudaGetErrorString( err) );\
-      exit(EXIT_FAILURE);                                                  \
-    }                                                                        \
-}
+#  define CUT_CHECK_ERROR(errorMessage)                           \
+    {                                                             \
+      cudaError_t err = cudaGetLastError();                       \
+      if (cudaSuccess != err) {                                   \
+        fprintf(stderr,                                           \
+                "Cuda error: %s in file '%s' in line %i : %s.\n", \
+                errorMessage,                                     \
+                __FILE__,                                         \
+                __LINE__,                                         \
+                cudaGetErrorString(err));                         \
+        exit(EXIT_FAILURE);                                       \
+      }                                                           \
+      err = cudaThreadSynchronize();                              \
+      if (cudaSuccess != err) {                                   \
+        fprintf(stderr,                                           \
+                "Cuda error: %s in file '%s' in line %i : %s.\n", \
+                errorMessage,                                     \
+                __FILE__,                                         \
+                __LINE__,                                         \
+                cudaGetErrorString(err));                         \
+        exit(EXIT_FAILURE);                                       \
+      }                                                           \
+    }
 #else
-#  define CUT_CHECK_ERROR(errorMessage) {                                    \
-    cudaError_t err = cudaGetLastError();                                    \
-    if (cudaSuccess != err) {                                                \
-      fprintf(stderr, "Cuda error: %s in file '%s' in line %i : %s.\n",    \
-              errorMessage, __FILE__, __LINE__, cudaGetErrorString( err) );\
-      exit(EXIT_FAILURE);                                                  \
-    }                                                                        \
-}
+#  define CUT_CHECK_ERROR(errorMessage)                           \
+    {                                                             \
+      cudaError_t err = cudaGetLastError();                       \
+      if (cudaSuccess != err) {                                   \
+        fprintf(stderr,                                           \
+                "Cuda error: %s in file '%s' in line %i : %s.\n", \
+                errorMessage,                                     \
+                __FILE__,                                         \
+                __LINE__,                                         \
+                cudaGetErrorString(err));                         \
+        exit(EXIT_FAILURE);                                       \
+      }                                                           \
+    }
 #endif
 
 //! Check for malloc error
-#  define CUT_SAFE_MALLOC( mallocCall ) {                                    \
-    if (!(mallocCall)) {                                                     \
-      fprintf(stderr, "Host malloc failure in file '%s' in line %i\n",     \
-              __FILE__, __LINE__);                                         \
-      exit(EXIT_FAILURE);                                                  \
-    } } while (0);
+#define CUT_SAFE_MALLOC(mallocCall)                                                         \
+  {                                                                                         \
+    if (!(mallocCall)) {                                                                    \
+      fprintf(stderr, "Host malloc failure in file '%s' in line %i\n", __FILE__, __LINE__); \
+      exit(EXIT_FAILURE);                                                                   \
+    }                                                                                       \
+  }                                                                                         \
+  while (0)                                                                                 \
+    ;
 
 //! Check if condition is true (flexible assert)
-#  define CUT_CONDITION( val)                                                \
-  if (CUTFalse == cutCheckCondition( val, __FILE__, __LINE__)) {           \
-    exit(EXIT_FAILURE);                                                  \
+#define CUT_CONDITION(val)                                      \
+  if (CUTFalse == cutCheckCondition(val, __FILE__, __LINE__)) { \
+    exit(EXIT_FAILURE);                                         \
   }
 
 #if __DEVICE_EMULATION__
@@ -849,95 +827,118 @@ cutGetAverageTimerValue( const unsigned int name);
 
 #else
 
-#  define CUT_DEVICE_INIT(ARGC, ARGV) {                                      \
-    int deviceCount;                                                         \
-    CUDA_SAFE_CALL_NO_SYNC(cudaGetDeviceCount(&deviceCount));                \
-    if (deviceCount == 0) {                                                  \
-      fprintf(stderr, "cutil error: no devices supporting CUDA.\n");       \
-      exit(EXIT_FAILURE);                                                  \
-    }                                                                        \
-    int dev = 0;                                                             \
-    cutGetCmdLineArgumenti(ARGC, (const char**) ARGV, "device", &dev);      \
-    if (dev < 0) dev = 0;                                                    \
-    if (dev > deviceCount - 1) dev = deviceCount - 1;                          \
-    cudaDeviceProp deviceProp;                                               \
-    CUDA_SAFE_CALL_NO_SYNC(cudaGetDeviceProperties(&deviceProp, dev));       \
-    if (deviceProp.major < 1) {                                              \
-      fprintf(stderr, "cutil error: device does not support CUDA.\n");     \
-      exit(EXIT_FAILURE);                                                  \
-    }                                                                        \
-    if (cutCheckCmdLineFlag(ARGC, (const char**) ARGV, "quiet") == CUTFalse) \
-    fprintf(stderr, "Using device %d: %s\n", dev, deviceProp.name);       \
-    CUDA_SAFE_CALL(cudaSetDevice(dev));                                      \
-}
-
-
-//! Check for CUDA context lost
-#  define CUDA_CHECK_CTX_LOST(errorMessage) {                                \
-    cudaError_t err = cudaGetLastError();                                    \
-    if (cudaSuccess != err) {                                                \
-      fprintf(stderr, "Cuda error: %s in file '%s' in line %i : %s.\n",    \
-              errorMessage, __FILE__, __LINE__, cudaGetErrorString( err) );\
-      exit(EXIT_FAILURE);                                                  \
-    }                                                                        \
-    err = cudaThreadSynchronize();                                           \
-    if (cudaSuccess != err) {                                                \
-      fprintf(stderr, "Cuda error: %s in file '%s' in line %i : %s.\n",    \
-              errorMessage, __FILE__, __LINE__, cudaGetErrorString( err) );\
-      exit(EXIT_FAILURE);                                                  \
-    } }
+#  define CUT_DEVICE_INIT(ARGC, ARGV)                                         \
+    {                                                                         \
+      int deviceCount;                                                        \
+      CUDA_SAFE_CALL_NO_SYNC(cudaGetDeviceCount(&deviceCount));               \
+      if (deviceCount == 0) {                                                 \
+        fprintf(stderr, "cutil error: no devices supporting CUDA.\n");        \
+        exit(EXIT_FAILURE);                                                   \
+      }                                                                       \
+      int dev = 0;                                                            \
+      cutGetCmdLineArgumenti(ARGC, (const char**)ARGV, "device", &dev);       \
+      if (dev < 0)                                                            \
+        dev = 0;                                                              \
+      if (dev > deviceCount - 1)                                              \
+        dev = deviceCount - 1;                                                \
+      cudaDeviceProp deviceProp;                                              \
+      CUDA_SAFE_CALL_NO_SYNC(cudaGetDeviceProperties(&deviceProp, dev));      \
+      if (deviceProp.major < 1) {                                             \
+        fprintf(stderr, "cutil error: device does not support CUDA.\n");      \
+        exit(EXIT_FAILURE);                                                   \
+      }                                                                       \
+      if (cutCheckCmdLineFlag(ARGC, (const char**)ARGV, "quiet") == CUTFalse) \
+        fprintf(stderr, "Using device %d: %s\n", dev, deviceProp.name);       \
+      CUDA_SAFE_CALL(cudaSetDevice(dev));                                     \
+    }
 
 //! Check for CUDA context lost
-#  define CU_CHECK_CTX_LOST(errorMessage) {                                  \
-    cudaError_t err = cudaGetLastError();                                    \
-    if (CUDA_ERROR_INVALID_CONTEXT != err) {                                 \
-      fprintf(stderr, "Cuda error: %s in file '%s' in line %i : %s.\n",    \
-              errorMessage, __FILE__, __LINE__, cudaGetErrorString( err) );\
-      exit(EXIT_FAILURE);                                                  \
-    }                                                                        \
-    err = cudaThreadSynchronize();                                           \
-    if (cudaSuccess != err) {                                                \
-      fprintf(stderr, "Cuda error: %s in file '%s' in line %i : %s.\n",    \
-              errorMessage, __FILE__, __LINE__, cudaGetErrorString( err) );\
-      exit(EXIT_FAILURE);                                                  \
-    } }
+#  define CUDA_CHECK_CTX_LOST(errorMessage)                       \
+    {                                                             \
+      cudaError_t err = cudaGetLastError();                       \
+      if (cudaSuccess != err) {                                   \
+        fprintf(stderr,                                           \
+                "Cuda error: %s in file '%s' in line %i : %s.\n", \
+                errorMessage,                                     \
+                __FILE__,                                         \
+                __LINE__,                                         \
+                cudaGetErrorString(err));                         \
+        exit(EXIT_FAILURE);                                       \
+      }                                                           \
+      err = cudaThreadSynchronize();                              \
+      if (cudaSuccess != err) {                                   \
+        fprintf(stderr,                                           \
+                "Cuda error: %s in file '%s' in line %i : %s.\n", \
+                errorMessage,                                     \
+                __FILE__,                                         \
+                __LINE__,                                         \
+                cudaGetErrorString(err));                         \
+        exit(EXIT_FAILURE);                                       \
+      }                                                           \
+    }
 
+//! Check for CUDA context lost
+#  define CU_CHECK_CTX_LOST(errorMessage)                         \
+    {                                                             \
+      cudaError_t err = cudaGetLastError();                       \
+      if (CUDA_ERROR_INVALID_CONTEXT != err) {                    \
+        fprintf(stderr,                                           \
+                "Cuda error: %s in file '%s' in line %i : %s.\n", \
+                errorMessage,                                     \
+                __FILE__,                                         \
+                __LINE__,                                         \
+                cudaGetErrorString(err));                         \
+        exit(EXIT_FAILURE);                                       \
+      }                                                           \
+      err = cudaThreadSynchronize();                              \
+      if (cudaSuccess != err) {                                   \
+        fprintf(stderr,                                           \
+                "Cuda error: %s in file '%s' in line %i : %s.\n", \
+                errorMessage,                                     \
+                __FILE__,                                         \
+                __LINE__,                                         \
+                cudaGetErrorString(err));                         \
+        exit(EXIT_FAILURE);                                       \
+      }                                                           \
+    }
 
 #endif
 
-#  define CUT_DEVICE_INIT_DRV(cuDevice, ARGC, ARGV) {                        \
-    cuDevice = 0;                                                            \
-    int deviceCount = 0;                                                     \
-    CUresult err = cuInit(0);                                                \
-    if (CUDA_SUCCESS == err)                                                 \
-    CU_SAFE_CALL_NO_SYNC(cuDeviceGetCount(&deviceCount));                \
-    if (deviceCount == 0) {                                                  \
-      fprintf(stderr, "cutil error: no devices supporting CUDA\n");        \
-      exit(EXIT_FAILURE);                                                  \
-    }                                                                        \
-    int dev = 0;                                                             \
-    cutGetCmdLineArgumenti(ARGC, (const char**) ARGV, "device", &dev);      \
-    if (dev < 0) dev = 0;                                                    \
-    if (dev > deviceCount - 1) dev = deviceCount - 1;                          \
-    CU_SAFE_CALL_NO_SYNC(cuDeviceGet(&cuDevice, dev));                       \
-    char name[100];                                                          \
-    cuDeviceGetName(name, 100, cuDevice);                                    \
-    if (cutCheckCmdLineFlag(ARGC, (const char**) ARGV, "quiet") == CUTFalse) \
-    fprintf(stderr, "Using device %d: %s\n", dev, name);                  \
-}
+#define CUT_DEVICE_INIT_DRV(cuDevice, ARGC, ARGV)                           \
+  {                                                                         \
+    cuDevice = 0;                                                           \
+    int deviceCount = 0;                                                    \
+    CUresult err = cuInit(0);                                               \
+    if (CUDA_SUCCESS == err)                                                \
+      CU_SAFE_CALL_NO_SYNC(cuDeviceGetCount(&deviceCount));                 \
+    if (deviceCount == 0) {                                                 \
+      fprintf(stderr, "cutil error: no devices supporting CUDA\n");         \
+      exit(EXIT_FAILURE);                                                   \
+    }                                                                       \
+    int dev = 0;                                                            \
+    cutGetCmdLineArgumenti(ARGC, (const char**)ARGV, "device", &dev);       \
+    if (dev < 0)                                                            \
+      dev = 0;                                                              \
+    if (dev > deviceCount - 1)                                              \
+      dev = deviceCount - 1;                                                \
+    CU_SAFE_CALL_NO_SYNC(cuDeviceGet(&cuDevice, dev));                      \
+    char name[100];                                                         \
+    cuDeviceGetName(name, 100, cuDevice);                                   \
+    if (cutCheckCmdLineFlag(ARGC, (const char**)ARGV, "quiet") == CUTFalse) \
+      fprintf(stderr, "Using device %d: %s\n", dev, name);                  \
+  }
 
-#define CUT_EXIT(argc, argv)                                                 \
-  if (!cutCheckCmdLineFlag(argc, (const char**)argv, "noprompt")) {        \
-    printf("\nPress ENTER to exit...\n");                                \
-    fflush( stdout);                                                     \
-    fflush( stderr);                                                     \
-    getchar();                                                           \
-  }                                                                        \
+#define CUT_EXIT(argc, argv)                                        \
+  if (!cutCheckCmdLineFlag(argc, (const char**)argv, "noprompt")) { \
+    printf("\nPress ENTER to exit...\n");                           \
+    fflush(stdout);                                                 \
+    fflush(stderr);                                                 \
+    getchar();                                                      \
+  }                                                                 \
   exit(EXIT_SUCCESS);
-
 
 #ifdef __cplusplus
 }
-#endif  // #ifdef _DEBUG (else branch)
+#endif // #ifdef _DEBUG (else branch)
 
-#endif  // #ifndef _CUTIL_H_
+#endif // #ifndef _CUTIL_H_

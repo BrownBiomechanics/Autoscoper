@@ -90,4 +90,4 @@ void register_bt_sighandler()
   // sigaction(SIGSEGV, &sa, NULL);
   // sigaction(SIGUSR1, &sa, NULL);
 }
-} // xromm
+} // namespace xromm

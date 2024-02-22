@@ -46,25 +46,24 @@
 #include <vector>
 
 #if defined(__APPLE__) || defined(__MACOSX)
-#include <OpenCL/opencl.h>
-#include <OpenGL/OpenGL.h>
+#  include <OpenCL/opencl.h>
+#  include <OpenGL/OpenGL.h>
 #else
-#if defined(_WIN32)
-#include <windows.h>
-#endif
-#include <CL/opencl.h>
-#include <GL/gl.h>
+#  if defined(_WIN32)
+#    include <windows.h>
+#  endif
+#  include <CL/opencl.h>
+#  include <GL/gl.h>
 #endif
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 void opencl_global_gl_context();
 cl_int opencl_global_context();
 std::vector<std::vector<std::string>> get_platforms();
 void setUsedPlatform(int platform_idx);
 void setUsedPlatform(int platform, int device);
 std::pair<int, int> getUsedPlatform();
-
-
 
 class Buffer;
 class GLBuffer;
@@ -156,8 +155,7 @@ protected:
 class Image
 {
 public:
-  Image(size_t* dims, cl_image_format* format,
-        cl_mem_flags access = CL_MEM_READ_WRITE);
+  Image(size_t* dims, cl_image_format* format, cl_mem_flags access = CL_MEM_READ_WRITE);
   ~Image();
 
   void read(const void* buf) const;
@@ -170,6 +168,7 @@ protected:
   cl_mem image_;
   cl_mem_flags access_;
 };
-} } // namespace xromm::opencl
+} // namespace gpu
+} // namespace xromm
 
 #endif // XROMM_HPP

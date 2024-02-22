@@ -18,7 +18,8 @@ __device__ float fitness_function(float x[])
   return (float)total;
 }
 
-__global__ void kernelUpdateParticle(float *positions, float *velocities, float *pBests, float *gBest, float r1, float r2)
+__global__ void kernelUpdateParticle(float *positions, float *velocities, float *pBests, float *gBest, float r1, float
+r2)
 {
   int i = blockIdx.x*blockDim.x + threadIdx.x;
   if (i >= NUM_OF_PARTICLES * NUM_OF_DIMENSIONS)
@@ -27,8 +28,8 @@ __global__ void kernelUpdateParticle(float *positions, float *velocities, float 
   float rp = r1;
   float rg = r2;
 
-  velocities[i] = OMEGA * velocities[i] + c1 * rp*(pBests[i] - positions[i]) + c2 * rg*(gBest[i%NUM_OF_DIMENSIONS] - positions[i]);
-  positions[i] += velocities[i];
+  velocities[i] = OMEGA * velocities[i] + c1 * rp*(pBests[i] - positions[i]) + c2 * rg*(gBest[i%NUM_OF_DIMENSIONS] -
+positions[i]); positions[i] += velocities[i];
 }
 
 __global__ void kernelUpdatePBest(float *positions, float *pBests, float *gBest)
@@ -118,11 +119,12 @@ cudaMemcpy(devGBest, gBest, sizeof(float) * NUM_OF_DIMENSIONS, cudaMemcpyHostToD
 // cudaEventCreate(&stop1);
 // float msecTotal1 = 0.0f;
 for (int iter = 0; iter < MAX_EPOCHS; iter++) {
-  kernelUpdateParticle << < blocksNum, threadNum >> > (devPos, devVel, devPBest, devGBest, getRandomClamped(), getRandomClamped()); // 0.000008s
+  kernelUpdateParticle<<<blocksNum, threadNum>>>(
+    devPos, devVel, devPBest, devGBest, getRandomClamped(), getRandomClamped()); // 0.000008s
 
   // cudaEventRecord(start1, NULL);
 
-  kernelUpdatePBest << < blocksNum, threadNum >> > (devPos, devPBest, devGBest);
+  kernelUpdatePBest<<<blocksNum, threadNum>>>(devPos, devPBest, devGBest);
 
   // cudaEventRecord(stop1, NULL);
   // cudaEventSynchronize(stop1);

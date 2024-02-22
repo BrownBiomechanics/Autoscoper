@@ -40,22 +40,22 @@
 /// \author Benjamin Knorlein, Andy Loomis, Bardiya Akhbari
 
 #ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
+#  define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #include <QApplication>
 
 #include "ui/AutoscoperMainWindow.h"
 #ifdef _MSC_VER
-#        pragma comment(linker, "/SUBSYSTEM:CONSOLE")
+#  pragma comment(linker, "/SUBSYSTEM:CONSOLE")
 #endif
 
 #include "net/Socket.h"
 
-int main ( int argc, char** argv )
+int main(int argc, char** argv)
 {
   QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-  QApplication app (argc, argv);
+  QApplication app(argc, argv);
 
   if (argc <= 1) {
     AutoscoperMainWindow* widget = new AutoscoperMainWindow();
@@ -72,11 +72,4 @@ int main ( int argc, char** argv )
     widget->runBatch(argv[1], true);
     delete socket;
   }
-
 }
-
-
-
-
-
-

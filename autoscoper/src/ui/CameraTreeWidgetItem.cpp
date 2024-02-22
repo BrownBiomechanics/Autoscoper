@@ -40,7 +40,7 @@
 /// \author Benjamin Knorlein, Andy Loomis
 
 #ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
+#  define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #include "ui/CameraTreeWidgetItem.h"
@@ -55,13 +55,17 @@
 #include "View.hpp"
 #include "Camera.hpp"
 
-CameraTreeWidgetItem::CameraTreeWidgetItem(View* view):QTreeWidgetItem(CAMERA_VIEW), QObject()
+CameraTreeWidgetItem::CameraTreeWidgetItem(View* view)
+  : QTreeWidgetItem(CAMERA_VIEW)
+  , QObject()
 {
   m_view = view;
   init();
 }
 
-CameraTreeWidgetItem::CameraTreeWidgetItem(View* view, QTreeWidget* parent):QTreeWidgetItem(parent, CAMERA_VIEW), QObject(parent)
+CameraTreeWidgetItem::CameraTreeWidgetItem(View* view, QTreeWidget* parent)
+  : QTreeWidgetItem(parent, CAMERA_VIEW)
+  , QObject(parent)
 {
   m_view = view;
   init();
@@ -90,12 +94,10 @@ void CameraTreeWidgetItem::addToGrid(QTreeWidget* treewidget)
   treewidget->setItemWidget(this, 0, pFrame);
   setExpanded(true);
   this->setBackground(0, QColor::fromRgb(230, 230, 230));
-  this->setFlags(this->flags() & ~Qt::ItemIsDragEnabled& ~Qt::ItemIsDropEnabled);
+  this->setFlags(this->flags() & ~Qt::ItemIsDragEnabled & ~Qt::ItemIsDropEnabled);
 }
 
-CameraTreeWidgetItem::~CameraTreeWidgetItem()
-{
-}
+CameraTreeWidgetItem::~CameraTreeWidgetItem() {}
 
 void CameraTreeWidgetItem::addModelView(ModelViewTreeWidgetItem* modelViewTtem)
 {
@@ -105,6 +107,7 @@ void CameraTreeWidgetItem::addModelView(ModelViewTreeWidgetItem* modelViewTtem)
 
 void CameraTreeWidgetItem::removeModelView(ModelViewTreeWidgetItem* modelViewTtem)
 {
-  modelViewTreeWidgets.erase(std::remove(modelViewTreeWidgets.begin(), modelViewTreeWidgets.end(), modelViewTtem), modelViewTreeWidgets.end());
+  modelViewTreeWidgets.erase(std::remove(modelViewTreeWidgets.begin(), modelViewTreeWidgets.end(), modelViewTtem),
+                             modelViewTreeWidgets.end());
   this->removeChild(modelViewTtem);
 }

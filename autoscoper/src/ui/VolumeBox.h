@@ -54,7 +54,6 @@ class VolumeBox : public QWidget
   Q_OBJECT
 
 private:
-
 public:
   explicit VolumeBox(QWidget* parent = 0);
   ~VolumeBox();
@@ -64,7 +63,6 @@ public:
 public slots:
 
   void on_toolButton_VolumeFile_clicked();
-
 };
 
 #endif /* VOLUMEBOX_H_ */

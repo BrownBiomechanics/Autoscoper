@@ -48,11 +48,11 @@ static const int CAMERA_VIEW = QTreeWidgetItem::UserType;
 static const int MODEL_VIEW = QTreeWidgetItem::UserType + 1;
 static const int FILTER = QTreeWidgetItem::UserType + 2;
 
-namespace xromm{
-namespace gpu{
+namespace xromm {
+namespace gpu {
 class View;
 }
-}
+} // namespace xromm
 using xromm::gpu::View;
 
 class FilterTreeWidget : public QTreeWidget
@@ -93,8 +93,8 @@ private:
   QAction* action_RemoveFilter;
 
 protected:
-  void drawRow( QPainter* p, const QStyleOptionViewItem& opt, const QModelIndex& idx ) const;
-  void dropEvent ( QDropEvent* event );
+  void drawRow(QPainter* p, const QStyleOptionViewItem& opt, const QModelIndex& idx) const;
+  void dropEvent(QDropEvent* event);
   void dragMoveEvent(QDragMoveEvent* event);
 
 public slots:
@@ -112,4 +112,4 @@ public slots:
   void action_RemoveFilter_triggered();
 };
 
-#endif  // UAUTOSCOPERMAINWINDOW_H
+#endif // UAUTOSCOPERMAINWINDOW_H

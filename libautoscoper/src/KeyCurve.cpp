@@ -126,7 +126,8 @@ float KeyCurve::operator()(float time) const
     return p1->second.value;
   }
 
-  const_iterator p0 = p1; p0--;
+  const_iterator p0 = p1;
+  p0--;
   if (p1 == keys.end()) {
     return p0->second.value;
   }
@@ -187,8 +188,7 @@ void KeyCurve::update_curve(iterator position)
     switch (key.in_tangent_type) {
       default:
       case SMOOTH:
-        key.in_tangent = (next->second.value - prev->second.value) /
-                         (float)(next->first - prev->first);
+        key.in_tangent = (next->second.value - prev->second.value) / (float)(next->first - prev->first);
         break;
     }
   }
@@ -196,8 +196,7 @@ void KeyCurve::update_curve(iterator position)
     switch (key.out_tangent_type) {
       default:
       case SMOOTH:
-        key.out_tangent = (next->second.value - prev->second.value) /
-                          (float)(next->first - prev->first);
+        key.out_tangent = (next->second.value - prev->second.value) / (float)(next->first - prev->first);
         break;
     }
   }

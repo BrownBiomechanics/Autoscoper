@@ -49,18 +49,20 @@
 #define BX 16
 #define BY 16
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 #include "gpu/opencl/kernel/RayCaster.cl.h"
 
 static Program raycaster_program_;
 
 static int num_ray_casters = 0;
 
-RayCaster::RayCaster() : volumeDescription_(0),
-                         sampleDistance_(0.5f),
-                         rayIntensity_(10.f),
-                         cutoff_(0.0f),
-                         name_("")
+RayCaster::RayCaster()
+  : volumeDescription_(0)
+  , sampleDistance_(0.5f)
+  , rayIntensity_(10.f)
+  , cutoff_(0.0f)
+  , name_("")
 {
   std::stringstream name_stream;
   name_stream << "DrrRenderer" << (++num_ray_casters);
@@ -68,8 +70,8 @@ RayCaster::RayCaster() : volumeDescription_(0),
 
   viewport_[0] = -1.0f;
   viewport_[1] = -1.0f;
-  viewport_[2] =  2.0f;
-  viewport_[3] =  2.0f;
+  viewport_[2] = 2.0f;
+  viewport_[3] = 2.0f;
 
   b_viewport_ = new Buffer(4 * sizeof(float), CL_MEM_READ_ONLY);
   b_viewport_->read(viewport_);
@@ -78,17 +80,16 @@ RayCaster::RayCaster() : volumeDescription_(0),
 
 RayCaster::~RayCaster()
 {
-  if (b_viewport_) delete b_viewport_;
+  if (b_viewport_)
+    delete b_viewport_;
 }
 
-void
-RayCaster::setVolume(VolumeDescription& volume)
+void RayCaster::setVolume(VolumeDescription& volume)
 {
   volumeDescription_ = &volume;
 }
 
-void
-RayCaster::setInvModelView(const double* invModelView)
+void RayCaster::setInvModelView(const double* invModelView)
 {
   if (!volumeDescription_) {
     std::cerr << "RayCaster: ERROR: Unable to calculate matrix." << std::endl;
@@ -140,8 +141,7 @@ RayCaster::setInvModelView(const double* invModelView)
 #endif
 }
 
-void
-RayCaster::setViewport(float x, float y, float width, float height)
+void RayCaster::setViewport(float x, float y, float width, float height)
 {
   viewport_[0] = x;
   viewport_[1] = y;
@@ -149,15 +149,13 @@ RayCaster::setViewport(float x, float y, float width, float height)
   viewport_[3] = height;
 
 #if DEBUG
-  fprintf(stdout, "RayCaster: new viewport: %f, %f, %f, %f\n",
-          viewport_[0], viewport_[1], viewport_[2], viewport_[3]);
+  fprintf(stdout, "RayCaster: new viewport: %f, %f, %f, %f\n", viewport_[0], viewport_[1], viewport_[2], viewport_[3]);
 #endif
 
   b_viewport_->read(viewport_);
 }
 
-void
-RayCaster::render(const Buffer* buffer, unsigned width, unsigned height)
+void RayCaster::render(const Buffer* buffer, unsigned width, unsigned height)
 {
   if (!volumeDescription_) {
     std::cerr << "RayCaster: WARNING: No volume loaded." << std::endl;
@@ -169,8 +167,7 @@ RayCaster::render(const Buffer* buffer, unsigned width, unsigned height)
     return;
   }
 
-  Kernel* kernel = raycaster_program_.compile(
-    RayCaster_cl, "volume_render_kernel");
+  Kernel* kernel = raycaster_program_.compile(RayCaster_cl, "volume_render_kernel");
 
   Buffer* b_imv = new Buffer(12 * sizeof(float), CL_MEM_READ_ONLY);
   b_imv->read(invModelView_);
@@ -194,5 +191,5 @@ RayCaster::render(const Buffer* buffer, unsigned width, unsigned height)
   delete kernel;
   delete b_imv;
 }
-} } // namespace xromm::opencl
-
+} // namespace gpu
+} // namespace xromm

@@ -39,7 +39,6 @@
 /// \file SimulatedAnnealing.cpp
 /// \author Bardiya Akhbari
 
-
 #include "SimulatedAnnealing.hpp"
 
 #include <stdio.h>
@@ -66,7 +65,4 @@ void SA_BA(double pose0, double* Y, int* ITER, double MAX_TEMP, double MAX_ITER)
     std::cout << xyzypr[i] << " ";
   }
   std::cout << std::endl;
-
-
-
 }

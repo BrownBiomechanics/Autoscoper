@@ -40,7 +40,7 @@
 /// \author Benjamin Knorlein, Andy Loomis
 
 #ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
+#  define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #include "ui_TimelineDockWidget.h"
@@ -53,13 +53,13 @@
 #include <QTimer>
 #include <math.h>
 
-TimelineDockWidget::TimelineDockWidget(QWidget* parent) :
-  QDockWidget(parent),
-  dock(new Ui::TimelineDockWidget)
+TimelineDockWidget::TimelineDockWidget(QWidget* parent)
+  : QDockWidget(parent)
+  , dock(new Ui::TimelineDockWidget)
 {
   dock->setupUi(this);
 
-  mainwindow  = dynamic_cast<AutoscoperMainWindow*> ( parent);
+  mainwindow = dynamic_cast<AutoscoperMainWindow*>(parent);
 
   position_graph = new GraphData();
   position_graph->show_x = true;
@@ -81,7 +81,6 @@ TimelineDockWidget::TimelineDockWidget(QWidget* parent) :
   play_tag = 0;
   play_timer = new QTimer(this);
   connect(play_timer, SIGNAL(timeout()), this, SLOT(play_update()));
-
 }
 
 TimelineDockWidget::~TimelineDockWidget()
@@ -100,8 +99,7 @@ void TimelineDockWidget::draw()
   dock->gltimeline->update();
 }
 
-
-void TimelineDockWidget::setFramesRange(int firstFrame, int lastFrame )
+void TimelineDockWidget::setFramesRange(int firstFrame, int lastFrame)
 {
   dock->spinBox_FirstFrame->setMinimum(firstFrame);
   dock->spinBox_FirstFrame->setMaximum(lastFrame);
@@ -145,15 +143,16 @@ void TimelineDockWidget::on_toolButton_Play_clicked()
 void TimelineDockWidget::on_toolButton_NextFrame_clicked()
 {
   dock->horizontalSlider_Frame->setValue(dock->labelFrame->text().toInt() + 1);
-  if (play_tag && dock->horizontalSlider_Frame->value() == dock->horizontalSlider_Frame->maximum())on_toolButton_Stop_clicked();
+  if (play_tag && dock->horizontalSlider_Frame->value() == dock->horizontalSlider_Frame->maximum())
+    on_toolButton_Stop_clicked();
 }
 
 void TimelineDockWidget::on_toolButton_NextTenFrame_clicked()
 {
   dock->horizontalSlider_Frame->setValue(dock->labelFrame->text().toInt() + 10);
-  if (play_tag && dock->horizontalSlider_Frame->value() == dock->horizontalSlider_Frame->maximum())on_toolButton_Stop_clicked();
+  if (play_tag && dock->horizontalSlider_Frame->value() == dock->horizontalSlider_Frame->maximum())
+    on_toolButton_Stop_clicked();
 }
-
 
 void TimelineDockWidget::setFrame(int frame)
 {
@@ -167,7 +166,7 @@ void TimelineDockWidget::on_horizontalSlider_Frame_valueChanged(int value)
   mainwindow->setFrame(dock->labelFrame->text().toInt());
 }
 
-void TimelineDockWidget::on_doubleSpinBox_X_valueChanged ( double d )
+void TimelineDockWidget::on_doubleSpinBox_X_valueChanged(double d)
 {
   if (m_spinButtonUpdate) {
     mainwindow->update_coord_frame();
@@ -177,7 +176,7 @@ void TimelineDockWidget::on_doubleSpinBox_X_valueChanged ( double d )
   }
 }
 
-void TimelineDockWidget::on_doubleSpinBox_Y_valueChanged ( double d )
+void TimelineDockWidget::on_doubleSpinBox_Y_valueChanged(double d)
 {
   if (m_spinButtonUpdate) {
     mainwindow->update_coord_frame();
@@ -187,7 +186,7 @@ void TimelineDockWidget::on_doubleSpinBox_Y_valueChanged ( double d )
   }
 }
 
-void TimelineDockWidget::on_doubleSpinBox_Z_valueChanged ( double d )
+void TimelineDockWidget::on_doubleSpinBox_Z_valueChanged(double d)
 {
   if (m_spinButtonUpdate) {
     mainwindow->update_coord_frame();
@@ -197,7 +196,7 @@ void TimelineDockWidget::on_doubleSpinBox_Z_valueChanged ( double d )
   }
 }
 
-void TimelineDockWidget::on_doubleSpinBox_Yaw_valueChanged ( double d )
+void TimelineDockWidget::on_doubleSpinBox_Yaw_valueChanged(double d)
 {
   if (m_spinButtonUpdate) {
     mainwindow->update_coord_frame();
@@ -207,7 +206,7 @@ void TimelineDockWidget::on_doubleSpinBox_Yaw_valueChanged ( double d )
   }
 }
 
-void TimelineDockWidget::on_doubleSpinBox_Pitch_valueChanged ( double d )
+void TimelineDockWidget::on_doubleSpinBox_Pitch_valueChanged(double d)
 {
   if (m_spinButtonUpdate) {
     mainwindow->update_coord_frame();
@@ -217,7 +216,7 @@ void TimelineDockWidget::on_doubleSpinBox_Pitch_valueChanged ( double d )
   }
 }
 
-void TimelineDockWidget::on_doubleSpinBox_Roll_valueChanged ( double d )
+void TimelineDockWidget::on_doubleSpinBox_Roll_valueChanged(double d)
 {
   if (m_spinButtonUpdate) {
     mainwindow->update_coord_frame();
@@ -227,50 +226,49 @@ void TimelineDockWidget::on_doubleSpinBox_Roll_valueChanged ( double d )
   }
 }
 
-
-void TimelineDockWidget::on_checkBox_X_stateChanged ( int state )
+void TimelineDockWidget::on_checkBox_X_stateChanged(int state)
 {
   position_graph->show_x = (state != Qt::Unchecked);
   update_graph_min_max();
   mainwindow->redrawGL();
 }
 
-void TimelineDockWidget::on_checkBox_Y_stateChanged ( int state )
+void TimelineDockWidget::on_checkBox_Y_stateChanged(int state)
 {
   position_graph->show_y = (state != Qt::Unchecked);
   update_graph_min_max();
   mainwindow->redrawGL();
 }
 
-void TimelineDockWidget::on_checkBox_Z_stateChanged ( int state )
+void TimelineDockWidget::on_checkBox_Z_stateChanged(int state)
 {
   position_graph->show_z = (state != Qt::Unchecked);
   update_graph_min_max();
   mainwindow->redrawGL();
 }
 
-void TimelineDockWidget::on_checkBox_Yaw_stateChanged ( int state )
+void TimelineDockWidget::on_checkBox_Yaw_stateChanged(int state)
 {
   position_graph->show_yaw = (state != Qt::Unchecked);
   update_graph_min_max();
   mainwindow->redrawGL();
 }
 
-void TimelineDockWidget::on_checkBox_Pitch_stateChanged ( int state )
+void TimelineDockWidget::on_checkBox_Pitch_stateChanged(int state)
 {
   position_graph->show_pitch = (state != Qt::Unchecked);
   update_graph_min_max();
   mainwindow->redrawGL();
 }
 
-void TimelineDockWidget::on_checkBox_Roll_stateChanged ( int state )
+void TimelineDockWidget::on_checkBox_Roll_stateChanged(int state)
 {
   position_graph->show_roll = (state != Qt::Unchecked);
   update_graph_min_max();
   mainwindow->redrawGL();
 }
 
-void TimelineDockWidget::on_spinBox_FirstFrame_valueChanged ( int d )
+void TimelineDockWidget::on_spinBox_FirstFrame_valueChanged(int d)
 {
   int new_min = d;
   dock->spinBox_LastFrame->setMinimum(new_min + 1);
@@ -282,7 +280,7 @@ void TimelineDockWidget::on_spinBox_FirstFrame_valueChanged ( int d )
   }
 }
 
-void TimelineDockWidget::on_spinBox_LastFrame_valueChanged ( int d )
+void TimelineDockWidget::on_spinBox_LastFrame_valueChanged(int d)
 {
   int new_max = d;
   dock->spinBox_FirstFrame->setMaximum(new_max - 1);
@@ -293,8 +291,6 @@ void TimelineDockWidget::on_spinBox_LastFrame_valueChanged ( int d )
     mainwindow->redrawGL();
   }
 }
-
-
 
 void TimelineDockWidget::getValues(double* xyzypr)
 {
@@ -325,7 +321,6 @@ void TimelineDockWidget::setValuesEnabled(bool enabled)
   dock->doubleSpinBox_Pitch->setEnabled(enabled);
   dock->doubleSpinBox_Roll->setEnabled(enabled);
 }
-
 
 void TimelineDockWidget::update_graph_min_max(int frame)
 {
@@ -401,9 +396,7 @@ void TimelineDockWidget::update_graph_min_max(int frame)
     position_graph->max_value = -1e6;
 
     if (position_graph->show_x) {
-      for (frame = floor(position_graph->min_frame);
-           frame < position_graph->max_frame;
-           frame += 1.0f) {
+      for (frame = floor(position_graph->min_frame); frame < position_graph->max_frame; frame += 1.0f) {
         float x_value = (*mainwindow->getTracker()->trial()->getXCurve(-1))(frame);
         if (x_value > position_graph->max_value) {
           position_graph->max_value = x_value;
@@ -414,9 +407,7 @@ void TimelineDockWidget::update_graph_min_max(int frame)
       }
     }
     if (position_graph->show_y) {
-      for (frame = floor(position_graph->min_frame);
-           frame < position_graph->max_frame;
-           frame += 1.0f) {
+      for (frame = floor(position_graph->min_frame); frame < position_graph->max_frame; frame += 1.0f) {
         float y_value = (*mainwindow->getTracker()->trial()->getYCurve(-1))(frame);
         if (y_value > position_graph->max_value) {
           position_graph->max_value = y_value;
@@ -427,9 +418,7 @@ void TimelineDockWidget::update_graph_min_max(int frame)
       }
     }
     if (position_graph->show_z) {
-      for (frame = floor(position_graph->min_frame);
-           frame < position_graph->max_frame;
-           frame += 1.0f) {
+      for (frame = floor(position_graph->min_frame); frame < position_graph->max_frame; frame += 1.0f) {
         float z_value = (*mainwindow->getTracker()->trial()->getZCurve(-1))(frame);
         if (z_value > position_graph->max_value) {
           position_graph->max_value = z_value;
@@ -440,9 +429,7 @@ void TimelineDockWidget::update_graph_min_max(int frame)
       }
     }
     if (position_graph->show_yaw) {
-      for (frame = floor(position_graph->min_frame);
-           frame < position_graph->max_frame;
-           frame += 1.0f) {
+      for (frame = floor(position_graph->min_frame); frame < position_graph->max_frame; frame += 1.0f) {
         float yaw_value = (*mainwindow->getTracker()->trial()->getYawCurve(-1))(frame);
         if (yaw_value > position_graph->max_value) {
           position_graph->max_value = yaw_value;
@@ -453,9 +440,7 @@ void TimelineDockWidget::update_graph_min_max(int frame)
       }
     }
     if (position_graph->show_pitch) {
-      for (frame = floor(position_graph->min_frame);
-           frame < position_graph->max_frame;
-           frame += 1.0f) {
+      for (frame = floor(position_graph->min_frame); frame < position_graph->max_frame; frame += 1.0f) {
         float pitch_value = (*mainwindow->getTracker()->trial()->getPitchCurve(-1))(frame);
         if (pitch_value > position_graph->max_value) {
           position_graph->max_value = pitch_value;
@@ -466,9 +451,7 @@ void TimelineDockWidget::update_graph_min_max(int frame)
       }
     }
     if (position_graph->show_roll) {
-      for (frame = floor(position_graph->min_frame);
-           frame < position_graph->max_frame;
-           frame += 1.0f) {
+      for (frame = floor(position_graph->min_frame); frame < position_graph->max_frame; frame += 1.0f) {
         float roll_value = (*mainwindow->getTracker()->trial()->getRollCurve(-1))(frame);
         if (roll_value > position_graph->max_value) {
           position_graph->max_value = roll_value;

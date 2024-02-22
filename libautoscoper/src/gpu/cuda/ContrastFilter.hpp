@@ -46,18 +46,17 @@
 
 #include "Filter.hpp"
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 
 class ContrastFilter : public Filter
 {
 public:
-
   ContrastFilter();
 
   // Apply the filter to the input image
 
-  virtual
-  void apply(const float* input, float* output, int width, int height);
+  virtual void apply(const float* input, float* output, int width, int height);
 
   // Accessors and mutators
 
@@ -70,13 +69,13 @@ public:
   void set_beta(float beta) { beta_ = beta; }
 
 private:
-
   float alpha_;
 
   float beta_;
 
   int size_;
 };
-} } // namespace xromm::cuda
+} // namespace gpu
+} // namespace xromm
 
 #endif // XROMM_GPU_CONTRAST_FILTER_HPP

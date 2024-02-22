@@ -54,7 +54,6 @@ class ImportExportTrackingOptionsDialog : public QDialog
   Q_OBJECT
 
 private:
-
 public:
   explicit ImportExportTrackingOptionsDialog(QWidget* parent = 0);
   ~ImportExportTrackingOptionsDialog();

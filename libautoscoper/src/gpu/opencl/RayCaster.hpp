@@ -47,7 +47,8 @@
 #include "VolumeDescription.hpp"
 #include "OpenCL.hpp"
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 
 class RayCaster
 {
@@ -60,60 +61,27 @@ public:
   void setViewport(float x, float y, float width, float height);
   void render(const Buffer* buffer, unsigned width, unsigned height);
 
-  void setVisible(bool visible)
-  {
-    visible_ = visible;
-  }
+  void setVisible(bool visible) { visible_ = visible; }
 
-  float getSampleDistance() const
-  {
-    return sampleDistance_;
-  }
+  float getSampleDistance() const { return sampleDistance_; }
 
-  void setSampleDistance(float sampleDistance)
-  {
-    sampleDistance_ = sampleDistance;
-  }
+  void setSampleDistance(float sampleDistance) { sampleDistance_ = sampleDistance; }
 
-  float getRayIntensity() const
-  {
-    return rayIntensity_;
-  }
+  float getRayIntensity() const { return rayIntensity_; }
 
-  void setRayIntensity(float rayIntensity)
-  {
-    rayIntensity_ = rayIntensity;
-  }
+  void setRayIntensity(float rayIntensity) { rayIntensity_ = rayIntensity; }
 
-  float getCutoff() const
-  {
-    return cutoff_;
-  }
+  float getCutoff() const { return cutoff_; }
 
-  float getMinCutoff() const
-  {
-    return volumeDescription_->minValue();
-  }
+  float getMinCutoff() const { return volumeDescription_->minValue(); }
 
-  float getMaxCutoff() const
-  {
-    return volumeDescription_->maxValue();
-  }
+  float getMaxCutoff() const { return volumeDescription_->maxValue(); }
 
-  void setCutoff(float cutoff)
-  {
-    cutoff_ = cutoff;
-  }
+  void setCutoff(float cutoff) { cutoff_ = cutoff; }
 
-  const std::string& getName() const
-  {
-    return name_;
-  }
+  const std::string& getName() const { return name_; }
 
-  void setName(const std::string& name)
-  {
-    name_ = name;
-  }
+  void setName(const std::string& name) { name_ = name; }
 
 private:
   VolumeDescription* volumeDescription_;
@@ -126,6 +94,7 @@ private:
   std::string name_;
   bool visible_;
 };
-} } // namespace xromm::opencl
+} // namespace gpu
+} // namespace xromm
 
 #endif // XROMM_RAY_CASTER_HPP

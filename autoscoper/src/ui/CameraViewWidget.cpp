@@ -39,9 +39,8 @@
 /// \file CameraViewWidget.cpp
 /// \author Benjamin Knorlein, Andy Loomis
 
-
 #ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
+#  define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #include "ui/CameraViewWidget.h"
@@ -50,16 +49,16 @@
 
 #include <QOpenGLContext>
 
-CameraViewWidget::CameraViewWidget(int id, View* view, QString name, QWidget* parent) :
-  QWidget(parent),
-  widget(new Ui::CameraViewWidget)
+CameraViewWidget::CameraViewWidget(int id, View* view, QString name, QWidget* parent)
+  : QWidget(parent)
+  , widget(new Ui::CameraViewWidget)
 {
   widget->setupUi(this);
   m_name = name;
   m_id = id;
   widget->cameraTitleLabel->setText(m_name);
   widget->glView->setView(view);
-  mainwindow  = dynamic_cast<AutoscoperMainWindow*> ( parent);
+  mainwindow = dynamic_cast<AutoscoperMainWindow*>(parent);
 }
 
 CameraViewWidget::~CameraViewWidget()

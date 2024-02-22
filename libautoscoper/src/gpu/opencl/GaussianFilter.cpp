@@ -43,7 +43,8 @@
 #include <cmath>
 #include "GaussianFilter.hpp"
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 #define KERNEL_X 16
 #define KERNEL_Y 16
 #define KERNEL_CODE GaussianFilter_cl
@@ -55,8 +56,8 @@ static int num_gaussian_filters = 0;
 static Program gaussian_program_;
 
 GaussianFilter::GaussianFilter()
-  : Filter(XROMM_GPU_GAUSSIAN_FILTER, ""),
-    gaussian_(NULL)
+  : Filter(XROMM_GPU_GAUSSIAN_FILTER, "")
+  , gaussian_(NULL)
 {
   std::stringstream name_stream;
   name_stream << "GaussianFilter" << (++num_gaussian_filters);
@@ -67,7 +68,8 @@ GaussianFilter::GaussianFilter()
 
 GaussianFilter::~GaussianFilter()
 {
-  if (gaussian_ != NULL) delete gaussian_;
+  if (gaussian_ != NULL)
+    delete gaussian_;
 }
 
 void GaussianFilter::set_radius(float radius)
@@ -115,18 +117,15 @@ void GaussianFilter::set_radius(float radius)
   }
 
   /* copies gaussian filter over to GPU */
-  if (gaussian_ != NULL) delete gaussian_;
+  if (gaussian_ != NULL)
+    delete gaussian_;
   gaussian_ = new Buffer(nBytes, CL_MEM_READ_ONLY);
   gaussian_->read((void*)gaussian);
 
   delete[] gaussian;
 }
 
-void
-GaussianFilter::apply(const Buffer* input,
-                      Buffer* output,
-                      int width,
-                      int height)
+void GaussianFilter::apply(const Buffer* input, Buffer* output, int width, int height)
 {
   if (filterSize_ == 1) {
     /* if filterSize_ = 1, filter does not change image */
@@ -149,4 +148,5 @@ GaussianFilter::apply(const Buffer* input,
     delete kernel;
   }
 }
-} } // namespace xromm::opencl
+} // namespace gpu
+} // namespace xromm

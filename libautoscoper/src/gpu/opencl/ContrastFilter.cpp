@@ -42,7 +42,8 @@
 #include <sstream>
 #include "ContrastFilter.hpp"
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 #define KERNEL_X 16
 #define KERNEL_Y 16
 #define KERNEL_CODE ContrastFilter_cl
@@ -50,27 +51,21 @@ namespace xromm { namespace gpu {
 
 #include "gpu/opencl/kernel/ContrastFilter.cl.h"
 
-
 static int num_contrast_filters = 0;
 static Program contrast_program_;
 
 ContrastFilter::ContrastFilter()
-  : Filter(XROMM_GPU_CONTRAST_FILTER, ""),
-    alpha_(1.0f),
-    beta_(1.0f),
-    size_(3)
+  : Filter(XROMM_GPU_CONTRAST_FILTER, "")
+  , alpha_(1.0f)
+  , beta_(1.0f)
+  , size_(3)
 {
   std::stringstream name_stream;
   name_stream << "ContrastFilter" << (++num_contrast_filters);
   name_ = name_stream.str();
 }
 
-void
-ContrastFilter::apply(
-  const Buffer* input,
-  Buffer* output,
-  int width,
-  int height)
+void ContrastFilter::apply(const Buffer* input, Buffer* output, int width, int height)
 {
   Kernel* kernel = contrast_program_.compile(ContrastFilter_cl, KERNEL_NAME);
 
@@ -89,4 +84,5 @@ ContrastFilter::apply(
 
   delete kernel;
 }
-} } // namespace xromm::opencl
+} // namespace gpu
+} // namespace xromm

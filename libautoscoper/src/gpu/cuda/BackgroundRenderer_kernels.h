@@ -42,13 +42,21 @@
 #ifndef XROMM_GPU_BACKGROUND_RENDERER_KERNELS_H
 #define XROMM_GPU_BACKGROUND_RENDERER_KERNELS_H
 
-namespace xromm
-{
-namespace gpu
-{
-void background_render(cudaTextureObject_t tex, float* output, int width, int height, float u0,
-                       float v0, float u1, float v1, float u2, float v2,
-                       float u3, float v3, float threshold);
+namespace xromm {
+namespace gpu {
+void background_render(cudaTextureObject_t tex,
+                       float* output,
+                       int width,
+                       int height,
+                       float u0,
+                       float v0,
+                       float u1,
+                       float v1,
+                       float u2,
+                       float v2,
+                       float u3,
+                       float v3,
+                       float threshold);
 } // namespace gpu
 } // namespace xromm
 

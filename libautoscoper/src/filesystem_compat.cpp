@@ -3,9 +3,7 @@
 namespace xromm {
 namespace filesystem {
 // Experimental filesystem compliant version where there is no fs::relative
-std::filesystem::path relative(
-  const std::filesystem::path& path,
-  const std::filesystem::path& basePath)
+std::filesystem::path relative(const std::filesystem::path& path, const std::filesystem::path& basePath)
 {
   // find the first mismatched element and the shared root
   auto mismatched = std::mismatch(path.begin(), path.end(), basePath.begin(), basePath.end());
@@ -31,18 +29,16 @@ std::filesystem::path relative(
 
   return relativePath.string();
 }
-}
-}
+} // namespace filesystem
+} // namespace xromm
 
 #if Autoscoper_HAS_EXPERIMENTAL_FILESYSTEM
 namespace std {
 namespace experimental::filesystem {
-std::filesystem::path relative(
-  const std::filesystem::path& path,
-  const std::filesystem::path& basePath)
+std::filesystem::path relative(const std::filesystem::path& path, const std::filesystem::path& basePath)
 {
   return xromm::filesystem::relative(path, basePath);
 }
-}
-}
+} // namespace experimental::filesystem
+} // namespace std
 #endif

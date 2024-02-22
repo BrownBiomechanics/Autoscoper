@@ -44,9 +44,9 @@
 
 #include <QTextBrowser>
 
-AboutAutoscoper::AboutAutoscoper(QWidget* parent) :
-  QDialog(parent),
-  about(new Ui::AboutAutoscoper)
+AboutAutoscoper::AboutAutoscoper(QWidget* parent)
+  : QDialog(parent)
+  , about(new Ui::AboutAutoscoper)
 {
 
   about->setupUi(this);
@@ -67,13 +67,14 @@ AboutAutoscoper::AboutAutoscoper(QWidget* parent) :
 
   // Links (bottom)
   textBrowser = about->linksTextBrowser;
-  textBrowser->insertHtml(QString(
-                            "<table align=\"center\" border=\"0\" width=\"80%\">"
-                            "  <tr>"
-                            "    <td align=\"center\"><a href=\"https://autoscoper.readthedocs.io/en/latest/about.html#license\">Licensing Information</a></td>"
-                            "    <td align=\"center\"><a href=\"https://autoscoper.readthedocs.io/\">Website</a></td>"
-                            "  </tr>"
-                            "</table>"));
+  textBrowser->insertHtml(
+    QString("<table align=\"center\" border=\"0\" width=\"80%\">"
+            "  <tr>"
+            "    <td align=\"center\"><a "
+            "href=\"https://autoscoper.readthedocs.io/en/latest/about.html#license\">Licensing Information</a></td>"
+            "    <td align=\"center\"><a href=\"https://autoscoper.readthedocs.io/\">Website</a></td>"
+            "  </tr>"
+            "</table>"));
 
   connect(about->ButtonBox, SIGNAL(rejected()), this, SLOT(close()));
 }

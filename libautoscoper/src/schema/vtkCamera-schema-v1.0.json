@@ -12,7 +12,7 @@
     "focal-point": {
       "description": "The point the camera is looking at",
       "type": "array",
-      "items" : {
+      "items": {
         "type": "number"
       },
       "minItems": 3,
@@ -21,7 +21,7 @@
     "camera-position": {
       "description": "The point the camera is at",
       "type": "array",
-      "items" : {
+      "items": {
         "type": "number"
       },
       "minItems": 3,
@@ -30,13 +30,13 @@
     "view-up": {
       "description": "The up vector of the camera",
       "type": "array",
-      "items" : {
+      "items": {
         "type": "number"
       },
       "minItems": 3,
       "maxItems": 3
     },
-    "view-angle" : {
+    "view-angle": {
       "description": "The viewing angle",
       "type": "number"
     },
@@ -49,5 +49,13 @@
       "type": "integer"
     }
   },
-  "required": [ "version","focal-point","camera-position","view-up","view-angle","image-width","image-height" ]
+  "required": [
+    "version",
+    "focal-point",
+    "camera-position",
+    "view-up",
+    "view-angle",
+    "image-width",
+    "image-height"
+  ]
 }

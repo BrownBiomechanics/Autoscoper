@@ -59,7 +59,8 @@ static float* d_den2s_ba = NULL;
 
 //////// Helper functions ////////
 
-static void get_device_params_hdist(unsigned int n, unsigned int maxNumThreads,
+static void get_device_params_hdist(unsigned int n,
+                                    unsigned int maxNumThreads,
                                     unsigned int& numThreads,
                                     unsigned int& numBlocks,
                                     unsigned int& sizeMem);
@@ -68,19 +69,15 @@ static float sum_hdist(float* f, unsigned int n);
 
 //////// Cuda kernels ////////
 
-__global__
-void sum_hdist_kernel(float* f, float* sums, unsigned int n);
+__global__ void sum_hdist_kernel(float* f, float* sums, unsigned int n);
 
-__global__
-void cuda_hdist_kernel(float* f, float meanF, float* g, float meanG, float* mask,
-                       float* nums, unsigned int n);
+__global__ void
+cuda_hdist_kernel(float* f, float meanF, float* g, float meanG, float* mask, float* nums, unsigned int n);
 
 //////// Interface Definitions ////////
 
-namespace xromm
-{
-namespace gpu
-{
+namespace xromm {
+namespace gpu {
 void hdist_init(unsigned int max_n, unsigned int maxNumThreads)
 {
   if (g_max_n_hdist != max_n || g_maxNumThreads_hdist != maxNumThreads) {
@@ -120,8 +117,7 @@ float hdist(float* f, float* g, float* mask, unsigned int n)
   unsigned int numThreads, numBlocks, sizeMem;
   get_device_params_hdist(n, g_maxNumThreads_hdist, numThreads, numBlocks, sizeMem);
 
-  cuda_hdist_kernel << < numBlocks, numThreads, sizeMem >> > (f, meanF, g, meanG, mask,
-                                                              d_nums_ba, n);
+  cuda_hdist_kernel<<<numBlocks, numThreads, sizeMem>>>(f, meanF, g, meanG, mask, d_nums_ba, n);
 
   float sad_cost = sum_hdist(d_nums_ba, n);
   // float den = sqrt(sum_hdist(d_den1s_ba, n)*sum_hdist(d_den2s_ba, n));
@@ -158,22 +154,18 @@ float sum_hdist(float* f, unsigned int n)
   get_device_params_hdist(n, g_maxNumThreads_hdist, numThreads, numBlocks, sizeMem);
 
   while (n > 1) {
-    sum_hdist_kernel << < numBlocks, numThreads, sizeMem >> > (f, d_sums_ba, n);
+    sum_hdist_kernel<<<numBlocks, numThreads, sizeMem>>>(f, d_sums_ba, n);
     n = numBlocks;
     get_device_params_hdist(n, g_maxNumThreads_hdist, numThreads, numBlocks, sizeMem);
     f = d_sums_ba;
   }
 
   float h_sum_ba;
-  cutilSafeCall(cudaMemcpy(&h_sum_ba,
-                           d_sums_ba,
-                           sizeof(float),
-                           cudaMemcpyDeviceToHost));
+  cutilSafeCall(cudaMemcpy(&h_sum_ba, d_sums_ba, sizeof(float), cudaMemcpyDeviceToHost));
   return h_sum_ba;
 }
 
-__global__
-void sum_hdist_kernel(float* f, float* sums, unsigned int n)
+__global__ void sum_hdist_kernel(float* f, float* sums, unsigned int n)
 {
   extern __shared__ float sdata[];
 
@@ -194,9 +186,8 @@ void sum_hdist_kernel(float* f, float* sums, unsigned int n)
   }
 }
 
-__global__
-void cuda_hdist_kernel(float* f, float meanF, float* g, float meanG, float* mask,
-                       float* nums, unsigned int n)
+__global__ void
+cuda_hdist_kernel(float* f, float meanF, float* g, float meanG, float* mask, float* nums, unsigned int n)
 {
   // JointTrack_Biplane
   unsigned int i = blockDim.x * blockIdx.x + threadIdx.x;
@@ -210,4 +201,3 @@ void cuda_hdist_kernel(float* f, float meanF, float* g, float meanG, float* mask
     nums[i] = 0.0f;
   }
 }
-

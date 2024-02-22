@@ -8,12 +8,16 @@
 #include <QSpacerItem>
 
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
-#include <gpu/cuda/RayCaster.hpp>
+#  include <gpu/cuda/RayCaster.hpp>
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-#include <gpu/opencl/RayCaster.hpp>
+#  include <gpu/opencl/RayCaster.hpp>
 #endif
 
-VolumeListWidgetItem::VolumeListWidgetItem(QListWidget* listWidget, const QString& name, AutoscoperMainWindow* main_window, std::vector<xromm::gpu::RayCaster*>* renderers) : QListWidgetItem(listWidget)
+VolumeListWidgetItem::VolumeListWidgetItem(QListWidget* listWidget,
+                                           const QString& name,
+                                           AutoscoperMainWindow* main_window,
+                                           std::vector<xromm::gpu::RayCaster*>* renderers)
+  : QListWidgetItem(listWidget)
 {
   this->name_ = name;
   this->main_window_ = main_window;

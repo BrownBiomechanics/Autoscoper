@@ -40,7 +40,7 @@
 /// \author Benjamin Knorlein, Andy Loomis
 
 #ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
+#  define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #include "ui/ModelViewTreeWidgetItem.h"
@@ -64,12 +64,14 @@
 
 #include <View.hpp>
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
-#include <gpu/cuda/RayCaster.hpp>
+#  include <gpu/cuda/RayCaster.hpp>
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-#include <gpu/opencl/RayCaster.hpp>
+#  include <gpu/opencl/RayCaster.hpp>
 #endif
 
-ModelViewTreeWidgetItem::ModelViewTreeWidgetItem(int type, std::vector<Filter*>* filters):QTreeWidgetItem(MODEL_VIEW), QObject()
+ModelViewTreeWidgetItem::ModelViewTreeWidgetItem(int type, std::vector<Filter*>* filters)
+  : QTreeWidgetItem(MODEL_VIEW)
+  , QObject()
 {
   m_filters = filters;
   m_type = type;
@@ -95,8 +97,8 @@ void ModelViewTreeWidgetItem::save(std::ofstream& file)
 {
   if (m_type == 0) {
     file << "RadFilters_begin" << std::endl;
-    for (int i = 0; i < childCount(); i ++) {
-      FilterTreeWidgetItem* filter = dynamic_cast<FilterTreeWidgetItem*> (child(i));
+    for (int i = 0; i < childCount(); i++) {
+      FilterTreeWidgetItem* filter = dynamic_cast<FilterTreeWidgetItem*>(child(i));
       if (filter) {
         filter->save(file);
       }
@@ -110,8 +112,8 @@ void ModelViewTreeWidgetItem::save(std::ofstream& file)
     file << "DrrRenderer_end" << std::endl;
 
     file << "DrrFilters_begin" << std::endl;
-    for (int i = 0; i < childCount(); i ++) {
-      FilterTreeWidgetItem* filter = dynamic_cast<FilterTreeWidgetItem*> (child(i));
+    for (int i = 0; i < childCount(); i++) {
+      FilterTreeWidgetItem* filter = dynamic_cast<FilterTreeWidgetItem*>(child(i));
       if (filter) {
         filter->save(file);
       }
@@ -149,15 +151,15 @@ void ModelViewTreeWidgetItem::loadFilters(std::ifstream& file)
   std::string line, key;
 
   // Delete all Filters
-  for (int i = childCount() - 1; i >= 0; i --) {
-    FilterTreeWidgetItem* filterItem = dynamic_cast<FilterTreeWidgetItem*> (child(i));
+  for (int i = childCount() - 1; i >= 0; i--) {
+    FilterTreeWidgetItem* filterItem = dynamic_cast<FilterTreeWidgetItem*>(child(i));
     if (filterItem) {
       removeFilter(filterItem);
       delete filterItem;
     }
   }
 
-  while (std::getline(file, line) && line.compare("DrrFilters_end") != 0  && line.compare("RadFilters_end") != 0) {
+  while (std::getline(file, line) && line.compare("DrrFilters_end") != 0 && line.compare("RadFilters_end") != 0) {
     std::istringstream lineStream(line);
     lineStream >> key;
     if (key.compare("SobelFilter_begin") == 0) {
@@ -178,9 +180,7 @@ void ModelViewTreeWidgetItem::loadFilters(std::ifstream& file)
       filter->load(file);
     }
   }
-
 }
-
 
 void ModelViewTreeWidgetItem::init()
 {
@@ -214,7 +214,7 @@ void ModelViewTreeWidgetItem::addToCameraTreeWidgetItem(QTreeWidget* treewidget,
   pLayout->addWidget(new QLabel(name), 0, 1);
   visibleCheckBox = new QCheckBox();
   visibleCheckBox->setChecked(true);
-  connect(visibleCheckBox, SIGNAL(stateChanged (int)), this, SLOT(on_visibleCheckBox_stateChanged(int)));
+  connect(visibleCheckBox, SIGNAL(stateChanged(int)), this, SLOT(on_visibleCheckBox_stateChanged(int)));
   pLayout->addWidget(visibleCheckBox, 0, 0);
   pLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum), 0, 2);
 
@@ -265,7 +265,8 @@ void ModelViewTreeWidgetItem::settingsButtonClicked()
   if (settingsShown) {
     this->setBackground(0, QColor::fromRgb(225, 225, 225));
     QIcon icon;
-    icon.addFile(QString::fromUtf8(":/images/resource-files/icons/settings_cancel.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon.addFile(
+      QString::fromUtf8(":/images/resource-files/icons/settings_cancel.png"), QSize(), QIcon::Normal, QIcon::Off);
     settingsButton->setIcon(icon);
   } else {
     this->setBackground(0, QColor::fromRgb(240, 240, 240));
@@ -273,7 +274,6 @@ void ModelViewTreeWidgetItem::settingsButtonClicked()
     icon.addFile(QString::fromUtf8(":/images/resource-files/icons/settings.png"), QSize(), QIcon::Normal, QIcon::Off);
     settingsButton->setIcon(icon);
   }
-
 
   this->treeWidget()->doItemsLayout();
   this->treeWidget()->repaint();
@@ -283,14 +283,17 @@ void ModelViewTreeWidgetItem::addFilter(FilterTreeWidgetItem* filterItem, bool a
 {
   filterTreeWidgets.push_back(filterItem);
   m_filters->push_back(filterItem->getFilter());
-  if (addToTree)this->addChild(filterItem);
+  if (addToTree)
+    this->addChild(filterItem);
 }
 
 void ModelViewTreeWidgetItem::removeFilter(FilterTreeWidgetItem* filterItem, bool removeFromTree)
 {
   m_filters->erase(std::remove(m_filters->begin(), m_filters->end(), filterItem->getFilter()), m_filters->end());
-  filterTreeWidgets.erase(std::remove(filterTreeWidgets.begin(), filterTreeWidgets.end(), filterItem), filterTreeWidgets.end());
-  if (removeFromTree)this->removeChild(filterItem);
+  filterTreeWidgets.erase(std::remove(filterTreeWidgets.begin(), filterTreeWidgets.end(), filterItem),
+                          filterTreeWidgets.end());
+  if (removeFromTree)
+    this->removeChild(filterItem);
 }
 
 void ModelViewTreeWidgetItem::printFilters()
@@ -305,7 +308,7 @@ void ModelViewTreeWidgetItem::resetVectors()
   filterTreeWidgets.clear();
   m_filters->clear();
   for (int i = 0; i < childCount(); i++) {
-    FilterTreeWidgetItem* filter = dynamic_cast<FilterTreeWidgetItem*> (child(i));
+    FilterTreeWidgetItem* filter = dynamic_cast<FilterTreeWidgetItem*>(child(i));
     if (filter) {
       filterTreeWidgets.push_back(filter);
       m_filters->push_back(filter->getFilter());
@@ -317,7 +320,10 @@ void ModelViewTreeWidgetItem::updateModelview()
 {
   if (m_type == 1) {
     for (int idx = 0; idx < ((CameraTreeWidgetItem*)QTreeWidgetItem::parent())->getView()->nbDrrRenderer(); idx++) {
-      xromm::gpu::RayCaster* rayCaster = ((CameraTreeWidgetItem*)QTreeWidgetItem::parent())->getView()->drrRenderer(idx); // not sure if this is correct. Dont we have to go through all drrRenderer
+      xromm::gpu::RayCaster* rayCaster =
+        ((CameraTreeWidgetItem*)QTreeWidgetItem::parent())
+          ->getView()
+          ->drrRenderer(idx); // not sure if this is correct. Dont we have to go through all drrRenderer
 
       double value = exp(7 * parameters[0]->value - 5);
       rayCaster->setSampleDistance(value);
@@ -335,20 +341,20 @@ void ModelViewTreeWidgetItem::updateModelview()
   filterTreeWidget->redrawGL();
 }
 
-void ModelViewTreeWidgetItem::on_visibleCheckBox_stateChanged ( int state )
+void ModelViewTreeWidgetItem::on_visibleCheckBox_stateChanged(int state)
 {
   if (state == 0) {
     if (m_type == 0) {
-      ((CameraTreeWidgetItem*) QTreeWidgetItem::parent())->getView()->rad_enabled = false;
+      ((CameraTreeWidgetItem*)QTreeWidgetItem::parent())->getView()->rad_enabled = false;
     } else {
-      ((CameraTreeWidgetItem*) QTreeWidgetItem::parent())->getView()->drr_enabled = false;
+      ((CameraTreeWidgetItem*)QTreeWidgetItem::parent())->getView()->drr_enabled = false;
     }
 
   } else {
     if (m_type == 0) {
-      ((CameraTreeWidgetItem*) QTreeWidgetItem::parent())->getView()->rad_enabled = true;
+      ((CameraTreeWidgetItem*)QTreeWidgetItem::parent())->getView()->rad_enabled = true;
     } else {
-      ((CameraTreeWidgetItem*) QTreeWidgetItem::parent())->getView()->drr_enabled = true;
+      ((CameraTreeWidgetItem*)QTreeWidgetItem::parent())->getView()->drr_enabled = true;
     }
   }
   FilterTreeWidget* filterTreeWidget = dynamic_cast<FilterTreeWidget*>(treeWidget());

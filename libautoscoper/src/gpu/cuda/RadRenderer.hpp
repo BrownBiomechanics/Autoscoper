@@ -46,25 +46,22 @@
 
 struct cudaArray;
 
-namespace xromm { namespace gpu
-{
+namespace xromm {
+namespace gpu {
 
 class RadRenderer
 {
 public:
-
   RadRenderer();
 
   ~RadRenderer();
 
 private:
-
   RadRenderer(const RadRenderer& renderer);
 
   RadRenderer& operator=(const RadRenderer& renderer);
 
 public:
-
   void set_rad(const void* data, size_t width, size_t height, size_t bps);
 
   void set_image_plane(float x, float y, float width, float height);
@@ -78,7 +75,6 @@ public:
   void setName(const std::string& name) { name_ = name; }
 
 private:
-
   cudaArray* array_;
 
   float image_plane_[4];
@@ -87,7 +83,7 @@ private:
 
   std::string name_;
 };
-} } // namespace xromm::cuda
+} // namespace gpu
+} // namespace xromm
 
 #endif // XROMM_GPU_RAD_RENDERER_HPP
-

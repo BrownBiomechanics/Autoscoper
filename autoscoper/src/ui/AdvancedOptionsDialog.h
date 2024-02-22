@@ -44,7 +44,6 @@
 
 #include <QDialog>
 
-
 namespace Ui {
 class AdvancedOptionsDialog;
 }
@@ -55,13 +54,11 @@ class AdvancedOptionsDialog : public QDialog
   Q_OBJECT
 
 private:
-
 public:
   explicit AdvancedOptionsDialog(QWidget* parent = 0);
   ~AdvancedOptionsDialog();
 
   Ui::AdvancedOptionsDialog* adv_diag;
-
 
   int frame, from_frame, to_frame, d_frame, skip_frame;
   bool doExit;
@@ -81,10 +78,13 @@ public slots:
   void on_radioButton_MovingAverage_clicked(bool checked);
   void on_radioButton_AnotherMethod_clicked(bool checked);
 
-  void setDefPaths(QString root_path, QString filter_folder, QString filter_name, QString tracking_folder, QString task_name);
+  void setDefPaths(QString root_path,
+                   QString filter_folder,
+                   QString filter_name,
+                   QString tracking_folder,
+                   QString task_name);
 
   // void loadFilters(bool checked, int camera, std::string filter_path);
-
 };
 
 #endif /* ADVANCEDOPTIONSDIALOG_H_ */

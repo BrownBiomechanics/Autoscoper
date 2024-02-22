@@ -62,7 +62,12 @@ struct GraphData
   std::vector<bool> frame_locks;
 };
 
-enum Selection_type { NODE, IN_TANGENT, OUT_TANGENT };
+enum Selection_type
+{
+  NODE,
+  IN_TANGENT,
+  OUT_TANGENT
+};
 
 // forward declarations
 namespace Ui {
@@ -81,11 +86,17 @@ public:
   explicit TimelineDockWidget(QWidget* parent = 0);
   ~TimelineDockWidget();
 
-  void setFramesRange(int firstFrame, int lastFrame );
+  void setFramesRange(int firstFrame, int lastFrame);
   GraphData* getPosition_graph() { return position_graph; }
   AutoscoperMainWindow* getMainWindow() { return mainwindow; };
-  std::vector<std::pair<std::pair<KeyCurve*, KeyCurve::iterator>, Selection_type>>* getSelectedNodes() { return &selected_nodes; }
-  void setSelectedNodes(std::vector<std::pair<std::pair<KeyCurve*, KeyCurve::iterator>, Selection_type>> new_nodes) { selected_nodes = new_nodes; }
+  std::vector<std::pair<std::pair<KeyCurve*, KeyCurve::iterator>, Selection_type>>* getSelectedNodes()
+  {
+    return &selected_nodes;
+  }
+  void setSelectedNodes(std::vector<std::pair<std::pair<KeyCurve*, KeyCurve::iterator>, Selection_type>> new_nodes)
+  {
+    selected_nodes = new_nodes;
+  }
 
   std::vector<std::pair<KeyCurve*, KeyCurve::iterator>>* getCopiedNodes() { return &copied_nodes; }
 
@@ -115,7 +126,6 @@ private:
   QTimer* play_timer;
 
 protected:
-
 public slots:
   void play_update();
 
@@ -126,23 +136,22 @@ public slots:
   void on_toolButton_NextTenFrame_clicked();
   void on_horizontalSlider_Frame_valueChanged(int value);
 
-  void on_doubleSpinBox_X_valueChanged ( double d );
-  void on_doubleSpinBox_Y_valueChanged ( double d );
-  void on_doubleSpinBox_Z_valueChanged ( double d );
-  void on_doubleSpinBox_Yaw_valueChanged ( double d );
-  void on_doubleSpinBox_Pitch_valueChanged ( double d );
-  void on_doubleSpinBox_Roll_valueChanged ( double d );
+  void on_doubleSpinBox_X_valueChanged(double d);
+  void on_doubleSpinBox_Y_valueChanged(double d);
+  void on_doubleSpinBox_Z_valueChanged(double d);
+  void on_doubleSpinBox_Yaw_valueChanged(double d);
+  void on_doubleSpinBox_Pitch_valueChanged(double d);
+  void on_doubleSpinBox_Roll_valueChanged(double d);
 
-  void on_checkBox_X_stateChanged ( int state );
-  void on_checkBox_Y_stateChanged ( int state );
-  void on_checkBox_Z_stateChanged ( int state );
-  void on_checkBox_Yaw_stateChanged ( int state );
-  void on_checkBox_Pitch_stateChanged ( int state );
-  void on_checkBox_Roll_stateChanged ( int state );
+  void on_checkBox_X_stateChanged(int state);
+  void on_checkBox_Y_stateChanged(int state);
+  void on_checkBox_Z_stateChanged(int state);
+  void on_checkBox_Yaw_stateChanged(int state);
+  void on_checkBox_Pitch_stateChanged(int state);
+  void on_checkBox_Roll_stateChanged(int state);
 
-  void on_spinBox_FirstFrame_valueChanged ( int d );
-  void on_spinBox_LastFrame_valueChanged ( int d );
-
+  void on_spinBox_FirstFrame_valueChanged(int d);
+  void on_spinBox_LastFrame_valueChanged(int d);
 };
 
-#endif  // TIMELINEDOCKWIDGET_H
+#endif // TIMELINEDOCKWIDGET_H

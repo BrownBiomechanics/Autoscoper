@@ -40,21 +40,21 @@
 /// \author Benjamin Knorlein, Andy Loomis
 
 #ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
+#  define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #define GL_GLEXT_PROTOTYPES 1
 #include <GL/glew.h>
 
 #ifdef __APPLE__
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
+#  include <OpenGL/gl.h>
+#  include <OpenGL/glu.h>
 #else
-#ifdef _WIN32
-  #include <windows.h>
-#endif
-#include <GL/gl.h>
-#include <GL/glu.h>
+#  ifdef _WIN32
+#    include <windows.h>
+#  endif
+#  include <GL/gl.h>
+#  include <GL/glu.h>
 #endif
 
 #include "ui/GLWidget.h"
@@ -62,7 +62,7 @@
 #include <QMouseEvent>
 
 #ifndef _PI
-#define _PI 3.141592653
+#  define _PI 3.141592653
 #endif
 
 GLWidget::GLWidget(QWidget* parent)
@@ -122,10 +122,8 @@ void GLWidget::resizeGL(int w, int h)
   // Create a pixel buffer object.
   // glGenBuffersARB(1, &view->pbo);
   CALL_GL(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, viewdata.pbo));
-  CALL_GL(glBufferData(GL_PIXEL_UNPACK_BUFFER,
-                       3 * viewdata.window_width * viewdata.window_height * sizeof(float),
-                       0,
-                       GL_STREAM_DRAW));
+  CALL_GL(glBufferData(
+    GL_PIXEL_UNPACK_BUFFER, 3 * viewdata.window_width * viewdata.window_height * sizeof(float), 0, GL_STREAM_DRAW));
   CALL_GL(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0));
 #endif
 
@@ -188,10 +186,8 @@ void GLWidget::update_viewport(ViewData* view)
   // The zoom_x and zoom_y parameters should be normalized between -1 and 1.
   // They determine the location of the window in the viewport. They are
   // clamped so that the window never moves outside of the viewport.
-  view->viewport_x = -(int)(view->viewport_width / 2.0f *
-                            (1.0 + view->zoom_x - 1.0 / view->zoom));
-  view->viewport_y = -(int)(view->viewport_height / 2.0f *
-                            (1.0 + view->zoom_y - 1.0 / view->zoom));
+  view->viewport_x = -(int)(view->viewport_width / 2.0f * (1.0 + view->zoom_x - 1.0 / view->zoom));
+  view->viewport_y = -(int)(view->viewport_height / 2.0f * (1.0 + view->zoom_y - 1.0 / view->zoom));
 
   int min_viewport_x = view->window_width - view->viewport_width;
   int max_viewport_x = 0;
@@ -200,23 +196,18 @@ void GLWidget::update_viewport(ViewData* view)
 
   if (view->viewport_x < min_viewport_x) {
     view->viewport_x = min_viewport_x;
-    view->zoom_x = 1.0f / (float)view->zoom -
-                   2.0f * view->viewport_x / (float)view->viewport_width - 1.0f;
+    view->zoom_x = 1.0f / (float)view->zoom - 2.0f * view->viewport_x / (float)view->viewport_width - 1.0f;
   }
   if (view->viewport_x > max_viewport_x) {
     view->viewport_x = max_viewport_x;
-    view->zoom_x = 1.0f / (float)view->zoom -
-                   2.0f * view->viewport_x / (float)view->viewport_width - 1.0f;
+    view->zoom_x = 1.0f / (float)view->zoom - 2.0f * view->viewport_x / (float)view->viewport_width - 1.0f;
   }
   if (view->viewport_y < min_viewport_y) {
     view->viewport_y = min_viewport_y;
-    view->zoom_y = 1.0f / (float)view->zoom -
-                   2.0f * view->viewport_y / (float)view->viewport_height - 1.0f;
+    view->zoom_y = 1.0f / (float)view->zoom - 2.0f * view->viewport_y / (float)view->viewport_height - 1.0f;
   }
   if (view->viewport_y > max_viewport_y) {
     view->viewport_y = max_viewport_y;
-    view->zoom_y = 1.0f / (float)view->zoom -
-                   2.0f * view->viewport_y / (float)view->viewport_height - 1.0f;
+    view->zoom_y = 1.0f / (float)view->zoom - 2.0f * view->viewport_y / (float)view->viewport_height - 1.0f;
   }
 }
-

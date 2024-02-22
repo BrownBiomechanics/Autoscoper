@@ -46,8 +46,7 @@
 
 #include "KeyCurve.hpp"
 #include "CoordFrame.hpp"
-namespace xromm
-{
+namespace xromm {
 
 // The trial class contains all of the state information for an autoscoper run.
 // It should eventually become an in-memory representation of the xromm
@@ -57,7 +56,6 @@ namespace xromm
 class VolumeTransform
 {
 public:
-
   // Loads a trial file
   VolumeTransform();
   ~VolumeTransform();

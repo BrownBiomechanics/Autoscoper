@@ -40,21 +40,21 @@
 /// \author Benjamin Knorlein, Andy Loomis
 
 #ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
+#  define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #define GL_GLEXT_PROTOTYPES 1
 #include <GL/glew.h>
 
 #ifdef __APPLE__
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
+#  include <OpenGL/gl.h>
+#  include <OpenGL/glu.h>
 #else
-#ifdef _WIN32
-  #include <windows.h>
-#endif
-#include <GL/gl.h>
-#include <GL/glu.h>
+#  ifdef _WIN32
+#    include <windows.h>
+#  endif
+#  include <GL/gl.h>
+#  include <GL/glu.h>
 #endif
 
 #include "ui/GLTimeline.h"
@@ -90,9 +90,7 @@ void GLTimeline::setGraphData(GraphData* position_graph)
 }
 
 // Renders a bitmap string at the specified position using glut.
-void GLTimeline::render_bitmap_string(double x,
-                                      double y,
-                                      const char* string)
+void GLTimeline::render_bitmap_string(double x, double y, const char* string)
 {
   setFont(QFont(this->font().family(), 10));
   QFontMetrics fm(this->font());
@@ -113,24 +111,21 @@ void GLTimeline::renderText(double textPosX, double textPosY, QString text)
   painter.end();
 }
 
-void GLTimeline::mouse_to_graph(double mouse_x,
-                                double mouse_y,
-                                double& graph_x,
-                                double& graph_y)
+void GLTimeline::mouse_to_graph(double mouse_x, double mouse_y, double& graph_x, double& graph_y)
 {
-  TimelineDockWidget* timelineDockWidget = dynamic_cast<TimelineDockWidget*> ( this->parent()->parent());
+  TimelineDockWidget* timelineDockWidget = dynamic_cast<TimelineDockWidget*>(this->parent()->parent());
 
-  double frame_offset = 48.0 * (timelineDockWidget->getPosition_graph()->max_frame -
-                                timelineDockWidget->getPosition_graph()->min_frame) /
-                        viewdata.viewport_width;
+  double frame_offset =
+    48.0 * (timelineDockWidget->getPosition_graph()->max_frame - timelineDockWidget->getPosition_graph()->min_frame)
+    / viewdata.viewport_width;
   double min_frame = timelineDockWidget->getPosition_graph()->min_frame - frame_offset;
   double max_frame = timelineDockWidget->getPosition_graph()->max_frame - 1.0;
-  double value_offset = 12.0 * (timelineDockWidget->getPosition_graph()->max_value -
-                                timelineDockWidget->getPosition_graph()->min_value) /
-                        viewdata.viewport_height;
-  double value_offset_top = 12.0 * (timelineDockWidget->getPosition_graph()->max_value -
-                                    timelineDockWidget->getPosition_graph()->min_value) /
-                            viewdata.viewport_height;
+  double value_offset =
+    12.0 * (timelineDockWidget->getPosition_graph()->max_value - timelineDockWidget->getPosition_graph()->min_value)
+    / viewdata.viewport_height;
+  double value_offset_top =
+    12.0 * (timelineDockWidget->getPosition_graph()->max_value - timelineDockWidget->getPosition_graph()->min_value)
+    / viewdata.viewport_height;
   double min_value = timelineDockWidget->getPosition_graph()->min_value - value_offset;
   double max_value = timelineDockWidget->getPosition_graph()->max_value + value_offset_top;
 
@@ -143,11 +138,11 @@ void GLTimeline::mouse_to_graph(double mouse_x,
 
 void GLTimeline::mousePressEvent(QMouseEvent* e)
 {
-  TimelineDockWidget* timelineDockWidget = dynamic_cast<TimelineDockWidget*> ( this->parent()->parent());
+  TimelineDockWidget* timelineDockWidget = dynamic_cast<TimelineDockWidget*>(this->parent()->parent());
   AutoscoperMainWindow* mainwindow = timelineDockWidget->getMainWindow();
 
   // Only respond to left button click
-  if (e->button() &  Qt::LeftButton) {
+  if (e->button() & Qt::LeftButton) {
 
     double x, y;
     mouse_to_graph(e->x(), e->y(), x, y);
@@ -172,10 +167,10 @@ void GLTimeline::mousePressEvent(QMouseEvent* e)
 
 void GLTimeline::mouseMoveEvent(QMouseEvent* e)
 {
-  TimelineDockWidget* timelineDockWidget = dynamic_cast<TimelineDockWidget*> ( this->parent()->parent());
+  TimelineDockWidget* timelineDockWidget = dynamic_cast<TimelineDockWidget*>(this->parent()->parent());
   AutoscoperMainWindow* mainwindow = timelineDockWidget->getMainWindow();
 
-  if (e->buttons() &  Qt::LeftButton) {
+  if (e->buttons() & Qt::LeftButton) {
     if (modify_nodes) {
       double x, y;
       mouse_to_graph(e->x(), e->y(), x, y);
@@ -225,9 +220,9 @@ void GLTimeline::mouseMoveEvent(QMouseEvent* e)
 void GLTimeline::mouseReleaseEvent(QMouseEvent* e)
 {
   // If there are selected nodes and
-  TimelineDockWidget* timelineDockWidget = dynamic_cast<TimelineDockWidget*> ( this->parent()->parent());
+  TimelineDockWidget* timelineDockWidget = dynamic_cast<TimelineDockWidget*>(this->parent()->parent());
   AutoscoperMainWindow* mainwindow = timelineDockWidget->getMainWindow();
-  if (e->button() &  Qt::LeftButton) {
+  if (e->button() & Qt::LeftButton) {
     if (modify_nodes) {
       modify_nodes = false;
     } else if (draw_marquee) {
@@ -237,22 +232,22 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent* e)
       float min_y = marquee[1] < marquee[3] ? marquee[1] : marquee[3];
       float max_y = marquee[1] < marquee[3] ? marquee[3] : marquee[1];
 
-      double frame_offset = 48.0 * (timelineDockWidget->getPosition_graph()->max_frame -
-                                    timelineDockWidget->getPosition_graph()->min_frame) /
-                            viewdata.viewport_width;
+      double frame_offset =
+        48.0 * (timelineDockWidget->getPosition_graph()->max_frame - timelineDockWidget->getPosition_graph()->min_frame)
+        / viewdata.viewport_width;
       double min_frame = timelineDockWidget->getPosition_graph()->min_frame - frame_offset;
       double max_frame = timelineDockWidget->getPosition_graph()->max_frame - 1.0;
-      double value_offset = 12.0 * (timelineDockWidget->getPosition_graph()->max_value -
-                                    timelineDockWidget->getPosition_graph()->min_value) /
-                            viewdata.viewport_height;
-      double value_offset_top = 12.0 * (timelineDockWidget->getPosition_graph()->max_value -
-                                        timelineDockWidget->getPosition_graph()->min_value) /
-                                viewdata.viewport_height;
+      double value_offset =
+        12.0 * (timelineDockWidget->getPosition_graph()->max_value - timelineDockWidget->getPosition_graph()->min_value)
+        / viewdata.viewport_height;
+      double value_offset_top =
+        12.0 * (timelineDockWidget->getPosition_graph()->max_value - timelineDockWidget->getPosition_graph()->min_value)
+        / viewdata.viewport_height;
       double min_value = timelineDockWidget->getPosition_graph()->min_value - value_offset;
       double max_value = timelineDockWidget->getPosition_graph()->max_value + value_offset_top;
 
-      float a = (max_frame + 1 - min_frame) / (max_value - min_value) *
-                viewdata.viewport_height / viewdata.viewport_width;
+      float a =
+        (max_frame + 1 - min_frame) / (max_value - min_value) * viewdata.viewport_height / viewdata.viewport_width;
       float tan_scale = 40.0f * (max_frame + 1 - min_frame) / viewdata.viewport_width;
 
       std::vector<std::pair<std::pair<KeyCurve*, KeyCurve::iterator>, Selection_type>> new_nodes;
@@ -264,18 +259,14 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent* e)
         float s_in = tan_scale / sqrt(1.0f + a * a * curve.in_tangent(it) * curve.in_tangent(it));
         float s_out = tan_scale / sqrt(1.0f + a * a * curve.out_tangent(it) * curve.out_tangent(it));
 
-        bool in_selected = curve.time(it) - s_in > min_x &&
-                           curve.time(it) - s_in < max_x &&
-                                                 curve.value(it) - s_in * curve.in_tangent(it) > min_y &&
-                           curve.value(it) - s_in * curve.in_tangent(it) < max_y;
-        bool node_selected = curve.time(it) > min_x &&
-                             curve.time(it) < max_x &&
-                             curve.value(it) > min_y &&
-                             curve.value(it) < max_y;
-        bool out_selected = curve.time(it) + s_out > min_x &&
-                            curve.time(it) + s_out < max_x &&
-                                                   curve.value(it) + s_out * curve.out_tangent(it)> min_y &&
-                            curve.value(it) + s_out * curve.out_tangent(it) < max_y;
+        bool in_selected = curve.time(it) - s_in > min_x && curve.time(it) - s_in < max_x
+                           && curve.value(it) - s_in * curve.in_tangent(it) > min_y
+                           && curve.value(it) - s_in * curve.in_tangent(it) < max_y;
+        bool node_selected =
+          curve.time(it) > min_x && curve.time(it) < max_x && curve.value(it) > min_y && curve.value(it) < max_y;
+        bool out_selected = curve.time(it) + s_out > min_x && curve.time(it) + s_out < max_x
+                            && curve.value(it) + s_out * curve.out_tangent(it) > min_y
+                            && curve.value(it) + s_out * curve.out_tangent(it) < max_y;
 
         if (in_selected && !node_selected && !out_selected) {
           new_nodes.push_back(std::make_pair(std::make_pair(&curve, it), IN_TANGENT));
@@ -291,11 +282,12 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent* e)
       if (timelineDockWidget->getPosition_graph()->show_x) {
         KeyCurve::iterator it = mainwindow->getTracker()->trial()->getXCurve(-1)->begin();
         while (it != mainwindow->getTracker()->trial()->getXCurve(-1)->end()) {
-          if (mainwindow->getTracker()->trial()->getXCurve(-1)->time(it) > min_x &&
-              mainwindow->getTracker()->trial()->getXCurve(-1)->time(it) < max_x &&
-              mainwindow->getTracker()->trial()->getXCurve(-1)->value(it) > min_y &&
-              mainwindow->getTracker()->trial()->getXCurve(-1)->value(it) < max_y) {
-            new_nodes.push_back(std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getXCurve(-1), it), NODE));
+          if (mainwindow->getTracker()->trial()->getXCurve(-1)->time(it) > min_x
+              && mainwindow->getTracker()->trial()->getXCurve(-1)->time(it) < max_x
+              && mainwindow->getTracker()->trial()->getXCurve(-1)->value(it) > min_y
+              && mainwindow->getTracker()->trial()->getXCurve(-1)->value(it) < max_y) {
+            new_nodes.push_back(
+              std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getXCurve(-1), it), NODE));
           }
           ++it;
         }
@@ -303,11 +295,12 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent* e)
       if (timelineDockWidget->getPosition_graph()->show_y) {
         KeyCurve::iterator it = mainwindow->getTracker()->trial()->getYCurve(-1)->begin();
         while (it != mainwindow->getTracker()->trial()->getYCurve(-1)->end()) {
-          if (mainwindow->getTracker()->trial()->getYCurve(-1)->time(it) > min_x &&
-              mainwindow->getTracker()->trial()->getYCurve(-1)->time(it) < max_x &&
-              mainwindow->getTracker()->trial()->getYCurve(-1)->value(it) > min_y &&
-              mainwindow->getTracker()->trial()->getYCurve(-1)->value(it) < max_y) {
-            new_nodes.push_back(std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getYCurve(-1), it), NODE));
+          if (mainwindow->getTracker()->trial()->getYCurve(-1)->time(it) > min_x
+              && mainwindow->getTracker()->trial()->getYCurve(-1)->time(it) < max_x
+              && mainwindow->getTracker()->trial()->getYCurve(-1)->value(it) > min_y
+              && mainwindow->getTracker()->trial()->getYCurve(-1)->value(it) < max_y) {
+            new_nodes.push_back(
+              std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getYCurve(-1), it), NODE));
           }
           ++it;
         }
@@ -315,11 +308,12 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent* e)
       if (timelineDockWidget->getPosition_graph()->show_z) {
         KeyCurve::iterator it = mainwindow->getTracker()->trial()->getZCurve(-1)->begin();
         while (it != mainwindow->getTracker()->trial()->getZCurve(-1)->end()) {
-          if (mainwindow->getTracker()->trial()->getZCurve(-1)->time(it) > min_x &&
-              mainwindow->getTracker()->trial()->getZCurve(-1)->time(it) < max_x &&
-              mainwindow->getTracker()->trial()->getZCurve(-1)->value(it) > min_y &&
-              mainwindow->getTracker()->trial()->getZCurve(-1)->value(it) < max_y) {
-            new_nodes.push_back(std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getZCurve(-1), it), NODE));
+          if (mainwindow->getTracker()->trial()->getZCurve(-1)->time(it) > min_x
+              && mainwindow->getTracker()->trial()->getZCurve(-1)->time(it) < max_x
+              && mainwindow->getTracker()->trial()->getZCurve(-1)->value(it) > min_y
+              && mainwindow->getTracker()->trial()->getZCurve(-1)->value(it) < max_y) {
+            new_nodes.push_back(
+              std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getZCurve(-1), it), NODE));
           }
           ++it;
         }
@@ -327,11 +321,12 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent* e)
       if (timelineDockWidget->getPosition_graph()->show_yaw) {
         KeyCurve::iterator it = mainwindow->getTracker()->trial()->getYawCurve(-1)->begin();
         while (it != mainwindow->getTracker()->trial()->getYawCurve(-1)->end()) {
-          if (mainwindow->getTracker()->trial()->getYawCurve(-1)->time(it) > min_x &&
-              mainwindow->getTracker()->trial()->getYawCurve(-1)->time(it) < max_x &&
-              mainwindow->getTracker()->trial()->getYawCurve(-1)->value(it) > min_y &&
-              mainwindow->getTracker()->trial()->getYawCurve(-1)->value(it) < max_y) {
-            new_nodes.push_back(std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getYawCurve(-1), it), NODE));
+          if (mainwindow->getTracker()->trial()->getYawCurve(-1)->time(it) > min_x
+              && mainwindow->getTracker()->trial()->getYawCurve(-1)->time(it) < max_x
+              && mainwindow->getTracker()->trial()->getYawCurve(-1)->value(it) > min_y
+              && mainwindow->getTracker()->trial()->getYawCurve(-1)->value(it) < max_y) {
+            new_nodes.push_back(
+              std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getYawCurve(-1), it), NODE));
           }
           ++it;
         }
@@ -339,11 +334,12 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent* e)
       if (timelineDockWidget->getPosition_graph()->show_pitch) {
         KeyCurve::iterator it = mainwindow->getTracker()->trial()->getPitchCurve(-1)->begin();
         while (it != mainwindow->getTracker()->trial()->getPitchCurve(-1)->end()) {
-          if (mainwindow->getTracker()->trial()->getPitchCurve(-1)->time(it) > min_x &&
-              mainwindow->getTracker()->trial()->getPitchCurve(-1)->time(it) < max_x &&
-              mainwindow->getTracker()->trial()->getPitchCurve(-1)->value(it) > min_y &&
-              mainwindow->getTracker()->trial()->getPitchCurve(-1)->value(it) < max_y) {
-            new_nodes.push_back(std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getPitchCurve(-1), it), NODE));
+          if (mainwindow->getTracker()->trial()->getPitchCurve(-1)->time(it) > min_x
+              && mainwindow->getTracker()->trial()->getPitchCurve(-1)->time(it) < max_x
+              && mainwindow->getTracker()->trial()->getPitchCurve(-1)->value(it) > min_y
+              && mainwindow->getTracker()->trial()->getPitchCurve(-1)->value(it) < max_y) {
+            new_nodes.push_back(
+              std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getPitchCurve(-1), it), NODE));
           }
           ++it;
         }
@@ -351,11 +347,12 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent* e)
       if (timelineDockWidget->getPosition_graph()->show_roll) {
         KeyCurve::iterator it = mainwindow->getTracker()->trial()->getRollCurve(-1)->begin();
         while (it != mainwindow->getTracker()->trial()->getRollCurve(-1)->end()) {
-          if (mainwindow->getTracker()->trial()->getRollCurve(-1)->time(it) > min_x &&
-              mainwindow->getTracker()->trial()->getRollCurve(-1)->time(it) < max_x &&
-              mainwindow->getTracker()->trial()->getRollCurve(-1)->value(it) > min_y &&
-              mainwindow->getTracker()->trial()->getRollCurve(-1)->value(it) < max_y) {
-            new_nodes.push_back(std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getRollCurve(-1), it), NODE));
+          if (mainwindow->getTracker()->trial()->getRollCurve(-1)->time(it) > min_x
+              && mainwindow->getTracker()->trial()->getRollCurve(-1)->time(it) < max_x
+              && mainwindow->getTracker()->trial()->getRollCurve(-1)->value(it) > min_y
+              && mainwindow->getTracker()->trial()->getRollCurve(-1)->value(it) < max_y) {
+            new_nodes.push_back(
+              std::make_pair(std::make_pair(mainwindow->getTracker()->trial()->getRollCurve(-1), it), NODE));
           }
           ++it;
         }
@@ -370,7 +367,6 @@ void GLTimeline::mouseReleaseEvent(QMouseEvent* e)
   }
 
   mainwindow->redrawGL();
-
 }
 
 void GLTimeline::paintGL()
@@ -388,25 +384,22 @@ void GLTimeline::paintGL()
 
     // Calculate how much space needs to be left on the left of the
     // graph in order to accommodate the labels.
-    double frame_offset = 48.0 * (m_position_graph->max_frame - m_position_graph->min_frame) /
-                          (double)viewdata.viewport_width;
+    double frame_offset =
+      48.0 * (m_position_graph->max_frame - m_position_graph->min_frame) / (double)viewdata.viewport_width;
     double min_frame = m_position_graph->min_frame - frame_offset;
     double max_frame = m_position_graph->max_frame - 1.0;
 
     // Calculate how much space needs to be left on the bottom and top of the
     // graph in order to accommodate the labels.
-    float value_offset = (float)12.0 * (m_position_graph->max_value - m_position_graph->min_value) /
-                         (float)viewdata.viewport_height;
+    float value_offset =
+      (float)12.0 * (m_position_graph->max_value - m_position_graph->min_value) / (float)viewdata.viewport_height;
     /*float value_offset_top = (float)12.0*(m_position_graph->max_value-m_position_graph->min_value)/
                   (float)viewdata.viewport_height;*/
     float min_value = (float)m_position_graph->min_value - value_offset;
     float max_value = (float)m_position_graph->max_value + value_offset;
 
     // Read the viewport
-    glViewport(viewdata.viewport_x,
-               viewdata.viewport_y,
-               viewdata.viewport_width,
-               viewdata.viewport_height);
+    glViewport(viewdata.viewport_x, viewdata.viewport_y, viewdata.viewport_width, viewdata.viewport_height);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -438,7 +431,6 @@ void GLTimeline::paintGL()
       glVertex2d(x, max_value);
     }
     glEnd();
-
 
     glColor3f(0.75f, 0.75f, 0.75f);
     // This section visualizes the y-axis grid lines (horizontal grid lines)
@@ -477,32 +469,31 @@ void GLTimeline::paintGL()
     glVertex2d(0.0, max_value);
     glEnd();
 
-
     // Draw grid labels.
-    double char_width = (double)viewdata.viewport_width / (m_position_graph->max_frame - m_position_graph->min_frame + frame_offset);
+    double char_width =
+      (double)viewdata.viewport_width / (m_position_graph->max_frame - m_position_graph->min_frame + frame_offset);
     double char_height = (double)viewdata.viewport_height / (max_value - min_value);
-
 
     glLineWidth(1.5);
     glColor3f(0.0f, 0.0f, 0.0f);
     // This section visualizes the x-axis values
     for (double x = m_position_graph->min_frame; x <= max_frame; x += frame_dist) {
-      std::stringstream ss; ss << (int)x;
-      render_bitmap_string((x + frame_offset) * char_width, (double)viewdata.viewport_height - 2,
-                           ss.str().c_str());
+      std::stringstream ss;
+      ss << (int)x;
+      render_bitmap_string((x + frame_offset) * char_width, (double)viewdata.viewport_height - 2, ss.str().c_str());
     }
-
 
     double diff = 0;
     for (int counter = 0; counter < y_values.size(); counter++) {
-      std::stringstream ss; ss << y_values.at(counter);
+      std::stringstream ss;
+      ss << y_values.at(counter);
       if (counter == 0) {
-        render_bitmap_string(frame_offset * char_width * 0.5,
-                             (double)viewdata.viewport_height - 6,  ss.str().c_str());
+        render_bitmap_string(frame_offset * char_width * 0.5, (double)viewdata.viewport_height - 6, ss.str().c_str());
       } else {
         diff = y_values.at(counter) - y_values.at(counter - 1);
         render_bitmap_string(frame_offset * char_width * 0.5,
-                             (double)viewdata.viewport_height - diff * counter * char_height - 6,  ss.str().c_str());
+                             (double)viewdata.viewport_height - diff * counter * char_height - 6,
+                             ss.str().c_str());
       }
     }
 
@@ -599,11 +590,11 @@ void GLTimeline::paintGL()
         draw_curve(*m_trial->getRollCurve(-1));
       }
     }
-    float a = (max_frame + 1 - min_frame) / (max_value - min_value) *
-              viewdata.viewport_height / viewdata.viewport_width;
+    float a =
+      (max_frame + 1 - min_frame) / (max_value - min_value) * viewdata.viewport_height / viewdata.viewport_width;
     float tan_scale = 40.0f * (max_frame + 1 - min_frame) / viewdata.viewport_width;
 
-    TimelineDockWidget* timelineDockWidget = dynamic_cast<TimelineDockWidget*> ( this->parent()->parent());
+    TimelineDockWidget* timelineDockWidget = dynamic_cast<TimelineDockWidget*>(this->parent()->parent());
 
     for (unsigned i = 0; i < timelineDockWidget->getSelectedNodes()->size(); i++) {
       KeyCurve& curve = *(*timelineDockWidget->getSelectedNodes())[i].first.first;
@@ -679,7 +670,8 @@ void GLTimeline::draw_curve(const KeyCurve& curve)
   }
 
   min_x = curve.time(it);
-  it = curve.end(); it--;
+  it = curve.end();
+  it--;
   max_x = curve.time(it);
 
   // Clamp the values to the extents of the graph

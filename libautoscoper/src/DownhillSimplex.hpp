@@ -3,9 +3,9 @@
 #ifndef DOWNHILL_SIMPLEX_H
 #define DOWNHILL_SIMPLEX_H
 
-#define   MP  22
-#define   NP  21 // Maximum value for NDIM=20
-typedef   double MAT[MP][NP];
+#define MP 22
+#define NP 21 // Maximum value for NDIM=20
+typedef double MAT[MP][NP];
 
 // We define this function.
 double FUNC(double* P);
@@ -14,4 +14,3 @@ double FUNC(double* P);
 void AMOEBA(MAT P, double* Y, int NDIM, double FTOL, int* ITER);
 
 #endif
-

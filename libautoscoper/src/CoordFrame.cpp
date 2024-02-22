@@ -43,7 +43,7 @@
 
 #include <cmath>
 #ifndef M_PI
-#define M_PI 3.14159265358979323846
+#  define M_PI 3.14159265358979323846
 #endif
 
 #include <iostream>
@@ -53,8 +53,7 @@
 
 #define sqr(a) ((a) * (a))
 
-namespace xromm
-{
+namespace xromm {
 CoordFrame::CoordFrame()
 {
   rotation_[0] = 1.0;
@@ -74,8 +73,7 @@ CoordFrame::CoordFrame()
   translation_[2] = 0.0;
 }
 
-CoordFrame::CoordFrame(const double* rotation,
-                       const double* translation)
+CoordFrame::CoordFrame(const double* rotation, const double* translation)
 {
   this->orient(rotation, translation);
 }
@@ -137,28 +135,18 @@ void CoordFrame::rotateQuat(double x, double y, double z)
 
   double R[9] = {
 
-    t* sqr(x_a) + c,
-    t * x_a * y_a - z_a * s,
-    t * x_a * z_a + y_a * s,
-    t * x_a * y_a + z_a * s,
-    t* sqr(y_a) + c,
-    t * y_a * z_a - x_a * s,
-    t * x_a * z_a - y_a * s,
-    t * y_a * z_a + x_a * s,
-    t* sqr(z_a) + c
+    t * sqr(x_a) + c,        t * x_a * y_a - z_a * s, t * x_a * z_a + y_a * s,
+    t * x_a * y_a + z_a * s, t * sqr(y_a) + c,        t * y_a * z_a - x_a * s,
+    t * x_a * z_a - y_a * s, t * y_a * z_a + x_a * s, t * sqr(z_a) + c
 
   };
 
   double* M = rotation_;
 
-  double temp[9] = { M[0] * R[0] + M[1] * R[3] + M[2] * R[6],
-                     M[0] * R[1] + M[1] * R[4] + M[2] * R[7],
-                     M[0] * R[2] + M[1] * R[5] + M[2] * R[8],
-                     M[3] * R[0] + M[4] * R[3] + M[5] * R[6],
-                     M[3] * R[1] + M[4] * R[4] + M[5] * R[7],
-                     M[3] * R[2] + M[4] * R[5] + M[5] * R[8],
-                     M[6] * R[0] + M[7] * R[3] + M[8] * R[6],
-                     M[6] * R[1] + M[7] * R[4] + M[8] * R[7],
+  double temp[9] = { M[0] * R[0] + M[1] * R[3] + M[2] * R[6], M[0] * R[1] + M[1] * R[4] + M[2] * R[7],
+                     M[0] * R[2] + M[1] * R[5] + M[2] * R[8], M[3] * R[0] + M[4] * R[3] + M[5] * R[6],
+                     M[3] * R[1] + M[4] * R[4] + M[5] * R[7], M[3] * R[2] + M[4] * R[5] + M[5] * R[8],
+                     M[6] * R[0] + M[7] * R[3] + M[8] * R[6], M[6] * R[1] + M[7] * R[4] + M[8] * R[7],
                      M[6] * R[2] + M[7] * R[5] + M[8] * R[8] };
 
   rotation_[0] = temp[0];
@@ -214,16 +202,16 @@ CoordFrame CoordFrame::from_matrix(const double* m)
 
 void CoordFrame::to_matrix(double* m) const
 {
-  m[0]  = rotation_[0];
-  m[1]  = rotation_[1];
-  m[2]  = rotation_[2];
-  m[3]  = 0.0;
-  m[4]  = rotation_[3];
-  m[5]  = rotation_[4];
-  m[6]  = rotation_[5];
-  m[7]  = 0.0;
-  m[8]  = rotation_[6];
-  m[9]  = rotation_[7];
+  m[0] = rotation_[0];
+  m[1] = rotation_[1];
+  m[2] = rotation_[2];
+  m[3] = 0.0;
+  m[4] = rotation_[3];
+  m[5] = rotation_[4];
+  m[6] = rotation_[5];
+  m[7] = 0.0;
+  m[8] = rotation_[6];
+  m[9] = rotation_[7];
   m[10] = rotation_[8];
   m[11] = 0.0;
   m[12] = translation_[0];
@@ -234,16 +222,16 @@ void CoordFrame::to_matrix(double* m) const
 
 void CoordFrame::to_matrix_row_order(double* m) const
 {
-  m[0]  = rotation_[0];
-  m[1]  = rotation_[3];
-  m[2]  = rotation_[6];
-  m[3]  = translation_[0];
-  m[4]  = rotation_[1];
-  m[5]  = rotation_[4];
-  m[6]  = rotation_[7];
-  m[7]  = translation_[1];
-  m[8]  = rotation_[2];
-  m[9]  = rotation_[5];
+  m[0] = rotation_[0];
+  m[1] = rotation_[3];
+  m[2] = rotation_[6];
+  m[3] = translation_[0];
+  m[4] = rotation_[1];
+  m[5] = rotation_[4];
+  m[6] = rotation_[7];
+  m[7] = translation_[1];
+  m[8] = rotation_[2];
+  m[9] = rotation_[5];
   m[10] = rotation_[8];
   m[11] = translation_[2];
   m[12] = 0.0;
@@ -252,9 +240,7 @@ void CoordFrame::to_matrix_row_order(double* m) const
   m[15] = 1.0;
 }
 
-
-void CoordFrame::orient(const double* rotation,
-                        const double* translation)
+void CoordFrame::orient(const double* rotation, const double* translation)
 {
   rotation_[0] = rotation[0];
   rotation_[1] = rotation[1];
@@ -527,22 +513,10 @@ CoordFrame& CoordFrame::operator=(const CoordFrame& xcframe)
 std::string CoordFrame::to_string() const
 {
   std::stringstream ss;
-  ss << rotation_[0] << ", "
-     << rotation_[1] << ", "
-     << rotation_[2] << ", "
-     << 0.0 << ", "
-     << rotation_[3] << ", "
-     << rotation_[4] << ", "
-     << rotation_[5] << ", "
-     << 0.0 << ", "
-     << rotation_[6] << ", "
-     << rotation_[7] << ", "
-     << rotation_[8] << ", "
-     << 0.0 << ", "
-     << translation_[0] << ", "
-     << translation_[1] << ", "
-     << translation_[2] << ", "
-     << 1.0;
+  ss << rotation_[0] << ", " << rotation_[1] << ", " << rotation_[2] << ", " << 0.0 << ", " << rotation_[3] << ", "
+     << rotation_[4] << ", " << rotation_[5] << ", " << 0.0 << ", " << rotation_[6] << ", " << rotation_[7] << ", "
+     << rotation_[8] << ", " << 0.0 << ", " << translation_[0] << ", " << translation_[1] << ", " << translation_[2]
+     << ", " << 1.0;
 
   return ss.str();
 }
@@ -552,14 +526,14 @@ void CoordFrame::from_string(std::string str)
   std::vector<double> vd;
   double d = 0.0;
   std::size_t pos = 0;
-  while (pos < str.size ())
-    if ((pos = str.find_first_of (',', pos)) != std::string::npos)
+  while (pos < str.size())
+    if ((pos = str.find_first_of(',', pos)) != std::string::npos)
       str[pos] = ' ';
 
   std::stringstream ss(str);
 
   while (ss >> d)
-    vd.push_back (d);
+    vd.push_back(d);
 
   rotation_[0] = vd[0];
   rotation_[2] = vd[1];
@@ -580,9 +554,12 @@ void CoordFrame::from_string(std::string str)
 
 std::ostream& operator<<(std::ostream& os, const CoordFrame& frame)
 {
-  os << frame.rotation()[0] << " , " << frame.rotation()[1] << " , " << frame.rotation()[2] << frame.translation()[0] << std::endl;
-  os << frame.rotation()[3] << " , " << frame.rotation()[4] << " , " << frame.rotation()[5] << frame.translation()[1] << std::endl;
-  os << frame.rotation()[6] << " , " << frame.rotation()[7] << " , " << frame.rotation()[8] << frame.translation()[2] << std::endl;
+  os << frame.rotation()[0] << " , " << frame.rotation()[1] << " , " << frame.rotation()[2] << frame.translation()[0]
+     << std::endl;
+  os << frame.rotation()[3] << " , " << frame.rotation()[4] << " , " << frame.rotation()[5] << frame.translation()[1]
+     << std::endl;
+  os << frame.rotation()[6] << " , " << frame.rotation()[7] << " , " << frame.rotation()[8] << frame.translation()[2]
+     << std::endl;
   return os;
 }
-} // namespace XROMM
+} // namespace xromm

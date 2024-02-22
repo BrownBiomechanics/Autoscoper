@@ -52,10 +52,9 @@
 // #include <sstream>
 #include <stdexcept>
 
-
-NewTrialDialog::NewTrialDialog(QWidget* parent) :
-  QDialog(parent),
-  diag(new Ui::NewTrialDialog)
+NewTrialDialog::NewTrialDialog(QWidget* parent)
+  : QDialog(parent)
+  , diag(new Ui::NewTrialDialog)
 {
   diag->setupUi(this);
 
@@ -84,7 +83,7 @@ NewTrialDialog::~NewTrialDialog()
 {
   delete diag;
 
-  for (int i = 0; i < nbCams; i ++) {
+  for (int i = 0; i < nbCams; i++) {
     delete cameras[i];
   }
   cameras.clear();
@@ -102,14 +101,13 @@ void NewTrialDialog::on_toolButton_CameraMinus_clicked()
   }
 }
 
-
 void NewTrialDialog::on_toolButton_CameraPlus_clicked()
 {
   nbCams += 1;
   diag->label_CameraNb->setText(QString::number(nbCams));
 
   CameraBox* box = new CameraBox();
-  box->widget->groupBox_Camera->setTitle("Camera "  + QString::number(nbCams));
+  box->widget->groupBox_Camera->setTitle("Camera " + QString::number(nbCams));
   diag->gridLayout_6->addWidget(box, nbCams - 1, 0, 1, 1);
   cameras.push_back(box);
 }
@@ -141,15 +139,15 @@ void NewTrialDialog::on_toolButton_VolumePlus_clicked()
 
 void NewTrialDialog::on_pushButton_OK_clicked()
 {
-  if (run())this->accept();
+  if (run())
+    this->accept();
 }
 void NewTrialDialog::on_pushButton_Cancel_clicked()
 {
   this->reject();
 }
 
-bool
-NewTrialDialog::run()
+bool NewTrialDialog::run()
 {
   std::vector<QString> cameras_mayaCam;
   std::vector<QString> cameras_videoPath;
@@ -171,11 +169,10 @@ NewTrialDialog::run()
       trial.cameras.push_back(xromm::Camera(cameras_mayaCam[i].toStdString().c_str()));
       trial.videos.push_back(xromm::Video(cameras_videoPath[i].toStdString().c_str()));
 
-      maxFrames = (maxFrames > trial.videos.at(i).num_frames()) ? maxFrames : trial.videos.at(i).num_frames() ;
+      maxFrames = (maxFrames > trial.videos.at(i).num_frames()) ? maxFrames : trial.videos.at(i).num_frames();
     }
 
     trial.num_frames = maxFrames;
-
 
     for (int i = 0; i < nbVolumes; i++) {
       if (volumes[i]->widget->lineEdit_VolumeFile->text().isEmpty())
@@ -183,9 +180,8 @@ NewTrialDialog::run()
 
       QString volume_filename = volumes[i]->widget->lineEdit_VolumeFile->text();
 
-      if (volumes[i]->widget->lineEdit_ScaleX->text().isEmpty() ||
-          volumes[i]->widget->lineEdit_ScaleY->text().isEmpty() ||
-          volumes[i]->widget->lineEdit_ScaleZ->text().isEmpty())
+      if (volumes[i]->widget->lineEdit_ScaleX->text().isEmpty() || volumes[i]->widget->lineEdit_ScaleY->text().isEmpty()
+          || volumes[i]->widget->lineEdit_ScaleZ->text().isEmpty())
         continue;
 
       double volume_scale_x = volumes[i]->widget->lineEdit_ScaleX->text().toDouble();
@@ -243,8 +239,7 @@ NewTrialDialog::run()
     trial.render_height = 512;
 
     return true;
-  }
-  catch (std::exception& e) {
+  } catch (std::exception& e) {
     std::cerr << e.what() << std::endl;
     return false;
   }

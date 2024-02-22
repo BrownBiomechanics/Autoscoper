@@ -39,7 +39,6 @@
 /// \file GLView.h
 /// \author Benjamin Knorlein, Andy Loomis
 
-
 #ifndef GL_VIEW_H_
 #define GL_VIEW_H_
 
@@ -47,18 +46,18 @@
 #include "ui/GLWidget.h"
 #include "CoordFrame.hpp"
 
-namespace xromm{
-namespace gpu{
+namespace xromm {
+namespace gpu {
 class View;
 }
-}
-using xromm::gpu::View;
+} // namespace xromm
 using xromm::CoordFrame;
+using xromm::gpu::View;
 
 class QMouseEvent;
 class QWheelEvent;
 
-class GLView: public GLWidget
+class GLView : public GLWidget
 {
   Q_OBJECT
 
@@ -101,7 +100,5 @@ private:
   void draw_camera();
   void draw_textured_quad(const double* pts, unsigned int texid);
 };
-
-
 
 #endif /* GL_VIEW_H_ */

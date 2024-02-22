@@ -41,13 +41,19 @@
 
 #pragma once
 
-namespace xromm
-{
-namespace gpu
-{
-void video_render(cudaTextureObject_t tex, float* output, int width, int height, float u0,
-                  float v0, float u1, float v1, float u2, float v2,
-                  float u3, float v3);
+namespace xromm {
+namespace gpu {
+void video_render(cudaTextureObject_t tex,
+                  float* output,
+                  int width,
+                  int height,
+                  float u0,
+                  float v0,
+                  float u1,
+                  float v1,
+                  float u2,
+                  float v2,
+                  float u3,
+                  float v3);
 } // namespace gpu
 } // namespace xromm
-

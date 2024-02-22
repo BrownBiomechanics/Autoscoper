@@ -36,11 +36,11 @@
 
 // includes, graphics
 #if defined(__APPLE__) || defined(MACOSX)
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
+#  include <OpenGL/gl.h>
+#  include <OpenGL/glu.h>
 #else
-#include <GL/gl.h>
-#include <GL/glu.h>
+#  include <GL/gl.h>
+#  include <GL/glu.h>
 #endif
 
 ////////////////////////////////////////////////////////////////////////////
@@ -51,8 +51,7 @@
 //! @note The GL error is listed on stderr
 //! @note This function should be used via the CHECK_ERROR_GL() macro
 ////////////////////////////////////////////////////////////////////////////
-CUTBoolean CUTIL_API
-cutCheckErrorGL(const char* file, const int line)
+CUTBoolean CUTIL_API cutCheckErrorGL(const char* file, const int line)
 {
   CUTBoolean ret_val = CUTTrue;
 
@@ -75,34 +74,32 @@ cutCheckErrorGL(const char* file, const int line)
 
 #ifdef _DEBUG
 
-#define CUT_CHECK_ERROR_GL()                                               \
-  if (CUTFalse == cutCheckErrorGL( __FILE__, __LINE__)) {                  \
-    exit(EXIT_FAILURE);                                                  \
-  }
+#  define CUT_CHECK_ERROR_GL()                             \
+    if (CUTFalse == cutCheckErrorGL(__FILE__, __LINE__)) { \
+      exit(EXIT_FAILURE);                                  \
+    }
 // Use this one to do : if(CUT_GL_HAS_ERROR)
-#define CUT_GL_HAS_ERROR (cutCheckErrorGL( __FILE__, __LINE__) ? CUTFalse : CUTTrue )
-#ifdef _WIN32
-#define CUT_CHECK_ERROR_GL2()\
-  if (CUT_GL_HAS_ERROR)\
-  {\
-    MessageBox(NULL, "Error in OpenGL. Check VStudio Output...", "Error", MB_OK);\
-    exit(EXIT_FAILURE);\
-  }
-#else // Not _WIN32:
-#define CUT_CHECK_ERROR_GL2()\
-  if (CUT_GL_HAS_ERROR)\
-  {\
-    printf("press a key...\n");\
-    getc(stdin);\
-    exit(EXIT_FAILURE);\
-  }
-#endif
+#  define CUT_GL_HAS_ERROR (cutCheckErrorGL(__FILE__, __LINE__) ? CUTFalse : CUTTrue)
+#  ifdef _WIN32
+#    define CUT_CHECK_ERROR_GL2()                                                     \
+      if (CUT_GL_HAS_ERROR) {                                                         \
+        MessageBox(NULL, "Error in OpenGL. Check VStudio Output...", "Error", MB_OK); \
+        exit(EXIT_FAILURE);                                                           \
+      }
+#  else // Not _WIN32:
+#    define CUT_CHECK_ERROR_GL2()   \
+      if (CUT_GL_HAS_ERROR) {       \
+        printf("press a key...\n"); \
+        getc(stdin);                \
+        exit(EXIT_FAILURE);         \
+      }
+#  endif
 
 #else
 
-#define CUT_CHECK_ERROR_GL()
-#define CUT_CHECK_ERROR_GL2()
-#define CUT_GL_HAS_ERROR CUTFalse
+#  define CUT_CHECK_ERROR_GL()
+#  define CUT_CHECK_ERROR_GL2()
+#  define CUT_GL_HAS_ERROR CUTFalse
 
 #endif // _DEBUG
 

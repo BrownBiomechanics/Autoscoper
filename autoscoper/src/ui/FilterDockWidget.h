@@ -48,11 +48,11 @@
 namespace Ui {
 class FilterDockWidget;
 }
-namespace xromm{
-namespace gpu{
+namespace xromm {
+namespace gpu {
 class View;
 }
-}
+} // namespace xromm
 using xromm::gpu::View;
 class AutoscoperMainWindow;
 
@@ -81,8 +81,7 @@ private:
   AutoscoperMainWindow* mainwindow;
 
 protected:
-
 public slots:
 };
 
-#endif  // UAUTOSCOPERMAINWINDOW_H
+#endif // UAUTOSCOPERMAINWINDOW_H

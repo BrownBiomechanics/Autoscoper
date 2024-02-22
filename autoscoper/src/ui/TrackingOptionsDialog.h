@@ -44,7 +44,6 @@
 
 #include <QDialog>
 
-
 namespace Ui {
 class TrackingOptionsDialog;
 }
@@ -65,19 +64,16 @@ public:
 
   Ui::TrackingOptionsDialog* diag;
 
-
   int frame, from_frame, to_frame, d_frame, skip_frame;
   bool doExit;
   bool frame_optimizing;
   int num_repeats;
-
 
   // Read random search limits and iterations
   unsigned int max_iter;
   unsigned int max_stall_iter;
   double min_lim;
   double max_lim;
-
 
   int curFrame;
   void frame_optimize();
@@ -95,7 +91,6 @@ public slots:
   void on_radioButton_PreviousFrame_clicked(bool checked);
   void on_radioButton_LinearExtrapolation_clicked(bool checked);
   void on_radioButton_SplineInterpolation_clicked(bool checked);
-
 };
 
 #endif /* TRACKINGOPTIONSDIALOG_H_ */

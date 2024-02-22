@@ -41,10 +41,8 @@
 
 #pragma once
 
-namespace xromm { namespace gpu {
-void multiply(float* src1,
-              float* src2,
-              float* dest,
-              size_t width,
-              size_t height);
-} } // namespace xromm::cuda
+namespace xromm {
+namespace gpu {
+void multiply(float* src1, float* src2, float* dest, size_t width, size_t height);
+}
+} // namespace xromm

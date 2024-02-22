@@ -44,7 +44,6 @@
 
 #include <QDialog>
 
-
 namespace Ui {
 class AboutAutoscoper;
 }
@@ -52,17 +51,14 @@ class AboutAutoscoper;
 class AboutAutoscoper : public QDialog
 {
 
-
   Q_OBJECT
 
 private:
-
 public:
   explicit AboutAutoscoper(QWidget* parent = 0);
   ~AboutAutoscoper();
 
   Ui::AboutAutoscoper* about;
-
 };
 
 #endif /* ABOUTAUTOSCOPER_H_ */

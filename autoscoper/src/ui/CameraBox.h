@@ -54,7 +54,6 @@ class CameraBox : public QWidget
   Q_OBJECT
 
 private:
-
 public:
   explicit CameraBox(QWidget* parent = 0);
   ~CameraBox();

@@ -39,7 +39,6 @@
 /// \file CameraTreeWidgetItem.h
 /// \author Benjamin Knorlein, Andy Loomis
 
-
 #ifndef CAMERATREEWIDGETITEM_H
 #define CAMERATREEWIDGETITEM_H
 
@@ -47,14 +46,16 @@
 #include <QObject>
 
 class ModelViewTreeWidgetItem;
-namespace xromm{
-namespace gpu{
+namespace xromm {
+namespace gpu {
 class View;
 }
-}
+} // namespace xromm
 using xromm::gpu::View;
 
-class CameraTreeWidgetItem : public QObject, public  QTreeWidgetItem
+class CameraTreeWidgetItem
+  : public QObject
+  , public QTreeWidgetItem
 {
   Q_OBJECT
 
@@ -81,9 +82,6 @@ private:
   View* m_view;
 
 protected:
-
 };
-
-
 
 #endif /* CAMERATREEWIDGETITEM_H */

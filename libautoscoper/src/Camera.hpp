@@ -49,8 +49,7 @@
 
 #include "CoordFrame.hpp"
 
-namespace xromm
-{
+namespace xromm {
 
 // Simple class encapsulating an xromm camera. This class is constructed from a
 // mayacam file, which describes the orientation and position of the camera, and
@@ -59,7 +58,6 @@ namespace xromm
 class Camera
 {
 public:
-
   // Loads a mayaCam.csv file
 
   Camera(const std::string& mayacam);
@@ -77,7 +75,6 @@ public:
   const double* size() const { return size_; }
 
 private:
-
   std::string mayacam_; // filename
 
   CoordFrame coord_frame_;
@@ -99,7 +96,6 @@ private:
   void calculateImagePlane(const double& cx, const double& cy, const double& z);
   void calculateFocalLength(const double& view_angle, double focal_lengths[2]);
   void calculateLookAtMatrix(const Vec3d& eye, const Vec3d& center, const Vec3d& up, double matrix[9]);
-
 };
 } // namespace xromm
 

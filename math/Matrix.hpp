@@ -128,10 +128,7 @@ struct Mat2
 
   //! Returns a scaleonal matrix
 
-  static Mat2 scale(const T& sx, const T& sy)
-  {
-    return Mat2(sx, T(0), T(0), sy);
-  }
+  static Mat2 scale(const T& sx, const T& sy) { return Mat2(sx, T(0), T(0), sy); }
 
   // Returns a rotation matrix
 
@@ -165,94 +162,55 @@ struct Mat2
 
   //! Returns a pointer to the underlying m
 
-  operator T*()
-  {
-    return &data[0][0];
-  }
+  operator T*() { return &data[0][0]; }
 
   //! Returns a const pointer to the underlying m
 
-  operator const T*() const
-  {
-    return &data[0][0];
-  }
+  operator const T*() const { return &data[0][0]; }
 
   //! Returns a pointer to the row at the specified index
 
-  T* operator[](int i)
-  {
-    return &data[i][0];
-  }
+  T* operator[](int i) { return &data[i][0]; }
 
   //! Returns a const pointer to the row at the specified index
 
-  const T* operator[](int i) const
-  {
-    return &data[i][0];
-  }
+  const T* operator[](int i) const { return &data[i][0]; }
 
   //! Returns a reference to the element at the specified indices
 
-  T& operator()(int i, int j)
-  {
-    return data[i][j];
-  }
+  T& operator()(int i, int j) { return data[i][j]; }
 
   //! Returns a const reference to the element at the specified indices
 
-  const T& operator()(int i, int j) const
-  {
-    return data[i][j];
-  }
+  const T& operator()(int i, int j) const { return data[i][j]; }
 
   //! Returns the specified row of the specified matrix
 
-  friend Vec2<T> row(const Mat2& m, int i)
-  {
-    return Vec2<T>(m(i, 0), m(i, 1));
-  }
+  friend Vec2<T> row(const Mat2& m, int i) { return Vec2<T>(m(i, 0), m(i, 1)); }
 
   //! Returns the specified col of the specified matrix
 
-  friend Vec2<T> col(const Mat2& m, int j)
-  {
-    return Vec2<T>(m(0, j), m(1, j));
-  }
+  friend Vec2<T> col(const Mat2& m, int j) { return Vec2<T>(m(0, j), m(1, j)); }
 
   //! Returns the determinant of the specified matrix
 
-  friend T det(const Mat2& m)
-  {
-    return m(0, 0) * m(1, 1) - m(0, 1) * m(1, 0);
-  }
+  friend T det(const Mat2& m) { return m(0, 0) * m(1, 1) - m(0, 1) * m(1, 0); }
 
   //! Returns the transpose of the specified matrix
 
-  friend Mat2 trans(const Mat2& m)
-  {
-    return Mat2(m(0, 0), m(1, 0), m(0, 1), m(1, 1));
-  }
+  friend Mat2 trans(const Mat2& m) { return Mat2(m(0, 0), m(1, 0), m(0, 1), m(1, 1)); }
 
   //! Returns the inverse of the specified matrix
 
-  friend Mat2 inv(const Mat2& m)
-  {
-    return Mat2(m(1, 1), -m(0, 1), -m(1, 0), m(0, 0)) / det(m);
-  }
+  friend Mat2 inv(const Mat2& m) { return Mat2(m(1, 1), -m(0, 1), -m(1, 0), m(0, 0)) / det(m); }
 
   //! Returns a copy of the specified matrix
 
-  friend Mat2 operator+(const Mat2& m)
-  {
-    return m;
-  }
+  friend Mat2 operator+(const Mat2& m) { return m; }
 
   //! Returns the negation of the specified matrix
 
-  friend Mat2 operator-(const Mat2& m)
-  {
-    return Mat2(-m(0, 0), -m(0, 1), -m(1, 0), -m(1, 1));
-  }
+  friend Mat2 operator-(const Mat2& m) { return Mat2(-m(0, 0), -m(0, 1), -m(1, 0), -m(1, 1)); }
 
   //! Returns the sum of the specified matricies
 
@@ -293,31 +251,19 @@ struct Mat2
 
   //! Returns the result of m*inv(n)
 
-  friend Mat2 operator/(const Mat2& m, const Mat2& n)
-  {
-    return m * inv(n);
-  }
+  friend Mat2 operator/(const Mat2& m, const Mat2& n) { return m * inv(n); }
 
   //! Returns the product of the specified scalar and matrix
 
-  friend Mat2 operator*(const T& s, const Mat2& m)
-  {
-    return Mat2(s * m(0, 0), s * m(0, 1), s * m(1, 0), s * m(1, 1));
-  }
+  friend Mat2 operator*(const T& s, const Mat2& m) { return Mat2(s * m(0, 0), s * m(0, 1), s * m(1, 0), s * m(1, 1)); }
 
   //! Returns the product of the specified matrix and scalar
 
-  friend Mat2 operator*(const Mat2& m, const T& s)
-  {
-    return Mat2(m(0, 0) * s, m(0, 1) * s, m(1, 0) * s, m(1, 1) * s);
-  }
+  friend Mat2 operator*(const Mat2& m, const T& s) { return Mat2(m(0, 0) * s, m(0, 1) * s, m(1, 0) * s, m(1, 1) * s); }
 
   //! Returns the quotient of the specified matrix and scalar
 
-  friend Mat2 operator/(const Mat2& m, const T& s)
-  {
-    return Mat2(m(0, 0) / s, m(0, 1) / s, m(1, 0) / s, m(1, 1) / s);
-  }
+  friend Mat2 operator/(const Mat2& m, const T& s) { return Mat2(m(0, 0) / s, m(0, 1) / s, m(1, 0) / s, m(1, 1) / s); }
 
   //! Assigns a matrix to the sum of the specified matricies
 
@@ -343,17 +289,11 @@ struct Mat2
 
   //! Assigns a matrix to the product of the specified matricies
 
-  friend Mat2& operator*=(Mat2& m, const Mat2& n)
-  {
-    return m = m * n;
-  }
+  friend Mat2& operator*=(Mat2& m, const Mat2& n) { return m = m * n; }
 
   //! Assigns a matrix to the result of m*inv(n)
 
-  friend Mat2& operator/=(Mat2& m, const Mat2& n)
-  {
-    return m = m / n;
-  }
+  friend Mat2& operator/=(Mat2& m, const Mat2& n) { return m = m / n; }
 
   //! Assigns a matrix to the product of the specified matrix and scalar
 
@@ -678,59 +618,35 @@ struct Mat3
 
   //! Returns a pointer to the underlying m
 
-  operator T*()
-  {
-    return &data[0][0];
-  }
+  operator T*() { return &data[0][0]; }
 
   //! Returns a const pointer to the underlying m
 
-  operator const T*() const
-  {
-    return &data[0][0];
-  }
+  operator const T*() const { return &data[0][0]; }
 
   //! Returns a pointer to the row at the specified index
 
-  T* operator[](int i)
-  {
-    return &data[i][0];
-  }
+  T* operator[](int i) { return &data[i][0]; }
 
   //! Returns a const pointer to the row at the specified index
 
-  const T* operator[](int i) const
-  {
-    return &data[i][0];
-  }
+  const T* operator[](int i) const { return &data[i][0]; }
 
   //! Returns a reference to the element at the specified indices
 
-  T& operator()(int i, int j)
-  {
-    return data[i][j];
-  }
+  T& operator()(int i, int j) { return data[i][j]; }
 
   //! Returns a const reference to the element at the specified indices
 
-  const T& operator()(int i, int j) const
-  {
-    return data[i][j];
-  }
+  const T& operator()(int i, int j) const { return data[i][j]; }
 
   //! Returns the specified row of the specified matrix
 
-  friend Vec3<T> row(const Mat3& m, int i)
-  {
-    return Vec3<T>(m(i, 0), m(i, 1), m(i, 2));
-  }
+  friend Vec3<T> row(const Mat3& m, int i) { return Vec3<T>(m(i, 0), m(i, 1), m(i, 2)); }
 
   //! Returns the specified col of the specified matrix
 
-  friend Vec3<T> col(const Mat3& m, int j)
-  {
-    return Vec3<T>(m(0, j), m(1, j), m(2, j));
-  }
+  friend Vec3<T> col(const Mat3& m, int j) { return Vec3<T>(m(0, j), m(1, j), m(2, j)); }
 
   //! Returns the determinant of the specified matrix
 
@@ -782,10 +698,7 @@ struct Mat3
 
   //! Returns a copy of the specified matrix
 
-  friend Mat3 operator+(const Mat3& m)
-  {
-    return m;
-  }
+  friend Mat3 operator+(const Mat3& m) { return m; }
 
   //! Returns the negation of the specified matrix
 
@@ -868,10 +781,7 @@ struct Mat3
 
   //! Returns m*inv(n)
 
-  friend Mat3 operator/(const Mat3& m, const Mat3& n)
-  {
-    return m * inv(n);
-  }
+  friend Mat3 operator/(const Mat3& m, const Mat3& n) { return m * inv(n); }
 
   //! Returns the product of the specified scalar and matrix
 
@@ -940,17 +850,11 @@ struct Mat3
 
   //! Assigns a matrix to the product of the specified matricies
 
-  friend Mat3& operator*=(Mat3& m, const Mat3& n)
-  {
-    return m = m * n;
-  }
+  friend Mat3& operator*=(Mat3& m, const Mat3& n) { return m = m * n; }
 
   //! Assigns a matrix to the result of m*inv(n)
 
-  friend Mat3& operator/=(Mat3& m, const Mat3& n)
-  {
-    return m = m / n;
-  }
+  friend Mat3& operator/=(Mat3& m, const Mat3& n) { return m = m / n; }
 
   //! Assigns a matrix to the product of the specified matrix and scalar
 
@@ -1010,18 +914,15 @@ struct Mat3
 
   friend std::ostream& operator<<(std::ostream& os, const Mat3& m)
   {
-    return os << m(0, 0) << " " << m(0, 1) << " " << m(0, 2) << " "
-              << m(1, 0) << " " << m(1, 1) << " " << m(1, 2) << " "
-              << m(2, 0) << " " << m(2, 1) << " " << m(2, 2);
+    return os << m(0, 0) << " " << m(0, 1) << " " << m(0, 2) << " " << m(1, 0) << " " << m(1, 1) << " " << m(1, 2)
+              << " " << m(2, 0) << " " << m(2, 1) << " " << m(2, 2);
   }
 
   //! Reads the elements from the specified input stream to the matrix
 
   friend std::istream& operator>>(std::istream& is, const Mat3& m)
   {
-    return is >> m(0, 0) >> m(0, 1) >> m(0, 2)
-           >> m(1, 0) >> m(1, 1) >> m(1, 2)
-           >> m(2, 0) >> m(2, 1) >> m(2, 2);
+    return is >> m(0, 0) >> m(0, 1) >> m(0, 2) >> m(1, 0) >> m(1, 1) >> m(1, 2) >> m(2, 0) >> m(2, 1) >> m(2, 2);
   }
 
   //! Underlying data m
@@ -1300,59 +1201,35 @@ struct Mat4
 
   //! Returns a pointer to the underlying m
 
-  operator T*()
-  {
-    return &data[0][0];
-  }
+  operator T*() { return &data[0][0]; }
 
   //! Returns a const pointer to the underlying m
 
-  operator const T*() const
-  {
-    return &data[0][0];
-  }
+  operator const T*() const { return &data[0][0]; }
 
   //! Returns a pointer to the row at the specified index
 
-  T* operator[](int i)
-  {
-    return &data[i][0];
-  }
+  T* operator[](int i) { return &data[i][0]; }
 
   //! Returns a const pointer to the row at the specified index
 
-  const T* operator[](int i) const
-  {
-    return &data[i][0];
-  }
+  const T* operator[](int i) const { return &data[i][0]; }
 
   //! Returns a reference to the element at the specified indices
 
-  T& operator()(int i, int j)
-  {
-    return data[i][j];
-  }
+  T& operator()(int i, int j) { return data[i][j]; }
 
   //! Returns a const reference to the element at the specified indices
 
-  const T& operator()(int i, int j) const
-  {
-    return data[i][j];
-  }
+  const T& operator()(int i, int j) const { return data[i][j]; }
 
   //! Returns the specified row of the specified matrix
 
-  friend Vec4<T> row(const Mat4& m, int i)
-  {
-    return Vec4<T>(m(i, 0), m(i, 1), m(i, 2), m(i, 3));
-  }
+  friend Vec4<T> row(const Mat4& m, int i) { return Vec4<T>(m(i, 0), m(i, 1), m(i, 2), m(i, 3)); }
 
   //! Returns the specified col of the specified matrix
 
-  friend Vec4<T> col(const Mat4& m, int j)
-  {
-    return Vec4<T>(m(0, j), m(1, j), m(2, j), m(3, j));
-  }
+  friend Vec4<T> col(const Mat4& m, int j) { return Vec4<T>(m(0, j), m(1, j), m(2, j), m(3, j)); }
 
   //! Returns the determinant of the specified matrix
 
@@ -1451,10 +1328,7 @@ struct Mat4
 
   //! Returns a copy of the specified matrix
 
-  friend Mat4 operator+(const Mat4& m)
-  {
-    return m;
-  }
+  friend Mat4 operator+(const Mat4& m) { return m; }
 
   //! Returns the negation of the specified matrix
 
@@ -1553,10 +1427,7 @@ struct Mat4
 
   //! Returns the result of m*inv(n)
 
-  friend Mat4 operator/(const Mat4& m, const Mat4& n)
-  {
-    return m * inv(n);
-  }
+  friend Mat4 operator/(const Mat4& m, const Mat4& n) { return m * inv(n); }
 
   //! Returns the product of the specified scalar and matrix
 
@@ -1642,17 +1513,11 @@ struct Mat4
 
   //! Assigns a matrix to the product of the specified matricies
 
-  friend Mat4& operator*=(Mat4& m, const Mat4& n)
-  {
-    return m = m * n;
-  }
+  friend Mat4& operator*=(Mat4& m, const Mat4& n) { return m = m * n; }
 
   //! Assigns a matrix to the result of m*inv(n)
 
-  friend Mat4& operator/=(Mat4& m, const Mat4& n)
-  {
-    return m = m * inv(n);
-  }
+  friend Mat4& operator/=(Mat4& m, const Mat4& n) { return m = m * inv(n); }
 
   //! Assigns a matrix to the product of the specified matrix and scalar
 
@@ -1732,22 +1597,17 @@ struct Mat4
 
   friend std::ostream& operator<<(std::ostream& os, const Mat4& m)
   {
-    return os << m(0, 0) << " " << m(0, 1) << " " << m(0, 2) << " "
-              << m(0, 3) << " " << m(1, 0) << " " << m(1, 1) << " "
-              << m(1, 2) << " " << m(1, 3) << " " << m(2, 0) << " "
-              << m(2, 1) << " " << m(2, 2) << " " << m(2, 3) << " "
-              << m(3, 0) << " " << m(3, 1) << " " << m(3, 2) << " "
-              << m(3, 3);
+    return os << m(0, 0) << " " << m(0, 1) << " " << m(0, 2) << " " << m(0, 3) << " " << m(1, 0) << " " << m(1, 1)
+              << " " << m(1, 2) << " " << m(1, 3) << " " << m(2, 0) << " " << m(2, 1) << " " << m(2, 2) << " "
+              << m(2, 3) << " " << m(3, 0) << " " << m(3, 1) << " " << m(3, 2) << " " << m(3, 3);
   }
 
   //! Reads the elements from the specified input stream to the matrix
 
   friend std::istream& operator>>(std::istream is, Mat4& m)
   {
-    return is >> m(0, 0) >> m(0, 1) >> m(0, 2) >> m(0, 3)
-           >> m(1, 0) >> m(1, 1) >> m(1, 2) >> m(1, 3)
-           >> m(2, 0) >> m(2, 1) >> m(2, 2) >> m(2, 3)
-           >> m(3, 0) >> m(3, 1) >> m(3, 2) >> m(3, 3);
+    return is >> m(0, 0) >> m(0, 1) >> m(0, 2) >> m(0, 3) >> m(1, 0) >> m(1, 1) >> m(1, 2) >> m(1, 3) >> m(2, 0)
+           >> m(2, 1) >> m(2, 2) >> m(2, 3) >> m(3, 0) >> m(3, 1) >> m(3, 2) >> m(3, 3);
   }
 
   //! Underlying data m

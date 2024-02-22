@@ -9,7 +9,7 @@
  *
  */
 
- #ifndef _CUTIL_GL_INLINE_H_
+#ifndef _CUTIL_GL_INLINE_H_
 #define _CUTIL_GL_INLINE_H_
 
 #include <stdio.h>
@@ -19,16 +19,15 @@
 #include <cuda.h>
 #include <cutil.h>
 #ifdef HAVE_CUFFT
-#include <cufft.h>
+#  include <cufft.h>
 #endif
 #include <cuda_runtime_api.h>
 #include <cuda_gl_interop.h>
 
-
 #if __DEVICE_EMULATION__
-inline void cutilGLDeviceInit(int ARGC, char** ARGV) { }
-inline void cutilGLDeviceInitDrv(int cuDevice, int ARGC, char** ARGV) { }
-inline void cutilChooseCudaGLDevice(int ARGC, char** ARGV) { }
+inline void cutilGLDeviceInit(int ARGC, char** ARGV) {}
+inline void cutilGLDeviceInitDrv(int cuDevice, int ARGC, char** ARGV) {}
+inline void cutilChooseCudaGLDevice(int ARGC, char** ARGV) {}
 #else
 inline void cutilGLDeviceInit(int ARGC, char** ARGV)
 {
@@ -39,16 +38,18 @@ inline void cutilGLDeviceInit(int ARGC, char** ARGV)
     exit(-1);
   }
   int dev = 0;
-  cutGetCmdLineArgumenti(ARGC, (const char**) ARGV, "device", &dev);
-  if (dev < 0) dev = 0;\
-  if (dev > deviceCount - 1)dev = deviceCount - 1;
+  cutGetCmdLineArgumenti(ARGC, (const char**)ARGV, "device", &dev);
+  if (dev < 0)
+    dev = 0;
+  if (dev > deviceCount - 1)
+    dev = deviceCount - 1;
   cudaDeviceProp deviceProp;
   cutilSafeCallNoSync(cudaGetDeviceProperties(&deviceProp, dev));
   if (deviceProp.major < 1) {
     fprintf(stderr, "cutil error: device does not support CUDA.\n");
-    exit(-1);                                                  \
+    exit(-1);
   }
-  if (cutCheckCmdLineFlag(ARGC, (const char**) ARGV, "quiet") == CUTFalse)
+  if (cutCheckCmdLineFlag(ARGC, (const char**)ARGV, "quiet") == CUTFalse)
     fprintf(stderr, "Using device %d: %s\n", dev, deviceProp.name);
   cutilSafeCall(cudaGLSetGLDevice(dev));
 }
@@ -65,13 +66,15 @@ inline void cutilGLDeviceInitDrv(int cuDevice, int ARGC, char** ARGV)
     exit(-1);
   }
   int dev = 0;
-  cutGetCmdLineArgumenti(ARGC, (const char**) ARGV, "device", &dev);
-  if (dev < 0) dev = 0;
-  if (dev > deviceCount - 1)dev = deviceCount - 1;
+  cutGetCmdLineArgumenti(ARGC, (const char**)ARGV, "device", &dev);
+  if (dev < 0)
+    dev = 0;
+  if (dev > deviceCount - 1)
+    dev = deviceCount - 1;
   cutilDrvSafeCallNoSync(cuDeviceGet(&cuDevice, dev));
   char name[100];
   cuDeviceGetName(name, 100, cuDevice);
-  if (cutCheckCmdLineFlag(ARGC, (const char**) ARGV, "quiet") == CUTFalse)
+  if (cutCheckCmdLineFlag(ARGC, (const char**)ARGV, "quiet") == CUTFalse)
     fprintf(stderr, "Using device %d: %s\n", dev, name);
 }
 
@@ -83,7 +86,7 @@ inline void cutilChooseCudaGLDevice(int argc, char** argv)
     cutilGLDeviceInit(argc, argv);
   } else {
     // Otherwise pick the device with highest Gflops/s
-    cudaGLSetGLDevice( cutGetMaxGflopsDeviceId() );
+    cudaGLSetGLDevice(cutGetMaxGflopsDeviceId());
   }
 }
 

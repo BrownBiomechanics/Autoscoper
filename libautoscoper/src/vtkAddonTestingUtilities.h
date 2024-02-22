@@ -41,25 +41,26 @@
 /// Usually these test methods are used by single-line convenience macros
 /// defined in vtkAddonTestingMacros.h.
 
-namespace vtkAddonTestingUtilities
-{
-bool CheckInt(int line, const std::string& description,
-              int current, int expected);
+namespace vtkAddonTestingUtilities {
+bool CheckInt(int line, const std::string& description, int current, int expected);
 
-bool CheckDoubleTolerance(int line, const std::string& description,
-                          double current, double expected, double tolerance);
+bool CheckDoubleTolerance(int line, const std::string& description, double current, double expected, double tolerance);
 
-bool CheckNotNull(int line, const std::string& description,
-                  const void* pointer);
+bool CheckNotNull(int line, const std::string& description, const void* pointer);
 
-bool CheckNull(int line, const std::string& description,
-               const void* pointer);
+bool CheckNull(int line, const std::string& description, const void* pointer);
 
-bool CheckPointer(int line, const std::string& description,
-                  void* current, void* expected, bool errorIfDifferent = true);
+bool CheckPointer(int line,
+                  const std::string& description,
+                  void* current,
+                  void* expected,
+                  bool errorIfDifferent = true);
 
-bool CheckString(int line, const std::string& description,
-                 const char* current, const char* expected, bool errorIfDifferent = true );
+bool CheckString(int line,
+                 const std::string& description,
+                 const char* current,
+                 const char* expected,
+                 bool errorIfDifferent = true);
 } // namespace vtkAddonTestingUtilities
 
 #include "vtkAddonTestingUtilities.tpp"

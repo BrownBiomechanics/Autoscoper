@@ -47,8 +47,7 @@
 
 struct TiffImage;
 
-namespace xromm
-{
+namespace xromm {
 
 // Encapsulates an x ray video sequence. It is created from a directory of
 // image frames ordered alphanumerically. It loads each frame on demand, and
@@ -57,7 +56,6 @@ namespace xromm
 class Video
 {
 public:
-
   typedef std::vector<std::string>::size_type size_type;
 
   // Loads a directory of video frames -- only supports TIFF

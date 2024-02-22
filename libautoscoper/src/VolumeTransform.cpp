@@ -1,8 +1,7 @@
 
 #include "VolumeTransform.hpp"
 
-namespace xromm
-{
+namespace xromm {
 VolumeTransform::VolumeTransform()
 {
   x_curve.type = KeyCurve::X_CURVE;
@@ -13,8 +12,5 @@ VolumeTransform::VolumeTransform()
   roll_curve.type = KeyCurve::ROLL_CURVE;
 }
 
-VolumeTransform::~VolumeTransform()
-{
-
-}
-}
+VolumeTransform::~VolumeTransform() {}
+} // namespace xromm

@@ -39,7 +39,6 @@
 /// \file GLTimeline.h
 /// \author Benjamin Knorlein, Andy Loomis
 
-
 #ifndef GLTIMELINE_H_
 #define GLTIMELINE_H_
 
@@ -53,9 +52,7 @@ using xromm::Trial;
 class KeyCurve;
 struct GraphData;
 
-
-
-class GLTimeline: public GLWidget
+class GLTimeline : public GLWidget
 {
   Q_OBJECT
 
@@ -84,7 +81,5 @@ private:
   void renderText(double textPosX, double textPosY, QString text);
   float round_this(double my_val);
 };
-
-
 
 #endif /* GLTIMELINE_H_ */

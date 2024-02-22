@@ -51,6 +51,3 @@ double FUNC(double* P);
 void SA_BA(double pose0, double* Y, int* ITER, double MAX_TEMP, double MAX_ITER);
 
 #endif
-
-
-

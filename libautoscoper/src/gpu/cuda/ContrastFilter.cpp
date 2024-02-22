@@ -44,28 +44,26 @@
 
 #include <sstream>
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 // Unique identifier for each contrast filter
 
 static int num_contrast_filters = 0;
 
 ContrastFilter::ContrastFilter()
-  : Filter(XROMM_GPU_CONTRAST_FILTER, ""),
-    alpha_(1.0f),
-    beta_(1.0f),
-    size_(3)
+  : Filter(XROMM_GPU_CONTRAST_FILTER, "")
+  , alpha_(1.0f)
+  , beta_(1.0f)
+  , size_(3)
 {
   std::stringstream name_stream;
   name_stream << "ContrastFilter" << (++num_contrast_filters);
   name_ = name_stream.str();
 }
 
-void
-ContrastFilter::apply(const float* input,
-                      float* output,
-                      int width,
-                      int height)
+void ContrastFilter::apply(const float* input, float* output, int width, int height)
 {
   contrast_filter_apply(input, output, width, height, alpha_, beta_, size_);
 }
-} } // namespace xromm::cuda
+} // namespace gpu
+} // namespace xromm

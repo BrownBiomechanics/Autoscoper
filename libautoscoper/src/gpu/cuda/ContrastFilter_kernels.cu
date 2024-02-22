@@ -44,24 +44,20 @@
 #include "ContrastFilter_kernels.h"
 #include <cutil_math.h>
 
-__global__ void contrast_filter_kernel(const float* input, float* output,
-                                       int width, int height,
-                                       float alpha, float beta, int size);
+__global__ void
+contrast_filter_kernel(const float* input, float* output, int width, int height, float alpha, float beta, int size);
 
-namespace xromm { namespace gpu {
-void contrast_filter_apply(const float* input, float* output,
-                           int width, int height,
-                           float alpha, float beta, int size)
+namespace xromm {
+namespace gpu {
+void contrast_filter_apply(const float* input, float* output, int width, int height, float alpha, float beta, int size)
 {
   dim3 blockDim(32, 32);
-  dim3 gridDim((width + blockDim.x - 1) / blockDim.x,
-               (height + blockDim.y - 1) / blockDim.y);
+  dim3 gridDim((width + blockDim.x - 1) / blockDim.x, (height + blockDim.y - 1) / blockDim.y);
 
-  contrast_filter_kernel << < gridDim, blockDim >> > (input, output,
-                                                      width, height,
-                                                      alpha, beta, size);
+  contrast_filter_kernel<<<gridDim, blockDim>>>(input, output, width, height, alpha, beta, size);
 }
-} } // namespace xromm::cuda
+} // namespace gpu
+} // namespace xromm
 
 __device__ float average(const float* input, int width, int height, int x, int y, int size)
 {
@@ -80,9 +76,8 @@ __device__ float average(const float* input, int width, int height, int x, int y
   return sum / n;
 }
 
-__global__ void contrast_filter_kernel(const float* input, float* output,
-                                       int width, int height,
-                                       float alpha, float beta, int size)
+__global__ void
+contrast_filter_kernel(const float* input, float* output, int width, int height, float alpha, float beta, int size)
 {
   short x = blockIdx.x * blockDim.x + threadIdx.x;
   short y = blockIdx.y * blockDim.y + threadIdx.y;

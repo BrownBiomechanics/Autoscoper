@@ -39,8 +39,6 @@
 /// \file Manip3D.h
 /// \author Benjamin Knorlein, Andy Loomis
 
-
-
 #ifndef MANIP_3D_HPP
 #define MANIP_3D_HPP
 
@@ -55,13 +53,23 @@ class Ray;
 class Manip3D
 {
 public:
-
   // Enums specifying the two modes of the manipulator
 
-  enum Mode { TRANSLATION, ROTATION };
+  enum Mode
+  {
+    TRANSLATION,
+    ROTATION
+  };
 
-  enum Selection { NONE, X, Y, Z, VIEW_PLANE, FREE_ROTATION };
-
+  enum Selection
+  {
+    NONE,
+    X,
+    Y,
+    Z,
+    VIEW_PLANE,
+    FREE_ROTATION
+  };
 
   //! Constructs a default manipulator.
 
@@ -167,7 +175,6 @@ public:
   void setThickLinesMode(bool checked);
 
 private:
-
   void draw_axes() const;
 
   void draw_gimbals() const;
@@ -179,7 +186,6 @@ private:
   void move_axis(const Ray<double>& ray);
 
   void move_gimbal(const Ray<double>& ray);
-
 
   bool is_visible_;
 

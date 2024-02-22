@@ -44,10 +44,12 @@
 
 #include <cstddef>
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 // void cudaInitWrap();
 
 void cudaMallocWrap(float*& ptr, size_t size);
-} } // namespace xromm::cuda
+} // namespace gpu
+} // namespace xromm
 
 #endif // XROMM_GPU_WRAP_H

@@ -40,14 +40,15 @@
 /// \author Benjamin Knorlein, Andy Loomis
 
 #ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
+#  define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #include "ui/WorldViewWindow.h"
 #include "ui/AutoscoperMainWindow.h"
 #include <QOpenGLContext>
 
-WorldViewWindow::WorldViewWindow(QWidget* parent):QDockWidget(parent)
+WorldViewWindow::WorldViewWindow(QWidget* parent)
+  : QDockWidget(parent)
 {
   setWindowTitle(tr("World view"));
 
@@ -62,10 +63,10 @@ WorldViewWindow::WorldViewWindow(QWidget* parent):QDockWidget(parent)
   layout->addWidget(openGL, 0, 0);
   setWidget(openGL);
 
-  mainwindow  = dynamic_cast<AutoscoperMainWindow*> ( parent);
+  mainwindow = dynamic_cast<AutoscoperMainWindow*>(parent);
 }
 
-void  WorldViewWindow::resizeEvent ( QResizeEvent* event )
+void WorldViewWindow::resizeEvent(QResizeEvent* event)
 {
   openGL->repaint();
 }

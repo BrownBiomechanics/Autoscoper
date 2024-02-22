@@ -44,11 +44,10 @@
 
 #include "OpenCL.hpp"
 
-namespace xromm { namespace gpu {
-void drr_background(const Buffer* src1,
-                    const Buffer* dest,
-                    unsigned width,
-                    unsigned height);
-} } // namespace xromm::opencl
+namespace xromm {
+namespace gpu {
+void drr_background(const Buffer* src1, const Buffer* dest, unsigned width, unsigned height);
+}
+} // namespace xromm
 
 #endif // DRRBACKGROUND_H

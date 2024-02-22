@@ -41,7 +41,7 @@
 
 #include <cmath>
 #ifndef M_PI
-#define M_PI 3.14159265358979323846
+#  define M_PI 3.14159265358979323846
 #endif
 
 #define VTK_CAMERA_SCHEMA_URL "https://autoscoperm.slicer.org/vtkCamera-schema-1.0.json"
@@ -55,8 +55,7 @@
 
 #include "Camera.hpp"
 
-namespace xromm
-{
+namespace xromm {
 std::istream& safeGetline(std::istream& is, std::string& t)
 {
   t.clear();
@@ -91,22 +90,40 @@ std::istream& safeGetline(std::istream& is, std::string& t)
   }
 }
 
-std::string mayaCamReadingError(const std::string& version, int line, const std::string& filename, const std::string& message)
+std::string mayaCamReadingError(const std::string& version,
+                                int line,
+                                const std::string& filename,
+                                const std::string& message)
 {
-  return std::string("Invalid MayaCam ") + version + ".0 file. " + message + "\n"
-         "See line " + std::to_string(line) + " in " + filename + ".\n"
-         "\n"
-         "Please check the MayaCam " + version + ".0 specification.\n"
-         "See https://autoscoper.readthedocs.io/en/latest/file-specifications/camera-calibration.html#mayacam-" + version + "-0";
+  return std::string("Invalid MayaCam ") + version + ".0 file. " + message
+         + "\n"
+           "See line "
+         + std::to_string(line) + " in " + filename
+         + ".\n"
+           "\n"
+           "Please check the MayaCam "
+         + version
+         + ".0 specification.\n"
+           "See https://autoscoper.readthedocs.io/en/latest/file-specifications/camera-calibration.html#mayacam-"
+         + version + "-0";
 }
 
-std::string vtkCamReadingError(const std::string& version, int line, const std::string& filename, const std::string& message)
+std::string vtkCamReadingError(const std::string& version,
+                               int line,
+                               const std::string& filename,
+                               const std::string& message)
 {
-  return std::string("Invalid VTKCam ") + version + ".0 file. " + message + "\n"
-         "See line " + std::to_string(line) + " in " + filename + ".\n"
-         "\n"
-         "Please check the VTKCam " + version + ".0 specification.\n"
-         "See https://autoscoper.readthedocs.io/en/latest/file-specifications/camera-calibration.html#vtkcam-" + version + "-0";
+  return std::string("Invalid VTKCam ") + version + ".0 file. " + message
+         + "\n"
+           "See line "
+         + std::to_string(line) + " in " + filename
+         + ".\n"
+           "\n"
+           "Please check the VTKCam "
+         + version
+         + ".0 specification.\n"
+           "See https://autoscoper.readthedocs.io/en/latest/file-specifications/camera-calibration.html#vtkcam-"
+         + version + "-0";
 }
 
 bool parseArray(std::string& value, double* a, int n)
@@ -123,7 +140,8 @@ bool parseArray(std::string& value, double* a, int n)
   return true;
 }
 
-Camera::Camera(const std::string& mayacam) : mayacam_(mayacam)
+Camera::Camera(const std::string& mayacam)
+  : mayacam_(mayacam)
 {
   // Check the file extension
   std::string::size_type ext_pos = mayacam_.find_last_of('.');
@@ -172,15 +190,14 @@ void Camera::loadMayaCam1(const std::string& mayacam)
     }
     if (read_count != 3) {
       throw std::runtime_error(
-              mayaCamReadingError("1", /* line= */ i + 1, mayacam, "There was an error reading values."));
+        mayaCamReadingError("1", /* line= */ i + 1, mayacam, "There was an error reading values."));
     }
     ++line_count;
   }
   file.close();
 
   if (line_count != 5) {
-    throw std::runtime_error(
-            mayaCamReadingError("1", /* line= */ 1, mayacam, "There was an error reading values."));
+    throw std::runtime_error(mayaCamReadingError("1", /* line= */ 1, mayacam, "There was an error reading values."));
   }
 
   // Line 1: Camera location in world space
@@ -216,10 +233,12 @@ void Camera::loadMayaCam1(const std::string& mayacam)
 
   // Default to 1024x1024
   size_[0] = csv_vals[4][1];
-  if (size_[0] == 0) size_[0] = 1024;
+  if (size_[0] == 0)
+    size_[0] = 1024;
 
   size_[1] = csv_vals[4][2];
-  if (size_[1] == 0) size_[1] = 1024;
+  if (size_[1] == 0)
+    size_[1] = 1024;
 
   // Calculate the cameras local coordinate frame
   // clang-format off
@@ -253,7 +272,6 @@ void Camera::loadMayaCam2(const std::string& mayacam)
   double translation[3] = { 0. };
   int translation_read_count = 0;
 
-
   std::fstream file(mayacam.c_str(), std::ios::in);
   std::string csv_line, csv_val;
   for (int i = 0; i < 17 && safeGetline(file, csv_line); ++i) {
@@ -274,14 +292,13 @@ void Camera::loadMayaCam2(const std::string& mayacam)
         }
         if (read_count != 2) {
           throw std::runtime_error(
-                  mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'image size' values."));
+            mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'image size' values."));
         }
         break;
       }
       case 4: // K
       case 5:
-      case 6:
-      {
+      case 6: {
         int read_count = 0;
         for (int j = 0; j < 3 && std::getline(csv_line_stream, csv_val, ','); ++j) {
           std::istringstream csv_val_stream(csv_val);
@@ -292,14 +309,13 @@ void Camera::loadMayaCam2(const std::string& mayacam)
         }
         if (read_count != 3) {
           throw std::runtime_error(
-                  mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'camera matrix' values."));
+            mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'camera matrix' values."));
         }
         break;
       }
       case 9: // R
       case 10:
-      case 11:
-      {
+      case 11: {
         int read_count = 0;
         for (int j = 0; j < 3 && std::getline(csv_line_stream, csv_val, ','); ++j) {
           std::istringstream csv_val_stream(csv_val);
@@ -310,7 +326,7 @@ void Camera::loadMayaCam2(const std::string& mayacam)
         }
         if (read_count != 3) {
           throw std::runtime_error(
-                  mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'rotation' values."));
+            mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'rotation' values."));
         }
         break;
       }
@@ -319,18 +335,17 @@ void Camera::loadMayaCam2(const std::string& mayacam)
       case 16:
         if (!(csv_line_stream >> translation[i - 14])) {
           throw std::runtime_error(
-                  mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'translation' values."));
+            mayaCamReadingError("2", /* line= */ i + 1, mayacam, "There was an error reading 'translation' values."));
         }
         ++translation_read_count;
         break;
-
     }
   }
   file.close();
 
   if (translation_read_count != 3) {
     throw std::runtime_error(
-            mayaCamReadingError("2", /* line= */ 14 + 1, mayacam, "There was an error reading 'translation' values."));
+      mayaCamReadingError("2", /* line= */ 14 + 1, mayacam, "There was an error reading 'translation' values."));
   }
 
   // invert y - axis
@@ -356,7 +371,8 @@ void Camera::loadMayaCam2(const std::string& mayacam)
   {
     double translation_new[3];
     for (int i = 0; i < 3; i++)
-      translation_new[i] = -(translation[0] * rotation[0][i] + translation[1] * rotation[1][i] + translation[2] * rotation[2][i]);
+      translation_new[i] =
+        -(translation[0] * rotation[0][i] + translation[1] * rotation[1][i] + translation[2] * rotation[2][i]);
 
     for (int i = 0; i < 3; i++)
       translation[i] = translation_new[i];
@@ -391,22 +407,32 @@ void Camera::loadVTKCamera(const std::string& filename)
 
   // Check the schema
   if (calibrationFile["@schema"].asString() != VTK_CAMERA_SCHEMA_URL) {
-    throw std::runtime_error(vtkCamReadingError("1", -1, filename, "Unsupported schema. " + calibrationFile["@schema"].asString() + " is not " + VTK_CAMERA_SCHEMA_URL));
+    throw std::runtime_error(vtkCamReadingError("1",
+                                                -1,
+                                                filename,
+                                                "Unsupported schema. " + calibrationFile["@schema"].asString()
+                                                  + " is not " + VTK_CAMERA_SCHEMA_URL));
   }
 
   // Check the version number
   if (calibrationFile["version"].asDouble() != 1.0) {
-    throw std::runtime_error(vtkCamReadingError("1", -1, filename, "Unsupported version number. " + calibrationFile["version"].asString() + " is not 1.0"));
+    throw std::runtime_error(vtkCamReadingError(
+      "1", -1, filename, "Unsupported version number. " + calibrationFile["version"].asString() + " is not 1.0"));
   }
-
 
   // Set the size
   size_[0] = calibrationFile["image-width"].asDouble();
   size_[1] = calibrationFile["image-height"].asDouble();
 
-  Vec3d cam_pos(calibrationFile["camera-position"][0].asDouble(), calibrationFile["camera-position"][1].asDouble(), calibrationFile["camera-position"][2].asDouble());
-  Vec3d focal(calibrationFile["focal-point"][0].asDouble(), calibrationFile["focal-point"][1].asDouble(), calibrationFile["focal-point"][2].asDouble());
-  Vec3d up(calibrationFile["view-up"][0].asDouble(), calibrationFile["view-up"][1].asDouble(), calibrationFile["view-up"][2].asDouble());
+  Vec3d cam_pos(calibrationFile["camera-position"][0].asDouble(),
+                calibrationFile["camera-position"][1].asDouble(),
+                calibrationFile["camera-position"][2].asDouble());
+  Vec3d focal(calibrationFile["focal-point"][0].asDouble(),
+              calibrationFile["focal-point"][1].asDouble(),
+              calibrationFile["focal-point"][2].asDouble());
+  Vec3d up(calibrationFile["view-up"][0].asDouble(),
+           calibrationFile["view-up"][1].asDouble(),
+           calibrationFile["view-up"][2].asDouble());
   double rot[9] = { 0.0 };
   calculateLookAtMatrix(cam_pos, focal, up, rot);
   coord_frame_ = CoordFrame(rot, cam_pos);
@@ -465,44 +491,28 @@ void Camera::calculateImagePlane(const double& cx, const double& cy, const doubl
   double half_width = scale * size_[0] / 2.0;
   double half_height = scale * size_[1] / 2.0;
 
-  double right[3] = { coord_frame_.rotation()[0],
-                      coord_frame_.rotation()[1],
-                      coord_frame_.rotation()[2] };
-  double up[3] = { coord_frame_.rotation()[3],
-                   coord_frame_.rotation()[4],
-                   coord_frame_.rotation()[5] };
+  double right[3] = { coord_frame_.rotation()[0], coord_frame_.rotation()[1], coord_frame_.rotation()[2] };
+  double up[3] = { coord_frame_.rotation()[3], coord_frame_.rotation()[4], coord_frame_.rotation()[5] };
 
   // Top-left corner of the image plane
-  image_plane_[0] = image_plane_center[0] - half_width * right[0] +
-                    half_height * up[0];
-  image_plane_[1] = image_plane_center[1] - half_width * right[1] +
-                    half_height * up[1];
-  image_plane_[2] = image_plane_center[2] - half_width * right[2] +
-                    half_height * up[2];
+  image_plane_[0] = image_plane_center[0] - half_width * right[0] + half_height * up[0];
+  image_plane_[1] = image_plane_center[1] - half_width * right[1] + half_height * up[1];
+  image_plane_[2] = image_plane_center[2] - half_width * right[2] + half_height * up[2];
 
   // Bottom-left corner of the image plane
-  image_plane_[3] = image_plane_center[0] - half_width * right[0] -
-                    half_height * up[0];
-  image_plane_[4] = image_plane_center[1] - half_width * right[1] -
-                    half_height * up[1];
-  image_plane_[5] = image_plane_center[2] - half_width * right[2] -
-                    half_height * up[2];
+  image_plane_[3] = image_plane_center[0] - half_width * right[0] - half_height * up[0];
+  image_plane_[4] = image_plane_center[1] - half_width * right[1] - half_height * up[1];
+  image_plane_[5] = image_plane_center[2] - half_width * right[2] - half_height * up[2];
 
   // Bottom-right corner of the image plane
-  image_plane_[6] = image_plane_center[0] + half_width * right[0] -
-                    half_height * up[0];
-  image_plane_[7] = image_plane_center[1] + half_width * right[1] -
-                    half_height * up[1];
-  image_plane_[8] = image_plane_center[2] + half_width * right[2] -
-                    half_height * up[2];
+  image_plane_[6] = image_plane_center[0] + half_width * right[0] - half_height * up[0];
+  image_plane_[7] = image_plane_center[1] + half_width * right[1] - half_height * up[1];
+  image_plane_[8] = image_plane_center[2] + half_width * right[2] - half_height * up[2];
 
   // Top-right corner of the image plane
-  image_plane_[9] = image_plane_center[0] + half_width * right[0] +
-                    half_height * up[0];
-  image_plane_[10] = image_plane_center[1] + half_width * right[1] +
-                     half_height * up[1];
-  image_plane_[11] = image_plane_center[2] + half_width * right[2] +
-                     half_height * up[2];
+  image_plane_[9] = image_plane_center[0] + half_width * right[0] + half_height * up[0];
+  image_plane_[10] = image_plane_center[1] + half_width * right[1] + half_height * up[1];
+  image_plane_[11] = image_plane_center[2] + half_width * right[2] + half_height * up[2];
 }
 
 void Camera::calculateFocalLength(const double& view_angle, double focal_lengths[2])
@@ -532,4 +542,4 @@ void Camera::calculateLookAtMatrix(const Vec3d& eye, const Vec3d& center, const 
   matrix[7] = -forward.y;
   matrix[8] = -forward.z;
 }
-} // namespace XROMM
+} // namespace xromm

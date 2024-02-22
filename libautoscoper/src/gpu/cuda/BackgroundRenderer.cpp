@@ -50,19 +50,20 @@
 #include "BackgroundRenderer.hpp"
 #include "BackgroundRenderer_kernels.h"
 
-namespace xromm { namespace gpu
-{
-BackgroundRenderer::BackgroundRenderer() : array_(0)
+namespace xromm {
+namespace gpu {
+BackgroundRenderer::BackgroundRenderer()
+  : array_(0)
 {
   image_plane_[0] = -1.0f;
   image_plane_[1] = -1.0f;
-  image_plane_[2] =  2.0f;
-  image_plane_[3] =  2.0f;
+  image_plane_[2] = 2.0f;
+  image_plane_[3] = 2.0f;
 
   viewport_[0] = -1.0f;
   viewport_[1] = -1.0f;
-  viewport_[2] =  2.0f;
-  viewport_[3] =  2.0f;
+  viewport_[2] = 2.0f;
+  viewport_[3] = 2.0f;
 }
 
 BackgroundRenderer::~BackgroundRenderer()
@@ -70,8 +71,7 @@ BackgroundRenderer::~BackgroundRenderer()
   cutilSafeCall(cudaFreeArray(array_));
 }
 
-void
-BackgroundRenderer::set_back(const void* data, size_t width, size_t height)
+void BackgroundRenderer::set_back(const void* data, size_t width, size_t height)
 {
   cutilSafeCall(cudaFreeArray(array_));
 
@@ -82,16 +82,10 @@ BackgroundRenderer::set_back(const void* data, size_t width, size_t height)
   cutilSafeCall(cudaMallocArray(&array_, &desc, width, height));
 
   // Copy data to 2D array.
-  cutilSafeCall(cudaMemcpyToArray(array_,
-                                  0,
-                                  0,
-                                  data,
-                                  width * height * sizeof(float),
-                                  cudaMemcpyHostToDevice));
+  cutilSafeCall(cudaMemcpyToArray(array_, 0, 0, data, width * height * sizeof(float), cudaMemcpyHostToDevice));
 }
 
-void
-BackgroundRenderer::set_image_plane(float x, float y, float width, float height)
+void BackgroundRenderer::set_image_plane(float x, float y, float width, float height)
 {
   image_plane_[0] = x;
   image_plane_[1] = y;
@@ -99,8 +93,7 @@ BackgroundRenderer::set_image_plane(float x, float y, float width, float height)
   image_plane_[3] = height;
 }
 
-void
-BackgroundRenderer::set_viewport(float x, float y, float width, float height)
+void BackgroundRenderer::set_viewport(float x, float y, float width, float height)
 {
   viewport_[0] = x;
   viewport_[1] = y;
@@ -108,8 +101,7 @@ BackgroundRenderer::set_viewport(float x, float y, float width, float height)
   viewport_[3] = height;
 }
 
-void
-BackgroundRenderer::render(float* buffer, size_t width, size_t height, float threshold) const
+void BackgroundRenderer::render(float* buffer, size_t width, size_t height, float threshold) const
 {
   cudaTextureObject_t tex = createTexureObjectFromArray(array_, cudaReadModeElementType);
 
@@ -130,4 +122,5 @@ BackgroundRenderer::render(float* buffer, size_t width, size_t height, float thr
 
   cudaDestroyTextureObject(tex);
 }
-} } // namespace xromm::cuda
+} // namespace gpu
+} // namespace xromm

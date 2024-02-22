@@ -24,10 +24,7 @@ float ray_point_intersect(const Ray& ray, const Vec3f p, Vec3f* ray_point = 0)
   return len(p - v);
 }
 
-float ray_plane_intersect(const Ray& ray,
-                          const Vec3f& point,
-                          const Vec3f& normal,
-                          Vec3f* q)
+float ray_plane_intersect(const Ray& ray, const Vec3f& point, const Vec3f& normal, Vec3f* q)
 {
   float num = dot(point - ray.origin, normal);
   float den = dot(ray.direction, normal);
@@ -48,11 +45,7 @@ float ray_plane_intersect(const Ray& ray,
 
 // http://softsurfer.com/Archive/algorithm_0106/algorithm_0106.htm
 
-float ray_line_intersect(const Ray& ray,
-                         const Vec3f& p0,
-                         const Vec3f& p1,
-                         Vec3f* ray_point = 0,
-                         Vec3f* line_point = 0)
+float ray_line_intersect(const Ray& ray, const Vec3f& p0, const Vec3f& p1, Vec3f* ray_point = 0, Vec3f* line_point = 0)
 {
   Vec3f u = ray.direction;
   Vec3f v = p1 - p0;

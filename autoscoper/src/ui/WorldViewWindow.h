@@ -32,9 +32,7 @@ private:
   AutoscoperMainWindow* mainwindow;
 
 protected:
-  void  resizeEvent ( QResizeEvent* event );
+  void resizeEvent(QResizeEvent* event);
 };
-
-
 
 #endif /* WORLDVIEWWINDOW_H_ */

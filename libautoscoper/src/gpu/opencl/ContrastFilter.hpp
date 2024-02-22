@@ -47,7 +47,8 @@
 #include "Filter.hpp"
 #include "OpenCL.hpp"
 
-namespace xromm { namespace gpu {
+namespace xromm {
+namespace gpu {
 
 class ContrastFilter : public Filter
 {
@@ -56,10 +57,7 @@ public:
   virtual ~ContrastFilter() {}
 
   // Apply the filter to the input image
-  virtual void apply(const Buffer* input,
-                     Buffer* output,
-                     int width,
-                     int height);
+  virtual void apply(const Buffer* input, Buffer* output, int width, int height);
 
   // Accessors and mutators
   float alpha() const { return alpha_; }
@@ -73,6 +71,7 @@ private:
   float beta_;
   int size_;
 };
-} } // namespace xromm::opencl
+} // namespace gpu
+} // namespace xromm
 
 #endif // XROMM_GPU_CONTRAST_FILTER_HPP

@@ -47,47 +47,46 @@
 #define BX 16
 #define BY 16
 
-namespace xromm { namespace gpu
-{
+namespace xromm {
+namespace gpu {
 #include "gpu/opencl/kernel/BackgroundRenderer.cl.h"
 
 static Program background_renderer_program_;
 
-
-BackgroundRenderer::BackgroundRenderer() : image_(0)
+BackgroundRenderer::BackgroundRenderer()
+  : image_(0)
 {
   image_plane_[0] = -1.0f;
   image_plane_[1] = -1.0f;
-  image_plane_[2] =  2.0f;
-  image_plane_[3] =  2.0f;
+  image_plane_[2] = 2.0f;
+  image_plane_[3] = 2.0f;
 
   viewport_[0] = -1.0f;
   viewport_[1] = -1.0f;
-  viewport_[2] =  2.0f;
-  viewport_[3] =  2.0f;
+  viewport_[2] = 2.0f;
+  viewport_[3] = 2.0f;
 }
 
 BackgroundRenderer::~BackgroundRenderer()
 {
-  if (image_) delete image_;
+  if (image_)
+    delete image_;
 }
 
-void
-BackgroundRenderer::set_back(const void* data, size_t width, size_t height)
+void BackgroundRenderer::set_back(const void* data, size_t width, size_t height)
 {
   cl_image_format format;
   format.image_channel_order = CL_R;
   format.image_channel_data_type = CL_FLOAT;
 
-
-  if (image_) delete image_;
+  if (image_)
+    delete image_;
   size_t dims[3] = { width, height, 1 };
   image_ = new Image(dims, &format, CL_MEM_READ_ONLY);
   image_->read(data);
 }
 
-void
-BackgroundRenderer::set_image_plane(float x, float y, float width, float height)
+void BackgroundRenderer::set_image_plane(float x, float y, float width, float height)
 {
   image_plane_[0] = x;
   image_plane_[1] = y;
@@ -95,8 +94,7 @@ BackgroundRenderer::set_image_plane(float x, float y, float width, float height)
   image_plane_[3] = height;
 }
 
-void
-BackgroundRenderer::set_viewport(float x, float y, float width, float height)
+void BackgroundRenderer::set_viewport(float x, float y, float width, float height)
 {
   viewport_[0] = x;
   viewport_[1] = y;
@@ -104,11 +102,9 @@ BackgroundRenderer::set_viewport(float x, float y, float width, float height)
   viewport_[3] = height;
 }
 
-void
-BackgroundRenderer::render(const Buffer* buffer, unsigned width, unsigned height, float threshold) const
+void BackgroundRenderer::render(const Buffer* buffer, unsigned width, unsigned height, float threshold) const
 {
-  Kernel* kernel = background_renderer_program_.compile(
-    BackgroundRenderer_cl, "background_render_kernel");
+  Kernel* kernel = background_renderer_program_.compile(BackgroundRenderer_cl, "background_render_kernel");
 
   kernel->addBufferArg(buffer);
   kernel->addArg(width);
@@ -121,8 +117,7 @@ BackgroundRenderer::render(const Buffer* buffer, unsigned width, unsigned height
   kernel->addArg(viewport_[1]);
   kernel->addArg(viewport_[2]);
   kernel->addArg(viewport_[3]);
-  kernel->addArg(threshold),
-  kernel->addImageArg(image_);
+  kernel->addArg(threshold), kernel->addImageArg(image_);
 
   // Calculate the block and grid sizes.
   kernel->block2d(BX, BY);
@@ -132,4 +127,5 @@ BackgroundRenderer::render(const Buffer* buffer, unsigned width, unsigned height
 
   delete kernel;
 }
-} } // namespace xromm::opencl
+} // namespace gpu
+} // namespace xromm

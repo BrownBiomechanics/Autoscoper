@@ -48,7 +48,6 @@ namespace Ui {
 class NewTrialDialog;
 }
 
-
 #include "Trial.hpp"
 using xromm::Trial;
 
@@ -85,7 +84,6 @@ public slots:
 
   void on_pushButton_OK_clicked();
   void on_pushButton_Cancel_clicked();
-
 };
 
 #endif /* NEWTRIALDIALOG_H_ */
