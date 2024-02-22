@@ -45,6 +45,7 @@
 #include <map>
 #include "Quaternion.hpp"
 #include <iostream>
+#include <memory>
 
 // This class represents a two dimensional curve that smoothly transitions from
 // one keyed value to another. Interpolation between keyed values is done using
