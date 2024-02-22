@@ -30,6 +30,11 @@ repos:
     additional_dependencies:
     - black==23.3.0 # keep in sync with black hook
 
+- repo: https://github.com/pre-commit/mirrors-clang-format
+  rev: "v17.0.6"
+  hooks:
+  - id: clang-format
+
 - repo: https://github.com/codespell-project/codespell
   rev: "v2.2.5"
   hooks:
