@@ -41,9 +41,6 @@
 
 #pragma once
 
-#ifndef SOCKET_H
-#define SOCKET_H
-
 #include <QTcpServer>
 #include <QObject>
 #include "ui/AutoscoperMainWindow.h"
@@ -76,5 +73,3 @@ private slots:
   void onClientDisconnected();
   void reading();
 };
-
-#endif // SOCKET_H
