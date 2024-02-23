@@ -1,6 +1,8 @@
 ---
 BasedOnStyle: InheritParentConfig
 
+IndentExternBlock: NoIndent # Requires "BreakBeforeBraces" set to "Custom"
+
 BreakBeforeBraces: Custom
 BraceWrapping:
   # Mozilla-style defaults

@@ -16,7 +16,6 @@ IndentPPDirectives: AfterHash
 PackConstructorInitializers: Never
 
 # Mozilla-style overides
-IndentExternBlock: NoIndent # Requires "BreakBeforeBraces" set to "Custom"
 AllowShortFunctionsOnASingleLine: Inline
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
@@ -28,14 +27,5 @@ BreakBeforeBraces: Mozilla
 # A list of macros that should be interpreted as foreach loops instead of as
 # function calls.
 ForEachMacros: [ foreach, Q_FOREACH, BOOST_FOREACH, forever, Q_FOREVER, QBENCHMARK, QBENCHMARK_ONCE ]
-
-# Penalties
-# This decides what order things should be done if a line is too long
-#PenaltyBreakAssignment: 10
-#PenaltyBreakBeforeFirstCallParameter: 30
-#PenaltyBreakComment: 10
-#PenaltyBreakString: 10
-#PenaltyExcessCharacter: 100
-#PenaltyReturnTypeOnItsOwnLine: 5
 
 SortIncludes: false
