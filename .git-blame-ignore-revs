@@ -26,3 +26,7 @@ d6ea8ed817d1c77e202344040848ab3fa6ab6467
 6c933dc51248b0cd47adeda36b6592b2d8779c09
 # STYLE: Strip all trailing white spaces
 fb438c6f3f5303e0ddc6ed364bdb480eefaaaa7f
+# STYLE: Improve C++ source files formatting using uncrustify
+518e25f6b22d0a3739886f538e4df2dc386eacaf
+# STYLE: Consistent formatting of C++ sources using clang-format
+eafb30c81c6a83266c47904bbd2b764021234a74
