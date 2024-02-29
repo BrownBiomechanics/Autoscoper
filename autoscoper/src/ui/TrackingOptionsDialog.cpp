@@ -245,9 +245,7 @@ void TrackingOptionsDialog::on_pushButton_OK_clicked(bool checked)
       mainwindow->getTracker()->trial()->getXCurve(-1)->insert(from_frame, xyzypr[0]);
       mainwindow->getTracker()->trial()->getYCurve(-1)->insert(from_frame, xyzypr[1]);
       mainwindow->getTracker()->trial()->getZCurve(-1)->insert(from_frame, xyzypr[2]);
-      mainwindow->getTracker()->trial()->getYawCurve(-1)->insert(from_frame, xyzypr[3]);
-      mainwindow->getTracker()->trial()->getPitchCurve(-1)->insert(from_frame, xyzypr[4]);
-      mainwindow->getTracker()->trial()->getRollCurve(-1)->insert(from_frame, xyzypr[5]);
+      mainwindow->getTracker()->trial()->getQuatCurve(-1)->insert(from_frame, Quatf(xyzypr[3], xyzypr[4], xyzypr[5]));
     }
 
     if (!frame_optimizing) {

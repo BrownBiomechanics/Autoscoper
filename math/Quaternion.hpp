@@ -5,6 +5,9 @@
 #define QUATERNION_HPP
 
 #include <cmath>
+#ifndef M_PI
+#  define M_PI 3.14159265358979323846
+#endif
 #include <iostream>
 #include <limits>
 
@@ -50,6 +53,16 @@ struct Quat
     z = qz;
   }
 
+  //! Copy constructor
+
+  Quat(const Quat& q)
+  {
+    w = q.w;
+    x = q.x;
+    y = q.y;
+    z = q.z;
+  }
+
   //! Constructs a quaternion from the specified array
 
   explicit Quat(const T* q)
@@ -58,6 +71,26 @@ struct Quat
     x = q->x;
     y = q->y;
     z = q->z;
+  }
+
+  //! Constructs a quaternion from euler angles
+  //! See
+  //! https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Euler_angles_(in_3-2-1_sequence)_to_quaternion_conversion
+
+  Quat(const T& yaw, const T& pitch, const T& roll)
+  {
+    // Convert from degrees to radians
+    T cr = cos(roll * T(M_PI) / T(360));
+    T sr = sin(roll * T(M_PI) / T(360));
+    T cp = cos(pitch * T(M_PI) / T(360));
+    T sp = sin(pitch * T(M_PI) / T(360));
+    T cy = cos(yaw * T(M_PI) / T(360));
+    T sy = sin(yaw * T(M_PI) / T(360));
+
+    w = cr * cp * cy + sr * sp * sy;
+    x = sr * cp * cy - cr * sp * sy;
+    y = cr * sp * cy + sr * cp * sy;
+    z = cr * cp * sy - sr * sp * cy;
   }
 
   //! Returns a zero quaternion
@@ -179,6 +212,35 @@ struct Quat
   //! Returns a const reference to the element at the specified index
 
   const T& operator()(int i) const { return data[i]; }
+
+  //! Converts the Quaternion to a vector of euler angles
+  //! Based off of
+  //! https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Quaternion_to_Euler_angles_(in_3-2-1_sequence)_conversion
+
+  Vec3<T> toEuler() const
+  {
+    // Roll (x-axis rotation)
+    T sinr_cosp = T(2) * (w * x + y * z);
+    T cosr_cosp = T(1) - T(2) * (x * x + y * y);
+    T roll = atan2(sinr_cosp, cosr_cosp);
+
+    // Pitch (y-axis rotation)
+    T sinp = sqrt(T(1) + T(2) * (w * y - x * z));
+    T cosp = sqrt(T(1) - T(2) * (w * y - x * z));
+    T pitch = T(2) * atan2(sinp, cosp) - T(M_PI) / T(2);
+
+    // Yaw (z-axis rotation)
+    T siny_cosp = T(2) * (w * z + x * y);
+    T cosy_cosp = T(1) - T(2) * (y * y + z * z);
+    T yaw = atan2(siny_cosp, cosy_cosp);
+
+    // Convert to degrees
+    roll *= T(180) / T(M_PI);
+    pitch *= T(180) / T(M_PI);
+    yaw *= T(180) / T(M_PI);
+
+    return Vec3<T>(roll, pitch, yaw);
+  }
 
   //! Returns a vector representing the axis of rotation of the specified
   //! quaternion

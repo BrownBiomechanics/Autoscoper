@@ -361,31 +361,29 @@ void TimelineDockWidget::update_graph_min_max(int frame)
         position_graph->min_value = z_value;
       }
     }
+    Vec3f eulers = (*mainwindow->getTracker()->trial()->getQuatCurve(-1))(frame).toEuler();
     if (position_graph->show_yaw) {
-      float yaw_value = (*mainwindow->getTracker()->trial()->getYawCurve(-1))(frame);
-      if (yaw_value > position_graph->max_value) {
-        position_graph->max_value = yaw_value;
+      if (eulers.z > position_graph->max_value) {
+        position_graph->max_value = eulers.z;
       }
-      if (yaw_value < position_graph->min_value) {
-        position_graph->min_value = yaw_value;
+      if (eulers.z < position_graph->min_value) {
+        position_graph->min_value = eulers.z;
       }
     }
     if (position_graph->show_pitch) {
-      float pitch_value = (*mainwindow->getTracker()->trial()->getPitchCurve(-1))(frame);
-      if (pitch_value > position_graph->max_value) {
-        position_graph->max_value = pitch_value;
+      if (eulers.y > position_graph->max_value) {
+        position_graph->max_value = eulers.y;
       }
-      if (pitch_value < position_graph->min_value) {
-        position_graph->min_value = pitch_value;
+      if (eulers.y < position_graph->min_value) {
+        position_graph->min_value = eulers.y;
       }
     }
     if (position_graph->show_roll) {
-      float roll_value = (*mainwindow->getTracker()->trial()->getRollCurve(-1))(frame);
-      if (roll_value > position_graph->max_value) {
-        position_graph->max_value = roll_value;
+      if (eulers.x > position_graph->max_value) {
+        position_graph->max_value = eulers.x;
       }
-      if (roll_value < position_graph->min_value) {
-        position_graph->min_value = roll_value;
+      if (eulers.x < position_graph->min_value) {
+        position_graph->min_value = eulers.x;
       }
     }
   }
@@ -395,73 +393,52 @@ void TimelineDockWidget::update_graph_min_max(int frame)
     position_graph->min_value = 1e6;
     position_graph->max_value = -1e6;
 
-    if (position_graph->show_x) {
-      for (frame = floor(position_graph->min_frame); frame < position_graph->max_frame; frame += 1.0f) {
-        float x_value = (*mainwindow->getTracker()->trial()->getXCurve(-1))(frame);
-        if (x_value > position_graph->max_value) {
-          position_graph->max_value = x_value;
-        }
-        if (x_value < position_graph->min_value) {
-          position_graph->min_value = x_value;
-        }
-      }
-    }
-    if (position_graph->show_y) {
-      for (frame = floor(position_graph->min_frame); frame < position_graph->max_frame; frame += 1.0f) {
-        float y_value = (*mainwindow->getTracker()->trial()->getYCurve(-1))(frame);
-        if (y_value > position_graph->max_value) {
-          position_graph->max_value = y_value;
-        }
-        if (y_value < position_graph->min_value) {
-          position_graph->min_value = y_value;
-        }
-      }
-    }
-    if (position_graph->show_z) {
-      for (frame = floor(position_graph->min_frame); frame < position_graph->max_frame; frame += 1.0f) {
-        float z_value = (*mainwindow->getTracker()->trial()->getZCurve(-1))(frame);
-        if (z_value > position_graph->max_value) {
-          position_graph->max_value = z_value;
-        }
-        if (z_value < position_graph->min_value) {
-          position_graph->min_value = z_value;
-        }
-      }
-    }
-    if (position_graph->show_yaw) {
-      for (frame = floor(position_graph->min_frame); frame < position_graph->max_frame; frame += 1.0f) {
-        float yaw_value = (*mainwindow->getTracker()->trial()->getYawCurve(-1))(frame);
-        if (yaw_value > position_graph->max_value) {
-          position_graph->max_value = yaw_value;
-        }
-        if (yaw_value < position_graph->min_value) {
-          position_graph->min_value = yaw_value;
-        }
-      }
-    }
-    if (position_graph->show_pitch) {
-      for (frame = floor(position_graph->min_frame); frame < position_graph->max_frame; frame += 1.0f) {
-        float pitch_value = (*mainwindow->getTracker()->trial()->getPitchCurve(-1))(frame);
-        if (pitch_value > position_graph->max_value) {
-          position_graph->max_value = pitch_value;
-        }
-        if (pitch_value < position_graph->min_value) {
-          position_graph->min_value = pitch_value;
-        }
-      }
-    }
-    if (position_graph->show_roll) {
-      for (frame = floor(position_graph->min_frame); frame < position_graph->max_frame; frame += 1.0f) {
-        float roll_value = (*mainwindow->getTracker()->trial()->getRollCurve(-1))(frame);
-        if (roll_value > position_graph->max_value) {
-          position_graph->max_value = roll_value;
-        }
-        if (roll_value < position_graph->min_value) {
-          position_graph->min_value = roll_value;
-        }
-      }
-    }
+    double min_max[2] = { 1e6, -1e6 };
 
+    for (frame = floor(position_graph->min_frame); frame < position_graph->max_frame; frame += 1.0f) {
+      if (position_graph->show_x) {
+        float x_value = (*mainwindow->getTracker()->trial()->getXCurve(-1))(frame);
+        if (x_value < min_max[0])
+          min_max[0] = x_value;
+        if (x_value > min_max[1])
+          min_max[1] = x_value;
+      }
+      if (position_graph->show_y) {
+        float y_value = (*mainwindow->getTracker()->trial()->getYCurve(-1))(frame);
+        if (y_value < min_max[0])
+          min_max[0] = y_value;
+        if (y_value > min_max[1])
+          min_max[1] = y_value;
+      }
+      if (position_graph->show_z) {
+        float z_value = (*mainwindow->getTracker()->trial()->getZCurve(-1))(frame);
+        if (z_value < min_max[0])
+          min_max[0] = z_value;
+        if (z_value > min_max[1])
+          min_max[1] = z_value;
+      }
+      Vec3f eulers = (*mainwindow->getTracker()->trial()->getQuatCurve(-1))(frame).toEuler();
+      if (position_graph->show_yaw) {
+        if (eulers.z < min_max[0])
+          min_max[0] = eulers.z;
+        if (eulers.z > min_max[1])
+          min_max[1] = eulers.z;
+      }
+      if (position_graph->show_pitch) {
+        if (eulers.y < min_max[0])
+          min_max[0] = eulers.y;
+        if (eulers.y > min_max[1])
+          min_max[1] = eulers.y;
+      }
+      if (position_graph->show_roll) {
+        if (eulers.x < min_max[0])
+          min_max[0] = eulers.x;
+        if (eulers.x > min_max[1])
+          min_max[1] = eulers.x;
+      }
+    }
+    position_graph->min_value = min_max[0];
+    position_graph->max_value = min_max[1];
     position_graph->min_value -= 1.0;
     position_graph->max_value += 1.0;
   }

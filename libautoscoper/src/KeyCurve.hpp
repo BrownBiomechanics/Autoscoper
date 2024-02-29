@@ -43,41 +43,70 @@
 #define KEY_CURVE_HPP
 
 #include <map>
+#include "Quaternion.hpp"
+#include <iostream>
+#include <memory>
 
 // This class represents a two dimensional curve that smoothly transitions from
 // one keyed value to another. Interpolation between keyed values is done using
 // biezer curves. The value at each keypoint and the derivative can be setup as
 // desired.
 
-class KeyCurve
+class IKeyCurve // Interface to simplify the use of KeyCurve in the frontend
 {
-private:
-  class Key;
-
-  typedef std::map<int, Key> key_map;
-
 public:
   enum Tangent_type
   {
     SMOOTH
   };
 
+protected:
+  class IKey
+  {
+  public:
+    virtual ~IKey() {}
+    Tangent_type in_tangent_type;
+    Tangent_type out_tangent_type;
+    bool bind_tangents;
+    bool in_tangent_lock;
+    bool out_tangent_lock;
+    float in_tangent;
+    float out_tangent;
+    float a, b, c, d;
+  };
+  typedef std::map<int, std::shared_ptr<IKey>> key_map;
+
+public:
   enum Curve_type
   {
     X_CURVE,
     Y_CURVE,
     Z_CURVE,
-    YAW_CURVE,
-    PITCH_CURVE,
-    ROLL_CURVE
+    QUAT_CURVE
   };
+  Curve_type type;
 
   // Typedefs
+  typedef typename key_map::iterator iterator;
+  typedef typename key_map::const_iterator const_iterator;
 
-  typedef key_map::iterator iterator;
+  virtual ~IKeyCurve() {}
+  virtual void clear() = 0;
+  virtual void erase(iterator position) = 0;
+  virtual int time(const_iterator position) const = 0;
+  virtual void set_bind_tangents(iterator position, bool bind) = 0;
+  virtual void set_in_tangent(iterator position, float tangent) = 0;
+  virtual float in_tangent(const_iterator position) const = 0;
+  virtual float out_tangent(const_iterator position) const = 0;
+  virtual void set_out_tangent(iterator position, float tangent) = 0;
+};
 
-  typedef key_map::const_iterator const_iterator;
+template <typename T>
+class KeyCurve : public IKeyCurve
+{
+  friend class IKeyCurve;
 
+public:
   // COnstructors and Destructor
 
   KeyCurve() {}
@@ -85,8 +114,6 @@ public:
   ~KeyCurve() {}
 
   KeyCurve(Curve_type _type) { type = _type; }
-
-  Curve_type type;
 
   // Removes all keyframes from the curve
 
@@ -104,7 +131,7 @@ public:
 
   void insert(int time);
 
-  void insert(int time, float value);
+  void insert(int time, T value);
 
   void erase(iterator position);
 
@@ -130,65 +157,68 @@ public:
 
   iterator set_time(iterator position, int time);
 
-  float value(const_iterator position) const { return position->second.value; }
-
-  void set_value(iterator position, float value)
+  T value(const_iterator position) const
   {
-    position->second.value = value;
+    return std::dynamic_pointer_cast<const KeyCurve<T>::Key>(position->second)->value;
+  }
+
+  void set_value(iterator position, T value)
+  {
+    std::dynamic_pointer_cast<KeyCurve<T>::Key>(position->second)->value = value;
     key_changed(position);
   }
 
-  Tangent_type in_tangent_type(const_iterator position) const { return position->second.in_tangent_type; }
+  Tangent_type in_tangent_type(const_iterator position) const { return position->second->in_tangent_type; }
 
   void set_in_tangent_type(iterator position, Tangent_type type)
   {
-    position->second.in_tangent_type = type;
-    position->second.in_tangent_lock = false;
+    position->second->in_tangent_type = type;
+    position->second->in_tangent_lock = false;
     key_changed(position);
   }
 
-  Tangent_type out_tangent_type(const_iterator position) const { return position->second.out_tangent_type; }
+  Tangent_type out_tangent_type(const_iterator position) const { return position->second->out_tangent_type; }
 
   void set_out_tangent_type(iterator position, Tangent_type type)
   {
-    position->second.out_tangent_type = type;
-    position->second.out_tangent_lock = false;
+    position->second->out_tangent_type = type;
+    position->second->out_tangent_lock = false;
     key_changed(position);
   }
 
-  bool bind_tangents(iterator position) const { return position->second.bind_tangents; }
+  bool bind_tangents(iterator position) const { return position->second->bind_tangents; }
 
-  void set_bind_tangents(iterator position, bool bind) { position->second.bind_tangents = bind; }
+  void set_bind_tangents(iterator position, bool bind) { position->second->bind_tangents = bind; }
 
-  bool in_tangent_lock(const_iterator position) const { return position->second.in_tangent_lock; }
+  bool in_tangent_lock(const_iterator position) const { return position->second->in_tangent_lock; }
 
-  void set_in_tangent_lock(iterator position, bool lock) { position->second.in_tangent_lock = lock; }
+  void set_in_tangent_lock(iterator position, bool lock) { position->second->in_tangent_lock = lock; }
 
-  bool out_tangent_lock(const_iterator position) const { return position->second.out_tangent_lock; }
+  bool out_tangent_lock(const_iterator position) const { return position->second->out_tangent_lock; }
 
-  void set_out_tangent_lock(iterator position, bool lock) { position->second.out_tangent_lock = lock; }
+  void set_out_tangent_lock(iterator position, bool lock) { position->second->out_tangent_lock = lock; }
 
-  float in_tangent(const_iterator position) const { return position->second.in_tangent; }
+  float in_tangent(const_iterator position) const { return position->second->in_tangent; }
 
   void set_in_tangent(iterator position, float tangent)
   {
-    position->second.in_tangent = tangent;
+    position->second->in_tangent = tangent;
     set_in_tangent_lock(position, true);
-    if (position->second.bind_tangents) {
-      position->second.out_tangent = tangent;
+    if (position->second->bind_tangents) {
+      position->second->out_tangent = tangent;
       set_out_tangent_lock(position, true);
     }
     key_changed(position);
   }
 
-  float out_tangent(const_iterator position) const { return position->second.out_tangent; }
+  float out_tangent(const_iterator position) const { return position->second->out_tangent; }
 
   void set_out_tangent(iterator position, float tangent)
   {
-    position->second.out_tangent = tangent;
+    position->second->out_tangent = tangent;
     set_out_tangent_lock(position, true);
-    if (position->second.bind_tangents) {
-      position->second.in_tangent = tangent;
+    if (position->second->bind_tangents) {
+      position->second->in_tangent = tangent;
       set_in_tangent_lock(position, true);
     }
     key_changed(position);
@@ -196,26 +226,19 @@ public:
 
   // Interpolation
 
-  float evaluate(float time) const { return (*this)(time); }
+  T evaluate(float time) const { return (*this)(time); }
 
-  float operator()(float time) const;
+  T operator()(float time) const;
 
 private:
   // Internal structure to store keyframes and Bezier curves
 
-  class Key
+  class Key : public IKey
   {
     friend class KeyCurve;
+    friend class IKey;
 
-    float value;
-    Tangent_type in_tangent_type;
-    Tangent_type out_tangent_type;
-    bool bind_tangents;
-    bool in_tangent_lock;
-    bool out_tangent_lock;
-    float in_tangent;
-    float out_tangent;
-    float a, b, c, d;
+    T value;
   };
 
   // Called whenever a keyframe is modified
@@ -228,5 +251,196 @@ private:
 
   key_map keys;
 };
+
+// Need to have the implementation here in the header because of the template
+
+template <typename T>
+void KeyCurve<T>::insert(int time)
+{
+  insert(time, (*this)(time));
+}
+
+template <typename T>
+void KeyCurve<T>::insert(int time, T value)
+{
+  std::shared_ptr<Key> key(new Key);
+  key->value = T(value); // Copy the value
+  key->in_tangent_type = SMOOTH;
+  key->out_tangent_type = SMOOTH;
+  key->bind_tangents = true;
+  key->in_tangent_lock = false;
+  key->out_tangent_lock = false;
+
+  iterator position = keys.find(time);
+  if (position == keys.end()) {
+    std::pair<iterator, bool> temp = keys.insert(std::make_pair(time, key));
+    position = temp.first;
+  } else {
+    key->in_tangent_type = position->second->in_tangent_type;
+    key->out_tangent_type = position->second->out_tangent_type;
+    key->bind_tangents = position->second->bind_tangents;
+    key->in_tangent_lock = position->second->in_tangent_lock;
+    key->out_tangent_lock = position->second->out_tangent_lock;
+    key->in_tangent = position->second->in_tangent;
+    key->out_tangent = position->second->out_tangent;
+
+    if (position == keys.begin()) {
+      erase(position);
+      position = keys.insert(keys.begin(), std::make_pair(time, key));
+    } else {
+      erase(position--);
+      position = keys.insert(position, std::make_pair(time, key));
+    }
+  }
+  key_changed(position);
+}
+template <typename T>
+void KeyCurve<T>::erase(iterator position)
+{
+  if (position == keys.begin()) {
+    keys.erase(position);
+    if (!keys.empty()) {
+      key_changed(keys.begin());
+    }
+  } else {
+    keys.erase(position--);
+    key_changed(position);
+  }
+}
+template <typename T>
+typename KeyCurve<T>::iterator KeyCurve<T>::set_time(iterator position, int time)
+{
+  iterator temp = keys.find(time);
+  if (temp == position || temp != keys.end()) {
+    return position;
+  }
+
+  Key key = position->second;
+  if (position == keys.begin()) {
+    erase(position);
+    position = keys.insert(keys.begin(), std::make_pair(time, key));
+  } else {
+    erase(position--);
+    position = keys.insert(position, std::make_pair(time, key));
+  }
+  key_changed(position);
+
+  return position;
+}
+template <typename T>
+T KeyCurve<T>::operator()(float time) const
+{
+  if (keys.empty()) {
+    return T();
+  }
+
+  const_iterator p1 = keys.upper_bound(time);
+  if (p1 == keys.begin()) {
+    return std::dynamic_pointer_cast<KeyCurve<T>::Key>(p1->second)->value;
+  }
+
+  const_iterator p0 = p1;
+  p0--;
+  if (p1 == keys.end()) {
+    return std::dynamic_pointer_cast<KeyCurve<T>::Key>(p0->second)->value;
+  }
+
+  float t = (time - p0->first) / (float)(p1->first - p0->first); // 0 <= t <= 1
+  if constexpr (std::is_same<T, Quatf>::value) {
+    return slerp(std::dynamic_pointer_cast<KeyCurve<T>::Key>(p0->second)->value,
+                 std::dynamic_pointer_cast<KeyCurve<T>::Key>(p1->second)->value,
+                 t);
+  } else {
+    return p0->second->a + t * p0->second->b + t * t * p0->second->c + t * t * t * p0->second->d;
+  }
+}
+
+template <typename T>
+void KeyCurve<T>::key_changed(iterator position)
+{
+  if (std::is_same<T, Quatf>::value)
+    return;
+
+  iterator next = position;
+  if (next != --keys.end() && next != keys.end()) {
+    ++next;
+  }
+
+  iterator prev = position;
+  if (prev != keys.begin()) {
+    --prev;
+  }
+
+  iterator prev_prev = prev;
+  if (prev_prev != keys.begin()) {
+    --prev_prev;
+  }
+
+  if (next != position) {
+    update_curve(next);
+  }
+
+  update_curve(position);
+
+  if (prev != position) {
+    update_curve(prev);
+  }
+
+  if (prev_prev != prev) {
+    update_curve(prev_prev);
+  }
+}
+
+template <typename T>
+void KeyCurve<T>::update_curve(iterator position)
+{
+  if constexpr (!std::is_same<T, Quatf>::value) {
+
+    float time = (float)position->first;
+    std::shared_ptr<Key> key = std::dynamic_pointer_cast<KeyCurve<T>::Key>(position->second);
+
+    // First update the tangents
+
+    iterator prev = position;
+    if (prev != keys.begin()) {
+      --prev;
+    }
+    iterator next = position;
+    if (next != --keys.end() && next != keys.end()) {
+      ++next;
+    }
+    float next_val = std::dynamic_pointer_cast<KeyCurve<T>::Key>(next->second)->value;
+    float prev_val = std::dynamic_pointer_cast<KeyCurve<T>::Key>(prev->second)->value;
+
+    if (!key->in_tangent_lock) {
+      switch (key->in_tangent_type) {
+        default:
+        case SMOOTH:
+          key->in_tangent = (next_val - prev_val) / (float)(next->first - prev->first);
+          break;
+      }
+    }
+    if (!key->out_tangent_lock) {
+      switch (key->out_tangent_type) {
+        default:
+        case SMOOTH:
+          key->out_tangent = (next_val - prev_val) / (float)(next->first - prev->first);
+          break;
+      }
+    }
+
+    // Update the cubic spline
+
+    if (next != position) {
+      float D1 = key->out_tangent * (next->first - time);
+      float D2 = next->second->in_tangent * (next->first - time);
+
+      key->a = key->value;
+      key->b = D1;
+      key->c = 3.0f * (next_val - key->value) - 2.0f * D1 - D2;
+      key->d = 2.0f * (key->value - next_val) + D1 + D2;
+    }
+  }
+}
 
 #endif // KEY_CURVE_HPP

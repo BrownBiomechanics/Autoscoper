@@ -85,12 +85,10 @@ public:
   int render_width;
   int render_height;
 
-  KeyCurve* getXCurve(int volumeID);
-  KeyCurve* getYCurve(int volumeID);
-  KeyCurve* getZCurve(int volumeID);
-  KeyCurve* getYawCurve(int volumeID);
-  KeyCurve* getPitchCurve(int volumeID);
-  KeyCurve* getRollCurve(int volumeID);
+  KeyCurve<float>* getXCurve(int volumeID);
+  KeyCurve<float>* getYCurve(int volumeID);
+  KeyCurve<float>* getZCurve(int volumeID);
+  KeyCurve<Quatf>* getQuatCurve(int volumeID);
 
   CoordFrame* getVolumeMatrix(int volumeID); // Pivot
 

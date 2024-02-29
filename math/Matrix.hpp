@@ -7,7 +7,6 @@
 #include <cmath>
 #include <iostream>
 
-#include "Quaternion.hpp"
 #include "Vector.hpp"
 
 //! Forward declarations
@@ -555,33 +554,6 @@ struct Mat3
                 u.z * u.x * one_minus_cos_rad - sin_rad * u.y,
                 u.z * u.y * one_minus_cos_rad + sin_rad * u.x,
                 u.z * u.z * one_minus_cos_rad + cos_rad);
-    // clang-format on
-  }
-
-  //! Returns a matrix representing a rotation by the specified quaternion
-
-  static Mat3 rot(const Quat<T>& q)
-  {
-    T _lensq = lensq(q);
-    if (_lensq < std::numeric_limits<T>::epsilon()) {
-      return Mat3::eye();
-    }
-
-    Quat<T> p = q / sqrt(_lensq);
-    T xx = p.x * p.x;
-    T xy = p.x * p.y;
-    T xz = p.x * p.z;
-    T xw = p.x * p.w;
-    T yy = p.y * p.y;
-    T yz = p.y * p.z;
-    T yw = p.y * p.w;
-    T zz = p.z * p.z;
-    T zw = p.z * p.w;
-    T ww = p.w * p.w;
-    // clang-format off
-    return Mat3(ww + xx - yy - zz, T(2) * (xy - zw), T(2) * (xz + yw),
-                T(2) * (xy + zw), ww - xx + yy - zz, T(2) * (yz - xw),
-                T(2) * (xz - yw), T(2) * (yz + xw), ww - xx - yy + zz);
     // clang-format on
   }
 

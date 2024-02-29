@@ -49,7 +49,7 @@ namespace xromm {
 class Trial;
 }
 using xromm::Trial;
-class KeyCurve;
+class IKeyCurve;
 struct GraphData;
 
 class GLTimeline : public GLWidget
@@ -76,7 +76,8 @@ private:
   bool modify_nodes;
   bool glutIsInitialised;
   void mouse_to_graph(double mouse_x, double mouse_y, double& graph_x, double& graph_y);
-  void draw_curve(const KeyCurve& curve);
+  void draw_curve(const IKeyCurve* icurve);
+  void draw_curve_quat(const IKeyCurve* curve, bool show_yaw, bool show_pitch, bool show_roll);
   void render_bitmap_string(double x, double y, const char* string);
   void renderText(double textPosX, double textPosY, QString text);
   float round_this(double my_val);

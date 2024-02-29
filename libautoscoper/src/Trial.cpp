@@ -435,7 +435,7 @@ void Trial::save(const std::string& filename)
   file.close();
 }
 
-KeyCurve* Trial::getXCurve(int volumeID)
+KeyCurve<float>* Trial::getXCurve(int volumeID)
 {
   if (volumestransform.size() <= 0)
     return NULL;
@@ -447,7 +447,7 @@ KeyCurve* Trial::getXCurve(int volumeID)
   }
 }
 
-KeyCurve* Trial::getYCurve(int volumeID)
+KeyCurve<float>* Trial::getYCurve(int volumeID)
 {
   if (volumestransform.size() <= 0)
     return NULL;
@@ -459,7 +459,7 @@ KeyCurve* Trial::getYCurve(int volumeID)
   }
 }
 
-KeyCurve* Trial::getZCurve(int volumeID)
+KeyCurve<float>* Trial::getZCurve(int volumeID)
 {
   if (volumestransform.size() <= 0)
     return NULL;
@@ -471,39 +471,15 @@ KeyCurve* Trial::getZCurve(int volumeID)
   }
 }
 
-KeyCurve* Trial::getYawCurve(int volumeID)
+KeyCurve<Quatf>* Trial::getQuatCurve(int volumeID)
 {
   if (volumestransform.size() <= 0)
     return NULL;
 
   if (volumeID < volumestransform.size() && volumeID >= 0) {
-    return &volumestransform[volumeID].yaw_curve;
+    return &volumestransform[volumeID].quat_curve;
   } else {
-    return &volumestransform[current_volume].yaw_curve;
-  }
-}
-
-KeyCurve* Trial::getPitchCurve(int volumeID)
-{
-  if (volumestransform.size() <= 0)
-    return NULL;
-
-  if (volumeID < volumestransform.size() && volumeID >= 0) {
-    return &volumestransform[volumeID].pitch_curve;
-  } else {
-    return &volumestransform[current_volume].pitch_curve;
-  }
-}
-
-KeyCurve* Trial::getRollCurve(int volumeID)
-{
-  if (volumestransform.size() <= 0)
-    return NULL;
-
-  if (volumeID < volumestransform.size() && volumeID >= 0) {
-    return &volumestransform[volumeID].roll_curve;
-  } else {
-    return &volumestransform[current_volume].roll_curve;
+    return &volumestransform[current_volume].quat_curve;
   }
 }
 
