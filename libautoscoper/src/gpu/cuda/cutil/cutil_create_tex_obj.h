@@ -19,6 +19,7 @@ inline cudaTextureObject_t createTexureObjectFromArray(cudaArray* arr, cudaTextu
   texDesc.filterMode = cudaFilterModeLinear;
   texDesc.addressMode[0] = cudaAddressModeClamp;
   texDesc.addressMode[1] = cudaAddressModeClamp;
+  texDesc.addressMode[2] = cudaAddressModeClamp;
   texDesc.readMode = readMode;
 
   cudaTextureObject_t tex = 0;
