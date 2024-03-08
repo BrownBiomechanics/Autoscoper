@@ -52,6 +52,7 @@
 #include "ui/FilterDockWidget.h"
 #include "ui/AutoscoperMainWindow.h"
 
+#include "asys/SystemTools.hxx"
 #include "View.hpp"
 #include <math.h>
 
@@ -160,7 +161,7 @@ void FilterTreeWidget::action_LoadSettings_triggered()
     }
 
     std::string line, key;
-    while (std::getline(file, line)) {
+    while (asys::SystemTools::GetLineFromStream(file, line)) {
       if (line.compare("DrrRenderer_begin") == 0) {
         for (int i = 0; i < cameraTreeItem->childCount(); i++) {
           ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(cameraTreeItem->child(i));
@@ -257,7 +258,7 @@ void FilterTreeWidget::loadAllSettings(QString directory)
       QString filename = directory + camera->getName() + ".vie";
       std::ifstream file(filename.toStdString().c_str(), std::ios::in);
       std::string line, key;
-      while (std::getline(file, line)) {
+      while (asys::SystemTools::GetLineFromStream(file, line)) {
         if (line.compare("DrrRenderer_begin") == 0) {
           for (int i = 0; i < camera->childCount(); i++) {
             ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(camera->child(i));
@@ -298,7 +299,7 @@ void FilterTreeWidget::loadFilterSettings(int camera, QString filename)
     if (camera) {
       std::ifstream file(filename.toStdString().c_str(), std::ios::in);
       std::string line, key;
-      while (std::getline(file, line)) {
+      while (asys::SystemTools::GetLineFromStream(file, line)) {
         if (line.compare("DrrRenderer_begin") == 0) {
           for (int i = 0; i < camera->childCount(); i++) {
             ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(camera->child(i));

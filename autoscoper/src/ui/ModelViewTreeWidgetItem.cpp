@@ -62,6 +62,7 @@
 #include <sstream>
 #include <math.h> /* exp */
 
+#include <asys/SystemTools.hxx>
 #include <View.hpp>
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
 #  include <gpu/cuda/RayCaster.hpp>
@@ -126,7 +127,7 @@ void ModelViewTreeWidgetItem::loadSettings(std::ifstream& file)
 {
   std::string line, key;
   if (m_type == 1) {
-    while (std::getline(file, line) && line.compare("DrrRenderer_end") != 0) {
+    while (asys::SystemTools::GetLineFromStream(file, line) && line.compare("DrrRenderer_end") != 0) {
       std::istringstream lineStream(line);
       lineStream >> key;
       if (key.compare("SampleDistance") == 0) {
@@ -159,7 +160,8 @@ void ModelViewTreeWidgetItem::loadFilters(std::ifstream& file)
     }
   }
 
-  while (std::getline(file, line) && line.compare("DrrFilters_end") != 0 && line.compare("RadFilters_end") != 0) {
+  while (asys::SystemTools::GetLineFromStream(file, line) && line.compare("DrrFilters_end") != 0
+         && line.compare("RadFilters_end") != 0) {
     std::istringstream lineStream(line);
     lineStream >> key;
     if (key.compare("SobelFilter_begin") == 0) {
