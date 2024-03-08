@@ -1,4 +1,5 @@
 set(libautoscoper_HEADERS
+  src/asys/SystemTools.hxx
   src/Backtrace.hpp
   src/Camera.hpp
   src/CoordFrame.hpp
@@ -17,6 +18,7 @@ set(libautoscoper_HEADERS
 )
 
 set(libautoscoper_SOURCES
+  src/asys/SystemTools.cxx
   src/Backtrace.cpp
   src/Camera.cpp
   src/CoordFrame.cpp

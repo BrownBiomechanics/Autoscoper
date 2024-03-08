@@ -60,6 +60,7 @@
 #include "ui/NewTrialDialog.h"
 #include "ui_NewTrialDialog.h"
 
+#include "asys/SystemTools.hxx"
 #include "Trial.hpp"
 #include "View.hpp"
 #include "Tracker.hpp"
@@ -1010,7 +1011,7 @@ bool AutoscoperMainWindow::load_tracking_results(QString filename,
 
   double m[16];
   std::string line, value;
-  for (int i = 0; i < tracker->trial()->num_frames && std::getline(file, line); ++i) {
+  for (int i = 0; i < tracker->trial()->num_frames && asys::SystemTools::GetLineFromStream(file, line); ++i) {
     std::istringstream lineStream(line);
     for (int k = start; k < stop; k++) {
       for (int j = 0; j < (save_as_matrix ? 16 : 6) && std::getline(lineStream, value, s); ++j) {

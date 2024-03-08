@@ -54,41 +54,9 @@
 #include <json/json.h>
 
 #include "Camera.hpp"
+#include "asys/SystemTools.hxx"
 
 namespace xromm {
-std::istream& safeGetline(std::istream& is, std::string& t)
-{
-  t.clear();
-
-  // The characters in the stream are read one-by-one using a std::streambuf.
-  // That is faster than reading them one-by-one using the std::istream.
-  // Code that uses streambuf this way must be guarded by a sentry object.
-  // The sentry object performs various tasks,
-  // such as thread synchronization and updating the stream state.
-
-  std::istream::sentry se(is, true);
-  std::streambuf* sb = is.rdbuf();
-
-  for (;;) {
-    int c = sb->sbumpc();
-    switch (c) {
-      case '\n':
-        return is;
-      case '\r':
-        if (sb->sgetc() == '\n')
-          sb->sbumpc();
-        return is;
-      case EOF:
-        // Also handle the case when the last line has no line ending
-        if (t.empty()) {
-          is.setstate(std::ios::eofbit);
-        }
-        return is;
-      default:
-        t += (char)c;
-    }
-  }
-}
 
 std::string mayaCamReadingError(const std::string& version,
                                 int line,
@@ -159,7 +127,7 @@ Camera::Camera(const std::string& mayacam)
     }
 
     std::string csv_line;
-    safeGetline(file, csv_line);
+    asys::SystemTools::GetLineFromStream(file, csv_line);
     file.close();
     if (csv_line.compare("image size") == 0) {
       loadMayaCam2(mayacam);
@@ -178,7 +146,7 @@ void Camera::loadMayaCam1(const std::string& mayacam)
   std::string csv_line, csv_val;
   int line_count = 0;
 
-  for (int i = 0; i < 5 && safeGetline(file, csv_line); ++i) {
+  for (int i = 0; i < 5 && asys::SystemTools::GetLineFromStream(file, csv_line); ++i) {
     int read_count = 0;
     std::istringstream csv_line_stream(csv_line);
     for (int j = 0; j < 3 && std::getline(csv_line_stream, csv_val, ','); ++j) {
@@ -274,7 +242,7 @@ void Camera::loadMayaCam2(const std::string& mayacam)
 
   std::fstream file(mayacam.c_str(), std::ios::in);
   std::string csv_line, csv_val;
-  for (int i = 0; i < 17 && safeGetline(file, csv_line); ++i) {
+  for (int i = 0; i < 17 && asys::SystemTools::GetLineFromStream(file, csv_line); ++i) {
     std::istringstream csv_line_stream(csv_line);
 
     switch (i) {

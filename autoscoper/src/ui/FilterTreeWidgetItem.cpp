@@ -66,6 +66,7 @@
 #  include <gpu/opencl/SharpenFilter.hpp>
 #  include <gpu/opencl/GaussianFilter.hpp>
 #endif
+#include <asys/SystemTools.hxx>
 #include <Filter.hpp>
 
 #include <iostream>
@@ -147,8 +148,9 @@ void FilterTreeWidgetItem::save(std::ofstream& file)
 void FilterTreeWidgetItem::load(std::ifstream& file)
 {
   std::string line, key;
-  while (std::getline(file, line) && line.compare("SobelFilter_end") != 0 && line.compare("ContrastFilter_end") != 0
-         && line.compare("GaussianFilter_end") != 0 && line.compare("SharpenFilter_end") != 0) {
+  while (asys::SystemTools::GetLineFromStream(file, line) && line.compare("SobelFilter_end") != 0
+         && line.compare("ContrastFilter_end") != 0 && line.compare("GaussianFilter_end") != 0
+         && line.compare("SharpenFilter_end") != 0) {
     std::istringstream lineStream(line);
     lineStream >> key;
 
