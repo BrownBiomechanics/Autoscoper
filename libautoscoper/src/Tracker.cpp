@@ -582,7 +582,7 @@ std::vector<double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) c
     double viewport[4];
     if (!this->calculate_viewport(modelview, *views_[i]->camera(), viewport)) {
       std::cerr << "Tracker::trackFrame(): Volume " << volumeID << " is not in view of camera " << i << std::endl;
-      correlations.push_back(0.0);
+      correlations.push_back(9999.0);
       continue;
     }
 
