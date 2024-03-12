@@ -777,10 +777,10 @@ void AutoscoperMainWindow::save_tracking_results(QString filename,
         xyzypr[0] = (*tracker->trial()->getXCurve(j))(i);
         xyzypr[1] = (*tracker->trial()->getYCurve(j))(i);
         xyzypr[2] = (*tracker->trial()->getZCurve(j))(i);
-        Quatf q = (*tracker->trial()->getQuatCurve(j))(i);
-        xyzypr[3] = q.z;
-        xyzypr[4] = q.y;
-        xyzypr[5] = q.x;
+        Vec3f eulers = (*tracker->trial()->getQuatCurve(j))(i).toEuler();
+        xyzypr[3] = eulers.z;
+        xyzypr[4] = eulers.y;
+        xyzypr[5] = eulers.x;
 
         if (save_as_matrix) {
           double m[16];
