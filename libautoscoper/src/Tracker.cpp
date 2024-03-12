@@ -399,10 +399,10 @@ void Tracker::optimize(int frame,
   for (int j = 0; j < repeats; j++) {
 
     // Get Current Pose
-    float x_val = (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame - dFrame);
-    float y_val = (*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame - dFrame);
-    float z_val = (*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame - dFrame);
-    Quatf quat_val = (*(const_cast<Trial&>(trial_)).getQuatCurve(-1))(trial_.frame - dFrame);
+    float x_val = (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame);
+    float y_val = (*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame);
+    float z_val = (*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame);
+    Quatf quat_val = (*(const_cast<Trial&>(trial_)).getQuatCurve(-1))(trial_.frame);
     Vec3f eulers = quat_val.toEuler();
 
     double xyzypr[6] = { x_val, y_val, z_val, eulers.z, eulers.y, eulers.x };
