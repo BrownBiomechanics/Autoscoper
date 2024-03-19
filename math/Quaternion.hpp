@@ -379,6 +379,10 @@ struct Quat
 
   friend Quat slerp(const Quat& p, const Quat& q, const T& t)
   {
+    if (t < std::numeric_limits<T>::epsilon())
+      return p;
+    if (t > T(1) - std::numeric_limits<T>::epsilon())
+      return q;
     T cosRad = dot(unit(p), unit(q));
     T rad = acos(cosRad);
     if (rad < std::numeric_limits<T>::epsilon()) {
