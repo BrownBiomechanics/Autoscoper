@@ -952,6 +952,12 @@ bool Tracker::calculate_viewport(const CoordFrame& modelview, const Camera& came
     return false;
   }
 
+  // Check if min_max is unchanged from the initial values
+  if (min_max[0] == 1.0 && min_max[1] == 1.0 && min_max[2] == -1.0 && min_max[3] == -1.0) {
+    // This usually means that the rotation was all NaN
+    return false;
+  }
+
   // clip min_max to rad_min_max_film
   if (min_max[0] < rad_min_max_film[0]) {
     min_max[0] = rad_min_max_film[0];
