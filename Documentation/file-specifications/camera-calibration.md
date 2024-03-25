@@ -24,6 +24,12 @@ We mean it.
 |`view-angle`| The view angle of the camera. |
 |`image-width`| The width of the image. |
 |`image-height`| The height of the image. |
+|`clipping-range`| The range of the closest and farthest objects that will affect the rendering. |
+
+::: {warning}
+The `clipping-range` is not currently used by Autoscoper. This is used to
+communicate information within the AutoscoperM Slicer extension.
+:::
 
 ### Example
 
@@ -37,6 +43,7 @@ We mean it.
   "view-angle": 30.0,
   "image-width": 1760,
   "image-height": 1760,
+  "clipping-range": [0.1, 1000],
 }
 ```
 ## MayaCam 2.0
