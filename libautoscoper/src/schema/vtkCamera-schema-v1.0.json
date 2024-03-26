@@ -47,6 +47,15 @@
     "image-height": {
       "description": "The height of the DRR image",
       "type": "integer"
+    },
+    "clipping-range": {
+      "description": "The clipping range of the camera",
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 2,
+      "maxItems": 2
     }
   },
   "required": [
