@@ -39,3 +39,20 @@ Sample data is available for download from the [SlicerAutoscoperM Sample Data](/
 * Ankle BVR data - This data was provided by Michael Rainbow.
   * Three frames of movement are included in the sample data.
   * Three partial volumes are included in the sample data. The tibia, talus, and calcaneus are included.
+
+## Glossary
+
+This section defines terms that are commonly used by Autoscoper and SlicerAutoscoperM
+
+* **3D Computed Tomography (CT)**: A computerized X-ray imaging method that produces volumetric density data of a region of interest. The data is typically saved in DICOM format.
+* **4D CT**: A temporal sequence 3D CT scans, capturing both spatial and temporal changes.
+* **Biplaner Videoradiography (BVR)**: A system utilizing two calibrated X-ray sources and high-speed video cameras to simultaneously capture radiographs from two perspectives. The camera models derived from the calibrations enable the construction of a unified 3D World construction from the 2D perspective views.
+* **Rigid Body**: In the context of 3D imaging and motion tracking, a Rigid Body refers to a solid object, such as a bone or implant, that does not deform under normal conditions. Within a 3DCT (three-dimensional computed tomography) scan, the rigid body is the specific region of interest that users identify and isolate. This segmented data is often exported as a bone mesh model in STL (stereolithography) format. The primary purpose of Autoscoper is to track the kinematics (both rotation and translation) of the rigid body as it moves through three-dimensional space.
+* **Partial Volume (PVOL)**: A volumetric image data file saved as a TIFF stack. The PVOL represents a subset of 3D CT scan data, defined by a segmented rigid body and cropped to its dimensions.
+* **AUT Model (AUT)**: A representation of the rigid body STL file, as parsed and visualized within the Autoscoper 3D World.
+* **Digitally Reconstructed Radiograph (DRR)**: A synthetic radiograph generated when a PVOL is loaded into Autoscoper. Perspective camera models cast the volumetric density data onto the same image plane as the radiographs, simulating the radiograph digitally.
+* **Radiograph**: A 2D image produced by X-rays.
+* **Sequential 3D CT**: A series of 3D CT scans acquired from the same region of interest (such as a joint or limb) in different positions. Using the Sequences module, these independent volumes can be visualized and processed together as a series.
+* **TFM**: An ITK transformation file with the extension `.tfm`.
+* **TRA**: A transform file with the extension `.tra` exported by Autoscoper. It contains a Nx16 transformation matrix of rigid body kinematics. Each one of the N lines represents a frame of BVR data optimized by Autoscoper. The TRA transforms can be applied to AUT models to visualized 3D motion of the rigid body and calculate motion.
+* **Virtually Generated Radiograph (VRG)**: Synthetic radiograph generated from 3D CT using synthetic camera models.
