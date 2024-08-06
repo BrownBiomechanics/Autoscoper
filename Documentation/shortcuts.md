@@ -20,6 +20,7 @@ This is a list of all the shortcuts that are available in the current version of
 | `E` | Switch to rotation mode |
 | `D` | Switch to move volume pivot mode |
 | `H` | Toggle visibility of all volumes |
+| `L` | Toggle visibility of all Radiographs |
 | `+` / `=` | Increase size of manipulator |
 | `-` | Decrease size of manipulator |
 
