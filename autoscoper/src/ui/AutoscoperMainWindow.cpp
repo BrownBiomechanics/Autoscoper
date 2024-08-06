@@ -2370,6 +2370,10 @@ void AutoscoperMainWindow::key_h_pressed()
 {
   filters_widget->toggle_drrs();
 }
+void AutoscoperMainWindow::key_l_pressed()
+{
+  filters_widget->toggle_radiographs();
+}
 void AutoscoperMainWindow::key_t_pressed()
 {
   ui->toolButtonTrack->click();
@@ -2410,6 +2414,8 @@ void AutoscoperMainWindow::setupShortcuts()
   new QShortcut(QKeySequence(Qt::Key_D), this, SLOT(key_d_pressed()));
   // H - Enables/Disables DRRs
   new QShortcut(QKeySequence(Qt::Key_H), this, SLOT(key_h_pressed()));
+  // L - Enable/Disable Radiographs
+  new QShortcut(QKeySequence(Qt::Key_L), this, SLOT(key_l_pressed()));
   // T - Opens the tracking dialog
   new QShortcut(QKeySequence(Qt::Key_T), this, SLOT(key_t_pressed()));
   // P - Retrack - not enabled

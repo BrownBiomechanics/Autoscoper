@@ -47,6 +47,8 @@
 #include "ui/FilterDockWidget.h"
 #include "ui/AutoscoperMainWindow.h"
 
+#include "FilterDockWidget.h"
+
 #include <iostream>
 
 FilterDockWidget::FilterDockWidget(QWidget* parent)
@@ -75,6 +77,11 @@ void FilterDockWidget::clearTree()
 void FilterDockWidget::toggle_drrs()
 {
   dock->treeWidget->toggle_drrs();
+}
+
+void FilterDockWidget::toggle_radiographs()
+{
+  dock->treeWidget->toggle_radiographs();
 }
 
 void FilterDockWidget::saveAllSettings(QString directory)

@@ -67,6 +67,7 @@ public:
   void addCamera(View* view);
   void redrawGL();
   void toggle_drrs();
+  void toggle_radiographs();
 
   void saveAllSettings(QString directory);
   void printAllSettings(std::ofstream& os);
