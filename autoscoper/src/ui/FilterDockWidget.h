@@ -68,6 +68,7 @@ public:
   void clearTree();
   void addCamera(View* view);
   void toggle_drrs();
+  void toggle_radiographs();
   void saveAllSettings(QString directory);
   void printAllSettings(std::ofstream& os);
   void loadAllSettings(QString directory);

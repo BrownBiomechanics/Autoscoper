@@ -343,6 +343,21 @@ void FilterTreeWidget::toggle_drrs()
   }
 }
 
+void FilterTreeWidget::toggle_radiographs()
+{
+  for (int i = 0; i < this->topLevelItemCount(); ++i) {
+    CameraTreeWidgetItem* camera = dynamic_cast<CameraTreeWidgetItem*>(topLevelItem(i));
+    if (camera) {
+      for (int j = 0; j < camera->childCount(); ++j) {
+        ModelViewTreeWidgetItem* model = dynamic_cast<ModelViewTreeWidgetItem*>(camera->child(j));
+        if (model && model->getType() == 0) {
+          model->toggleVisible();
+        }
+      }
+    }
+  }
+}
+
 void FilterTreeWidget::action_AddSobelFilter_triggered()
 {
   ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(item_contextMenu);
