@@ -46,3 +46,5 @@ These shortcuts only apply to the currently selected volume. See [](./user-inter
 | `Right` | Select next DOF. |
 | `Up` | Increment selected DOF. |
 | `Down` | Decrement selected DOF. |
+| `J` | Swap to the previous tracking set if it exists. |
+| `K` | Swap to the next tracking set if it exists. |
