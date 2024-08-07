@@ -2089,6 +2089,32 @@ void AutoscoperMainWindow::on_toolButtonTrackCurrent_clicked()
    tracking_dialog->retrack();
    }*/
 
+void AutoscoperMainWindow::on_toolButtonPreviousCurveSet_clicked()
+{
+  if (tracker) {
+    tracker->trial()->setCurrentCurveSetToPrevious();
+  }
+  redrawGL();
+  frame_changed();
+}
+
+void AutoscoperMainWindow::on_toolButtonAddNewCurveSet_clicked()
+{
+  if (tracker)
+    tracker->trial()->addCurveSet();
+  redrawGL();
+  frame_changed();
+}
+
+void AutoscoperMainWindow::on_toolButtonNextCurveSet_clicked()
+{
+  if (tracker) {
+    tracker->trial()->setCurrentCurveSetToNext();
+  }
+  redrawGL();
+  frame_changed();
+}
+
 void AutoscoperMainWindow::on_actionExport_NCC_as_csv_triggered(bool checked)
 {
   QString filename = get_filename(true, "*.ncc");
@@ -2389,6 +2415,14 @@ void AutoscoperMainWindow::key_t_pressed()
 {
   ui->toolButtonTrack->click();
 }
+void AutoscoperMainWindow::key_j_pressed()
+{
+  ui->toolButtonPreviousCurveSet->click();
+}
+void AutoscoperMainWindow::key_k_pressed()
+{
+  ui->toolButtonNextCurveSet->click();
+}
 /*void AutoscoperMainWindow::key_p_pressed(){
    ui->toolButtonRetrack->click();
    } */
@@ -2467,6 +2501,10 @@ void AutoscoperMainWindow::setupShortcuts()
   new QShortcut(QKeySequence(Qt::Key_L), this, SLOT(key_l_pressed()));
   // T - Opens the tracking dialog
   new QShortcut(QKeySequence(Qt::Key_T), this, SLOT(key_t_pressed()));
+  // J - Goes to the previous tracking set if there is one
+  new QShortcut(QKeySequence(Qt::Key_J), this, SLOT(key_j_pressed()));
+  // K - Goes to the next tracking set if there is one
+  new QShortcut(QKeySequence(Qt::Key_K), this, SLOT(key_k_pressed()));
   // P - Retrack - not enabled
   // new QShortcut(QKeySequence(Qt::Key_P), this, SLOT(key_p_pressed()));
   // C - Track current frame

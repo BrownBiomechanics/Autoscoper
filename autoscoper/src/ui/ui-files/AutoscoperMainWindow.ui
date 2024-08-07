@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1283</width>
+    <height>632</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -385,6 +385,49 @@ Dialog</string>
         </widget>
        </item>
        <item>
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="toolButtonPreviousCurveSet">
+         <property name="text">
+          <string>Previous
+Tracking
+Set (J)</string>
+         </property>
+         <property name="autoRaise">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="toolButtonAddNewCurveSet">
+         <property name="text">
+          <string>Add New
+Tracking
+Set</string>
+         </property>
+         <property name="autoRaise">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="toolButtonNextCurveSet">
+         <property name="text">
+          <string>Next
+Tracking
+Set (K)</string>
+         </property>
+         <property name="autoRaise">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -410,7 +453,7 @@ Dialog</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1283</width>
      <height>25</height>
     </rect>
    </property>
