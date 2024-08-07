@@ -318,6 +318,10 @@ public slots:
   void on_toolButtonTrackCurrent_clicked();
   // void on_toolButtonRetrack_clicked();
 
+  void on_toolButtonPreviousCurveSet_clicked();
+  void on_toolButtonAddNewCurveSet_clicked();
+  void on_toolButtonNextCurveSet_clicked();
+
   // Shortcuts
   void key_w_pressed();
   void key_e_pressed();
@@ -325,6 +329,8 @@ public slots:
   void key_h_pressed();
   void key_l_pressed();
   void key_t_pressed();
+  void key_j_pressed();
+  void key_k_pressed();
   // void key_r_pressed();
   // void key_p_pressed();
   void key_c_pressed();

@@ -46,6 +46,7 @@
 
 #include "KeyCurve.hpp"
 #include "CoordFrame.hpp"
+
 namespace xromm {
 
 // The trial class contains all of the state information for an autoscoper run.
@@ -57,16 +58,28 @@ class VolumeTransform
 {
 public:
   // Loads a trial file
-  VolumeTransform();
+  VolumeTransform() { addCurveSet(); }
   ~VolumeTransform();
 
-  KeyCurve<float> x_curve;
-  KeyCurve<float> y_curve;
-  KeyCurve<float> z_curve;
-  KeyCurve<Quatf> quat_curve;
+  KeyCurve<float>* getXCurve() { return x_curves[currentCurveSet]; }
+  KeyCurve<float>* getYCurve() { return y_curves[currentCurveSet]; }
+  KeyCurve<float>* getZCurve() { return z_curves[currentCurveSet]; }
+  KeyCurve<Quatf>* getQuatCurve() { return quat_curves[currentCurveSet]; }
+
+  size_t numberOfCurveSets() const { return x_curves.size(); }
+  void addCurveSet();
+  void setCurrentCurveSetToNext();
+  void setCurrentCurveSetToPrevious();
 
   // CoordFrame volumeTrans; //FromWorldToVolume
   CoordFrame volumeMatrix; // FromWorldToPivot
+
+private:
+  int currentCurveSet;
+  std::vector<KeyCurve<float>*> x_curves;
+  std::vector<KeyCurve<float>*> y_curves;
+  std::vector<KeyCurve<float>*> z_curves;
+  std::vector<KeyCurve<Quatf>*> quat_curves;
 };
 } // namespace xromm
 

@@ -90,6 +90,10 @@ public:
   KeyCurve<float>* getZCurve(int volumeID);
   KeyCurve<Quatf>* getQuatCurve(int volumeID);
 
+  void addCurveSet();
+  void setCurrentCurveSetToNext();
+  void setCurrentCurveSetToPrevious();
+
   CoordFrame* getVolumeMatrix(int volumeID); // Pivot
 
 private:

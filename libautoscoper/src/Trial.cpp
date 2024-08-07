@@ -429,9 +429,9 @@ KeyCurve<float>* Trial::getXCurve(int volumeID)
     return NULL;
 
   if (volumeID < volumestransform.size() && volumeID >= 0) {
-    return &volumestransform[volumeID].x_curve;
+    return volumestransform[volumeID].getXCurve();
   } else {
-    return &volumestransform[current_volume].x_curve;
+    return volumestransform[current_volume].getXCurve();
   }
 }
 
@@ -441,9 +441,9 @@ KeyCurve<float>* Trial::getYCurve(int volumeID)
     return NULL;
 
   if (volumeID < volumestransform.size() && volumeID >= 0) {
-    return &volumestransform[volumeID].y_curve;
+    return volumestransform[volumeID].getYCurve();
   } else {
-    return &volumestransform[current_volume].y_curve;
+    return volumestransform[current_volume].getYCurve();
   }
 }
 
@@ -453,9 +453,9 @@ KeyCurve<float>* Trial::getZCurve(int volumeID)
     return NULL;
 
   if (volumeID < volumestransform.size() && volumeID >= 0) {
-    return &volumestransform[volumeID].z_curve;
+    return volumestransform[volumeID].getZCurve();
   } else {
-    return &volumestransform[current_volume].z_curve;
+    return volumestransform[current_volume].getZCurve();
   }
 }
 
@@ -465,9 +465,33 @@ KeyCurve<Quatf>* Trial::getQuatCurve(int volumeID)
     return NULL;
 
   if (volumeID < volumestransform.size() && volumeID >= 0) {
-    return &volumestransform[volumeID].quat_curve;
+    return volumestransform[volumeID].getQuatCurve();
   } else {
-    return &volumestransform[current_volume].quat_curve;
+    return volumestransform[current_volume].getQuatCurve();
+  }
+}
+
+void Trial::addCurveSet()
+{
+  // Add a new blank curve set to all volumes, also switches the active curve to the new set
+  for (std::vector<VolumeTransform>::iterator itr = volumestransform.begin(); itr != volumestransform.end(); ++itr) {
+    itr->addCurveSet();
+  }
+}
+
+void Trial::setCurrentCurveSetToNext()
+{
+  // Switch to the next active curve for all volumes
+  for (std::vector<VolumeTransform>::iterator itr = volumestransform.begin(); itr != volumestransform.end(); ++itr) {
+    itr->setCurrentCurveSetToNext();
+  }
+}
+
+void Trial::setCurrentCurveSetToPrevious()
+{
+  // Go to the previous curve for all volumes
+  for (std::vector<VolumeTransform>::iterator itr = volumestransform.begin(); itr != volumestransform.end(); ++itr) {
+    itr->setCurrentCurveSetToPrevious();
   }
 }
 
