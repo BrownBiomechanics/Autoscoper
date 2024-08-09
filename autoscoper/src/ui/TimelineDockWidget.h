@@ -43,6 +43,8 @@
 #define TIMELINEDOCKWIDGET_H
 
 #include <QDockWidget>
+
+#include "AutoscoperMainWindow.h"
 #include "KeyCurve.hpp"
 
 struct GraphData
@@ -100,6 +102,12 @@ public:
 
   std::vector<std::pair<IKeyCurve*, IKeyCurve::iterator>>* getCopiedNodes() { return &copied_nodes; }
 
+  // DOF stepping and selection
+  void setCurrentDOF(int dof);
+  int getCurrentDOF() { return this->currentDOF; }
+
+  static const int NUMBER_OF_DEGREES_OF_FREEDOM = 6;
+
   void getValues(double* xyzypr);
   void setValues(double* xyzypr);
   void setValuesEnabled(bool enabled);
@@ -124,6 +132,10 @@ private:
   // Video play
   int play_tag;
   QTimer* play_timer;
+
+  // DOF stepping and selection
+  int currentDOF = 0;
+  void updateBolding(int dof, bool state);
 
 protected:
 public slots:

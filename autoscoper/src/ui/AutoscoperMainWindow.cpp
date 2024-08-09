@@ -833,6 +833,10 @@ void AutoscoperMainWindow::loadFilterSettings(int camera, QString filename)
 
 std::vector<double> AutoscoperMainWindow::getPose(unsigned int volume, unsigned int frame)
 {
+  if (frame == -1) {
+    frame = tracker->trial()->frame;
+  }
+
   std::vector<double> pose(6, 0);
   pose[0] = (*tracker->trial()->getXCurve(volume))(frame);
   pose[1] = (*tracker->trial()->getYCurve(volume))(frame);
@@ -846,6 +850,10 @@ std::vector<double> AutoscoperMainWindow::getPose(unsigned int volume, unsigned 
 
 void AutoscoperMainWindow::setPose(std::vector<double> pose, unsigned int volume, unsigned int frame)
 {
+  if (frame == -1) {
+    frame = tracker->trial()->frame;
+  }
+
   tracker->trial()->getXCurve(volume)->insert(frame, pose[0]);
   tracker->trial()->getYCurve(volume)->insert(frame, pose[1]);
   tracker->trial()->getZCurve(volume)->insert(frame, pose[2]);
@@ -2401,6 +2409,44 @@ void AutoscoperMainWindow::key_minus_pressed()
   redrawGL();
 }
 
+void AutoscoperMainWindow::key_left_pressed()
+{
+  // Move to the prev DOF
+  int updatedDOF = this->timeline_widget->getCurrentDOF();
+  updatedDOF--;
+  if (updatedDOF < 0) {
+    updatedDOF = TimelineDockWidget::NUMBER_OF_DEGREES_OF_FREEDOM - 1;
+  }
+  this->timeline_widget->setCurrentDOF(updatedDOF);
+}
+
+void AutoscoperMainWindow::key_right_pressed()
+{
+  // Move to the next DOF
+  int updatedDOF = timeline_widget->getCurrentDOF();
+  updatedDOF++;
+  if (updatedDOF >= TimelineDockWidget::NUMBER_OF_DEGREES_OF_FREEDOM) {
+    updatedDOF = 0;
+  }
+  timeline_widget->setCurrentDOF(updatedDOF);
+}
+
+void AutoscoperMainWindow::key_up_pressed()
+{
+  std::vector<double> curPose = getPose(-1, -1);
+  int currentDOF = this->timeline_widget->getCurrentDOF();
+  curPose[currentDOF] = curPose[currentDOF] + stepVal;
+  setPose(curPose, -1, -1);
+}
+
+void AutoscoperMainWindow::key_down_pressed()
+{
+  std::vector<double> curPose = getPose(-1, -1);
+  int currentDOF = this->timeline_widget->getCurrentDOF();
+  curPose[currentDOF] = curPose[currentDOF] - stepVal;
+  setPose(curPose, -1, -1);
+}
+
 // Shortcuts
 void AutoscoperMainWindow::setupShortcuts()
 {
@@ -2424,6 +2470,15 @@ void AutoscoperMainWindow::setupShortcuts()
   new QShortcut(QKeySequence(Qt::Key_Equal), this, SLOT(key_equal_pressed()));
   // - - Decrease pivot size
   new QShortcut(QKeySequence(Qt::Key_Minus), this, SLOT(key_minus_pressed()));
+
+  // Left Arrow Key - Previous DOF
+  new QShortcut(QKeySequence(Qt::Key_Left), this, SLOT(key_left_pressed()));
+  // Right Arrow Key - Next DOF
+  new QShortcut(QKeySequence(Qt::Key_Right), this, SLOT(key_right_pressed()));
+  // Up Arrow Key - Increment DOF
+  new QShortcut(QKeySequence(Qt::Key_Up), this, SLOT(key_up_pressed()));
+  // Down Arrow Key - Decrement DOF
+  new QShortcut(QKeySequence(Qt::Key_Down), this, SLOT(key_down_pressed()));
 
   // CTRL+C - Copy keyframe
   ui->actionCopy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));

@@ -77,6 +77,7 @@ public slots:
   void on_pushButton_Delete_clicked(bool checked);
   void on_radioButton_MovingAverage_clicked(bool checked);
   void on_radioButton_AnotherMethod_clicked(bool checked);
+  void on_stepSizeSpinBox_valueChanged(double d);
 
   void setDefPaths(QString root_path,
                    QString filter_folder,

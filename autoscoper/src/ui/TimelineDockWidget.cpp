@@ -47,6 +47,7 @@
 #include "ui/TimelineDockWidget.h"
 #include "ui/AutoscoperMainWindow.h"
 
+#include "TimelineDockWidget.h"
 #include "Tracker.hpp"
 
 #include <QOpenGLContext>
@@ -289,6 +290,61 @@ void TimelineDockWidget::on_spinBox_LastFrame_valueChanged(int d)
     position_graph->max_frame = new_max;
     update_graph_min_max();
     mainwindow->redrawGL();
+  }
+}
+
+void TimelineDockWidget::setCurrentDOF(int dof)
+{
+  if (dof < 0) {
+    dof = 0;
+  }
+  if (dof >= NUMBER_OF_DEGREES_OF_FREEDOM) {
+    dof = NUMBER_OF_DEGREES_OF_FREEDOM - 1;
+  }
+  if (dof == this->currentDOF) {
+    return;
+  }
+  this->updateBolding(this->currentDOF, false);
+  this->updateBolding(dof, true);
+  this->currentDOF = dof;
+}
+
+void TimelineDockWidget::updateBolding(int dof, bool state)
+{
+  QFont font;
+  switch (dof) {
+    case 0:
+      font = dock->checkBox_X->font();
+      font.setBold(state);
+      dock->checkBox_X->setFont(font);
+      break;
+    case 1:
+      font = dock->checkBox_Y->font();
+      font.setBold(state);
+      dock->checkBox_Y->setFont(font);
+      break;
+    case 2:
+      font = dock->checkBox_Z->font();
+      font.setBold(state);
+      dock->checkBox_Z->setFont(font);
+      break;
+    case 3:
+      font = dock->checkBox_Yaw->font();
+      font.setBold(state);
+      dock->checkBox_Yaw->setFont(font);
+      break;
+    case 4:
+      font = dock->checkBox_Pitch->font();
+      font.setBold(state);
+      dock->checkBox_Pitch->setFont(font);
+      break;
+    case 5:
+      font = dock->checkBox_Roll->font();
+      font.setBold(state);
+      dock->checkBox_Roll->setFont(font);
+      break;
+    default:
+      break;
   }
 }
 

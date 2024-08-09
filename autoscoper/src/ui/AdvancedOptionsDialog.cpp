@@ -149,6 +149,12 @@ void AdvancedOptionsDialog::on_radioButton_AnotherMethod_clicked(bool checked)
   // mainwindow->getTracker()->trial()->guess = 1;
 }
 
+void AdvancedOptionsDialog::on_stepSizeSpinBox_valueChanged(double d)
+{
+  AutoscoperMainWindow* mainwindow = dynamic_cast<AutoscoperMainWindow*>(parent());
+  mainwindow->updateStepSize(d);
+}
+
 void AdvancedOptionsDialog::setDefPaths(QString root_path,
                                         QString filter_folder,
                                         QString filter_name,
