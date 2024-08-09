@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>941</width>
+    <width>1088</width>
     <height>366</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>941</width>
-    <height>180</height>
+    <width>1088</width>
+    <height>194</height>
    </size>
   </property>
   <property name="floating">
@@ -231,6 +231,12 @@
            <width>90</width>
            <height>20</height>
           </size>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
          </property>
          <property name="text">
           <string>X (mm)</string>

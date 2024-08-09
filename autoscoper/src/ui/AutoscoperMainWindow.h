@@ -161,6 +161,8 @@ public:
   // Backup Save
   void backup_tracking(bool backup_on);
 
+  void updateStepSize(double d) { stepVal = d; }
+
 private:
   Ui::AutoscoperMainWindow* ui;
   FilterDockWidget* filters_widget;
@@ -219,6 +221,9 @@ private:
   void set_manip_matrix(int idx, const CoordFrame& frame);
   std::vector<unsigned int> textures;
   void reset_graph();
+
+  // Arrow key stepping
+  double stepVal = 1.0;
 
   /// \brief Log tracking parameter to file
   ///
@@ -326,6 +331,11 @@ public slots:
   void key_plus_pressed();
   void key_equal_pressed();
   void key_minus_pressed();
+
+  void key_left_pressed();
+  void key_right_pressed();
+  void key_up_pressed();
+  void key_down_pressed();
 };
 
 #endif // UAUTOSCOPERMAINWINDOW_H
