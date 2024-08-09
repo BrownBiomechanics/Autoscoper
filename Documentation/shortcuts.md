@@ -41,3 +41,7 @@ These shortcuts only apply to the currently selected volume. See [](./user-inter
 | `Ctrl + Y` | Redo - forward to next keyframe |
 | `Delete` | Delete the current keyframe |
 | `Ctrl + L` | Smooth tangents between keyframes |
+| `Left` | Select previous DOF. |
+| `Right` | Select next DOF. |
+| `Up` | Increment selected DOF. |
+| `Down` | Decrement selected DOF. |
