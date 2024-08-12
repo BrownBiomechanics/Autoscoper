@@ -75,7 +75,7 @@
 #include "PSO.hpp"
 
 static bool firstRun = true;
-
+static int m_numBoxTest = (int)0;
 #define DEBUG 0
 
 // XXX
@@ -210,6 +210,11 @@ Tracker::Tracker()
   , drr_mask_(NULL)
   , background_mask_(NULL)
 {
+#ifdef Autoscoper_COLLISION_DETECTION
+  transformA = vtkTransform::New();
+  transformB = vtkTransform::New();
+  collide = vtkCollisionDetectionFilter::New();
+#endif
   g_markerless = this;
   optimization_method = 0; // initialize cost function
   cf_model_select = 0;     // cost function selector
@@ -239,6 +244,32 @@ Tracker::~Tracker()
 void Tracker::load(const Trial& trial)
 {
   trial_ = trial;
+
+  // If meshes are present and collision detection is enabled, create colliders
+#ifdef Autoscoper_COLLISION_DETECTION
+  if (trial_.meshes.size() > 0) {
+    for (int i = 0; i < trial_.meshes.size(); i++) {
+      for (int j = i + 1; j < trial_.meshes.size(); j++) {
+
+        vtkCollisionDetectionFilter* collide = vtkCollisionDetectionFilter::New();
+        collide->SetInputData(0, trial_.meshes[i].GetPolyData());
+        collide->SetInputData(1, trial_.meshes[j].GetPolyData());
+        collide->SetCollisionModeToFirstContact();
+        collide->SetNumberOfCellsPerNode(2);
+        collide->Register(nullptr);
+
+        std::pair<std::pair<int, int>, vtkCollisionDetectionFilter*> collider;
+        collider.first.first = i;
+        collider.first.second = j;
+        collider.second = collide;
+
+        std::cout << "Creating collider between mesh " << i << " and mesh " << j << std::endl;
+
+        colliders.push_back(collider);
+      }
+    }
+  }
+#endif
 
   std::vector<gpu::View*>::iterator viewIter;
   for (viewIter = views_.begin(); viewIter != views_.end(); ++viewIter) {
@@ -741,7 +772,7 @@ std::vector<double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) c
   return correlations;
 }
 // Minimizing Function for Bone Matching
-double Tracker::minimizationFunc(const double* values) const
+double Tracker::minimizationFunc(double* values) const
 {
   // Construct a coordinate frame from the given values
   float x_val = (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame);
@@ -759,6 +790,27 @@ double Tracker::minimizationFunc(const double* values) const
 
   unsigned int idx = trial_.current_volume;
   xcframe.to_xyzypr(xyzypr);
+
+#ifdef Autoscoper_COLLISION_DETECTION
+  std::vector<std::vector<double>> poses;
+  if (trial_.meshes.size() > 0) {
+    for (unsigned int i = 0; i < trial_.meshes.size(); ++i) {
+      poses.push_back(std::vector<double>(6));
+      poses[i][0] = (*(const_cast<Trial&>(trial_)).getXCurve(i))(trial_.frame);
+      poses[i][1] = (*(const_cast<Trial&>(trial_)).getYCurve(i))(trial_.frame);
+      poses[i][2] = (*(const_cast<Trial&>(trial_)).getZCurve(i))(trial_.frame);
+      quat_val = (*(const_cast<Trial&>(trial_)).getQuatCurve(i))(trial_.frame);
+      eulers = quat_val.toEuler();
+      poses[i][3] = eulers.z;
+      poses[i][4] = eulers.y;
+      poses[i][5] = eulers.x;
+    }
+
+    if (computeCollisions(trial_.meshes, trial_.current_volume, xyzypr, poses))
+      return 1.0E6;
+  }
+#endif // Autoscoper_COLLISION_DETECTION
+
   std::vector<double> correlations = trackFrame(idx, &xyzypr[0]);
 
   double correlation = correlations[0];
@@ -1032,6 +1084,112 @@ void Tracker::getFullDRR(unsigned int volumeID) const
     save_full_drr(rendered_drr_, render_width, render_height);
   }
 }
+
+#ifdef Autoscoper_COLLISION_DETECTION
+bool Tracker::computeCollisions(std::vector<Mesh> meshes,
+                                unsigned int current_volume,
+                                double* xyzypr,
+                                std::vector<std::vector<double>> poses) const
+{
+  // meshes is a vector of meshes, one for each volume
+  // current_volume is the index of the volume we are currently tracking
+  // xyzypr is the possible new pose of the current volume
+  // poses is a vector of poses for all volumes
+
+  // BEGIN COLLIDER BASED IMPLEMENTATION
+  int meshA = current_volume;
+  int meshB = -1;
+
+  // Set up transformA
+  transformA->Identity();
+
+  // Apply Translation
+  transformA->Translate(xyzypr[0], xyzypr[1], xyzypr[2]);
+
+  // Apply Rotation
+  transformA->RotateZ(xyzypr[3]);
+  transformA->RotateY(xyzypr[4]);
+  transformA->RotateX(xyzypr[5]);
+
+  // Get bounding box to generate spherical sweep
+  double centerA[3];
+  meshes[meshA].GetPolyData()->GetCenter(centerA);
+
+  double radiusA = meshes[meshA].getBoundingRadius();
+
+  transformA->TransformVector(centerA, centerA);
+
+  centerA[0] += xyzypr[0];
+  centerA[1] += xyzypr[1];
+  centerA[2] += xyzypr[2];
+
+  for (int i = 0; i < colliders.size(); i++) {
+
+    if (colliders[i].first.first != current_volume && colliders[i].first.second != current_volume) {
+      continue;
+    }
+
+    // Set meshB to be the non current volume mesh
+    meshB = (colliders[i].first.first == current_volume) ? meshB = colliders[i].first.second
+                                                         : meshB = colliders[i].first.first;
+
+    // Set up transformB
+    transformB->Identity();
+
+    // Translate to pose position
+    transformB->Translate(poses[meshB][0], poses[meshB][1], poses[meshB][2]);
+    // Apply Rotation
+    transformB->RotateZ(poses[meshB][3]);
+    transformB->RotateY(poses[meshB][4]);
+    transformB->RotateX(poses[meshB][5]);
+
+    double centerB[3];
+    meshes[meshB].GetPolyData()->GetCenter(centerB);
+    double radiusB = meshes[meshB].getBoundingRadius();
+
+    transformB->TransformVector(centerB, centerB);
+    centerB[0] += poses[meshB][0];
+    centerB[1] += poses[meshB][1];
+    centerB[2] += poses[meshB][2];
+
+    // Check for intersection of spherical representation
+    double distance =
+      sqrt(pow(centerA[0] - centerB[0], 2) + pow(centerA[1] - centerB[1], 2) + pow(centerA[2] - centerB[2], 2));
+
+    if (distance > radiusA + radiusB) {
+#  if DEBUG
+      std::cout << "Skipped in CD in spherical sweep" << std::endl;
+      std::cout << "Distance = " << distance << std::endl;
+      std::cout << "Radius sum = " << radiusA + radiusB << std::endl;
+#  endif
+      return false;
+    }
+
+    if (colliders[i].first.first == current_volume) {
+      colliders[i].second->SetTransform(0, transformA);
+      colliders[i].second->SetTransform(1, transformB);
+    }
+
+    if (colliders[i].first.second == current_volume) {
+      colliders[i].second->SetTransform(0, transformB);
+      colliders[i].second->SetTransform(1, transformA);
+    }
+
+    colliders[i].second->Update();
+
+    m_numBoxTest += colliders[i].second->GetNumberOfBoxTests();
+
+    if (colliders[i].second->GetNumberOfContacts() != 0) {
+#  if DEBUG
+      std::cout << "Collision using " << colliders[i].second->GetNumberOfBoxTests() << " box test**" << std::endl;
+#  endif
+      return true;
+    }
+  } // END COLLIDER IMPLEMENTATION
+
+  return false;
+}
+#endif // Autoscoper_COLLISION_DETECTION
 
 gpu::VolumeDescription* Tracker::getVolumeDescription(const int& index)
 {
