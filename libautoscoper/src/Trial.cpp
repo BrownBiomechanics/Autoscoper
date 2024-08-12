@@ -297,11 +297,13 @@ void Trial::validate(const std::vector<std::string>& mayaCams,
   }
 
   if (meshFiles.size() != 0 && volumeFiles.size() != meshFiles.size()) {
-      throw std::runtime_error(filename, std::string("You must specify a mesh file for each volume or none at all.\n") + "Found"
-                            + std::to_string(volumeFiles.size())
-                            + " volumes "
-                              "and "
-                            + std::to_string(meshFiles.size()) + " mesh files."));
+    throw std::runtime_error(
+      trialReadingError(filename,
+                        std::string("You must specify a mesh file for each volume or none at all.\n") + "Found"
+                          + std::to_string(volumeFiles.size())
+                          + " volumes "
+                            "and "
+                          + std::to_string(meshFiles.size()) + " mesh files."));
   }
 }
 

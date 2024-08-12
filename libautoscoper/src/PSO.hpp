@@ -34,6 +34,10 @@ struct Particle
   std::vector<float> Position;
   std::vector<float> Velocity;
 
+#ifdef Autoscoper_COLLISION_DETECTION
+  bool collided;
+#endif // Autoscoper_COLLISION_DETECTION
+
   // Copy constructor
   Particle(const Particle& p);
   // Default constructor
@@ -52,3 +56,15 @@ extern std::ostream& operator<<(std::ostream& os, const std::vector<float>& valu
 extern std::ostream& operator<<(std::ostream& os, const Particle& p);
 
 Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOCHS, unsigned int MAX_STALL);
+
+#ifdef Autoscoper_COLLISION_DETECTION
+void checkCollision(Particle& p,
+                    std::vector<float>& avgNonCollidedPosition,
+                    std::vector<float>& avgCollidedPosition,
+                    unsigned int& collidedCount);
+
+void computeCorrectionVector(std::vector<float>& avgNonCollidedPosition,
+                             std::vector<float>& avgCollidedPosition,
+                             std::vector<float>& correctionVector,
+                             const unsigned int& collidedCount);
+#endif // Autoscoper_COLLISION_DETECTION
