@@ -3,12 +3,18 @@
 #include <cfloat> // For FLT_MAX
 #include <string>
 
+#define VELOCITY_FILTER 0
+#define COLLISION_RESPONSE 0
+
 // Particle Struct Function Definitions
 Particle::Particle(const Particle& p)
 {
   this->NCC = p.NCC;
   this->Position = p.Position;
   this->Velocity = p.Velocity;
+#ifdef Autoscoper_COLLISION_DETECTION
+  this->collided = p.collided;
+#endif // Autoscoper_COLLISION_DETECTION
 }
 
 Particle::Particle()
@@ -16,6 +22,10 @@ Particle::Particle()
   this->NCC = FLT_MAX;
   this->Position = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
   this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
+
+#ifdef Autoscoper_COLLISION_DETECTION
+  this->collided = false;
+#endif // Autoscoper_COLLISION_DETECTION
 }
 
 Particle::Particle(const std::vector<float>& pos)
@@ -23,6 +33,10 @@ Particle::Particle(const std::vector<float>& pos)
   this->NCC = FLT_MAX;
   this->Position = pos;
   this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
+
+#ifdef Autoscoper_COLLISION_DETECTION
+  this->collided = false;
+#endif // Autoscoper_COLLISION_DETECTION
 }
 
 Particle::Particle(float start_range_min, float start_range_max)
@@ -31,6 +45,10 @@ Particle::Particle(float start_range_min, float start_range_max)
   this->Position = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
   this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
   this->initializePosition(start_range_min, start_range_max);
+
+#ifdef Autoscoper_COLLISION_DETECTION
+  this->collided = false;
+#endif // Autoscoper_COLLISION_DETECTION
 }
 
 Particle& Particle::operator=(const Particle& p)
@@ -38,6 +56,11 @@ Particle& Particle::operator=(const Particle& p)
   this->NCC = p.NCC;
   this->Position = p.Position;
   this->Velocity = p.Velocity;
+
+#ifdef Autoscoper_COLLISION_DETECTION
+  this->collided = p.collided;
+#endif // Autoscoper_COLLISION_DETECTION
+
   return *this;
 }
 
@@ -68,6 +91,21 @@ void Particle::updateVelocityAndPosition(const Particle& pBest, const Particle& 
 
     this->Velocity[dim] = omega * this->Velocity[dim] + c1 * rp * (pBest.Position[dim] - this->Position[dim])
                           + c2 * rg * (gBest.Position[dim] - this->Position[dim]);
+
+#ifdef VELOCITY_FILTER
+    float velClamp = 0.2;
+    float speed = 0.0;
+    for (int i = 0; i < NUM_OF_DIMENSIONS; i++) {
+      speed += this->Velocity[i] * this->Velocity[i];
+    }
+    speed = sqrt(speed);
+    if (speed > velClamp) {
+      for (int i = 0; i < NUM_OF_DIMENSIONS; i++) {
+        this->Velocity[i] /= speed;
+        this->Velocity[i] *= velClamp;
+      }
+    }
+#endif // VELOCITY_FILTER
 
     this->Position[dim] += this->Velocity[dim];
   }
@@ -123,6 +161,40 @@ float getRandomClamped()
   return (float)rand() / (float)RAND_MAX;
 }
 
+#ifdef Autoscoper_COLLISION_DETECTION
+void checkCollision(Particle& p,
+                    std::vector<float>& avgNonCollidedPosition,
+                    std::vector<float>& avgCollidedPosition,
+                    unsigned int& collidedCount)
+{
+  if (p.NCC > 1.0E4) {
+    collidedCount++;
+    p.collided = true;
+
+    for (int i = 0; i < NUM_OF_DIMENSIONS; ++i) {
+      avgCollidedPosition[i] += p.Position[i];
+    }
+  } else {
+    for (int i = 0; i < NUM_OF_DIMENSIONS; ++i) {
+      avgNonCollidedPosition[i] += p.Position[i];
+    }
+  }
+}
+
+void computeCorrectionVector(std::vector<float>& avgNonCollidedPosition,
+                             std::vector<float>& avgCollidedPosition,
+                             std::vector<float>& correctionVector,
+                             const unsigned int& collidedCount)
+{
+  if (collidedCount != 0 && collidedCount != NUM_OF_PARTICLES) {
+    for (int i = 0; i < NUM_OF_DIMENSIONS; ++i) {
+      avgNonCollidedPosition[i] /= ((float)NUM_OF_PARTICLES - (float)collidedCount);
+      avgCollidedPosition[i] /= (float)collidedCount;
+    }
+  }
+}
+#endif // Autoscoper_COLLISION_DETECTION
+
 Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOCHS, unsigned int MAX_STALL)
 {
   int stall_iter = 0;
@@ -154,6 +226,12 @@ Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOC
     }
 
     currentBest = gBest;
+#ifdef Autoscoper_COLLISION_DETECTION
+    unsigned int collidedCount = 0;
+    std::vector<float> avgNonCollidedPosition = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
+    std::vector<float> avgCollidedPosition = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
+    std::vector<float> correctionVector = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
+#endif // Autoscoper_COLLISION_DETECTION
 
     for (int idx = 0; idx < NUM_OF_PARTICLES; idx++) {
 
@@ -172,7 +250,23 @@ Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOC
       if (particles[idx].NCC < gBest.NCC) {
         gBest = particles[idx];
       }
+#ifdef Autoscoper_COLLISION_DETECTION
+      checkCollision(particles[idx], avgNonCollidedPosition, avgCollidedPosition, collidedCount);
+#endif // Autoscoper_COLLISION_DETECTION
     }
+
+#if defined(Autoscoper_COLLISION_DETECTION) and defined(COLLISION_RESPONSE)
+    computeCorrectionVector(avgNonCollidedPosition, avgCollidedPosition, correctionVector, collidedCount);
+    for (int idx = 0; idx < NUM_OF_PARTICLES; ++idx) {
+      if (particles[idx].collided) {
+        for (int j = 0; j < NUM_OF_DIMENSIONS; ++j) {
+          particles[idx].Position[j] += ((float)collidedCount / (float)NUM_OF_PARTICLES) * correctionVector[j];
+          pBest[idx] = particles[idx];
+          // Why always update the pBest here?
+        }
+      }
+    }
+#endif // Autoscoper_COLLISION_DETECTION and COLLISION_RESPONSE
 
     OMEGA = OMEGA * 0.9f;
 
