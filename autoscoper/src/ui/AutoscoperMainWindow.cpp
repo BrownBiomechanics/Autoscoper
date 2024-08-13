@@ -838,9 +838,10 @@ std::vector<double> AutoscoperMainWindow::getPose(unsigned int volume, unsigned 
   pose[1] = (*tracker->trial()->getYCurve(volume))(frame);
   pose[2] = (*tracker->trial()->getZCurve(volume))(frame);
   Quatf q = (*tracker->trial()->getQuatCurve(volume))(frame);
-  pose[3] = q.z;
-  pose[4] = q.y;
-  pose[5] = q.x;
+  Vec3f euler = q.toEuler();
+  pose[3] = euler.z;
+  pose[4] = euler.y;
+  pose[5] = euler.x;
   return pose;
 }
 
