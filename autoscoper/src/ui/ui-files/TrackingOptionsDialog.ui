@@ -585,6 +585,27 @@ QGroupBox::title {
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>spinBox_FrameStart</tabstop>
+  <tabstop>spinBox_FrameEnd</tabstop>
+  <tabstop>checkBox_Reverse</tabstop>
+  <tabstop>spinBox_FrameSkip</tabstop>
+  <tabstop>radioButton_CurrentFrame</tabstop>
+  <tabstop>radioButton_PreviousFrame</tabstop>
+  <tabstop>radioButton_LinearExtrapolation</tabstop>
+  <tabstop>radioButton_SplineInterpolation</tabstop>
+  <tabstop>radioButton_random_search_method</tabstop>
+  <tabstop>radioButton_downhill_method</tabstop>
+  <tabstop>spinBox_NumberRefinements</tabstop>
+  <tabstop>spinBox_min_lim</tabstop>
+  <tabstop>spinBox_max_lim</tabstop>
+  <tabstop>spinBox_max_iter</tabstop>
+  <tabstop>spinBox_stall_max</tabstop>
+  <tabstop>radioButton_bone_ncc_cf</tabstop>
+  <tabstop>radioButton_implant_ncc_cf</tabstop>
+  <tabstop>pushButton_Cancel</tabstop>
+  <tabstop>pushButton_OK</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
