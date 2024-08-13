@@ -851,6 +851,8 @@ void AutoscoperMainWindow::setPose(std::vector<double> pose, unsigned int volume
   tracker->trial()->getYCurve(volume)->insert(frame, pose[1]);
   tracker->trial()->getZCurve(volume)->insert(frame, pose[2]);
   tracker->trial()->getQuatCurve(volume)->insert(frame, Quatf(pose[3], pose[4], pose[5]));
+  frame_changed();
+  redrawGL();
 }
 
 void AutoscoperMainWindow::setBackground(double threshold)
