@@ -64,6 +64,7 @@ class TimelineDockWidget;
 class VolumeDockWidget;
 class AboutAutoscoper;
 class TrackingOptionsDialog;
+class TrackingSetDockWidget;
 class AdvancedOptionsDialog;
 class WorldViewWindow;
 class QOpenGLContext;
@@ -169,6 +170,7 @@ private:
   TimelineDockWidget* timeline_widget;
   VolumeDockWidget* volumes_widget;
   TrackingOptionsDialog* tracking_dialog;
+  TrackingSetDockWidget* tracking_set_widget;
   AdvancedOptionsDialog* advanced_dialog;
   AboutAutoscoper* about_autoscoper;
 

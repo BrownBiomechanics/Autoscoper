@@ -1,7 +1,17 @@
 
 #include "VolumeTransform.hpp"
-
+#include <istream>
 namespace xromm {
+
+void VolumeTransform::setCurrentCurveSet(const int& idx)
+{
+  if (idx < 0 || idx >= numberOfCurveSets()) {
+    std::cerr << "[WARNING] Failed to set curveSet " << idx << " is either below 0 or above " << numberOfCurveSets()
+              << std::endl;
+    return;
+  }
+  currentCurveSet = idx;
+}
 
 void VolumeTransform::addCurveSet()
 {
