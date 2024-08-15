@@ -46,12 +46,14 @@
 #include "ui/CameraViewWidget.h"
 #include "ui/TimelineDockWidget.h"
 #include "ui/TrackingOptionsDialog.h"
+#include "ui/TrackingSetDockWidget.h"
 #include "ui/AdvancedOptionsDialog.h"
 
 #include "ui/GLTracker.h"
 #include "ui/ImportExportTrackingOptionsDialog.h"
 #include "ui_ImportExportTrackingOptionsDialog.h"
 #include "ui_TrackingOptionsDialog.h"
+#include "ui_TrackingSetDockWidget.h"
 #include "ui/AboutAutoscoper.h"
 #include "ui/OpenCLPlatformSelectDialog.h"
 #include "Manip3D.hpp"
@@ -127,6 +129,11 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget* parent)
   // Create filter widget and put it on the left
   filters_widget = new FilterDockWidget(this);
   this->addDockWidget(Qt::LeftDockWidgetArea, filters_widget);
+  this->setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
+
+  // Create the tracking set widget
+  tracking_set_widget = new TrackingSetDockWidget(this);
+  this->addDockWidget(Qt::LeftDockWidgetArea, tracking_set_widget);
 
   // Create volume idwget and put it on the bottom-left
   volumes_widget = new VolumeDockWidget(this);
@@ -180,6 +187,7 @@ AutoscoperMainWindow::~AutoscoperMainWindow()
   delete ui;
 
   delete filters_widget;
+  delete tracking_set_widget;
   delete volumes_widget;
   delete worldview;
   delete tracker;
@@ -597,6 +605,11 @@ void AutoscoperMainWindow::setupUI()
     glBindTexture(GL_TEXTURE_2D, 0);
   }
   // Setup the default view
+
+  // Add tracking sets - Needs to happen after textures get binded
+  for (unsigned int i = 0; i < tracker->trial()->numberOfCurveSets(); i++) {
+    tracking_set_widget->addTrackingSet(tracker->trial()->volumes.size());
+  }
 
   // Update the number of frames
   timeline_widget->setFramesRange(0, tracker->trial()->num_frames - 1);
@@ -2100,8 +2113,10 @@ void AutoscoperMainWindow::on_toolButtonPreviousCurveSet_clicked()
 
 void AutoscoperMainWindow::on_toolButtonAddNewCurveSet_clicked()
 {
-  if (tracker)
+  if (tracker) {
     tracker->trial()->addCurveSet();
+    tracking_set_widget->addTrackingSet(tracker->trial()->volumes.size());
+  }
   redrawGL();
   frame_changed();
 }

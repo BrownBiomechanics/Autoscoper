@@ -471,6 +471,19 @@ KeyCurve<Quatf>* Trial::getQuatCurve(int volumeID)
   }
 }
 
+size_t Trial::numberOfCurveSets()
+{
+  return volumestransform.begin()->numberOfCurveSets();
+}
+
+void Trial::setCurrentCurveSet(const int& idx)
+{
+  // Set the active curve to idx for all volumes
+  for (std::vector<VolumeTransform>::iterator itr = volumestransform.begin(); itr != volumestransform.end(); ++itr) {
+    itr->setCurrentCurveSet(idx);
+  }
+}
+
 void Trial::addCurveSet()
 {
   // Add a new blank curve set to all volumes, also switches the active curve to the new set

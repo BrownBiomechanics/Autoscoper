@@ -90,6 +90,8 @@ public:
   KeyCurve<float>* getZCurve(int volumeID);
   KeyCurve<Quatf>* getQuatCurve(int volumeID);
 
+  size_t numberOfCurveSets();
+  void setCurrentCurveSet(const int& idx);
   void addCurveSet();
   void setCurrentCurveSetToNext();
   void setCurrentCurveSetToPrevious();

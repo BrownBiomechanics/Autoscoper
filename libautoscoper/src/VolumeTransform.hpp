@@ -67,6 +67,7 @@ public:
   KeyCurve<Quatf>* getQuatCurve() { return quat_curves[currentCurveSet]; }
 
   size_t numberOfCurveSets() const { return x_curves.size(); }
+  void setCurrentCurveSet(const int& idx);
   void addCurveSet();
   void setCurrentCurveSetToNext();
   void setCurrentCurveSetToPrevious();
