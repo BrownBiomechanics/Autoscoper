@@ -24,7 +24,6 @@ set(libautoscoper_SOURCES
   src/CoordFrame.cpp
   src/DownhillSimplex.cpp
   src/PSO.cpp
-  src/KeyCurve.cpp
   src/TiffImage.cpp
   src/Tracker.cpp
   src/Trial.cpp
