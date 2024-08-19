@@ -1033,4 +1033,12 @@ void Tracker::getFullDRR(unsigned int volumeID) const
   }
 }
 
+gpu::VolumeDescription* Tracker::getVolumeDescription(const int& index)
+{
+  if (index == -1) {
+    return volumeDescription_[trial()->current_volume];
+  }
+  return volumeDescription_[index];
+}
+
 } // namespace xromm

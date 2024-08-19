@@ -43,6 +43,7 @@
 #define XROMM_COORD_FRAME_HPP
 
 #include <string>
+#include <Vector.hpp>
 
 namespace xromm {
 
@@ -79,6 +80,8 @@ public:
 
   void translate(const double* v);
 
+  void set_translation(const Vec3f& t);
+
   void rotate(const double* v, double angle);
 
   CoordFrame inverse() const;
@@ -86,6 +89,12 @@ public:
   void point_to_world_space(const double* p, double* q) const;
 
   void vector_to_world_space(const double* p, double* q) const;
+
+  Vec3f rotate_vector(const Vec3f& p);
+
+  Vec3f translate_vector(const Vec3f& p);
+
+  Vec3f transform_vector(const Vec3f& p);
 
   CoordFrame linear_extrap(const CoordFrame& x2) const;
 

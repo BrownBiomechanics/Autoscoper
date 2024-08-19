@@ -325,6 +325,13 @@ void CoordFrame::translate(const double* v)
   translation_[2] += v[2];
 }
 
+void CoordFrame::set_translation(const Vec3f& t)
+{
+  translation_[0] = t.x;
+  translation_[1] = t.y;
+  translation_[2] = t.z;
+}
+
 CoordFrame CoordFrame::inverse() const
 {
   // clang-format off
@@ -376,6 +383,37 @@ void CoordFrame::vector_to_world_space(const double* p, double* q) const
          rotation_[5] * p[1] +
          rotation_[8] * p[2];
   // clang-format on
+}
+
+Vec3f CoordFrame::rotate_vector(const Vec3f& p)
+{
+  Vec3f q;
+  // clang-format off
+  q.x = rotation_[0] * p.x +
+        rotation_[3] * p.y +
+        rotation_[6] * p.z;
+  q.y = rotation_[1] * p.x +
+        rotation_[4] * p.y +
+        rotation_[7] * p.z;
+  q.z = rotation_[2] * p.x +
+        rotation_[5] * p.y +
+        rotation_[8] * p.z;
+  // clang-format on
+  return q;
+}
+
+Vec3f CoordFrame::translate_vector(const Vec3f& p)
+{
+  Vec3f q;
+  q.x = p.x + translation_[0];
+  q.y = p.y + translation_[1];
+  q.z = p.z + translation_[2];
+  return q;
+}
+
+Vec3f CoordFrame::transform_vector(const Vec3f& p)
+{
+  return translate_vector(rotate_vector(p));
 }
 
 CoordFrame CoordFrame::linear_extrap(const CoordFrame& x) const
