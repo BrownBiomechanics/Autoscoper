@@ -31,5 +31,3 @@ set(opencl_SOURCES
   src/gpu/opencl/DRRBackground.cpp
   src/gpu/opencl/Mult.cpp
 )
-
-

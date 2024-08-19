@@ -67,4 +67,3 @@ _These instructions are untested and maybe obsolete._
 5. Run `docker build -t "autoscoper_dev_ubuntu:latest" -f ./UbuntuDockerFile .`
 6. Find your IP address (using `ipconfig` on Windows or `ifconfig` on Unix)
 7. Run `docker run --rm -it --gpus all -e DISPLAY=<IP>:0.0 --name autoscoper_ubuntu autoscoper_dev_ubuntu:latest`
-

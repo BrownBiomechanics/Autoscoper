@@ -16,4 +16,3 @@ if(WIN32)
   # The xromm::filesystem::relative compatibility function is not expected to work on Windows
   set_tests_properties(TestFileSystemCompat PROPERTIES WILL_FAIL TRUE)
 endif()
-
