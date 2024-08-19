@@ -196,4 +196,3 @@ It may be useful to launch Autoscoper from Python. This can be done by using the
    :undoc-members:
    :show-inheritance:
 ```
-

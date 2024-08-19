@@ -37,4 +37,3 @@ endforeach()
 add_custom_target(${SHADER_TO_HEADER} DEPENDS ${GENERATED_LIST})
 
 set(opencl_shaders_src ${GENERATED_LIST} PARENT_SCOPE)
-

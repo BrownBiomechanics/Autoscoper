@@ -23,4 +23,3 @@ If you cannot find a similar feature request, then write a post in the [SlicerAu
 ## I Would Like to share how Autoscoper helped me in my research
 
 Please send us the citation for your paper posting in the [SlicerAutoscoperM category](https://discourse.slicer.org/c/community/slicerautoscoperm/30) on the Slicer Discourse. We would love to hear how Autoscoper helped you in your research.
-
