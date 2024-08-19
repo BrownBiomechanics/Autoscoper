@@ -2438,9 +2438,31 @@ void AutoscoperMainWindow::key_k_pressed()
 {
   ui->toolButtonNextCurveSet->click();
 }
-/*void AutoscoperMainWindow::key_p_pressed(){
-   ui->toolButtonRetrack->click();
-   } */
+void AutoscoperMainWindow::key_p_pressed()
+{
+  // Get the current position of the manipulator and the volume
+  Mat4d manip = getManipulator(-1)->transform();
+  CoordFrame vol_world = (CoordFrame::from_matrix(trans(manip)) * *tracker->trial()->getVolumeMatrix(-1));
+
+  // The translation center is the relative position of the center of the volume to the corner coordinate.
+  // Since this describes the movement from the corner to the center we transform the inverse of this point
+  // by the volumes R and t to get the position of the manipulator in world space.
+  Vec3f trans_center = tracker->getVolumeDescription(-1)->transCenterVec();
+  Vec3f vol_center_world = vol_world.transform_vector(-trans_center);
+
+  // Update the position of the manipulator to the transformed point
+  manip(0, 3) = vol_center_world.x;
+  manip(1, 3) = vol_center_world.y;
+  manip(2, 3) = vol_center_world.z;
+  getManipulator(-1)->set_transform(manip);
+
+  // We need to update the volume matrix translation to be the relative location of the volume center.
+  // So we can simply rotate the translation center by the volumes relative rotation.
+  CoordFrame* vol_mat = tracker->trial()->getVolumeMatrix(-1);
+  vol_mat->set_translation(vol_mat->rotate_vector(trans_center));
+
+  redrawGL();
+}
 void AutoscoperMainWindow::key_c_pressed()
 {
   on_actionInsert_Key_triggered(true); // Insert the current frame and then run the tracking
@@ -2520,8 +2542,8 @@ void AutoscoperMainWindow::setupShortcuts()
   new QShortcut(QKeySequence(Qt::Key_J), this, SLOT(key_j_pressed()));
   // K - Goes to the next tracking set if there is one
   new QShortcut(QKeySequence(Qt::Key_K), this, SLOT(key_k_pressed()));
-  // P - Retrack - not enabled
-  // new QShortcut(QKeySequence(Qt::Key_P), this, SLOT(key_p_pressed()));
+  // P - Snap pivot back to the center of the volume
+  new QShortcut(QKeySequence(Qt::Key_P), this, SLOT(key_p_pressed()));
   // C - Track current frame
   new QShortcut(QKeySequence(Qt::Key_C), this, SLOT(key_c_pressed()));
   // + - Increase pivot size

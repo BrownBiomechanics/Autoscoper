@@ -155,6 +155,7 @@ public:
   // std::vector<double> trackImplantFrame(unsigned int volumeID, double * xyzypr) const;
 
   void getFullDRR(unsigned int volumeID) const;
+  gpu::VolumeDescription* getVolumeDescription(const int& index);
 
 private:
   bool calculate_viewport(const CoordFrame& modelview, const Camera& camera, double* viewport) const;
