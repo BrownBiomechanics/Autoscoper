@@ -21,6 +21,8 @@ This is a list of all the shortcuts that are available in the current version of
 | `D` | Switch to move volume pivot mode |
 | `H` | Toggle visibility of all volumes |
 | `L` | Toggle visibility of all Radiographs |
+| `O` | Snap the manipulator axes back to the global axes |
+| `P` | Snap the manipulator position back to the center of the volume |
 | `+` / `=` | Increase size of manipulator |
 | `-` | Decrease size of manipulator |
 
