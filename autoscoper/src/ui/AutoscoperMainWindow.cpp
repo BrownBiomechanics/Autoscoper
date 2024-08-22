@@ -2463,6 +2463,28 @@ void AutoscoperMainWindow::key_p_pressed()
 
   redrawGL();
 }
+
+void AutoscoperMainWindow::key_o_pressed()
+{
+  // Get the current position of the manipulator and the volume.
+  Mat4d cur_manip_pos = getManipulator(-1)->transform();
+  Vec3f cur_manip_t = Vec3f(cur_manip_pos(0, 3), cur_manip_pos(1, 3), cur_manip_pos(2, 3));
+  CoordFrame* vol_mat = tracker->trial()->getVolumeMatrix(-1);
+
+  // Update the rotation of the volume matrix to preserve the orientation of the volume
+  *vol_mat = CoordFrame::from_matrix(trans(cur_manip_pos)) * *vol_mat;
+  // Ensure we are compensating for the manipulator so we don't alter the world coordinate calculations
+  vol_mat->set_translation(Vec3f(vol_mat->translation()) - cur_manip_t);
+
+  // Reset the rotation of the manipulator
+  Mat4d new_manip_pos = Mat4d::eye();
+  new_manip_pos(0, 3) = cur_manip_t.x;
+  new_manip_pos(1, 3) = cur_manip_t.y;
+  new_manip_pos(2, 3) = cur_manip_t.z;
+  getManipulator(-1)->set_transform(new_manip_pos);
+
+  redrawGL();
+}
 void AutoscoperMainWindow::key_c_pressed()
 {
   on_actionInsert_Key_triggered(true); // Insert the current frame and then run the tracking
@@ -2544,6 +2566,8 @@ void AutoscoperMainWindow::setupShortcuts()
   new QShortcut(QKeySequence(Qt::Key_K), this, SLOT(key_k_pressed()));
   // P - Snap pivot back to the center of the volume
   new QShortcut(QKeySequence(Qt::Key_P), this, SLOT(key_p_pressed()));
+  // O - Align pivot back to global axes
+  new QShortcut(QKeySequence(Qt::Key_O), this, SLOT(key_o_pressed()));
   // C - Track current frame
   new QShortcut(QKeySequence(Qt::Key_C), this, SLOT(key_c_pressed()));
   // + - Increase pivot size
