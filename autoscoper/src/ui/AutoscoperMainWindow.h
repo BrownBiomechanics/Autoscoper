@@ -335,6 +335,7 @@ public slots:
   void key_k_pressed();
   // void key_r_pressed();
   void key_p_pressed();
+  void key_o_pressed();
   void key_c_pressed();
   void key_plus_pressed();
   void key_equal_pressed();
