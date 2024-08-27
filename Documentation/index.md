@@ -14,6 +14,7 @@ getting-started.md
 get-help.md
 user-interface.md
 shortcuts.md
+transforms.md
 tutorials/index.md
 adv-topics/index.md
 file-specifications/index.md
