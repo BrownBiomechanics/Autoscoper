@@ -2447,7 +2447,7 @@ void AutoscoperMainWindow::key_p_pressed()
   // The translation center is the relative position of the center of the volume to the corner coordinate.
   // Since this describes the movement from the corner to the center we transform the inverse of this point
   // by the volumes R and t to get the position of the manipulator in world space.
-  Vec3f trans_center = tracker->getVolumeDescription(-1)->transCenterVec();
+  Vec3f trans_center = Vec3f(tracker->getVolumeDescription(-1)->transCenter());
   Vec3f vol_center_world = vol_world.transform_vector(-trans_center);
 
   // Update the position of the manipulator to the transformed point

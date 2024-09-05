@@ -48,7 +48,6 @@ typedef cudaArray Image;
 #elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
 #  include "gpu/opencl/OpenCL.hpp"
 #endif
-#include "Vector.hpp"
 
 namespace xromm {
 class Volume;
@@ -69,8 +68,6 @@ public:
   const float* invScale() const { return invScale_; }
   const float* invTrans() const { return invTrans_; }
   const double* transCenter() const { return transCenter_; }
-  Vec3f transCenterVec() { return Vec3f(transCenter_); }
-
   float minValue() const { return minValue_; }
   float maxValue() const { return maxValue_; }
 
