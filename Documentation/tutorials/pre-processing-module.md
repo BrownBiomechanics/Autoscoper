@@ -22,7 +22,7 @@ Before diving into pre-processing, ensure that you have already loaded the data 
 
 To access the Pre-Processing module, open the AutoscoperM module located in the `Tracking` category. Next, navigate to the second tab labeled `Autoscoper Pre-Processing`.
 
-![Pre-Processing Module UI Overview](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/prePro_uiOverview.png)
+![Pre-Processing Module UI Overview](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/prePro_overview.png)
 
 ## General Inputs
 
