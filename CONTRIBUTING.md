@@ -133,5 +133,5 @@ is the checklist:
 *The initial version of these guidelines is adapted from [3D Slicer guidelines](https://slicer.readthedocs.io/en/latest/developer_guide/contributing.html?highlight=contributing#decision-making-process)*
 
 
-[slicer-forum]: https://discourse.slicer.org/c/community/slicerautoscoperm/30
-[slicer-issues]: https://github.com/BrownBiomechanics/Autoscoper/issues
+[autoscoper-forum]: https://discourse.slicer.org/c/community/slicerautoscoperm/30
+[autoscoper-issues]: https://github.com/BrownBiomechanics/Autoscoper/issues
