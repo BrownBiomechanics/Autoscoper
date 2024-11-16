@@ -7,8 +7,7 @@ Currently, the module supports the following tasks:
 - Segmentation generation or loading
 - Partial volume cropping and extraction
 
-In the future, we will add support for the following tasks
-- Virtual Radiograph (VRG) generation
+In the future, we will add support for the following tasks:
 - Config file generation
 ```
 

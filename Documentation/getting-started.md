@@ -55,4 +55,3 @@ This section defines terms that are commonly used by Autoscoper and SlicerAutosc
 * **Sequential 3D CT**: A series of 3D CT scans acquired from the same region of interest (such as a joint or limb) in different positions. Using the Sequences module, these independent volumes can be visualized and processed together as a series.
 * **TFM**: An ITK transformation file with the extension `.tfm`.
 * **TRA**: A transform file with the extension `.tra` exported by Autoscoper. It contains a Nx16 transformation matrix of rigid body kinematics. Each one of the N lines represents a frame of BVR data optimized by Autoscoper. The TRA transforms can be applied to AUT models to visualized 3D motion of the rigid body and calculate motion.
-* **Virtually Generated Radiograph (VRG)**: Synthetic radiograph generated from 3D CT using synthetic camera models.

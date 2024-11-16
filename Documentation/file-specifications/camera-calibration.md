@@ -2,6 +2,10 @@
 
 ## VTKCam 1.0
 
+```{important} Deprecated
+This file specification is no longer supported. The VRG generation functionality was removed in [BrownBiomechanics/SlicerAutoscoperM#140](https://github.com/BrownBiomechanics/SlicerAutoscoperM/pull/140). Please refer to the updated workflows and documentation for alternative solutions.
+```
+
 ### Overview
 
 The camera calibration file is a yaml and contains all of the information to load a camera into Autoscoper. The file is organized with key value pairs.
