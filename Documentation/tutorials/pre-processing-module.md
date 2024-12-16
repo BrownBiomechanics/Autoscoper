@@ -108,7 +108,7 @@ Partial Volumes generated using this method must be loaded into Slicer via the `
 
 The `Generate Config` section of the Pre-Processing module an alternative way to create an [Autoscoper configuration file](../file-specifications/config.md).For more information on generating a configuration file directly within the Autoscoper application, see the section on [](./custom-data.md#creating-a-configuration-file).
 
-The inputs you provide in this section follow the configuration file format specified in [version 1.1](../file-specifications/config.md#version-1-1).
+The inputs you provide in this section follow the configuration file format specified in {ref}`config-file-format-version-1-1`.
 
 
 ### Creating a Configuration File

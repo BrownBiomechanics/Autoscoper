@@ -1,6 +1,6 @@
 # Configuration File Format
 
-(version-1-1)=
+(config-file-format-version-1-1)=
 ## Version 1.1
 
 ### Overview
