@@ -19,7 +19,6 @@ Before diving into pre-processing, ensure that you have already loaded the data 
 
 To access the Pre-Processing module, open the AutoscoperM module located in the `Tracking` category. Next, navigate to the second tab labeled `Autoscoper Pre-Processing`.
 
-<!-- TODO: update this image -->
 ![Pre-Processing Module UI Overview](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/prePro_overview.png)
 
 ## General Inputs
@@ -123,7 +122,7 @@ Once the directories are populated, you can select the files you wish to include
 
 If you wish to adjust the order of selected items, you can remove them from the right-hand list by clicking the `Delete` button next to each item. You and then re-add them in the desired order.
 
-<!-- TODO: insert screenshot of path specification here -->
+![Configuration File Path Selection](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/prePro_configPathSelection.gif)
 
 For selecting partial volume files, the process is similar but without the need to specify an order. Click the `Populate from Volume Subdirectory button` to load all available partial volume files from the `Partial Volume Subdirectory`. From there, you can check the files you want to include in the configuration file.
 
