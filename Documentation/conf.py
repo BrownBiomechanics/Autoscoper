@@ -27,6 +27,7 @@ extensions = [
     "sphinx_rtd_theme",
     "sphinxcontrib.autoprogram",
     "sphinxcontrib.bibtex",
+    "sphinxcontrib.mermaid",
 ]
 bibtex_bibfiles = ["refs.bib"]
 myst_enable_extensions = [
