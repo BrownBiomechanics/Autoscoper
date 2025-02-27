@@ -59,7 +59,7 @@ int main(int argc, char** argv)
 
   if (argc <= 1) {
     AutoscoperMainWindow* widget = new AutoscoperMainWindow();
-    Socket* socket = new Socket(widget, 30007);
+    Socket* socket = new Socket(widget, 0);
     widget->show();
     int ret = app.exec();
     delete socket;
@@ -68,7 +68,7 @@ int main(int argc, char** argv)
   } else {
     fprintf(stderr, "Start Batch %s\n", argv[1]);
     AutoscoperMainWindow* widget = new AutoscoperMainWindow(true);
-    Socket* socket = new Socket(widget, 30007);
+    Socket* socket = new Socket(widget, 0);
     widget->runBatch(argv[1], true);
     delete socket;
   }
