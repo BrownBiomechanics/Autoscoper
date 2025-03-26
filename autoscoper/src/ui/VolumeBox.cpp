@@ -64,3 +64,12 @@ void VolumeBox::on_toolButton_VolumeFile_clicked()
     widget->lineEdit_VolumeFile->setText(fileName);
   }
 }
+
+void VolumeBox::on_toolButton_MeshFile_clicked()
+{
+  QString fileName =
+    QFileDialog::getOpenFileName(this, tr("Open Mesh File"), QDir::currentPath(), tr("STL Mesh File (*.stl)"));
+  if (fileName.isNull() == false) {
+    widget->lineEdit_MeshFile->setText(fileName);
+  }
+}

@@ -47,6 +47,9 @@
 #include "ui_VolumeBox.h"
 
 #include <QFileDialog>
+#ifdef Autoscoper_COLLISION_DETECTION
+#include "Mesh.hpp"
+#endif // Autoscoper_COLLISION_DETECTION
 
 #include <iostream>
 // #include <sstream>
@@ -74,6 +77,11 @@ NewTrialDialog::NewTrialDialog(QWidget* parent)
   for (int i = 0; i < nbVolumes; i++) {
     VolumeBox* box = new VolumeBox();
     box->widget->groupBox_Volume->setTitle("Volume " + QString::number(i + 1));
+
+#ifndef Autoscoper_COLLISION_DETECTION
+    hideMeshFileFields(box);
+#endif // Autoscoper_COLLISION_DETECTION
+
     diag->gridLayout_8->addWidget(box, i, 0, 1, 1);
     volumes.push_back(box);
   }
@@ -87,6 +95,13 @@ NewTrialDialog::~NewTrialDialog()
     delete cameras[i];
   }
   cameras.clear();
+}
+
+void NewTrialDialog::hideMeshFileFields(VolumeBox* box)
+{
+  box->widget->meshFileLabel->setVisible(false);
+  box->widget->lineEdit_MeshFile->setVisible(false);
+  box->widget->toolButton_MeshFile->setVisible(false);
 }
 
 void NewTrialDialog::on_toolButton_CameraMinus_clicked()
@@ -133,6 +148,9 @@ void NewTrialDialog::on_toolButton_VolumePlus_clicked()
 
   VolumeBox* box = new VolumeBox();
   box->widget->groupBox_Volume->setTitle("Volume " + QString::number(nbVolumes));
+#ifndef Autoscoper_COLLISION_DETECTION
+  hideMeshFileFields(box);
+#endif // Autoscoper_COLLISION_DETECTION
   diag->gridLayout_8->addWidget(box, nbVolumes - 1, 0, 1, 1);
   volumes.push_back(box);
 }
@@ -183,6 +201,15 @@ bool NewTrialDialog::run()
       if (volumes[i]->widget->lineEdit_ScaleX->text().isEmpty() || volumes[i]->widget->lineEdit_ScaleY->text().isEmpty()
           || volumes[i]->widget->lineEdit_ScaleZ->text().isEmpty())
         continue;
+
+#ifdef Autoscoper_COLLISION_DETECTION
+      QString mesh_filename = volumes[i]->widget->lineEdit_MeshFile->text();
+      if (mesh_filename.isEmpty())
+        continue;
+
+      Mesh mesh(mesh_filename.toStdString().c_str());
+      trial.meshes.push_back(mesh);
+#endif // Autoscoper_COLLISION_DETECTION
 
       double volume_scale_x = volumes[i]->widget->lineEdit_ScaleX->text().toDouble();
       double volume_scale_y = volumes[i]->widget->lineEdit_ScaleY->text().toDouble();

@@ -66,6 +66,8 @@ private:
   int nbVolumes;
   bool run();
 
+  void hideMeshFileFields(VolumeBox* box);
+
 public:
   explicit NewTrialDialog(QWidget* parent = 0);
   ~NewTrialDialog();
