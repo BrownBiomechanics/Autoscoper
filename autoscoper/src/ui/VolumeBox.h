@@ -44,6 +44,10 @@
 
 #include <QWidget>
 
+#ifdef Autoscoper_COLLISION_DETECTION
+#include <QLineEdit>
+#endif // Autoscoper_COLLISION_DETECTION
+
 namespace Ui {
 class VolumeBox;
 }
@@ -60,9 +64,17 @@ public:
 
   Ui::VolumeBox* widget;
 
+#ifdef Autoscoper_COLLISION_DETECTION
+  QLineEdit* meshFileLineEdit;
+#endif // Autoscoper_COLLISION_DETECTION
+
 public slots:
 
   void on_toolButton_VolumeFile_clicked();
+
+#ifdef Autoscoper_COLLISION_DETECTION
+  void meshFileToolButtonClicked();
+#endif // Autoscoper_COLLISION_DETECTION
 };
 
 #endif /* VOLUMEBOX_H_ */

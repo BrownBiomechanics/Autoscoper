@@ -66,6 +66,10 @@ private:
   int nbVolumes;
   bool run();
 
+#ifdef Autoscoper_COLLISION_DETECTION
+  void addMeshFileFields(VolumeBox* box);
+#endif // Autoscoper_COLLISION_DETECTION
+
 public:
   explicit NewTrialDialog(QWidget* parent = 0);
   ~NewTrialDialog();

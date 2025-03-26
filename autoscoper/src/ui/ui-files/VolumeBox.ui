@@ -34,7 +34,7 @@
      <property name="title">
       <string>Volume</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_5">
+     <layout class="QGridLayout" name="gridLayout_Volume">
       <item row="1" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
