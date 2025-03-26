@@ -37,6 +37,17 @@ The output of the module is a sequence of transforms for each bone, mapping from
 * Region of interest (ROI) nodes, used to define the regions to compare from the source volume to each sequence frame
 * Cropped volumes based on the ROIs of the source volume and sequence frames
 
+## Preparing the Model Hierarchy
+
+1) Load in the STL Models previously segmented from the Source Volume. If not yet processed, see the
+[Pre-Processing Auto-Generated Segmentation](https://autoscoper.readthedocs.io/en/latest/tutorials/pre-processing-module.html#auto-generated-segmentations) SAM module.
+2) Once loded into the Scene, navigate to the Data module. Child nodes (Models) can be nested (drag and drop in Data module) under the Root node in accordance with the desired transform propagation.
+
+## Preparing the Sequence Volume (Sequential Static 3D CT)
+
+4DCT data can be loaded into 3DSLicer using the Add DICOM Data module directly as a Sequence.
+Multiple static 3D CT Scans can be combined to form a Sequence. Once  each desired CT scan is loaded into 3DSLicer,  using the Sequences module under the Edit tab, Create a new Sequence and add desired Volume Data nodes from the available list.
+
 <!-- ![Hierarchical 3D Registration Module UI Overview](TODO.png) -->
 
 ### Preparing the Model Hierarchy
