@@ -1,4 +1,4 @@
-# Hierarchical 3D Registration Module
+# Hierarchical 3D Registration (3DH) Module
 
 ```{warning}
 This module is currently under development, and details are subject to change without notice.
@@ -27,9 +27,20 @@ The Hierarchical 3D Registration module requires four inputs:
 * Model Hierarchy: The root node of the model hierarchy, representing the rigid objects to be registered
 * Frames: The range of frames to be tracked
 
-The output of the module is a sequence of transforms for each bone, mapping from the bone's position in the source volume to its position in each frame. The module also generates additional nodes in the scene used during the registration process, such as:
+The output of the module is a sequence of transforms for each bone, mapping from the bone's pose in the source volume to its pose in each frame. The module also generates additional nodes in the scene used during the registration process, such as:
 * Region of interest (ROI) nodes, used to define the regions to compare from the source volume to each sequence frame
 * Cropped volumes based on the ROIs of the source volume and sequence frames
+
+## Preparing the Model Hierarchy
+
+1) Load in the STL Models previously segmented from the Source Volume. If not yet processed, see the
+[Pre-Processing Auto-Generated Segmentation](https://autoscoper.readthedocs.io/en/latest/tutorials/pre-processing-module.html#auto-generated-segmentations) SAM module.
+2) Once loded into the Scene, navigate to the Data module. Child nodes (Models) can be nested (drag and drop in Data module) under the Root node in accordance with the desired transform propagation.
+
+## Preparing the Sequence Volume (Sequential Static 3D CT)
+
+4DCT data can be loaded into 3DSLicer using the Add DICOM Data module directly as a Sequence.
+Multiple static 3D CT Scans can be combined to form a Sequence. Once  each desired CT scan is loaded into 3DSLicer,  using the Sequences module under the Edit tab, Create a new Sequence and add desired Volume Data nodes from the available list.
 
 <!-- ![Hierarchical 3D Registration Module UI Overview](TODO.png) -->
 
