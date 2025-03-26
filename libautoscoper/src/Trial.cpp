@@ -129,6 +129,7 @@ Trial::Trial(const std::string& filename)
     convertToAbsolutePaths(mayaCams, configLocation);
     convertToAbsolutePaths(camRootDirs, configLocation);
     convertToAbsolutePaths(volumeFiles, configLocation);
+    convertToAbsolutePaths(meshFiles, configLocation);
   }
 
   validate(mayaCams, camRootDirs, volumeFiles, voxelSizes, meshFiles, filename);
