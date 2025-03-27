@@ -15,7 +15,6 @@ get-help.md
 user-interface.md
 shortcuts.md
 transforms.md
-hierarchical-3d-registration.md
 tutorials/index.md
 adv-topics/index.md
 file-specifications/index.md
