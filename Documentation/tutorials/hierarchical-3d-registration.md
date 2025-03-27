@@ -21,7 +21,7 @@ The Hierarchical 3D Registration module utilizes a robust image registration alg
 ## Accessing the Hierarchical 3D Registration Module
 
 3DSLicer version 5.8.0 or above is required for the Hierarchical 3D Registration Module.
- 
+
 To access the module, install the `Hierarchical 3D Registration` extension, following similar steps to the [AutoscoperM extension installation instructions](getting-started.md#installing-autoscoperm), then open the `Hierarchical 3D Registration` module located under the `Tracking` category in 3D Slicer.
 
 ## General Inputs and Outputs
@@ -60,7 +60,7 @@ The initialization step creates the necessary ROI nodes for each bone in the hie
 
 Following initialization, you will be prompted to adjust the bone transform. A transform interaction widget will appear in the slice views and 3D view, allowing you to manually adjust the position and orientation of the model closer to its target position in the current frame. This will serve as the initial guess for the optimal transform between the volumes.
 
-<!-- ![Adjusting the Initial Transform Guess for Registration](TODO.gif) -->
+![Adjusting the Initial Transform Guess for Registration](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/Registering.gif)
 
 If the change in position across frames is minimal enough to not require manual intervention, you can choose to skip it by selecting the "Skip Initial Guess Adjustment" option. This enables the registration process to proceed fully automatically. Use this option with caution, since the registration accuracy depends on the quality of the initial alignment.
 
@@ -68,7 +68,9 @@ Once the initial guess is set, click the "Set Initial Guess And Register" button
 
 The registration workflow provides visual feedback through the Slicer scene, allowing you to interact and adjust the input transformations when necessary. You can monitor the process using the progress bar at the top of the menu and the help string displayed below while registration is ongoing.
 
+![3D CT Registration Results](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/final_registration_success.png)
+
 Upon completion, the sequences of transforms will contain the registration results. These transforms will be applied to the model nodes, so that all tracked objects are visually aligned across the sequence frames. You can navigate through the sequence using the Sequence Browser to view the registration results for different frames.
 
-<!-- ![3D CT Registration Results](TODO.gif) -->
+
 <!-- ![4D CT Registration Results](TODO.gif) -->
