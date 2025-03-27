@@ -35,30 +35,20 @@ The output of the module is a sequence of transforms for each bone, mapping from
 * Region of interest (ROI) nodes, used to define the regions to compare from the source volume to each sequence frame
 * Cropped volumes based on the ROIs of the source volume and sequence frames
 
+<!-- ![Hierarchical 3D Registration Module UI Overview](TODO.png) -->
+
 ### Preparing the Model Hierarchy
 
 1) Load in the STL Models previously segmented from the Source Volume. If not yet processed, see the [Pre-Processing Auto-Generated Segmentation](tutorials/pre-processing-module.md#auto-generated-segmentations) SAM module.
 2) Once loaded into the Scene, navigate to the Data module. Child nodes (Models) can be nested (drag and drop in Data module) under the Root node in accordance with the desired transform propagation.
 
-[Drag and Drop Models into a Hierarchy](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/model_hier_demo.gif)
+![Creating a Model Hierarchy in the Data Module](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/model_hier_demo.gif)
 
 
 ### Preparing the Input Sequence Volume
 
 Slicer automatically loads 4D CT data as sequences. Multiple static 3D CT Scans can be combined to form a Sequence. Load all scalar volume data into the scene, then [construct the sequence using the Sequence Module](https://slicer.readthedocs.io/en/latest/user_guide/modules/sequences.html#creating-sequences-from-a-set-of-nodes). Using the Sequences module under the Edit tab, Create a new Sequence and add desired Volume Data nodes from the available list.
 
-<!-- ![Hierarchical 3D Registration Module UI Overview](TODO.png) -->
-
-
-
-### Preparing the Source Volume and Hierarchy
-
-1. Load the static CT data into 3D Slicer
-2. From the source image you intend to track, [generate segmentations](tutorials/pre-processing-module.md#segmentations) of the bones you are interested in tracking, or load them if your data has already been segmented
-3. To create a model from a segmentation node, navigate to the Data Module, right-click the node and select the "export visible segments to models" option
-4. Arrange the models in a hierarchy by dragging and dropping the model nodes, in Subject Hierarchy tab. Order them in a structure that most resembles their anatomical dependencies of motion.
-
-<!-- ![Creating a Model Hierarchy in the Data Module](TODO.png) -->
 
 ### Registering
 
