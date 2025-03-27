@@ -39,9 +39,8 @@ The output of the module is a sequence of transforms for each bone, mapping from
 
 ## Preparing the Model Hierarchy
 
-1) Load in the STL Models previously segmented from the Source Volume. If not yet processed, see the
-[Pre-Processing Auto-Generated Segmentation](https://autoscoper.readthedocs.io/en/latest/tutorials/pre-processing-module.html#auto-generated-segmentations) SAM module.
-2) Once loded into the Scene, navigate to the Data module. Child nodes (Models) can be nested (drag and drop in Data module) under the Root node in accordance with the desired transform propagation.
+1) Load in the STL Models previously segmented from the Source Volume. If not yet processed, see the [Pre-Processing Auto-Generated Segmentation](tutorials/pre-processing-module.md#auto-generated-segmentations) SAM module.
+2) Once loaded into the Scene, navigate to the Data module. Child nodes (Models) can be nested (drag and drop in Data module) under the Root node in accordance with the desired transform propagation.
 
 ## Preparing the Sequence Volume (Sequential Static 3D CT)
 
