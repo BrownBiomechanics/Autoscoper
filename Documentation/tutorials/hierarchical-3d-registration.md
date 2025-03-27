@@ -22,7 +22,7 @@ The Hierarchical 3D Registration module utilizes a robust image registration alg
 
 3DSLicer version 5.8.0 or above is required for the Hierarchical 3D Registration Module.
 
-To access the module, install the `Hierarchical 3D Registration` extension, following similar steps to the [AutoscoperM extension installation instructions](getting-started.md#installing-autoscoperm), then open the `Hierarchical 3D Registration` module located under the `Tracking` category in 3D Slicer.
+To access the module, install the `Hierarchical 3D Registration` extension, following similar steps to the [AutoscoperM extension installation instructions](../getting-started.md#installing-autoscoperm), then open the `Hierarchical 3D Registration` module located under the `Tracking` category in 3D Slicer.
 
 ## General Inputs and Outputs
 
@@ -41,7 +41,7 @@ The output of the module is a sequence of transforms for each bone, mapping from
 
 ### Preparing the Model Hierarchy
 
-1) Load in the STL Models previously segmented from the Source Volume. If not yet processed, see the [Pre-Processing Auto-Generated Segmentation](tutorials/pre-processing-module.md#auto-generated-segmentations) SAM module.
+1) Load in the STL Models previously segmented from the Source Volume. If not yet processed, see the [Pre-Processing Auto-Generated Segmentation](pre-processing-module.md#auto-generated-segmentations) SAM module.
 2) Once loaded into the Scene, navigate to the Data module. Child nodes (Models) can be nested (drag and drop in Data module) under the Root node in accordance with the desired transform propagation.
 
 ![Creating a Model Hierarchy in the Data Module](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/model_hier_demo.gif)
