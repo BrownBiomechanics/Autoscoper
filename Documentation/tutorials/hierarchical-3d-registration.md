@@ -37,19 +37,14 @@ The output of the module is a sequence of transforms for each bone, mapping from
 * Region of interest (ROI) nodes, used to define the regions to compare from the source volume to each sequence frame
 * Cropped volumes based on the ROIs of the source volume and sequence frames
 
+<!-- ![Hierarchical 3D Registration Module UI Overview](TODO.png) -->
+
 ### Preparing the Model Hierarchy
 
 1) Load in the STL Models previously segmented from the Source Volume. If not yet processed, see the [Pre-Processing Auto-Generated Segmentation](tutorials/pre-processing-module.md#auto-generated-segmentations) SAM module.
 2) Once loaded into the Scene, navigate to the Data module. Child nodes (Models) can be nested (drag and drop in Data module) under the Root node in accordance with the desired transform propagation.
 
 ![Creating a Model Hierarchy in the Data Module](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/model_hier_demo.gif)
-
-
-### Preparing the Input Sequence Volume
-
-Slicer automatically loads 4D CT data as sequences. Multiple static 3D CT Scans can be combined to form a Sequence. Load all scalar volume data into the scene, then [construct the sequence using the Sequence Module](https://slicer.readthedocs.io/en/latest/user_guide/modules/sequences.html#creating-sequences-from-a-set-of-nodes). Using the Sequences module under the Edit tab, Create a new Sequence and add desired Volume Data nodes from the available list.
-
-<!-- ![Hierarchical 3D Registration Module UI Overview](TODO.png) -->
 
 
 ### Preparing the Input Sequence Volume
