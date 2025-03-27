@@ -18,6 +18,10 @@ The Hierarchical 3D Registration module in Autoscoper is designed for image-base
 
 The Hierarchical 3D Registration module utilizes a robust image registration algorithm based on rigid transformations. The algorithm is inspired by the method proposed by [Marai et al. 2006](http://dx.doi.org/10.1109/TMI.2005.862151) and implemented using [ITKElastix](https://elastix.dev/index.php). The bone hierarchy defines the structure of objects to be registered, arranged to reflect the anatomical relationships between parent and child bones. The process starts by defining regions of interest (ROIs) around the bones in the static 3D CT image (Source Volume), which will be compared against the corresponding regions in each frame of the dynamic dataset (CT Sequence). The entire hierarchy is registered in each frame, traversed in a breadth-first manner  starting with the root bone. During the registration of a given bone from the source volume to a specific frame in the sequence, the module provides a initial transformation that serves as the starting point for the optimizer. Once the optimal transformation from the source region to the target region is found, it is propagated to all child bones in the hierarchy, adjusting the starting position for each subsequent bone in the current frame. This hierarchical approach enhances the optimization process by accounting for motion constraints and thereby improving the alignment accuracy throughout the sequence.
 
+## Accessing the Hierarchical 3D Registration Module
+
+To access the module, install the `Hierarchical 3D Registration` extension, following similar steps to the [AutoscoperM extension installation instructions](getting-started.md#installing-autoscoperm), then open the `Hierarchical 3D Registration` module located under the `Tracking` category in 3D Slicer.
+
 ## General Inputs and Outputs
 
 The Hierarchical 3D Registration module requires four inputs:
@@ -31,25 +35,21 @@ The output of the module is a sequence of transforms for each bone, mapping from
 * Region of interest (ROI) nodes, used to define the regions to compare from the source volume to each sequence frame
 * Cropped volumes based on the ROIs of the source volume and sequence frames
 
-## Preparing the Model Hierarchy
+### Preparing the Model Hierarchy
 
 1) Load in the STL Models previously segmented from the Source Volume. If not yet processed, see the [Pre-Processing Auto-Generated Segmentation](tutorials/pre-processing-module.md#auto-generated-segmentations) SAM module.
 2) Once loaded into the Scene, navigate to the Data module. Child nodes (Models) can be nested (drag and drop in Data module) under the Root node in accordance with the desired transform propagation.
 
-## Preparing the Sequence Volume (Sequential Static 3D CT)
+[Drag and Drop Models into a Hierarchy](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/model_hier_demo.gif)
 
-4DCT data can be loaded into 3DSLicer using the Add DICOM Data module directly as a Sequence.
-Multiple static 3D CT Scans can be combined to form a Sequence. Once  each desired CT scan is loaded into 3DSLicer,  using the Sequences module under the Edit tab, Create a new Sequence and add desired Volume Data nodes from the available list.
+
+### Preparing the Input Sequence Volume
+
+Slicer automatically loads 4D CT data as sequences. Multiple static 3D CT Scans can be combined to form a Sequence. Load all scalar volume data into the scene, then [construct the sequence using the Sequence Module](https://slicer.readthedocs.io/en/latest/user_guide/modules/sequences.html#creating-sequences-from-a-set-of-nodes). Using the Sequences module under the Edit tab, Create a new Sequence and add desired Volume Data nodes from the available list.
 
 <!-- ![Hierarchical 3D Registration Module UI Overview](TODO.png) -->
 
-## Using the Hierarchical 3D Registration Module
 
-To access the module, install the `Hierarchical 3D Registration` extension, following similar steps to the [AutoscoperM extension installation instructions](getting-started.md#installing-autoscoperm), then open the `Hierarchical 3D Registration` module located under the `Tracking` category in 3D Slicer.
-
-### Preparing the Input Sequence
-
-Slicer automatically loads 4D CT data as sequences. For sequential 3D CT data, load all scalar volume data into the scene, then [construct the sequence using the Sequence Module](https://slicer.readthedocs.io/en/latest/user_guide/modules/sequences.html#creating-sequences-from-a-set-of-nodes).
 
 ### Preparing the Source Volume and Hierarchy
 
