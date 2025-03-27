@@ -108,7 +108,7 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget* parent)
   ui->setupUi(this);
 
   // VERSION NUMBER
-  puts("Autoscoper v2.8\n");
+  puts("Autoscoper v3.0\n");
 
   // Init Tracker and get SharedGLContext
   tracker = new Tracker();
