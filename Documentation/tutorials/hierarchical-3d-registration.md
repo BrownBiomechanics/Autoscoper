@@ -72,5 +72,6 @@ The registration workflow provides visual feedback through the Slicer scene, all
 
 Upon completion, the sequences of transforms will contain the registration results. These transforms will be applied to the model nodes, so that all tracked objects are visually aligned across the sequence frames. You can navigate through the sequence using the Sequence Browser to view the registration results for different frames.
 
+![4D CT Registration Play](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/4dctAction.gif)
 
-<!-- ![4D CT Registration Results](TODO.gif) -->
+![4D CT Registration Results](https://github.com/BrownBiomechanics/Autoscoper/releases/download/docs-resources/4dctReg.PNG)
