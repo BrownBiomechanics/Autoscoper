@@ -15,6 +15,7 @@ evaluating-tracking-results.md
 custom-data.md
 filters.md
 pre-processing-module.md
+hierarchical-3d-registration.md
 saving-and-resuming-tracks.md
 tips-and-tricks.md
 ```
