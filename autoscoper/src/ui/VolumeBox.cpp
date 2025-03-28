@@ -49,6 +49,9 @@ VolumeBox::VolumeBox(QWidget* parent)
   , widget(new Ui::VolumeBox)
 {
   widget->setupUi(this);
+#ifdef Autoscoper_COLLISION_DETECTION
+  meshFileLineEdit = nullptr;
+#endif // Autoscoper_COLLISION_DETECTION
 }
 
 VolumeBox::~VolumeBox()
@@ -64,3 +67,14 @@ void VolumeBox::on_toolButton_VolumeFile_clicked()
     widget->lineEdit_VolumeFile->setText(fileName);
   }
 }
+
+#ifdef Autoscoper_COLLISION_DETECTION
+void VolumeBox::meshFileToolButtonClicked()
+{
+  QString fileName =
+    QFileDialog::getOpenFileName(this, tr("Open Mesh File"), QDir::currentPath(), tr("STL Mesh File (*.stl)"));
+  if (fileName.isNull() == false) {
+    meshFileLineEdit->setText(fileName);
+  }
+}
+#endif // Autoscoper_COLLISION_DETECTION

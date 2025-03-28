@@ -47,6 +47,13 @@
 #include "ui_VolumeBox.h"
 
 #include <QFileDialog>
+#ifdef Autoscoper_COLLISION_DETECTION
+#include <QLabel>
+#include <QLineEdit>
+#include <QToolButton>
+
+#include "Mesh.hpp"
+#endif // Autoscoper_COLLISION_DETECTION
 
 #include <iostream>
 // #include <sstream>
@@ -74,6 +81,11 @@ NewTrialDialog::NewTrialDialog(QWidget* parent)
   for (int i = 0; i < nbVolumes; i++) {
     VolumeBox* box = new VolumeBox();
     box->widget->groupBox_Volume->setTitle("Volume " + QString::number(i + 1));
+
+#ifdef Autoscoper_COLLISION_DETECTION
+    addMeshFileFields(box);
+#endif // Autoscoper_COLLISION_DETECTION
+
     diag->gridLayout_8->addWidget(box, i, 0, 1, 1);
     volumes.push_back(box);
   }
@@ -88,6 +100,26 @@ NewTrialDialog::~NewTrialDialog()
   }
   cameras.clear();
 }
+
+#ifdef Autoscoper_COLLISION_DETECTION
+void NewTrialDialog::addMeshFileFields(VolumeBox* box)
+{
+  // add UI widgets to box to specify mesh file
+  QGridLayout* volumeGridLayout = box->widget->gridLayout_Volume;
+
+  QLabel* meshFileLabel = new QLabel("Mesh File:", this);
+  volumeGridLayout->addWidget(meshFileLabel, 4, 0);
+
+  QLineEdit* meshFileLineEdit = new QLineEdit(this);
+  box->meshFileLineEdit = meshFileLineEdit;
+  volumeGridLayout->addWidget(meshFileLineEdit, 4, 1, 1, 4);
+
+  QToolButton* meshFileToolButton = new QToolButton(this);
+  meshFileToolButton->setText("...");
+  volumeGridLayout->addWidget(meshFileToolButton, 4, 5);
+  connect(meshFileToolButton, SIGNAL(clicked()), box, SLOT(meshFileToolButtonClicked()));
+}
+#endif // Autoscoper_COLLISION_DETECTION
 
 void NewTrialDialog::on_toolButton_CameraMinus_clicked()
 {
@@ -133,6 +165,9 @@ void NewTrialDialog::on_toolButton_VolumePlus_clicked()
 
   VolumeBox* box = new VolumeBox();
   box->widget->groupBox_Volume->setTitle("Volume " + QString::number(nbVolumes));
+#ifdef Autoscoper_COLLISION_DETECTION
+  addMeshFileFields(box);
+#endif // Autoscoper_COLLISION_DETECTION
   diag->gridLayout_8->addWidget(box, nbVolumes - 1, 0, 1, 1);
   volumes.push_back(box);
 }
@@ -183,6 +218,16 @@ bool NewTrialDialog::run()
       if (volumes[i]->widget->lineEdit_ScaleX->text().isEmpty() || volumes[i]->widget->lineEdit_ScaleY->text().isEmpty()
           || volumes[i]->widget->lineEdit_ScaleZ->text().isEmpty())
         continue;
+
+#ifdef Autoscoper_COLLISION_DETECTION
+      QLineEdit* meshFileLineEdit = volumes[i]->meshFileLineEdit;
+      if (!meshFileLineEdit || meshFileLineEdit->text().isEmpty())
+        continue;
+
+      QString mesh_filename = meshFileLineEdit->text();
+      Mesh mesh(mesh_filename.toStdString().c_str());
+      trial.meshes.push_back(mesh);
+#endif // Autoscoper_COLLISION_DETECTION
 
       double volume_scale_x = volumes[i]->widget->lineEdit_ScaleX->text().toDouble();
       double volume_scale_y = volumes[i]->widget->lineEdit_ScaleY->text().toDouble();
