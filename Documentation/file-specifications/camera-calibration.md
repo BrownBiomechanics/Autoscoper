@@ -1,6 +1,6 @@
 # Camera Calibration File Format
 
-```{External Program Required}
+```{note}
 Camera Calibration files described below are generated outside of SlicerAutoscoperM. Users are recommended to use [XMALAB](https://bitbucket.org/xromm/xmalab/wiki/Home)
 ```
 

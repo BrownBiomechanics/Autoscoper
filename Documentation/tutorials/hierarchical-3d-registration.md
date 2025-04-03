@@ -22,7 +22,7 @@ The Hierarchical 3D Registration module utilizes a robust image registration alg
 
 3DSLicer version 5.8.0 or above is required for the Hierarchical 3D Registration Module.
 
-To access the module, install the `Hierarchical 3D Registration` extension, following similar steps to the [AutoscoperM extension installation instructions](../getting-started.md#installing-autoscoperm), then open the `Hierarchical 3D Registration` module located under the `Tracking` category in 3D Slicer.
+To access the module, install the `Hierarchical 3D Registration` extension, following similar steps to the [AutoscoperM extension installation instructions](../getting-started.md#installing-slicerautoscoperm), then open the `Hierarchical 3D Registration` module located under the `Tracking` category in 3D Slicer.
 
 ## General Inputs and Outputs
 
