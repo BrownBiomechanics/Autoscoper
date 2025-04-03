@@ -2,21 +2,21 @@
 
 ## What is Autoscoper?
 
-Autoscoper enables the 3D tracking of structures within multiple imaging modalities including single, bi-, and multi-plane videoradiography. Current development is underway which will expand tracking capabilities to sequential CT, 4DCT, and MRI volume sets.
+Autoscoper enables the 3D tracking of structures within images collected via single, bi-, and multi-plane videoradiography. (Most commonly bi-plane videoradiography or BVR). It has been used for tracking the shoulder, spine, wrist, hip, knee, and ankle joints.
 
-Autoscoper has been used for tracking the shoulder, spine, wrist, hip, knee, and ankle joints.
+Autoscoper is distributed through SlicerAutoscoperM (SAM), a free, open source and multi-platform 3D Slicer extension. To learn more about the relationship between Autoscoper and SAM, see https://autoscoperm.slicer.org/.
 
-Autoscoper is distributed through SlicerAutoscoperM (SAM), a free, open source and multi-platform 3D Slicer extension. To learn more about the relationship between Autoscoper and AutoscoperM, see https://autoscoperm.slicer.org/.
+In addition to Autoscoper, SAM includes a [Pre-Processing module](tutorials/pre-processing-module.md) for Autoscoper videoradiography inputs, a [Tracking Evaluation](tutorials/evaluating-tracking-results.md) module for BVR sample data outputs, and the [3D Hierarchical Registration](tutorials/hierarchical-3d-registration.md) module for registration of structures collected via 4DCT and sequential 3D CT.
 
 ## License
 
-The Autoscoper software is distributed under a BSD-style open source license that is broadly compatible with the Open Source Definition by [The Open Source Initiative](https://opensource.org/) and contains no restrictions on legal uses of the software. For more information, see the [Autoscoper License File](https://github.com/BrownBiomechanics/Autoscoper/blob/main/LICENSE)
+The SAM software is distributed under a BSD-style open source license that is broadly compatible with the Open Source Definition by [The Open Source Initiative](https://opensource.org/) and contains no restrictions on legal uses of the software. For more information, see the [Autoscoper License File](https://github.com/BrownBiomechanics/Autoscoper/blob/main/LICENSE)
 
 ### Historical Notes about the License
 
 The Autoscoper license is an adaptation of the BSD-3 license with customized additions to the Disclaimer of Warranty and Limitation of Liability that were drafted by Brown University lawyers in 2011. These additional clauses go beyond the standard BSD-3 disclaimer by explicitly stating that Brown University provides no warranties or representations of any kind, including those for design, merchantability, and fitness for purpose, and disclaims any errors or infringement on third-party proprietary rights. The Autoscoper license also limits Brown University's liability for damages arising out of the use of the software, including direct and indirect damages, as well as any loss of data or profits.
 
-## History
+## History of Autoscoper
 
 In November 2020, the development was transitioned from bitbucket to GitHub. See https://github.com/BrownBiomechanics/Autoscoper/
 

@@ -1,14 +1,14 @@
 # Loading Custom Data
 
-This tutorial will show you how to prepare your own data for use with AutoscoperM. This tutorial assumes that you have some familiarity with tracking data using AutoscoperM. If you are new to AutoscoperM, please see the [Loading and Tracking Data](./loading-and-tracking.md#tracking-a-skeletal-structure) tutorial for information on how to track data with AutoscoperM.
+This tutorial will show you how to prepare your own data for use with Autoscoper. This tutorial assumes that you have some familiarity with tracking data using Autoscoper. If you are new to Autoscoper, please see the [Loading and Tracking Data](./loading-and-tracking.md#tracking-a-skeletal-structure) tutorial for information on how to track data with Autoscoper.
 
 ```{note}
-This tutorial is intended for users who wish to use their own data with AutoscoperM. However, for learning purposes, it can still be followed using the sample data provided with AutoscoperM. The sample data is downloaded into the cache directory of 3D Slicer. To locate your cache directory open 3D Slicer and go to `Edit` -> `Application Settings` -> `Cache`. You can then click on the button next to `Cache location:` to open the cache directory.
+This tutorial is intended for users who wish to use their own data with Autoscoper. However, for learning purposes, it can still be followed using the sample data provided with Autoscoper. The sample data is downloaded into the cache directory of 3D Slicer. To locate your cache directory open 3D Slicer and go to `Edit` -> `Application Settings` -> `Cache`. You can then click on the button next to `Cache location:` to open the cache directory.
 ```
 
 ## Preparing the Data
 
-AutoscoperM requires the following data to track a skeletal structure:
+Autoscoper requires the following data to track a skeletal structure:
 * One or more radiograph series
 * A 3D volume of each bone in the skeletal structure you wish to track
 * A camera calibration file for each radiograph series

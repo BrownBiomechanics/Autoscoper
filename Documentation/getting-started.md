@@ -1,30 +1,30 @@
 # Getting Started
 
-This page contains information on how to obtain and install AutoscoperM, as well as how to get started using the software.
+This page contains information on how to obtain and install SlicerAutoscoperM, as well as how to get started using the software.
 
 ## System Requirements
 
-AutoscoperM is a module for [3D Slicer](https://download.slicer.org/), a free, open-source software platform for medical image computing. For more information on the system requirements for 3D Slicer, please see the [3D Slicer documentation](https://slicer.readthedocs.io/en/latest/user_guide/getting_started.html#system-requirements).
+SlicerAutoscoperM is an extension for [3D Slicer](https://download.slicer.org/), a free, open-source software platform for medical image computing. For more information on the system requirements for 3D Slicer, please see the [3D Slicer documentation](https://slicer.readthedocs.io/en/latest/user_guide/getting_started.html#system-requirements).
 
-### OpenCL Requirements
+### OpenCL Requirements of Autoscoper
 
-A graphics card that supports OpenCL 1.2 or higher is required to run AutoscoperM. For more information on OpenCL, please see the [OpenCL documentation](https://www.khronos.org/opencl/). Please check your graphics card's specifications to ensure that it supports OpenCL 1.2 or higher. If your graphics card supports OpenCL 1.2 or higher, please make sure to update to the latest version of your graphics card drivers.
+A graphics card that supports OpenCL 1.2 or higher is required to run Autoscoper. For more information on OpenCL, please see the [OpenCL documentation](https://www.khronos.org/opencl/). Please check your graphics card's specifications to ensure that it supports OpenCL 1.2 or higher. If your graphics card supports OpenCL 1.2 or higher, please make sure to update to the latest version of your graphics card drivers.
 
 
-## Installing AutoscoperM
+## Installing SlicerAutoscoperM
 
-1. Download and install the latest **preview** release of [3D Slicer](https://download.slicer.org/). For more information on installing 3D Slicer, please see the [3D Slicer documentation](https://slicer.readthedocs.io/en/latest/user_guide/getting_started.html#installing-3d-slicer).
+1. Download and install the latest **stable** release of [3D Slicer](https://download.slicer.org/). For more information on installing 3D Slicer, please see the [3D Slicer documentation](https://slicer.readthedocs.io/en/latest/user_guide/getting_started.html#installing-3d-slicer).
 2. Once installed, open 3D Slicer and go to the [Extensions Manager](https://slicer.readthedocs.io/en/latest/user_guide/extensions_manager.html).
-3. Search for and install the `AutoscoperM` extension.
-4. Restart 3D Slicer. The AutoscoperM module will be available in the application, under the `Tracking` category.
+3. Search for and install the `SlicerAutoscoperM` extension.
+4. Restart 3D Slicer. The Autoscoper, Hierarchical 3D Registration and Tracking Evaluation modules will be available in the application, under the `Tracking` category.
 
 ```{hint}
-If you are using AutoscoperM on a remote computer, you will likely need to setup a [remote GPU](./adv-topics/remote-gpu-setup.md) to enable GPU acceleration.
+If you are using Autoscoper on a remote computer, you will likely need to setup a [remote GPU](./adv-topics/remote-gpu-setup.md) to enable GPU acceleration.
 ```
 
 ## Tutorials
 
-A series of tutorials are available to help you get started using AutoscoperM. These tutorials are available on the [AutoscoperM Tutorials](./tutorials/index.md) page.
+A series of tutorials are available to help you get started using SAM modules. These tutorials are available on the [Tutorials](./tutorials/index.md) page.
 
 ## Sample Data
 
