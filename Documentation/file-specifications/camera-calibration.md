@@ -1,55 +1,9 @@
 # Camera Calibration File Format
 
-## VTKCam 1.0
-
-```{important} Deprecated
-This file specification is no longer supported. The VRG generation functionality was removed in [BrownBiomechanics/SlicerAutoscoperM#140](https://github.com/BrownBiomechanics/SlicerAutoscoperM/pull/140). Please refer to the updated workflows and documentation for alternative solutions.
+```{External Program Required}
+Camera Calibration files described below are generated outside of SlicerAutoscoperM. Users are recommended to use [XMALAB](https://bitbucket.org/xromm/xmalab/wiki/Home)
 ```
 
-### Overview
-
-The camera calibration file is a yaml and contains all of the information to load a camera into Autoscoper. The file is organized with key value pairs.
-
-:::{warning}
-The VTKCam 1.0 format is non-standard and exists purely as an
-implementation detail. While we are documenting it, the file
-organization may change from version to version without notice.
-We mean it.
-:::
-
-### Key value pairs
-
-| Key | Value |
-| --- | --- |
-|`version`| The version of the file. Currently only 1.0 is supported. |
-|`focal-point`| The XYZ coordinates of the focal point. |
-|`camera-position`| The XYZ coordinates of the camera position. |
-|`view-up`| The up vector of the camera. |
-|`view-angle`| The view angle of the camera. |
-|`image-width`| The width of the image. |
-|`image-height`| The height of the image. |
-|`clipping-range`| The range of the closest and farthest objects that will affect the rendering. |
-
-::: {warning}
-The `clipping-range` is not currently used by Autoscoper. This is used to
-communicate information within the AutoscoperM Slicer extension.
-:::
-
-### Example
-
-```{code-block} json
-{
-  "@schema": "https://autoscoperm.slicer.org/vtk-schema-1.0.json",
-  "version": 1.0,
-  "focal-point": [-7.9999999999999964, -245.50000000000006, -186.65000000000006],
-  "camera-position": [104.71926635196253, -255.22259800818924, -179.66771669788898],
-  "view-up": [0.0, 1.0, 0.0],
-  "view-angle": 30.0,
-  "image-width": 1760,
-  "image-height": 1760,
-  "clipping-range": [0.1, 1000],
-}
-```
 ## MayaCam 2.0
 
 ### Overview
@@ -280,4 +234,54 @@ f_x = \frac{image\_size_x}{2 \cdot \tan(\frac{view\_angle}{2})}
 
 ```{math}
 f_y = \frac{image\_size_y}{2 \cdot \tan(\frac{view\_angle}{2})}
+```
+## VTKCam 1.0
+
+```{important} Deprecated
+This file specification is no longer supported. The VRG generation functionality was removed in [BrownBiomechanics/SlicerAutoscoperM#140](https://github.com/BrownBiomechanics/SlicerAutoscoperM/pull/140). Please refer to the updated workflows and documentation for alternative solutions.
+```
+
+### Overview
+
+The camera calibration file is a yaml and contains all of the information to load a camera into Autoscoper. The file is organized with key value pairs.
+
+:::{warning}
+The VTKCam 1.0 format is non-standard and exists purely as an
+implementation detail. While we are documenting it, the file
+organization may change from version to version without notice.
+We mean it.
+:::
+
+### Key value pairs
+
+| Key | Value |
+| --- | --- |
+|`version`| The version of the file. Currently only 1.0 is supported. |
+|`focal-point`| The XYZ coordinates of the focal point. |
+|`camera-position`| The XYZ coordinates of the camera position. |
+|`view-up`| The up vector of the camera. |
+|`view-angle`| The view angle of the camera. |
+|`image-width`| The width of the image. |
+|`image-height`| The height of the image. |
+|`clipping-range`| The range of the closest and farthest objects that will affect the rendering. |
+
+::: {warning}
+The `clipping-range` is not currently used by Autoscoper. This is used to
+communicate information within the AutoscoperM Slicer extension.
+:::
+
+### Example
+
+```{code-block} json
+{
+  "@schema": "https://autoscoperm.slicer.org/vtk-schema-1.0.json",
+  "version": 1.0,
+  "focal-point": [-7.9999999999999964, -245.50000000000006, -186.65000000000006],
+  "camera-position": [104.71926635196253, -255.22259800818924, -179.66771669788898],
+  "view-up": [0.0, 1.0, 0.0],
+  "view-angle": 30.0,
+  "image-width": 1760,
+  "image-height": 1760,
+  "clipping-range": [0.1, 1000],
+}
 ```
