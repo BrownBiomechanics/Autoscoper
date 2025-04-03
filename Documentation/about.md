@@ -2,11 +2,11 @@
 
 ## What is Autoscoper?
 
-Autoscoper enables the 3D tracking of structures within images collected via single, bi-, and multi-plane videoradiography. (Most commonly bi-plane videoradiography or BVR). It has has been used for tracking the shoulder, spine, wrist, hip, knee, and ankle joints.
+Autoscoper enables the 3D tracking of structures within images collected via single, bi-, and multi-plane videoradiography. (Most commonly bi-plane videoradiography or BVR). It has been used for tracking the shoulder, spine, wrist, hip, knee, and ankle joints.
 
 Autoscoper is distributed through SlicerAutoscoperM (SAM), a free, open source and multi-platform 3D Slicer extension. To learn more about the relationship between Autoscoper and SAM, see https://autoscoperm.slicer.org/.
 
-In addition to Autoscoper, SAM includes a [Pre-Processing module](.\tutorials\pre-processing-module.md) for Autoscoper videoradiography inputs, a [Tracking Evaluation](.\tutorials\evaluating-tracking-results.md) module for BVR sample data outputs, and the [3D Hierarchical Registration](.\tutorials\hierarchical-3d-registration.md) module for registration of structures collected via 4DCT and sequential 3D CT.
+In addition to Autoscoper, SAM includes a [Pre-Processing module](tutorials/pre-processing-module.md) for Autoscoper videoradiography inputs, a [Tracking Evaluation](tutorials/evaluating-tracking-results.md) module for BVR sample data outputs, and the [3D Hierarchical Registration](tutorials/hierarchical-3d-registration.md) module for registration of structures collected via 4DCT and sequential 3D CT.
 
 ## License
 
