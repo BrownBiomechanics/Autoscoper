@@ -35,7 +35,7 @@ struct Particle
   std::vector<float> Velocity;
 
 #ifdef Autoscoper_COLLISION_DETECTION
-  bool collided;
+  bool Collided;
 #endif // Autoscoper_COLLISION_DETECTION
 
   // Copy constructor
