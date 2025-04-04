@@ -144,7 +144,9 @@ Trial::Trial(const std::string& filename)
 
   loadRenderResolution(renderResolution);
 
-  loadMeshes(meshFiles);
+  if (version[0] == 1 && version[1] >= 2) {
+    loadMeshes(meshFiles);
+  }
 }
 
 void Trial::convertToUnixSlashes(std::string& path)
@@ -444,7 +446,11 @@ void Trial::save(const std::string& filename)
 
   file.precision(12);
 
+#ifdef Autoscoper_COLLISION_DETECTION
+  file << "Version 1.2" << std::endl;
+#else
   file << "Version 1.1" << std::endl;
+#endif
 
   for (const std::string& mayaCamsFile : mayaCamsFiles) {
     file << "mayaCam_csv " << mayaCamsFile << std::endl;
