@@ -98,9 +98,18 @@ Trial::Trial(const std::string& filename)
   std::vector<std::string> volumeFlips;
   std::vector<std::string> renderResolution;
   std::vector<std::string> optimizationOffsets;
+  std::vector<std::string> meshFiles;
 
-  parse(
-    file, version, mayaCams, camRootDirs, volumeFiles, voxelSizes, volumeFlips, renderResolution, optimizationOffsets);
+  parse(file,
+        version,
+        mayaCams,
+        camRootDirs,
+        volumeFiles,
+        voxelSizes,
+        volumeFlips,
+        renderResolution,
+        optimizationOffsets,
+        meshFiles);
 
   file.close();
 
@@ -120,9 +129,10 @@ Trial::Trial(const std::string& filename)
     convertToAbsolutePaths(mayaCams, configLocation);
     convertToAbsolutePaths(camRootDirs, configLocation);
     convertToAbsolutePaths(volumeFiles, configLocation);
+    convertToAbsolutePaths(meshFiles, configLocation);
   }
 
-  validate(mayaCams, camRootDirs, volumeFiles, voxelSizes, filename);
+  validate(mayaCams, camRootDirs, volumeFiles, voxelSizes, meshFiles, filename);
 
   loadCameras(mayaCams);
 
@@ -133,6 +143,10 @@ Trial::Trial(const std::string& filename)
   loadOffsets(optimizationOffsets);
 
   loadRenderResolution(renderResolution);
+
+  if (version[0] == 1 && version[1] >= 2) {
+    loadMeshes(meshFiles);
+  }
 }
 
 void Trial::convertToUnixSlashes(std::string& path)
@@ -193,7 +207,8 @@ void Trial::parse(std::ifstream& file,
                   std::vector<std::string>& voxelSizes,
                   std::vector<std::string>& volumeFlips,
                   std::vector<std::string>& renderResolution,
-                  std::vector<std::string>& optimizationOffsets)
+                  std::vector<std::string>& optimizationOffsets,
+                  std::vector<std::string>& meshFiles)
 {
 
   std::string line, key, value;
@@ -230,6 +245,9 @@ void Trial::parse(std::ifstream& file,
     } else if (key.compare("OptimizationOffsets") == 0) {
       asys::SystemTools::GetLineFromStream(lineStream, value);
       optimizationOffsets.push_back(value);
+    } else if (key.compare("MeshFile") == 0) {
+      asys::SystemTools::GetLineFromStream(lineStream, value);
+      meshFiles.push_back(value);
     } else if (key.compare("Version") == 0) {
       asys::SystemTools::GetLineFromStream(lineStream, value);
       parseVersion(value, version);
@@ -252,6 +270,7 @@ void Trial::validate(const std::vector<std::string>& mayaCams,
                      const std::vector<std::string>& camRootDirs,
                      const std::vector<std::string>& volumeFiles,
                      const std::vector<std::string>& voxelSizes,
+                     const std::vector<std::string>& meshFiles,
                      const std::string& filename)
 {
 
@@ -278,6 +297,16 @@ void Trial::validate(const std::vector<std::string>& mayaCams,
                           + " volumes "
                             "and "
                           + std::to_string(voxelSizes.size()) + " voxel sizes."));
+  }
+
+  if (meshFiles.size() != 0 && volumeFiles.size() != meshFiles.size()) {
+    throw std::runtime_error(
+      trialReadingError(filename,
+                        std::string("You must specify a mesh file for each volume or none at all.\n") + "Found"
+                          + std::to_string(volumeFiles.size())
+                          + " volumes "
+                            "and "
+                          + std::to_string(meshFiles.size()) + " mesh files."));
   }
 }
 
@@ -367,6 +396,26 @@ void Trial::loadRenderResolution(std::vector<std::string>& renderResolution)
   }
 }
 
+void Trial::loadMeshes(std::vector<std::string>& meshFiles)
+{
+  if (meshFiles.size() > 0) {
+#ifdef Autoscoper_COLLISION_DETECTION
+    meshes.clear();
+    for (unsigned int i = 0; i < meshFiles.size(); ++i) {
+      try {
+        Mesh mesh(meshFiles[i]);
+        meshes.push_back(mesh);
+      } catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
+      }
+    }
+#else
+    std::cerr << "WARNING: Autoscoper was not compiled with collision detection support.  No mesh files"
+              << " will be loaded." << std::endl;
+#endif // Autoscoper_COLLISION_DETECTION
+  }
+}
+
 void Trial::save(const std::string& filename)
 {
   std::vector<std::string> mayaCamsFiles;
@@ -397,7 +446,11 @@ void Trial::save(const std::string& filename)
 
   file.precision(12);
 
+#ifdef Autoscoper_COLLISION_DETECTION
+  file << "Version 1.2" << std::endl;
+#else
   file << "Version 1.1" << std::endl;
+#endif
 
   for (const std::string& mayaCamsFile : mayaCamsFiles) {
     file << "mayaCam_csv " << mayaCamsFile << std::endl;

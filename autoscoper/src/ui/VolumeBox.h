@@ -63,6 +63,7 @@ public:
 public slots:
 
   void on_toolButton_VolumeFile_clicked();
+  void on_toolButton_MeshFile_clicked();
 };
 
 #endif /* VOLUMEBOX_H_ */
