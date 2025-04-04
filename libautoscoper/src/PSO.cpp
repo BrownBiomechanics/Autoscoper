@@ -13,7 +13,7 @@ Particle::Particle(const Particle& p)
   this->Position = p.Position;
   this->Velocity = p.Velocity;
 #ifdef Autoscoper_COLLISION_DETECTION
-  this->collided = p.collided;
+  this->Collided = p.Collided;
 #endif // Autoscoper_COLLISION_DETECTION
 }
 
@@ -24,7 +24,7 @@ Particle::Particle()
   this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
 
 #ifdef Autoscoper_COLLISION_DETECTION
-  this->collided = false;
+  this->Collided = false;
 #endif // Autoscoper_COLLISION_DETECTION
 }
 
@@ -35,7 +35,7 @@ Particle::Particle(const std::vector<float>& pos)
   this->Velocity = std::vector<float>(NUM_OF_DIMENSIONS, 0.f);
 
 #ifdef Autoscoper_COLLISION_DETECTION
-  this->collided = false;
+  this->Collided = false;
 #endif // Autoscoper_COLLISION_DETECTION
 }
 
@@ -47,7 +47,7 @@ Particle::Particle(float start_range_min, float start_range_max)
   this->initializePosition(start_range_min, start_range_max);
 
 #ifdef Autoscoper_COLLISION_DETECTION
-  this->collided = false;
+  this->Collided = false;
 #endif // Autoscoper_COLLISION_DETECTION
 }
 
@@ -58,7 +58,7 @@ Particle& Particle::operator=(const Particle& p)
   this->Velocity = p.Velocity;
 
 #ifdef Autoscoper_COLLISION_DETECTION
-  this->collided = p.collided;
+  this->Collided = p.Collided;
 #endif // Autoscoper_COLLISION_DETECTION
 
   return *this;
@@ -169,7 +169,7 @@ void checkCollision(Particle& p,
 {
   if (p.NCC > 1.0E4) {
     collidedCount++;
-    p.collided = true;
+    p.Collided = true;
 
     for (int i = 0; i < NUM_OF_DIMENSIONS; ++i) {
       avgCollidedPosition[i] += p.Position[i];
@@ -258,7 +258,7 @@ Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOC
 #if defined(Autoscoper_COLLISION_DETECTION) and defined(COLLISION_RESPONSE)
     computeCorrectionVector(avgNonCollidedPosition, avgCollidedPosition, correctionVector, collidedCount);
     for (int idx = 0; idx < NUM_OF_PARTICLES; ++idx) {
-      if (particles[idx].collided) {
+      if (particles[idx].Collided) {
         for (int j = 0; j < NUM_OF_DIMENSIONS; ++j) {
           particles[idx].Position[j] += ((float)collidedCount / (float)NUM_OF_PARTICLES) * correctionVector[j];
           pBest[idx] = particles[idx];
