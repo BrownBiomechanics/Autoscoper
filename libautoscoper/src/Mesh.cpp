@@ -9,7 +9,7 @@ Mesh::Mesh(const std::string& filename)
 {
   this->filename = filename;
 
-  vtkSTLReader* reader = vtkSTLReader::New();
+  vtkNew<vtkSTLReader> reader;
   this->polyData = vtkPolyData::New();
 
   reader->SetFileName(filename.c_str());
@@ -55,8 +55,6 @@ Mesh::Mesh(const std::string& filename)
   boundingRadius = sqrt(boundingRadius);
 
   std::cout << "Mesh " << filename << ", has a bounding radius of: " << boundingRadius << std::endl;
-
-  reader->Delete();
 }
 
 // Helper function to transform mesh after reading it in.  Physically moves the mesh to the new transformed position.
@@ -74,15 +72,15 @@ void Mesh::Transform(double xAngle, double yAngle, double zAngle, double shiftX,
   transformFilter->SetTransform(transform);
   transformFilter->Update();
 
+  // TODO: document why do we need this?
   this->polyData = transformFilter->GetOutput();
   this->polyData->Register(nullptr);
 }
 
 void Mesh::Write(const std::string& filename) const
 {
-  vtkSTLWriter* writer = vtkSTLWriter::New();
+  vtkNew<vtkSTLWriter> writer;
   writer->SetFileName(filename.c_str());
   writer->SetInputData(this->polyData);
   writer->Write();
-  writer->Delete();
 }

@@ -48,7 +48,7 @@
 
 #include <QFileDialog>
 #ifdef Autoscoper_COLLISION_DETECTION
-#include "Mesh.hpp"
+#  include "Mesh.hpp"
 #endif // Autoscoper_COLLISION_DETECTION
 
 #include <iostream>
