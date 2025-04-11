@@ -251,11 +251,12 @@ void Tracker::load(const Trial& trial)
     for (int i = 0; i < trial_.meshes.size(); i++) {
       for (int j = i + 1; j < trial_.meshes.size(); j++) {
 
-        vtkNew<vtkCollisionDetectionFilter> collide;
+        vtkCollisionDetectionFilter* collide = vtkCollisionDetectionFilter::New();
         collide->SetInputData(0, trial_.meshes[i].GetPolyData());
         collide->SetInputData(1, trial_.meshes[j].GetPolyData());
         collide->SetCollisionModeToFirstContact();
         collide->SetNumberOfCellsPerNode(2);
+        collide->Register(nullptr);
 
         std::pair<std::pair<int, int>, vtkCollisionDetectionFilter*> collider;
         collider.first.first = i;
