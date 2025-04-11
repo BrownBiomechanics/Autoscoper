@@ -58,6 +58,13 @@
 #  include "gpu/opencl/OpenCL.hpp"
 #endif
 
+#ifdef Autoscoper_COLLISION_DETECTION
+#  include <vtkPolyData.h>
+#  include <vtkTransform.h>
+#  include <vtkCollisionDetectionFilter.h>
+#  include "Mesh.hpp"
+#endif
+
 #include "Trial.hpp"
 
 namespace xromm {
@@ -134,7 +141,7 @@ public:
                 double max_limit,
                 int cf_model,
                 unsigned int max_stall_iter);
-  double minimizationFunc(const double* values) const;
+  double minimizationFunc(double* values) const;
   std::vector<double> trackFrame(unsigned int volumeID, double* xyzpr) const;
   std::vector<gpu::View*>& views() { return views_; }
   const std::vector<gpu::View*>& views() const { return views_; }
@@ -159,6 +166,18 @@ public:
 
 private:
   bool calculate_viewport(const CoordFrame& modelview, const Camera& camera, double* viewport) const;
+#ifdef Autoscoper_COLLISION_DETECTION
+  bool computeCollisions(std::vector<Mesh> meshes,
+                         unsigned int current_volume,
+                         double* xyzypr,
+                         std::vector<std::vector<double>> poses) const;
+
+  vtkTransform* transformA;
+  vtkTransform* transformB;
+
+  vtkCollisionDetectionFilter* collide;
+  std::vector<std::pair<std::pair<int, int>, vtkCollisionDetectionFilter*>> colliders;
+#endif
 
   int optimization_method = (int)0;
   int cf_model_select = (int)0;
