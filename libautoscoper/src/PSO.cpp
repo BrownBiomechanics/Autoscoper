@@ -266,6 +266,9 @@ Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOC
         }
       }
     }
+    if (collidedCount) {
+      std::cout << "PSO: epoch #" << counter << ": total collided particles: " << collidedCount << std::endl;
+    }
 #endif // Autoscoper_COLLISION_DETECTION and COLLISION_RESPONSE
 
     OMEGA = OMEGA * 0.9f;
