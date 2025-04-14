@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include <vtkPolyData.h>
-#include <vtkOBBTree.h>
 
 class Mesh
 {
@@ -21,5 +20,4 @@ private:
   std::string filename;
 
   vtkPolyData* polyData;
-  vtkOBBTree* meshOBB;
 };
