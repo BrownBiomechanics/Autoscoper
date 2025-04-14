@@ -133,10 +133,17 @@ target_compile_definitions(libautoscoper PUBLIC
   Autoscoper_RENDERING_USE_${Autoscoper_RENDERING_BACKEND}_BACKEND
 )
 
-if (Autoscoper_COLLISION_DETECTION) # Add definitions for collision detection
+if (Autoscoper_COLLISION_DETECTION)
+  # Add definitions for collision detection
   target_compile_definitions(libautoscoper PUBLIC
     Autoscoper_COLLISION_DETECTION
   )
+  # Add additional compile options
+  foreach(cd_option ${collision_detection_options})
+    if(${${cd_option}})
+      target_compile_definitions(libautoscoper PUBLIC ${cd_option})
+    endif()
+  endforeach()
   find_package(VTK COMPONENTS
     CommonCore
     CommonSystem

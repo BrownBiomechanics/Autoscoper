@@ -3,9 +3,6 @@
 #include <cfloat> // For FLT_MAX
 #include <string>
 
-#define VELOCITY_FILTER 0
-#define COLLISION_RESPONSE 0
-
 // Particle Struct Function Definitions
 Particle::Particle(const Particle& p)
 {
@@ -190,6 +187,9 @@ void computeCorrectionVector(std::vector<float>& avgNonCollidedPosition,
     for (int i = 0; i < NUM_OF_DIMENSIONS; ++i) {
       avgNonCollidedPosition[i] /= ((float)NUM_OF_PARTICLES - (float)collidedCount);
       avgCollidedPosition[i] /= (float)collidedCount;
+      // perturb the position away from the collision site,
+      // towards the rest of the non-collided particles
+      correctionVector[i] = avgNonCollidedPosition[i] - avgCollidedPosition[i];
     }
   }
 }
@@ -261,8 +261,6 @@ Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOC
       if (particles[idx].Collided) {
         for (int j = 0; j < NUM_OF_DIMENSIONS; ++j) {
           particles[idx].Position[j] += ((float)collidedCount / (float)NUM_OF_PARTICLES) * correctionVector[j];
-          pBest[idx] = particles[idx];
-          // Why always update the pBest here?
         }
       }
     }

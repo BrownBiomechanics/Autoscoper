@@ -1180,7 +1180,12 @@ bool Tracker::computeCollisions(std::vector<Mesh> meshes,
     m_numBoxTest += colliders[i].second->GetNumberOfBoxTests();
 
     if (colliders[i].second->GetNumberOfContacts() != 0) {
-      std::cout << "Tracker::computeCollisions: Detected collision between mesh " << meshA << " and mesh " << meshB << std::endl;
+      std::cout << "Tracker::computeCollisions: Detected collision between mesh " << meshA << " and mesh " << meshB
+                << std::endl;
+#  if DEBUG
+      std::cout << "  Collision detected using " << colliders[i].second->GetNumberOfBoxTests()
+                << " box tests, total performed is now " << m_numBoxTest << std::endl;
+#  endif
       return true;
     }
   } // END COLLIDER IMPLEMENTATION

@@ -182,14 +182,24 @@ mark_as_superbuild(Autoscoper_EXECUTABLE_LINK_FLAGS:STRING)
 #-----------------------------------------------------------------------------
 # Collision Detection
 #-----------------------------------------------------------------------------
+set(collision_detection_options
+  VELOCITY_FILTER
+  COLLISION_RESPONSE
+)
 if(DEFINED VTK_DIR AND EXISTS ${VTK_DIR})
   message(STATUS "Configuring with collision detection")
   set(Autoscoper_COLLISION_DETECTION 1)
 else()
   message(STATUS "Configuring without collision detection. If you want to enable collision detection, please set VTK_DIR.")
   set(Autoscoper_COLLISION_DETECTION 0)
+  foreach(cd_option ${collision_detection_options})
+    if(DEFINED ${cd_option})
+      message(WARNING "Ignoring specified option '${cd_option}=${${cd_option}}' since Autoscoper_COLLISION_DETECTION is not turned on.")
+    endif()
+  endforeach()
 endif()
 mark_as_superbuild(Autoscoper_COLLISION_DETECTION)
+mark_as_superbuild(${collision_detection_options})
 
 #-----------------------------------------------------------------------------
 # Dependencies
