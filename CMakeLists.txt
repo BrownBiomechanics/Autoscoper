@@ -180,6 +180,40 @@ endif()
 mark_as_superbuild(Autoscoper_EXECUTABLE_LINK_FLAGS:STRING)
 
 #-----------------------------------------------------------------------------
+# Collision Detection
+#-----------------------------------------------------------------------------
+set(collision_detection_options
+  Autoscoper_COLLISION_DETECTION_WITH_VELOCITY_FILTER
+  Autoscoper_COLLISION_DETECTION_WITH_COLLISION_RESPONSE
+)
+message(STATUS "Configuring Collision detection")
+if(DEFINED VTK_DIR AND EXISTS ${VTK_DIR})
+  message(STATUS "  Setting Autoscoper_COLLISION_DETECTION to 1 (VTK_DIR is defined)")
+  message(STATUS "  VTK_DIR is ${VTK_DIR}")
+  set(Autoscoper_COLLISION_DETECTION 1)
+
+  foreach(cd_option IN LISTS collision_detection_options)
+    if(NOT DEFINED ${cd_option})
+      set(${cd_option} 0)
+    endif()
+    message(STATUS "  ${cd_option} is ${${cd_option}}")
+  endforeach()
+
+else()
+  message(STATUS "  Setting Autoscoper_COLLISION_DETECTION to 0 (VTK_DIR is NOT defined)")
+  set(Autoscoper_COLLISION_DETECTION 0)
+  foreach(cd_option IN LISTS collision_detection_options)
+    if(DEFINED ${cd_option})
+      message(STATUS "  ${cd_option} is ${${cd_option}} (ignored because Autoscoper_COLLISION_DETECTION is 0)")
+    endif()
+  endforeach()
+endif()
+
+mark_as_superbuild(Autoscoper_COLLISION_DETECTION:BOOL)
+mark_as_superbuild(Autoscoper_COLLISION_DETECTION_WITH_VELOCITY_FILTER:BOOL)
+mark_as_superbuild(Autoscoper_COLLISION_DETECTION_WITH_COLLISION_RESPONSE:BOOL)
+
+#-----------------------------------------------------------------------------
 # Dependencies
 #-----------------------------------------------------------------------------
 find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
@@ -252,6 +286,9 @@ if(Autoscoper_CONFIGURE_LAUCHER_SCRIPT)
       endif()
     endif()
   endforeach()
+  if(Autoscoper_COLLISION_DETECTION)
+    list(APPEND _library_paths "${VTK_DIR}/bin/$<CONFIG>/")
+  endif()
 
   string(REPLACE ";" "${_pathsep}" PATHS_CONFIG "${_library_paths}")
 
@@ -283,6 +320,9 @@ if(Autoscoper_INSTALL_DEPENDENCIES)
   foreach(dependency IN LISTS Autoscoper_DEPENDENCIES)
     install(SCRIPT "${Autoscoper_SUPERBUILD_DIR}/${dependency}-build/cmake_install.cmake")
   endforeach()
+  if(Autoscoper_COLLISION_DETECTION)
+    install(SCRIPT "${VTK_DIR}/cmake_install.cmake")
+  endif()
 endif()
 
 #-----------------------------------------------------------------------------
