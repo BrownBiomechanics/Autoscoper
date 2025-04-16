@@ -183,8 +183,8 @@ mark_as_superbuild(Autoscoper_EXECUTABLE_LINK_FLAGS:STRING)
 # Collision Detection
 #-----------------------------------------------------------------------------
 set(collision_detection_options
-  VELOCITY_FILTER
-  COLLISION_RESPONSE
+  Autoscoper_COLLISION_DETECTION_WITH_VELOCITY_FILTER
+  Autoscoper_COLLISION_DETECTION_WITH_COLLISION_RESPONSE
 )
 if(DEFINED VTK_DIR AND EXISTS ${VTK_DIR})
   message(STATUS "Configuring with collision detection")
