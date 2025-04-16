@@ -186,20 +186,32 @@ set(collision_detection_options
   Autoscoper_COLLISION_DETECTION_WITH_VELOCITY_FILTER
   Autoscoper_COLLISION_DETECTION_WITH_COLLISION_RESPONSE
 )
+message(STATUS "Configuring Collision detection")
 if(DEFINED VTK_DIR AND EXISTS ${VTK_DIR})
-  message(STATUS "Configuring with collision detection")
+  message(STATUS "  Setting Autoscoper_COLLISION_DETECTION to 1 (VTK_DIR is defined)")
+  message(STATUS "  VTK_DIR is ${VTK_DIR}")
   set(Autoscoper_COLLISION_DETECTION 1)
+
+  foreach(cd_option IN LISTS collision_detection_options)
+    if(NOT DEFINED ${cd_option})
+      set(${cd_option} 0)
+    endif()
+    message(STATUS "  ${cd_option} is ${${cd_option}}")
+  endforeach()
+
 else()
-  message(STATUS "Configuring without collision detection. If you want to enable collision detection, please set VTK_DIR.")
+  message(STATUS "  Setting Autoscoper_COLLISION_DETECTION to 0 (VTK_DIR is NOT defined)")
   set(Autoscoper_COLLISION_DETECTION 0)
-  foreach(cd_option ${collision_detection_options})
+  foreach(cd_option IN LISTS collision_detection_options)
     if(DEFINED ${cd_option})
-      message(WARNING "Ignoring specified option '${cd_option}=${${cd_option}}' since Autoscoper_COLLISION_DETECTION is not turned on.")
+      message(STATUS "  ${cd_option} is ${${cd_option}} (ignored because Autoscoper_COLLISION_DETECTION is 0)")
     endif()
   endforeach()
 endif()
-mark_as_superbuild(Autoscoper_COLLISION_DETECTION)
-mark_as_superbuild(${collision_detection_options})
+
+mark_as_superbuild(Autoscoper_COLLISION_DETECTION:BOOL)
+mark_as_superbuild(Autoscoper_COLLISION_DETECTION_WITH_VELOCITY_FILTER:BOOL)
+mark_as_superbuild(Autoscoper_COLLISION_DETECTION_WITH_COLLISION_RESPONSE:BOOL)
 
 #-----------------------------------------------------------------------------
 # Dependencies
