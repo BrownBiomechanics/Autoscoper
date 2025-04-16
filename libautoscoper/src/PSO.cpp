@@ -89,7 +89,7 @@ void Particle::updateVelocityAndPosition(const Particle& pBest, const Particle& 
     this->Velocity[dim] = omega * this->Velocity[dim] + c1 * rp * (pBest.Position[dim] - this->Position[dim])
                           + c2 * rg * (gBest.Position[dim] - this->Position[dim]);
 
-#ifdef VELOCITY_FILTER
+#if defined(Autoscoper_COLLISION_DETECTION) && defined(VELOCITY_FILTER)
     float velClamp = 0.2;
     float speed = 0.0;
     for (int i = 0; i < NUM_OF_DIMENSIONS; i++) {
@@ -102,7 +102,7 @@ void Particle::updateVelocityAndPosition(const Particle& pBest, const Particle& 
         this->Velocity[i] *= velClamp;
       }
     }
-#endif // VELOCITY_FILTER
+#endif // defined(Autoscoper_COLLISION_DETECTION) && defined(VELOCITY_FILTER)
 
     this->Position[dim] += this->Velocity[dim];
   }
@@ -255,7 +255,7 @@ Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOC
 #endif // Autoscoper_COLLISION_DETECTION
     }
 
-#if defined(Autoscoper_COLLISION_DETECTION) and defined(COLLISION_RESPONSE)
+#if defined(Autoscoper_COLLISION_DETECTION) && defined(COLLISION_RESPONSE)
     computeCorrectionVector(avgNonCollidedPosition, avgCollidedPosition, correctionVector, collidedCount);
     for (int idx = 0; idx < NUM_OF_PARTICLES; ++idx) {
       if (particles[idx].Collided) {
@@ -267,7 +267,7 @@ Particle pso(float start_range_min, float start_range_max, unsigned int MAX_EPOC
     if (collidedCount) {
       std::cout << "PSO: epoch #" << counter << ": total collided particles: " << collidedCount << std::endl;
     }
-#endif // Autoscoper_COLLISION_DETECTION and COLLISION_RESPONSE
+#endif // defined(Autoscoper_COLLISION_DETECTION) && defined(COLLISION_RESPONSE)
 
     OMEGA = OMEGA * 0.9f;
 
