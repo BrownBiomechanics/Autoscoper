@@ -22,6 +22,18 @@ A graphics card that supports OpenCL 1.2 or higher is required to run Autoscoper
 If you are using Autoscoper on a remote computer, you will likely need to setup a [remote GPU](./adv-topics/remote-gpu-setup.md) to enable GPU acceleration.
 ```
 
+```{important}
+In the _AutoscoperM_ module’s _Autoscoper Control_ tab, the frame-level tracking executable requires GPU acceleration (CUDA or OpenCL) and is therefore supported **only** on **Linux** and **Windows**. macOS is not supported due to rendering-backend limitations.
+
+| Module                       | Linux   | macOS   | Windows   |
+|------------------------------|:-------:|:-------:|:---------:|
+| AutoscoperM Control (CUDA)   | ❌      | ❌      | ✅         |
+| AutoscoperM Control (OpenCL) | ✅      | ❌      | ✅         |
+| AutoscoperM Pre-Processing   | ✅      | ✅      | ✅         |
+| Hierarchical Registration 3D | ✅      | ✅      | ✅         |
+| Tracking Evaluation          | ✅      | ❌      | ✅         |
+```
+
 ## Tutorials
 
 A series of tutorials are available to help you get started using SAM modules. These tutorials are available on the [Tutorials](./tutorials/index.md) page.
