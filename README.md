@@ -4,6 +4,8 @@ Autoscoper enables the 3D tracking of structures within multiple imaging modalit
 
 Autoscoper has been used for tracking the shoulder, spine, wrist, hip, knee, and ankle joints.
 
+_📣 Call for Collaboration_ We are actively soliciting investigators from across the world who perform skeletal motion tracking and are willing to join the effort to develop and assess SAM. We welcome academic and industry partners—learn more [here](https://autoscoperm.slicer.org/call-for-collaboration/).
+
 ## Installation
 
 Autoscoper is distributed through SlicerAutoscoperM (SAM), a free, open source and multi-platform 3D Slicer extension. To learn more about the relationship between Autoscoper and AutoscoperM, see https://autoscoperm.slicer.org/.
