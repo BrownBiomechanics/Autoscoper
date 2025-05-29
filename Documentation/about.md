@@ -1,5 +1,7 @@
 # About
 
+**📢 Looking to collaborate?** We welcome academic and industry partners—learn more [here](https://autoscoperm.slicer.org/call-for-collaboration/).
+
 ## What is Autoscoper?
 
 Autoscoper enables the 3D tracking of structures within images collected via single, bi-, and multi-plane videoradiography. (Most commonly bi-plane videoradiography or BVR). It has been used for tracking the shoulder, spine, wrist, hip, knee, and ankle joints.
