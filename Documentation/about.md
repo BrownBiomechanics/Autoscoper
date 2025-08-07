@@ -30,13 +30,38 @@ From 2012 to 2013, Autoscoper v1 was developed at Brown University by Andy Loomi
 
 ## How to cite
 
-When citing Autoscoper in your scientific research, please mention the following work to support increased visibility and dissemination of our software:
+When citing **SlicerAutoscoperM** in your scientific research, please mention the following work to support increased visibility and dissemination of our software:
+
+> Morton AM, Holtgrewe JD, Beveridge JE, Yoon D, Rainbow MJ, Lopez C, Zhao KD, Paniagua B, Fillion-Robin JC, Lombardi AJ, Moore DC, Crisco JJ. An accuracy assessment of SlicerAutoscoperM − software for tracking skeletal structures in multi-plane videoradiography datasets. Journal of Biomechanics. 2025 Aug;189:112810.
+>
+> See https://www.sciencedirect.com/science/article/pii/S0021929025003227
+
+For your convenience, you may use the following BibTex entry:
+
+```bibtex
+@article{MORTON2025112810,
+title    = {An accuracy assessment of SlicerAutoscoperM − software for tracking skeletal structures in multi-plane videoradiography datasets},
+journal  = {Journal of Biomechanics},
+volume   = {189},
+pages    = {112810},
+year     = {2025},
+issn     = {0021-9290},
+doi      = {https://doi.org/10.1016/j.jbiomech.2025.112810},
+url      = {https://www.sciencedirect.com/science/article/pii/S0021929025003227},
+author   = {Amy M. Morton and John D. Holtgrewe and Jillian E. Beveridge and Dajung Yoon and Michael J. Rainbow and Cesar Lopez and Kristin D. Zhao and Beatriz Paniagua and Jean-Christophe Fillion-Robin and Anthony J. Lombardi and Douglas C. Moore and Joseph J. Crisco},
+keywords = {Autoscoper, Kinematics, 3DSlicer, Videoradiography, Skeletal Tracking},
+}
+```
+
+### Related work
+
+You may also consider referencing the following earlier publication, which demonstrates Autoscoper's accuracy in the context of wrist kinematics using biplane videoradiography:
 
 > Akhbari, B., Morton, A. M., Moore, D. C., Weiss, A-P. C., Wolfe, W. S., Crisco, J. J., 2019. Accuracy of Biplane Videoradiography for Quantifying Dynamic Wrist Kinematics, Journal of Biomechanics.
 >
 > See https://www.sciencedirect.com/science/article/abs/pii/S0021929019303847
 
-For your convenience, you may use the following BibTex entry:
+For your convenience, here is the corresponding BibTeX entry:
 
 ```bibtex
 @article{AKHBARI2019120,
@@ -49,7 +74,7 @@ For your convenience, you may use the following BibTex entry:
   doi      = {https://doi.org/10.1016/j.jbiomech.2019.05.040},
   url      = {https://www.sciencedirect.com/science/article/pii/S0021929019303847},
   author   = {Bardiya Akhbari and Amy M. Morton and Douglas C. Moore and Arnold-Peter C. Weiss and Scott W. Wolfe and Joseph J. Crisco},
-keywords = {Biplane videoradiography, Wrist kinematics, Accuracy study, Markerless tracking},
+  keywords = {Biplane videoradiography, Wrist kinematics, Accuracy study, Markerless tracking},
 }
 ```
 
