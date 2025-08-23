@@ -79,12 +79,15 @@ if((NOT DEFINED TIFF_INCLUDE_DIR
     set(TIFF_LIBRARY ${tiff_DIR}/${Autoscoper_LIB_DIR}/libtiff.so)
   endif()
 
-  mark_as_superbuild(
-    VARS
-      TIFF_INCLUDE_DIR:PATH
-      TIFF_LIBRARY:PATH
-    )
-
-  ExternalProject_Message(${proj} "TIFF_INCLUDE_DIR:${TIFF_INCLUDE_DIR}")
-  ExternalProject_Message(${proj} "TIFF_LIBRARY:${TIFF_LIBRARY}")
+else()
+  ExternalProject_Add_Empty(${proj} DEPENDS ${${proj}_DEPENDENCIES})
 endif()
+
+mark_as_superbuild(
+  VARS
+    TIFF_INCLUDE_DIR:PATH
+    TIFF_LIBRARY:PATH
+  )
+
+ExternalProject_Message(${proj} "TIFF_INCLUDE_DIR:${TIFF_INCLUDE_DIR}")
+ExternalProject_Message(${proj} "TIFF_LIBRARY:${TIFF_LIBRARY}")
