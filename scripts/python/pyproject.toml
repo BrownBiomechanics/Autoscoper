@@ -58,6 +58,7 @@ select = [
 ]
 extend-ignore = [
     "ANN101",  # missing-type-self
+    "ANN102",  # missing-type-cls
     "G004",    # logging-f-string
     "PIE790",  # unnecessary-pass
     "PLR0913", # too many arguments to function call
@@ -76,6 +77,10 @@ isort.known-first-party = [
 "pyautoscoper-examples.py" = [
     "E402",  # Module level import not at top of file
     "S603",  # `subprocess` call: check for execution of untrusted input"
+]
+"tests/**.py" = [
+    "S101", # Allow the use of assert within the test directory
+    "PLR2004", # Allow the use of magic values in comparisons within the test directory
 ]
 
 [tool.setuptools_scm]
