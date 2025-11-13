@@ -37,6 +37,36 @@ The output of the module is a sequence of transforms for each bone, mapping from
 * Region of interest (ROI) nodes, used to define the regions to compare from the source volume to each sequence frame
 * Cropped volumes based on the ROIs of the source volume and sequence frames
 
+Helpful Space-Space Hint:
+
+Transitioning RAS, LPS states (i.e 3DSLicer to MatLab convention) requires a post-processing conversion:
+
+In MatLab, where 
+    LPS = eye(4);
+    LPS(1,1) = -1;
+    LPS(2,2) = -1;
+    
+    % From the 4x4, separate rotation matrix from translation vector:
+    [h3dR, h3d_t] = fX4_to_RT( outputTRAmat);
+
+    H_t = eye(4);
+    H_t(1:3,4) = h3d_t;
+
+    H_R = eye(4);
+    H_R(1:3,1:3) = h3dR;
+
+    H_Tcorr = LPS * H_t;
+
+    H_Rcorr = H_R;
+    H_Rcorr(3,1) = -1*H_R(3,1);
+    H_Rcorr(3,2) = -1*H_R(3,2);
+    H_Rcorr(2,3) = -1*H_R(2,3);
+    H_Rcorr(1,3) = -1*H_R(1,3);
+
+    % Reconstitute the 4x4 matrix from Rotation and translation for conversion calcs
+    % This matrix can be applied to the STL models in source volume CT to produce each bone pose
+    adjO2D_L = RT_to_fX4(H_Rcorr(1:3,1:3), H_Tcorr(1:3,4));
+
 <!-- ![Hierarchical 3D Registration Module UI Overview](TODO.png) -->
 
 ### Preparing the Model Hierarchy
