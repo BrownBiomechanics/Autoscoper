@@ -33,7 +33,7 @@ The Hierarchical 3D Registration module requires four inputs:
 * Model Hierarchy: The root node of the model hierarchy, representing the rigid objects to be registered
 * Frames: The range of frames to be tracked
 
-The output of the module is a sequence of transforms for each bone, mapping from the bone's pose in the source volume to its pose in each frame. The module also generates additional nodes in the scene used during the registration process, such as:
+The output of the module is a sequence of [transforms](../transforms.md) for each bone, mapping from the bone's pose in the source volume to its pose in each frame. The module also generates additional nodes in the scene used during the registration process, such as:
 * Region of interest (ROI) nodes, used to define the regions to compare from the source volume to each sequence frame
 * Cropped volumes based on the ROIs of the source volume and sequence frames
 Helpful Space-Space Hint:
