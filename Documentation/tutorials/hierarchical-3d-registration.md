@@ -41,11 +41,11 @@ Helpful Space-Space Hint:
 
 Transitioning RAS, LPS states (i.e 3DSLicer to MatLab convention) requires a post-processing conversion:
 
-In MatLab, where 
+In MatLab, where
     LPS = eye(4);
     LPS(1,1) = -1;
     LPS(2,2) = -1;
-    
+
     % From the 4x4, separate rotation matrix from translation vector:
     [h3dR, h3d_t] = fX4_to_RT( outputTRAmat);
 
