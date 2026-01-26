@@ -147,11 +147,11 @@ AutoscoperMainWindow::AutoscoperMainWindow(bool skipGpuDevice, QWidget* parent)
 #if defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
   if (!skipGpuDevice) {
     OpenCLPlatformSelectDialog* dialog = new OpenCLPlatformSelectDialog(this);
-    if (dialog->getNumberPlatforms() > 1)
+    auto numberOfPlatforms = dialog->getNumberPlatforms();
+    if (numberOfPlatforms > 1)
       dialog->exec();
-    else {
+    else if (numberOfPlatforms > 0)
       xromm::gpu::setUsedPlatform(0);
-    }
     delete dialog;
   }
 #endif
