@@ -39,6 +39,7 @@
 /// \file Video.cpp
 /// \author Andy Loomis, Benjamin Knorlein
 
+#include <limits>
 #include <cstring>
 #include <algorithm>
 #include <iostream>
