@@ -42,6 +42,7 @@
 #ifndef XROMM_TRACKER_H
 #define XROMM_TRACKER_H
 
+#include <iostream>
 #include <vector>
 #include <string>
 

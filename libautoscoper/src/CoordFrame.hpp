@@ -42,6 +42,7 @@
 #ifndef XROMM_COORD_FRAME_HPP
 #define XROMM_COORD_FRAME_HPP
 
+#include <ostream>
 #include <string>
 #include <Vector.hpp>
 

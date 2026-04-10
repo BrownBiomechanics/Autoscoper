@@ -1,6 +1,6 @@
 
 #include "VolumeTransform.hpp"
-#include <istream>
+#include <iostream>
 namespace xromm {
 
 void VolumeTransform::setCurrentCurveSet(const int& idx)

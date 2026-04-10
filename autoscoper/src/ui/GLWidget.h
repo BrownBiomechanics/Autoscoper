@@ -43,6 +43,7 @@
 #define GLWIDGET_H
 
 #include <QOpenGLWidget>
+#include <iostream>
 
 // OpenGL error checking
 #if defined GLDEBUG
@@ -50,7 +51,7 @@
     do {                                                                           \
       exp;                                                                         \
       if (glGetError() != GL_NO_ERROR)                                             \
-        cerr << "Error in OpenGL call at " << __FILE__ << ':' << __LINE__ << endl; \
+        std::cerr << "Error in OpenGL call at " << __FILE__ << ':' << __LINE__ << std::endl; \
     } while (0)
 #else
 #  define CALL_GL(exp) exp
