@@ -1,4 +1,7 @@
 #include "Mesh.hpp"
+
+#include <iostream>
+
 #include <vtkSTLReader.h>
 #include <vtkSTLWriter.h>
 #include <vtkTransform.h>
