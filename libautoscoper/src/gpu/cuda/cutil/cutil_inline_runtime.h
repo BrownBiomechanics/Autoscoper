@@ -15,6 +15,7 @@
 #ifdef _WIN32
 #  ifdef _DEBUG // Do this only in debug mode...
 #    define WINDOWS_LEAN_AND_MEAN
+#    define NOMINMAX
 #    include <windows.h>
 #    include <stdlib.h>
 #    undef min

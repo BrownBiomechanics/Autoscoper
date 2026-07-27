@@ -40,8 +40,8 @@
 /// \author Benjamin Knorlein, Andy Loomis
 
 #ifdef _WIN32
+#  define NOMINMAX
 #  include <windows.h>
-#  undef max
 #  include <algorithm>
 #endif
 
