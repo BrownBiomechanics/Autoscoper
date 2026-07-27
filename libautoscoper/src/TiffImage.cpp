@@ -253,7 +253,7 @@ static int tiffReadContigTiledData(TIFF* tif, uint8_t* data, uint32_t width, uin
   // Allocate space for tile buffer.
   uint8_t* tileBuf = (uint8_t*)_TIFFmalloc(TIFFTileSize(tif));
   if (!tileBuf) {
-    printf("Unable to allocate space for tile (%d bytes).\n", TIFFTileSize(tif));
+    printf("Unable to allocate space for tile (%ld bytes).\n", TIFFTileSize(tif));
     return 0;
   }
 
@@ -361,7 +361,7 @@ static int tiffWriteContigTiledData(TIFF* tif, uint8_t* data, uint32_t width, ui
   // Allocate space for tile buffer.
   uint8_t* tileBuf = (uint8_t*)_TIFFmalloc(TIFFTileSize(tif));
   if (!tileBuf) {
-    printf("Unable to allocate space for tile (%d bytes).\n", TIFFTileSize(tif));
+    printf("Unable to allocate space for tile (%ld bytes).\n", TIFFTileSize(tif));
     return 0;
   }
 
