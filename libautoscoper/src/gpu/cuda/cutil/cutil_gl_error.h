@@ -28,6 +28,7 @@
 // includes, system
 #ifdef _WIN32
 #  define WINDOWS_LEAN_AND_MEAN
+#  define NOMINMAX
 #  include <windows.h>
 #  include <stdlib.h>
 #  undef min

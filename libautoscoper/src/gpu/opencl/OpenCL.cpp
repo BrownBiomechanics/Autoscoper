@@ -54,6 +54,7 @@
 #  include <OpenCL/cl_gl_ext.h>
 #elif defined(_WIN32)
 #  define WIN32_LEAN_AND_MEAN
+#  define NOMINMAX
 #  include <windows.h>
 #  include <CL/cl_gl.h>
 static clGetGLContextInfoKHR_fn pfn_clGetGLContextInfoKHR;

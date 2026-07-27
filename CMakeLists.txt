@@ -226,6 +226,10 @@ if(Autoscoper_SUPERBUILD)
   return()
 endif()
 
+if (MSVC)
+  add_definitions(-DNOMINMAX -D_USE_MATH_DEFINES)
+endif ()
+
 add_subdirectory(libautoscoper)
 add_subdirectory(autoscoper)
 

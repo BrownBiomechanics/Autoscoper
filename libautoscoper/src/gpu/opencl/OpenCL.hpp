@@ -50,6 +50,7 @@
 #  include <OpenGL/OpenGL.h>
 #else
 #  if defined(_WIN32)
+#    define NOMINMAX
 #    include <windows.h>
 #  endif
 #  include <CL/opencl.h>
