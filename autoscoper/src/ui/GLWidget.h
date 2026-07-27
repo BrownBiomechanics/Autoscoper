@@ -47,10 +47,10 @@
 
 // OpenGL error checking
 #if defined GLDEBUG
-#  define CALL_GL(exp)                                                             \
-    do {                                                                           \
-      exp;                                                                         \
-      if (glGetError() != GL_NO_ERROR)                                             \
+#  define CALL_GL(exp)                                                                       \
+    do {                                                                                     \
+      exp;                                                                                   \
+      if (glGetError() != GL_NO_ERROR)                                                       \
         std::cerr << "Error in OpenGL call at " << __FILE__ << ':' << __LINE__ << std::endl; \
     } while (0)
 #else
