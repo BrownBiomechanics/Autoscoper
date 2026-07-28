@@ -98,6 +98,14 @@ if(Autoscoper_RENDERING_BACKEND STREQUAL "CUDA")
   enable_language(CUDA)
   find_package(CUDAToolkit REQUIRED)
   include(${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/cuda/CMakeLists.txt)
+  if(WIN32)
+    # VTK passes /utf-8 flag to host compiler on Windows. NVCC does not
+    # handle this and must be explicitly instructed to forward it to the host
+    # compiler with -Xcompiler.
+    string(REPLACE "-utf-8" "" CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
+    string(REPLACE "/utf-8" "" CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
+    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler=\"/utf-8\"")
+  endif()
   add_library(libautoscoper STATIC ${libautoscoper_SOURCES} ${libautoscoper_HEADERS} ${cuda_HEADERS} ${cuda_SOURCES} ${cuda_KERNEL_HEADERS} ${cuda_KERNEL})
   target_include_directories(libautoscoper PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/gpu/cuda/cutil)
   target_link_libraries(libautoscoper PUBLIC
