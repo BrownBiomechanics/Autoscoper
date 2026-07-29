@@ -58,8 +58,9 @@ class AutoscoperConnectionError(Exception):
 
 
 class AutoscoperConnection:
-    def __init__(self, address: str = "127.0.0.1", verbose: bool = False) -> None:
+    def __init__(self, address: str = "127.0.0.1", port: int = 30007, verbose: bool = False) -> None:
         self.address = address
+        self.port = port
         self.verbose = verbose
         self.socket = self._openConnection()
         self._checkVersion()
@@ -155,7 +156,7 @@ class AutoscoperConnection:
         :return: The socket object
         """
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((self.address, 30007))
+        s.connect((self.address, self.port))
         return s
 
     def _checkVersion(self) -> None:
