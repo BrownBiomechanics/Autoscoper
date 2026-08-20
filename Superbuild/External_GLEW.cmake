@@ -61,6 +61,10 @@ if(NOT DEFINED GLEW_DIR AND NOT Autoscoper_USE_SYSTEM_${proj})
       ${${proj}_DEPENDENCIES}
     )
   set(GLEW_DIR ${EP_INSTALL_DIR}/${Autoscoper_LIB_DIR}/cmake/glew)
-  ExternalProject_Message(${proj} "GLEW_DIR:${GLEW_DIR}")
-  mark_as_superbuild(GLEW_DIR:PATH)
+
+else()
+  ExternalProject_Add_Empty(${proj} DEPENDS ${${proj}_DEPENDENCIES})
 endif()
+
+ExternalProject_Message(${proj} "GLEW_DIR:${GLEW_DIR}")
+mark_as_superbuild(GLEW_DIR:PATH)
