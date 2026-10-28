@@ -50,6 +50,8 @@ if(NOT DEFINED GLEW_DIR AND NOT Autoscoper_USE_SYSTEM_${proj})
       -DCMAKE_CXX_EXTENSIONS:BOOL=${CMAKE_CXX_EXTENSIONS}
       -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD}
       -DCMAKE_CXX_STANDARD_REQUIRED:BOOL=${CMAKE_CXX_STANDARD_REQUIRED}
+      # Allow configuring with CMake >= 4.0, which removed compatibility with CMake < 3.5
+      -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
       # Options
       -DBUILD_UTILS:BOOL=OFF
       # Install directories
