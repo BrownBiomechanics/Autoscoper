@@ -142,7 +142,16 @@ public:
                 double max_limit,
                 int cf_model,
                 unsigned int max_stall_iter);
+  // Cost the optimizers receive for a pose whose NCC cannot be computed in
+  // every camera, for example when the volume is out of view or the DRR is
+  // empty. Valid costs are at most 2 per camera, so this is far above any.
+  static constexpr double kInvalidPoseCost = 1.0e4;
+
+  // Returns the sum over cameras of 1 - NCC for the pose, or
+  // kInvalidPoseCost when any camera has no valid NCC.
   double minimizationFunc(double* values) const;
+  // Returns 1 - NCC for each camera, or NaN for a camera where it cannot be
+  // computed.
   std::vector<double> trackFrame(unsigned int volumeID, double* xyzpr) const;
   std::vector<gpu::View*>& views() { return views_; }
   const std::vector<gpu::View*>& views() const { return views_; }
@@ -186,6 +195,12 @@ private:
   std::vector<gpu::VolumeDescription*> volumeDescription_;
   std::vector<gpu::View*> views_;
   OptimizationParameters latest_optimization_parameters_;
+
+  // Cost evaluations for the frame being optimized, how many of them had no
+  // valid NCC, and why the most recent one did not.
+  mutable unsigned int cost_evaluations_ = 0;
+  mutable unsigned int invalid_cost_evaluations_ = 0;
+  mutable std::string invalid_cost_reason_;
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
   Buffer* rendered_drr_;
   Buffer* rendered_rad_;

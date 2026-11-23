@@ -42,6 +42,7 @@
 #include "Ncc_kernels.h"
 
 #include <iostream>
+#include <limits>
 
 #include <cutil_inline.h>
 
@@ -116,6 +117,10 @@ void ncc_deinit()
 float ncc(float* f, float* g, float* mask, unsigned int n)
 {
   float nbPixel = sum(mask, n);
+  if (!(nbPixel > 0.0f)) {
+    // No pixel is inside the mask, so the NCC is undefined.
+    return std::numeric_limits<float>::quiet_NaN();
+  }
   float meanF = sum(f, n) / nbPixel;
   float meanG = sum(g, n) / nbPixel;
 
@@ -126,8 +131,9 @@ float ncc(float* f, float* g, float* mask, unsigned int n)
 
   float den = sqrt(sum(d_den1s, n) * sum(d_den2s, n));
 
-  if (den < 1e-5) {
-    return 1e5;
+  // The NCC is undefined when either image has no variation inside the mask.
+  if (!(den >= 1e-5)) {
+    return std::numeric_limits<float>::quiet_NaN();
   }
 
   return sum(d_nums, n) / den;
