@@ -488,7 +488,10 @@ class AutoscoperConnection:
 
     def saveFullDRR(self) -> None:
         """
-        Save the full DRR.
+        Save the full DRR of the current volume, one PGM image per camera.
+
+        The images are written to a ``full_drr`` folder next to the loaded
+        trial file, named ``drr_vol<volume>_frame<frame>_cam<camera>.pgm``.
 
         :raises AutoscoperServerError: If the server fails to save the full DRR
         :raises AutoscoperConnectionError: If the connection to the server is lost

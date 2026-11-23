@@ -245,8 +245,10 @@ The tracking dialog method has the same optional arguments as the `optimizeFrame
 
 ### Save Full DRR Image
 
-To save the full DRR image of the scene, you can call the `saveFullDRRImage` method on the connection object:
+To save the full DRR image of the scene, you can call the `saveFullDRR` method on the connection object:
 
 ```matlab
 conn.saveFullDRR()
 ```
+
+Autoscoper writes one PGM image per camera to a `full_drr` folder next to the loaded trial file, named `drr_vol<volume>_frame<frame>_cam<camera>.pgm`.

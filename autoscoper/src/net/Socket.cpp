@@ -374,8 +374,6 @@ void Socket::handleMessage(QTcpSocket* connection, char* data, qint64 length)
     case 12:
       // save full drr image
       {
-        std::cerr << "Saving the full DRR image: " << std::endl;
-
         m_mainwindow->saveFullDRR();
 
         connection->write(QByteArray(1, 12));

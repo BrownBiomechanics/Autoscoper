@@ -162,7 +162,10 @@ public:
   // double implantMinFunc(const double* values) const;
   // std::vector<double> trackImplantFrame(unsigned int volumeID, double * xyzypr) const;
 
-  void getFullDRR(unsigned int volumeID) const;
+  // Renders the full DRR of a volume in every camera for the current frame
+  // and writes one PGM image per camera into outputDir, creating the folder
+  // if needed. Returns false if any image could not be written.
+  bool getFullDRR(unsigned int volumeID, const std::string& outputDir) const;
   gpu::VolumeDescription* getVolumeDescription(const int& index);
 
 private:
