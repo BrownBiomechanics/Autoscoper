@@ -12,7 +12,11 @@ void ncc_kernel(
 {
   unsigned i = get_global_id(0);
 
-  if (i < n && mask[i] > 0.5f) {
+  if (i >= n) {
+    return;
+  }
+
+  if (mask[i] > 0.5f) {
     float fMinusMean = f[i] - meanF;
     float gMinusMean = g[i] - meanG;
 

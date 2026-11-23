@@ -43,6 +43,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <algorithm>
 
 namespace xromm {
 namespace gpu {
@@ -51,7 +52,10 @@ namespace gpu {
 static unsigned g_max_n = 0;
 static size_t g_maxNumThreads = 0;
 
-static Buffer* d_sums = NULL;
+// Partial sums alternate between these two buffers from one reduction pass
+// to the next.
+static Buffer* d_sums_a = NULL;
+static Buffer* d_sums_b = NULL;
 static Buffer* d_nums = NULL;
 static Buffer* d_den1s = NULL;
 static Buffer* d_den2s = NULL;
@@ -64,6 +68,26 @@ static Program ncc_kernel_;
 static Program ncc_sum_kernel_;
 
 //////// Helper functions ////////
+
+// Largest power of two that is less than or equal to x (x >= 1).
+static size_t floor_pow2(size_t x)
+{
+  size_t p = 1;
+  while (p * 2 <= x) {
+    p *= 2;
+  }
+  return p;
+}
+
+// Smallest power of two that is greater than or equal to x.
+static size_t ceil_pow2(size_t x)
+{
+  size_t p = 1;
+  while (p < x) {
+    p *= 2;
+  }
+  return p;
+}
 
 static void get_max_threads()
 {
@@ -85,6 +109,10 @@ static void get_max_threads()
       g_maxNumThreads = maxLocalMem / sizeof(float);
     }
 
+    // The reduction kernel halves the work-group size at each step, so the
+    // size must be a power of two.
+    g_maxNumThreads = floor_pow2(g_maxNumThreads);
+
 #if DEBUG
     std::cerr << "ncc: maxLocalMem = " << maxLocalMem << std::endl;
     std::cerr << "ncc: maxNumThreads = " << g_maxNumThreads << std::endl;
@@ -94,56 +122,51 @@ static void get_max_threads()
 
 static void get_device_params(unsigned n, size_t& numThreads, size_t& numBlocks, size_t& sizeMem)
 {
-  numThreads = n < g_maxNumThreads ? n : g_maxNumThreads;
+  numThreads = std::min(g_maxNumThreads, ceil_pow2(n));
   numBlocks = (n + numThreads - 1) / numThreads;
   sizeMem = numThreads * sizeof(float);
 }
 
+// Returns the sum of the first n values of f. Each pass adds up blocks of
+// values into a partial-sum buffer; the next pass reads that buffer and writes
+// the other one, so no pass reads a buffer that it is also writing.
 static float ncc_sum(Buffer* f, unsigned n)
 {
-  size_t numThreads, numBlocks, sizeMem;
-  get_device_params(n, numThreads, numBlocks, sizeMem);
+  if (n == 0) {
+    return 0.0f;
+  }
 
   Kernel* kernel = ncc_sum_kernel_.compile(NccSum_cl, "ncc_sum_kernel");
 
+  Buffer* src = f;
+  Buffer* dst = d_sums_a;
   while (n > 1) {
+    size_t numThreads, numBlocks, sizeMem;
+    get_device_params(n, numThreads, numBlocks, sizeMem);
 #if DEBUG
-    std::cerr << "ncc_sum[" << n << "] numThreads = " << numThreads << std::endl;
-    std::cerr << "ncc_sum[" << n << "] numBlocks = " << numBlocks << std::endl;
-    std::cerr << "ncc_sum[" << n << "] sizeMem = " << sizeMem << std::endl;
+    std::cerr << "ncc_sum[" << n << "] numThreads = " << numThreads << " numBlocks = " << numBlocks << std::endl;
 #endif
 
     kernel->block2d(numThreads, 1);
     kernel->grid2d(1, numBlocks);
 
-    kernel->addBufferArg(f);
-    kernel->addBufferArg(d_sums);
+    kernel->addBufferArg(src);
+    kernel->addBufferArg(dst);
     kernel->addLocalMem(sizeMem);
     kernel->addArg(n);
 
     kernel->launch();
-
-#if DEBUG
-    float* tmp = new float[numBlocks];
-    d_sums->write(tmp, numBlocks * sizeof(float));
-    for (unsigned j = 0; j < numBlocks; j++) {
-      std::cerr << " " << tmp[j];
-    }
-    std::cerr << std::endl;
-    delete tmp;
-#endif
-
-    n = numBlocks;
-    get_device_params(n, numThreads, numBlocks, sizeMem);
-    f = d_sums;
-
     kernel->reset();
+
+    n = static_cast<unsigned>(numBlocks);
+    src = dst;
+    dst = (src == d_sums_a) ? d_sums_b : d_sums_a;
   }
 
   delete kernel;
 
   float h_sum;
-  d_sums->write(&h_sum, sizeof(float));
+  src->write(&h_sum, sizeof(float));
   return h_sum;
 }
 
@@ -158,7 +181,8 @@ void ncc_init(unsigned max_n)
     size_t numThreads, numBlocks, sizeMem;
     get_device_params(max_n, numThreads, numBlocks, sizeMem);
 
-    d_sums = new Buffer(numBlocks * sizeof(float));
+    d_sums_a = new Buffer(numBlocks * sizeof(float));
+    d_sums_b = new Buffer(numBlocks * sizeof(float));
     d_nums = new Buffer(max_n * sizeof(float));
     d_den1s = new Buffer(max_n * sizeof(float));
     d_den2s = new Buffer(max_n * sizeof(float));
@@ -169,10 +193,16 @@ void ncc_init(unsigned max_n)
 
 void ncc_deinit()
 {
-  delete d_sums;
+  delete d_sums_a;
+  delete d_sums_b;
   delete d_nums;
   delete d_den1s;
   delete d_den2s;
+  d_sums_a = NULL;
+  d_sums_b = NULL;
+  d_nums = NULL;
+  d_den1s = NULL;
+  d_den2s = NULL;
 
   g_max_n = 0;
 }
