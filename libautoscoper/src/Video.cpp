@@ -43,21 +43,9 @@
 #include <cstring>
 #include <algorithm>
 #include <iostream>
-#ifdef WIN32
-#  define NOMINMAX
-#  include <windows.h>
-#  include "Win32/dirent.h"
-#elif __APPLE__
-#  include <sys/types.h>
-#  include <sys/dir.h>
-#endif
-#ifdef __linux__
-#  include <sys/types.h>
-#  include <sys/dir.h>
-#endif
-
 #include <stdexcept>
 
+#include "filesystem_compat.hpp"
 #include "Video.hpp"
 #include "TiffImage.h"
 
@@ -69,29 +57,31 @@ Video::Video(const std::string& dirname)
   , image_(new TiffImage())
   , background_(NULL)
 {
-  DIR* dir = opendir(dirname_.c_str());
-  if (dir == 0) {
+  std::error_code ec;
+  std::filesystem::directory_iterator dir(dirname_, ec);
+  if (ec) {
     throw std::runtime_error("Unable to open directory: " + dirname_);
   }
 
-  struct dirent* ent;
-  while ((ent = readdir(dir)) != NULL) {
+  for (const std::filesystem::directory_entry& entry : dir) {
+    if (!std::filesystem::is_regular_file(entry.status())) {
+      continue;
+    }
 
     // Ignore hidden files
-    std::string filename(ent->d_name);
+    const std::string filename = entry.path().filename().string();
     if (filename.compare(0, 1, ".") == 0) {
       continue;
     }
 
-    // Only search for tifs
-    size_t ext = filename.find_last_of(".") + 1;
-    if (filename.compare(ext, 3, "tif") != 0) {
+    // Only keep files whose extension starts with "tif" (.tif, .tiff)
+    const size_t dot = filename.find_last_of('.');
+    if (dot == std::string::npos || filename.compare(dot + 1, 3, "tif") != 0) {
       continue;
     }
 
     filenames_.push_back(dirname + "/" + filename);
   }
-  closedir(dir);
 
   // Check if we found any files
   if (filenames_.size() == 0) {
