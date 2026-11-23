@@ -139,7 +139,10 @@ public:
   void setPose(std::vector<double> pose, unsigned int volume, unsigned int frame);
   void setBackground(double threshold);
   std::vector<double> getNCC(unsigned int volumeID, double* xyzpr);
-  void saveFullDRR();
+  // Writes the full DRR of the current volume, one image per camera, into
+  // outputDir. An empty outputDir means a "full_drr" folder next to the
+  // trial file. Returns false if any image could not be written.
+  bool saveFullDRR(const QString& outputDir = QString());
   std::vector<unsigned char> getImageData(unsigned int volumeID,
                                           unsigned int camera,
                                           double* xyzpr,

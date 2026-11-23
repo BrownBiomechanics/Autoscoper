@@ -899,18 +899,18 @@ std::vector<double> AutoscoperMainWindow::getNCC(unsigned int volumeID, double* 
   return tracker->trackFrame(volumeID, xyzpr);
 }
 
-void AutoscoperMainWindow::saveFullDRR()
+bool AutoscoperMainWindow::saveFullDRR(const QString& outputDir)
 {
-  /*QString filename = get_filename(true);
-     if (filename.compare("") != 0) {
-     try {
-      std::string drr_folderpath = filename.toStdString().c_str();
-     }
-     catch (std::exception& e) {
-      std::cerr << e.what() << std::endl;
-     }
-     }*/
-  getTracker()->getFullDRR(tracker->trial()->current_volume);
+  QString dir = outputDir;
+  if (dir.isEmpty()) {
+    // Default to a "full_drr" folder next to the loaded trial file, or in
+    // the system temporary folder when no trial file is known.
+    const QString base =
+      trial_filename.empty() ? QDir::tempPath() : QFileInfo(QString::fromStdString(trial_filename)).absolutePath();
+    dir = base + OS_SEP + "full_drr";
+  }
+  std::cerr << "Saving full DRR images to " << dir.toStdString() << std::endl;
+  return getTracker()->getFullDRR(tracker->trial()->current_volume, dir.toStdString());
 }
 
 std::vector<unsigned char> AutoscoperMainWindow::getImageData(unsigned int volumeID,
@@ -1868,7 +1868,15 @@ void AutoscoperMainWindow::on_actionExport_triggered(bool checked)
 
 void AutoscoperMainWindow::on_actionExport_Full_DRR_Image_triggered(bool checked)
 {
-  this->saveFullDRR();
+  const QString dir =
+    QFileDialog::getExistingDirectory(this, tr("Choose a folder for the full DRR images"), getLastFolder());
+  if (dir.isEmpty()) {
+    return;
+  }
+  setLastFolder(dir);
+  if (!this->saveFullDRR(dir)) {
+    QMessageBox::warning(this, tr("Export Full DRR Image"), tr("Some DRR images could not be saved to %1.").arg(dir));
+  }
 }
 
 void AutoscoperMainWindow::on_actionInsert_Key_triggered(bool checked)

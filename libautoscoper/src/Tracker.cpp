@@ -41,7 +41,10 @@
 
 #include "Tracker.hpp"
 
+#include "filesystem_compat.hpp"
+
 #include <algorithm>
+#include <cstdio>
 #include <limits>
 #include <fstream>
 #include <iostream>
@@ -96,113 +99,67 @@ double PSO_FUNC(double* P)
 }
 
 namespace xromm {
+
+namespace {
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
+using DeviceImage = Buffer;
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
+using DeviceImage = gpu::Buffer;
+#endif
+
+// Copies a GPU image to host memory, rescales its values to 0-255, and
+// writes it as an ASCII PGM file. Values are inverted so that air appears
+// white. Rows are written bottom-up, so viewers show the image flipped
+// vertically. Returns false if the file could not be written.
+bool save_image_as_pgm(const DeviceImage* dev_image, int width, int height, const std::string& filename)
+{
+  const size_t npixels = static_cast<size_t>(width) * height;
+  std::vector<float> host_image(npixels);
+#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
+  cudaMemcpy(host_image.data(), dev_image, npixels * sizeof(float), cudaMemcpyDeviceToHost);
+#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
+  dev_image->write(host_image.data(), npixels * sizeof(float));
+#endif
+
+  const auto [min_it, max_it] = std::minmax_element(host_image.begin(), host_image.end());
+  const float minim = npixels > 0 ? *min_it : 0.0f;
+  const float range = npixels > 0 ? *max_it - minim : 0.0f;
+
+  std::ofstream file(filename, std::ios::out);
+  if (!file) {
+    std::cerr << "Failed to open " << filename << " for writing" << std::endl;
+    return false;
+  }
+  file << "P2" << std::endl;
+  file << width << " " << height << std::endl;
+  file << 255 << std::endl;
+  for (float value : host_image) {
+    const int scaled = range > 0.0f ? static_cast<int>(255 * (value - minim) / range) : 0;
+    file << 255 - scaled << " ";
+  }
+  file.close();
+  if (!file) {
+    std::cerr << "Failed to write " << filename << std::endl;
+    return false;
+  }
+  std::cout << "Saved " << filename << std::endl;
+  return true;
+}
+
 #if DEBUG
-#  if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
-void save_debug_image(const Buffer* dev_image, int width, int height)
-#  elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-void save_debug_image(const gpu::Buffer* dev_image, int width, int height)
-#  endif
+// Writes a numbered debug image into "autoscoper-debug" inside the system
+// temporary folder.
+void save_debug_image(const DeviceImage* dev_image, int width, int height)
 {
-  static int count = 0; // static, so we add to it whenever we run this
-  float* host_image = new float[width * height];
-  unsigned char* uchar_image = new unsigned char[width * height];
-
-#  if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
-  cudaMemcpy(host_image, dev_image, width * height * sizeof(float), cudaMemcpyDeviceToHost);
-#  elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-  dev_image->write(host_image, width * height * sizeof(float));
-#  endif
-#  undef max
-#  undef min
-  float minim = std::numeric_limits<float>::max();
-  float maxim = std::numeric_limits<float>::min();
-
-  // Copy to a char array
-  for (int i = 0; i < width * height; i++) {
-    if (host_image[i] > maxim)
-      maxim = host_image[i];
-    if (host_image[i] < minim)
-      minim = host_image[i];
-  }
-
-  // Copy to a char array
-  for (int i = 0; i < width * height; i++) {
-    uchar_image[i] = (int)(255 * (host_image[i] - minim) / (maxim - minim));
-  }
-
-  char filename[256];
-#  ifdef __APPLE__
-  sprintf(filename, "/Users/bardiya/autoscoper-v2/debug/image_cam%02d.pgm", count++);
-#  elif _WIN32
-  sprintf(filename, "C:/Users/anthony.lombardi/Desktop/viewport-clip-test/image_cam%02d.pgm", count++);
-#  endif
-
-  std::cout << filename << std::endl;
-  std::ofstream file(filename, std::ios::out);
-  file << "P2" << std::endl;
-  file << width << " " << height << std::endl;
-  file << 255 << std::endl;
-  for (int i = 0; i < width * height; i++) {
-    file << 255 - (int)uchar_image[i] << " "; // (255-X) because we want white to be air
-  }
-  file.close(); // we have to flip this vertically for the actual image
-  delete[] uchar_image;
-  delete[] host_image;
+  static int count = 0; // numbers images across calls
+  const std::filesystem::path dir = std::filesystem::temp_directory_path() / "autoscoper-debug";
+  std::filesystem::create_directories(dir);
+  char name[64];
+  std::snprintf(name, sizeof(name), "image_%04d.pgm", count++);
+  save_image_as_pgm(dev_image, width, height, (dir / name).string());
 }
 #endif
-
-#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
-void save_full_drr(const Buffer* dev_image, int width, int height)
-#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-void save_full_drr(const gpu::Buffer* dev_image, int width, int height)
-#endif
-{
-  static int count = 0; // static, so we add to it whenever we run this
-  float* host_image = new float[width * height];
-  unsigned char* uchar_image = new unsigned char[width * height];
-
-#if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
-  cudaMemcpy(host_image, dev_image, width * height * sizeof(float), cudaMemcpyDeviceToHost);
-#elif defined(Autoscoper_RENDERING_USE_OpenCL_BACKEND)
-  dev_image->write(host_image, width * height * sizeof(float));
-#endif
-#undef max
-#undef min
-  float minim = std::numeric_limits<float>::max();
-  float maxim = std::numeric_limits<float>::min();
-
-  // Copy to a char array
-  for (int i = 0; i < width * height; i++) {
-    if (host_image[i] > maxim)
-      maxim = host_image[i];
-    if (host_image[i] < minim)
-      minim = host_image[i];
-  }
-
-  // Copy to a char array
-  for (int i = 0; i < width * height; i++) {
-    uchar_image[i] = (int)(255 * (host_image[i] - minim) / (maxim - minim));
-  }
-
-  char filename[256];
-#ifdef __APPLE__
-  sprintf(filename, "/Users/bardiya/autoscoper-v2/my_drr/image_cam%02d.pgm", count++);
-#elif _WIN32
-  sprintf_s(filename, "C:/_MyDRRs/image_cam%02d.pgm", count++);
-#endif
-
-  std::cout << filename << std::endl;
-  std::ofstream file(filename, std::ios::out);
-  file << "P2" << std::endl;
-  file << width << " " << height << std::endl;
-  file << 255 << std::endl;
-  for (int i = 0; i < width * height; i++) {
-    file << 255 - (int)uchar_image[i] << " "; // (255-X) because we want white to be air
-  }
-  file.close(); // we have to flip this vertically for the actual image
-  delete[] uchar_image;
-  delete[] host_image;
-}
+} // namespace
 
 Tracker::Tracker()
   : rendered_drr_(NULL)
@@ -1032,8 +989,16 @@ bool Tracker::calculate_viewport(const CoordFrame& modelview, const Camera& came
 }
 
 // Save Full DRR Image
-void Tracker::getFullDRR(unsigned int volumeID) const
+bool Tracker::getFullDRR(unsigned int volumeID, const std::string& outputDir) const
 {
+  std::error_code ec;
+  std::filesystem::create_directories(outputDir, ec);
+  if (ec) {
+    std::cerr << "Failed to create folder " << outputDir << ": " << ec.message() << std::endl;
+    return false;
+  }
+  bool all_saved = true;
+
   float x_val = (*(const_cast<Trial&>(trial_)).getXCurve(-1))(trial_.frame);
   float y_val = (*(const_cast<Trial&>(trial_)).getYCurve(-1))(trial_.frame);
   float z_val = (*(const_cast<Trial&>(trial_)).getZCurve(-1))(trial_.frame);
@@ -1081,8 +1046,12 @@ void Tracker::getFullDRR(unsigned int volumeID) const
     gpu::multiply(rendered_rad_, drr_mask_, rendered_rad_, render_width, render_height);
     gpu::multiply(rendered_drr_, drr_mask_, rendered_drr_, render_width, render_height);
 
-    save_full_drr(rendered_drr_, render_width, render_height);
+    char name[64];
+    std::snprintf(name, sizeof(name), "drr_vol%02u_frame%04d_cam%02u.pgm", volumeID, trial_.frame, i);
+    const std::string filename = (std::filesystem::path(outputDir) / name).string();
+    all_saved = save_image_as_pgm(rendered_drr_, render_width, render_height, filename) && all_saved;
   }
+  return all_saved;
 }
 
 #ifdef Autoscoper_COLLISION_DETECTION
