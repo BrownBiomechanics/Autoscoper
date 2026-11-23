@@ -58,7 +58,10 @@ Socket::Socket(AutoscoperMainWindow* mainwindow, unsigned long long int listenPo
   tcpServer = new QTcpServer();
 
   connect(tcpServer, &QTcpServer::newConnection, this, &Socket::onNewConnectionEstablished);
-  tcpServer->listen(QHostAddress::LocalHost, listenPort);
+  if (!tcpServer->listen(QHostAddress::LocalHost, listenPort)) {
+    std::cerr << "Socket: unable to listen on port " << listenPort << ": " << tcpServer->errorString().toStdString()
+              << ". Socket clients (PyAutoscoper, MATLAB) cannot connect to this Autoscoper." << std::endl;
+  }
 }
 
 Socket::~Socket()

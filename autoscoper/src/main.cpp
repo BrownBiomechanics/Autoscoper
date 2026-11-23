@@ -66,10 +66,12 @@ int main(int argc, char** argv)
     delete widget;
     return ret;
   } else {
+    // Batch mode runs without an event loop, so it does not open the socket:
+    // it could not answer clients, and it would keep the port from an
+    // Autoscoper window started at the same time.
     fprintf(stderr, "Start Batch %s\n", argv[1]);
     AutoscoperMainWindow* widget = new AutoscoperMainWindow(true);
-    Socket* socket = new Socket(widget, 30007);
     widget->runBatch(argv[1], true);
-    delete socket;
+    return 0;
   }
 }
