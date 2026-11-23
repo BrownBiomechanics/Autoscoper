@@ -158,6 +158,8 @@ To get the NCC value of a volume's pose, you can call the `getNCC` method on the
 ncc = conn.getNCC(volumeNumber,pose);
 ```
 
+`ncc` holds 1 - NCC for each camera, from 0 (identical images) to 2. A camera's value is `NaN` when it cannot be computed, for example when the volume is out of view of that camera.
+
 To get the sum of the NCC values of a volume's pose, you can call the `getNCC_Sum` method on the connection object:
 
 ```matlab

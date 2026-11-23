@@ -377,6 +377,9 @@ void Tracker::optimize(int frame,
   int ITER = 0;
 
   trial_.frame = frame;
+  cost_evaluations_ = 0;
+  invalid_cost_evaluations_ = 0;
+  invalid_cost_reason_.clear();
 
   for (unsigned int i = 0; i < trial_.videos.size(); ++i) {
 
@@ -467,8 +470,14 @@ void Tracker::optimize(int frame,
 
       printf("Minimum NCC from PSO = %f\n", gBest.NCC);
 
+      // Start the downhill simplex from the PSO result only when it scores
+      // better than the initial pose; otherwise start from the initial pose.
       double xyzypr_manip[NUM_OF_DIMENSIONS] = { 0 };
-      std::copy(gBest.Position.begin(), gBest.Position.begin() + NUM_OF_DIMENSIONS, xyzypr_manip);
+      if (gBest.NCC < init_ncc) {
+        std::copy(gBest.Position.begin(), gBest.Position.begin() + NUM_OF_DIMENSIONS, xyzypr_manip);
+      } else {
+        std::cout << "PSO found no pose better than the initial one." << std::endl;
+      }
 
       manip = CoordFrame::from_xyzAxis_angle(xyzypr_manip);
       // PSO End
@@ -520,7 +529,7 @@ void Tracker::optimize(int frame,
         // For Downhill Simplex Method (Final)
         manip = CoordFrame::from_xyzAxis_angle(P[1] + 1);
       } else {
-        std::cout << "The initial position was optimized." << std::endl;
+        std::cout << "Downhill simplex found no pose better than the initial one." << std::endl;
         manip = CoordFrame::from_xyzAxis_angle(init_manip);
       }
 
@@ -549,10 +558,12 @@ void Tracker::optimize(int frame,
       // Optimize the frame
       AMOEBA(P, Y, NDIM, FTOL, &ITER);
 
-      std::cout << "Optimized Final NCC: " << minimizationFunc((P[1] + 1)) << std::endl;
+      const double final_cost = minimizationFunc((P[1] + 1));
+      std::cout << "Optimized Final NCC: " << final_cost << std::endl;
 
-      // For Downhill Simplex Method
-      manip = CoordFrame::from_xyzAxis_angle(P[1] + 1);
+      // For Downhill Simplex Method; the pose stays where it is when the
+      // result has no valid NCC.
+      manip = CoordFrame::from_xyzAxis_angle(final_cost < kInvalidPoseCost ? P[1] + 1 : init_manip);
     }
 
     // Move the pose to the optimized pose
@@ -571,6 +582,16 @@ void Tracker::optimize(int frame,
   }
   totalIter += ITER;
 
+  if (invalid_cost_evaluations_ > 0) {
+    std::cerr << "Tracker::optimize(): Frame " << trial_.frame << ": " << invalid_cost_evaluations_ << " of "
+              << cost_evaluations_ << " pose evaluations had no valid NCC. Last reason: " << invalid_cost_reason_
+              << std::endl;
+    if (invalid_cost_evaluations_ == cost_evaluations_) {
+      std::cerr << "Tracker::optimize(): ERROR: Frame " << trial_.frame
+                << " could not be tracked because no evaluated pose had a valid NCC; its pose was left unchanged."
+                << std::endl;
+    }
+  }
   std::cerr << "Tracker::optimize(): Frame " << trial_.frame << " done in " << totalIter << " total iterations"
             << std::endl;
 
@@ -613,7 +634,8 @@ std::vector<double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) c
     double viewport[4];
     if (!this->calculate_viewport(modelview, *views_[i]->camera(), viewport)) {
       std::cerr << "Tracker::trackFrame(): Volume " << volumeID << " is not in view of camera " << i << std::endl;
-      correlations.push_back(9999.0);
+      invalid_cost_reason_ = "volume " + std::to_string(volumeID) + " is not in view of camera " + std::to_string(i);
+      correlations.push_back(std::numeric_limits<double>::quiet_NaN());
       continue;
     }
 
@@ -762,11 +784,19 @@ std::vector<double> Tracker::trackFrame(unsigned int volumeID, double* xyzypr) c
                            // Calculate Hausdorff Distance for Implant Matching _ FUTURE
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
       correlations.push_back(gpu::hdist(rendered_drr_, rendered_rad_, drr_mask_, render_width * render_height));
+#else
+      invalid_cost_reason_ = "the implant cost function (Hausdorff distance) requires the CUDA backend";
+      correlations.push_back(std::numeric_limits<double>::quiet_NaN());
 #endif
     } else { // If 0, we do bone model
       // Calculate the correlation for ncc
       // (1g) and (1h)
-      correlations.push_back(1.0 - gpu::ncc(rendered_drr_, rendered_rad_, drr_mask_, render_width * render_height));
+      const double ncc = gpu::ncc(rendered_drr_, rendered_rad_, drr_mask_, render_width * render_height);
+      if (std::isnan(ncc)) {
+        invalid_cost_reason_ =
+          "the NCC is undefined in camera " + std::to_string(i) + " (no masked pixels, or an image without variation)";
+      }
+      correlations.push_back(1.0 - ncc);
     }
   }
   return correlations;
@@ -812,17 +842,24 @@ double Tracker::minimizationFunc(double* values) const
 #endif // Autoscoper_COLLISION_DETECTION
 
   std::vector<double> correlations = trackFrame(idx, &xyzypr[0]);
+  cost_evaluations_++;
 
-  double correlation = correlations[0];
-  // printf("Cam 0: %4.5f", correlation);
-  for (unsigned int i = 1; i < trial_.cameras.size(); ++i) {
-    correlation += correlations[i];
-    //  printf("\tCam %d: %4.5f", i, correlations[i]);
+  // Each camera contributes 1 - NCC, which lies between 0 and 2. A value
+  // outside that range means the NCC computation itself went wrong.
+  const double tolerance = 1e-3;
+  double correlation = 0.0;
+  for (unsigned int i = 0; i < trial_.cameras.size(); ++i) {
+    const double value = correlations[i];
+    if (!std::isfinite(value) || value < -tolerance || value > 2.0 + tolerance) {
+      if (std::isfinite(value)) {
+        invalid_cost_reason_ = "camera " + std::to_string(i) + " returned 1 - NCC = " + std::to_string(value)
+                               + ", outside the valid range [0, 2]";
+      }
+      invalid_cost_evaluations_++;
+      return kInvalidPoseCost;
+    }
+    correlation += value;
   }
-  // printf("\tFinal NCC: %4.5f\n", correlation);
-  if (correlation < 0) {
-    correlation = 9999;
-  } // In case we have a really bad filters and correlation ends up negative... This should not happen...
   return correlation;
 }
 

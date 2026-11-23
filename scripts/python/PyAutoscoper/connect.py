@@ -373,7 +373,9 @@ class AutoscoperConnection:
         :param volume: The volume to get the NCC of
         :param pose: The pose to get the NCC at
 
-        :return: The NCC of the volume at the specified pose
+        :return: 1 - NCC for each camera, from 0 (identical) to 2 (opposite).
+            A camera's value is NaN when it cannot be computed, for example when
+            the volume is out of view or the images have no variation.
 
         :raises AutoscoperServerError: If the server fails to get the NCC
         :raises AutoscoperConnectionError: If the connection to the server is lost

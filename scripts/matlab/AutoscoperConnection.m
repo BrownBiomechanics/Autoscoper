@@ -255,6 +255,8 @@ classdef AutoscoperConnection
             ncc = nan(1, data(2));
             for i = 1:data(2)
                 val = typecast(uint8(data(3 + (i - 1) * 8:10 + (i - 1) * 8)), 'double');
+                % The server sends NaN when a camera's NCC cannot be computed;
+                % older servers sent -99999 instead.
                 if val == -99999
                     val = NaN;
                 end
