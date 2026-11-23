@@ -84,6 +84,24 @@ class AutoscoperConnection:
             if data:
                 return data
 
+    def _receive_more(self) -> bytes:
+        """
+        Internal function, should not be called by a user.
+
+        Reads the next chunk of a server response that spans several reads.
+
+        :return: The bytes received
+
+        :raises AutoscoperConnectionError: If the connection is closed or lost
+        """
+        try:
+            data = self.socket.recv(65536)
+        except OSError as e:
+            raise AutoscoperConnectionError(e) from e
+        if not data:
+            raise AutoscoperConnectionError("connection closed while receiving data")
+        return data
+
     def _pack_data(self, *args: tuple) -> bytearray:
         """
         Internal function, should not be called by a user.
@@ -415,10 +433,19 @@ class AutoscoperConnection:
         """
         if self.verbose:
             print(f"Getting image for volume {volume} on pose {pose} from camera {camera}")
-        response = self._send_command(0x0A, volume, camera, *pose)  # 10
+        response = bytearray(self._send_command(0x0A, volume, camera, *pose))  # 10
+        # The reply is the command byte, the width and height as 32-bit
+        # integers, then three width x height 8-bit images (radiograph, DRR,
+        # and mask). Large images arrive over several reads.
+        header_size = 9
+        while len(response) < header_size:
+            response.extend(self._receive_more())
         width = struct.unpack("i", response[1:5])[0]
         height = struct.unpack("i", response[5:9])[0]
-        img_data = response[9:]
+        expected_size = header_size + 3 * width * height
+        while len(response) < expected_size:
+            response.extend(self._receive_more())
+        img_data = bytes(response[header_size:expected_size])
         return [width, height, img_data]
 
     def optimizeFrame(
