@@ -78,6 +78,9 @@ public:
 
   void addFilter(FilterTreeWidgetItem* filterItem, bool addToTree = true);
   void removeFilter(FilterTreeWidgetItem* filterItem, bool removeFromTree = true);
+  // Removes the filter from the view, then deletes the filter and its tree
+  // item. The view owns its filters; this is the only place the UI deletes one.
+  void deleteFilter(FilterTreeWidgetItem* filterItem);
   void printFilters();
   void resetVectors();
   void save(std::ofstream& file);

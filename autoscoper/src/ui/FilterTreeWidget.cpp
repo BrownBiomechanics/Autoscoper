@@ -399,8 +399,7 @@ void FilterTreeWidget::action_RemoveFilter_triggered()
   FilterTreeWidgetItem* filterItem = dynamic_cast<FilterTreeWidgetItem*>(item_contextMenu);
   ModelViewTreeWidgetItem* modelviewItem = dynamic_cast<ModelViewTreeWidgetItem*>(item_contextMenu->parent());
   if (filterItem && modelviewItem) {
-    modelviewItem->removeFilter(filterItem);
-    delete filterItem;
+    modelviewItem->deleteFilter(filterItem);
   }
   redrawGL();
 }

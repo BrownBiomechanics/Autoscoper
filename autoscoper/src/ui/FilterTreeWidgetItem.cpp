@@ -204,7 +204,8 @@ void FilterTreeWidgetItem::init()
 
 FilterTreeWidgetItem::~FilterTreeWidgetItem()
 {
-  delete m_filter;
+  // m_filter belongs to the View it was added to (see
+  // ModelViewTreeWidgetItem::deleteFilter).
   // delete settingsButton;
   // delete pFrameSettings;
   // delete visibleCheckBox;

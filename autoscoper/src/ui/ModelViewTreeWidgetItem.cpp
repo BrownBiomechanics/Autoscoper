@@ -63,6 +63,7 @@
 #include <math.h> /* exp */
 
 #include <asys/SystemTools.hxx>
+#include <Filter.hpp>
 #include <View.hpp>
 #if defined(Autoscoper_RENDERING_USE_CUDA_BACKEND)
 #  include <gpu/cuda/RayCaster.hpp>
@@ -155,8 +156,7 @@ void ModelViewTreeWidgetItem::loadFilters(std::ifstream& file)
   for (int i = childCount() - 1; i >= 0; i--) {
     FilterTreeWidgetItem* filterItem = dynamic_cast<FilterTreeWidgetItem*>(child(i));
     if (filterItem) {
-      removeFilter(filterItem);
-      delete filterItem;
+      deleteFilter(filterItem);
     }
   }
 
@@ -287,6 +287,14 @@ void ModelViewTreeWidgetItem::addFilter(FilterTreeWidgetItem* filterItem, bool a
   m_filters->push_back(filterItem->getFilter());
   if (addToTree)
     this->addChild(filterItem);
+}
+
+void ModelViewTreeWidgetItem::deleteFilter(FilterTreeWidgetItem* filterItem)
+{
+  Filter* filter = filterItem->getFilter();
+  removeFilter(filterItem);
+  delete filterItem;
+  delete filter;
 }
 
 void ModelViewTreeWidgetItem::removeFilter(FilterTreeWidgetItem* filterItem, bool removeFromTree)
